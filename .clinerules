@@ -1,0 +1,22 @@
+# Reglas del Proyecto: Sistema Electrónico STR & Hardware
+
+## Metodología Orchestrated Driven Development (ODD)
+- Trabaja estrictamente bajo el flujo **Plan -> Act**.
+- En modo **Plan (Arquitecto)**: Lee la carpeta `docs/` para asimilar el contexto. NO modifiques ni crees archivos en esta fase.
+- En modo **Act (Codificador)**: Procede con modificaciones solo tras aprobación del plan.
+
+## Documentación LaTeX (`reports/`)
+- El informe oficial se edita en `reports/main.tex`.
+- Todo código LaTeX debe ser sintácticamente correcto y compilar con `latexmk` en WSL2.
+
+## Protección de Hardware Altium (`hardware/`)
+- **REGLA ESTRICTA:** NUNCA intentes modificar ni editar archivos propietarios o binarios de Altium (`.PcbDoc`, `.SchDoc`, `.PrjPcb`).
+- Para documentar cambios de hardware, actualiza `hardware/BOM.md` o `hardware/pinout.md`.
+
+## Estándares de Firmware Real-Time Systems (`firmware/`)
+- El código C debe cumplir los estándares de Linux Kernel / Zephyr / FreeRTOS.
+- Aísla la capa HAL/Drivers de la lógica de tareas en tiempo real.
+- Analiza siempre el log completo de GCC/Clang en WSL2 ante errores de compilación.
+
+## Entorno de Ejecución
+- Toda compilación de LaTeX, C y comandos de Git se ejecutan en la terminal Bash de Ubuntu (WSL2).

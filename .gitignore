@@ -1,0 +1,26 @@
+# Altium Designer (Temporales y Logs)
+**/History/
+**/Project Logs for */
+*.PcbDoc.htm
+*.CompileLog
+*.OutJob.Preview
+*.~(lock)*
+
+# LaTeX (Archivos auxiliares de compilación)
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.pdf
+
+# Firmware / Compiladores (Binarios y Build)
+build/
+.pio/
+.vscode/.browsedb*
+*.o
+*.elf
+*.bin
+*.hex
