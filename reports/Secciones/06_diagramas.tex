@@ -1,0 +1,119 @@
+\section*{Arquitectura -- Diagrama de bloques funcional}
+
+En la Figura \ref{fig:bloques_hw}, los bloques en línea continua representan el hardware de la \textbf{Fase 1 (Semestre Actual)}, mientras que los bloques en naranja con línea punteada corresponden a la \textbf{Fase 2 (Tesis)}.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=1.2cm and 1.3cm, auto, font=\sffamily\small,
+    mcu/.style={rectangle, draw=unalnavy, fill=blue!8, thick, minimum width=3.2cm, minimum height=3.6cm, align=center, rounded corners},
+    block1/.style={rectangle, draw=black, fill=phase1blue, thick, minimum width=2.6cm, minimum height=1.1cm, align=center, rounded corners},
+    block2/.style={rectangle, draw=unalred, dashed, fill=phase2orange, thick, minimum width=2.6cm, minimum height=1.1cm, align=center, rounded corners}]
+
+    % MCU CENTRAL
+    \node [mcu] (esp) {\textbf{NÚCLEO CENTRAL}\\[0.1cm]\textbf{ESP32-S3-N16R8}\\(Dual-Core 240 MHz)\\[0.1cm]\emph{3.3V Logic}};
+
+    % ENTRADAS
+    \node [block1, left=of esp, yshift=1.2cm] (gps) {GPS MAX-M10S\\(UART1: GPIO 16/17)};
+    \node [block1, left=of esp, yshift=-1.2cm] (imu) {IMU LSM6DSOX\\(I$^2$C: GPIO 21/22)};
+    
+    % ENERGIA
+    \node [block1, below=of esp, yshift=-0.2cm] (pwr) {MPPT CN3791 6V\\+ LiPo 3.7V + MAX17048};
+
+    % SALIDAS Y TELEMETRIA
+    \node [block1, right=of esp, yshift=1.4cm] (lora) {LoRa SX1262 (915 MHz)\\(SPI: GPIO 5/18/19/23)};
+    \node [block1, right=of esp, yshift=0.1cm] (opto) {VO617A Optoacoplador\\+ Buzzer / LED (GPIO 13)};
+    
+    % EXPANSION FASE 2
+    \node [block2, right=of esp, yshift=-1.3cm] (gsm) {Módem Quectel BG95-M3\\(UART2: GPIO 26/27)\\[0.05cm]\footnotesize\textbf{[Fase 2 -- Tesis]}};
+
+    % CONEXIONES
+    \draw[<->, thick] (gps) -- (esp);
+    \draw[<->, thick] (imu) -- (esp);
+    \draw[<->, thick] (esp) -- (lora);
+    \draw[->, thick] (esp) -- (opto);
+    \draw[->, thick] (pwr) -- (esp);
+    \draw[<->, thick, dashed, draw=unalred] (esp) -- (gsm);
+
+\end{tikzpicture}
+\caption{Diagrama de bloques funcional de la arquitectura de hardware DR-VF-01.}
+\label{fig:bloques_hw}
+\end{figure}
+
+\subsection*{Mapeo de Pines y Asignación de Periféricos}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|l l l X|}
+\hline
+\rowcolor{categorybg}
+\textbf{Módulo / Periférico} & \textbf{Protocolo} & \textbf{Pines ESP32-S3} & \textbf{Notas de Ruteo en PCB} \\ \hline
+GPS u-blox MAX-M10S & UART1 & GPIO 16 (RX1), GPIO 17 (TX1) & Intercambiar TX/RX en ruteo de pista. \\ \hline
+IMU ST LSM6DSOX & I$^2$C & GPIO 21 (SDA), GPIO 22 (SCL) & Requiere resistencias pull-up de $4.7~\text{k}\Omega$ a 3.3V. \\ \hline
+Medidor MAX17048 & I$^2$C & GPIO 21 (SDA), GPIO 22 (SCL) & Comparte bus I$^2$C con la IMU. \\ \hline
+LoRa SX1262 & SPI & GPIO 5 (CS), 18 (SCK), 19 (MISO), 23 (MOSI) & Líneas DIO1 (GPIO 4) y BUSY (GPIO 2) mapeadas. \\ \hline
+Optoacoplador / Buzzer & GPIO Digital & GPIO 13 (Disparo), GPIO 14 (PWM) & Separación estricta de plano de masa. \\ \hline
+\rowcolor{phase2orange}
+Quectel BG95-M3 [Fase 2] & UART2 & GPIO 26 (RX2), GPIO 27 (TX2) & \textbf{Pines reservados en PCB para expansión de tesis.} \\ \hline
+\end{tabularx}
+\end{table}
+
+\subsection*{Árbol de Distribución de Potencia y Gestión Energética}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=0.8cm and 1.0cm, auto, font=\sffamily\small,
+    pwr_in/.style={rectangle, draw=black, fill=categorybg, thick, minimum width=2.6cm, minimum height=1.0cm, align=center, rounded corners},
+    pwr_mgt/.style={rectangle, draw=unalnavy, fill=phase1blue, thick, minimum width=2.8cm, minimum height=1.0cm, align=center, rounded corners},
+    pwr_bus/.style={rectangle, draw=black, fill=blue!12, thick, minimum width=2.8cm, minimum height=1.0cm, align=center, rounded corners},
+    pwr_load/.style={rectangle, draw=black, fill=white, thick, minimum width=2.5cm, minimum height=1.0cm, align=center, rounded corners},
+    pwr_fase2/.style={rectangle, draw=unalred, dashed, fill=phase2orange, thick, minimum width=2.8cm, minimum height=1.0cm, align=center, rounded corners}]
+
+    % Fila Superior
+    \node [pwr_in] (in) {Entrada 6V Solar /\\ USB-C (5V)};
+    \node [pwr_mgt, right=of in] (cn) {Cargador MPPT\\CN3791 (6V)};
+    \node [pwr_bus, right=of cn] (bat) {Batería LiPo 3.7V\\(1200--1500 mAh)};
+
+    % Fila Media
+    \node [pwr_mgt, below=of bat, xshift=-2.0cm, yshift=-0.2cm] (ldo) {Regulador LDO\\3.3V (500 mA)};
+    \node [pwr_fase2, below=of bat, xshift=2.0cm, yshift=-0.2cm] (bg95) {Quectel BG95-M3\\(Picos 400--600 mA)\\[0.05cm]\footnotesize\textbf{[Fase 2 -- Tesis]}};
+
+    % Fila Inferior
+    \node [pwr_load, below=of ldo, xshift=-2.2cm, yshift=-0.3cm] (mcu) {ESP32-S3\\(Microcontrolador)};
+    \node [pwr_load, below=of ldo, yshift=-0.3cm] (sens) {Sensors \& Radio\\(MAX-M10S / LSM6DSOX\\SX1262 / MAX17048)};
+    \node [pwr_load, below=of ldo, xshift=2.2cm, yshift=-0.3cm] (act) {Disuasión Aislada\\(Opto VO617A / Buzzer)};
+
+    % Conexiones
+    \draw[->, thick] (in) -- (cn);
+    \draw[->, thick] (cn) -- node[above, font=\footnotesize] {$V_{\text{CHG}}$} (bat);
+    \draw[->, thick] (bat) |- node[near start, left, font=\footnotesize] {$V_{\text{BAT}}$ ($3.7\text{--}4.2\text{V}$)} (ldo);
+    \draw[->, thick, dashed, draw=unalred] (bat) |- node[near start, right, font=\footnotesize] {$V_{\text{BAT}}$} (bg95);
+
+    \draw[->, thick] (ldo) |- node[near start, left, font=\footnotesize] {$3.3\text{V}$} (mcu);
+    \draw[->, thick] (ldo) -- node[right, font=\footnotesize] {$3.3\text{V}$} (sens);
+    \draw[->, thick] (ldo) |- node[near start, right, font=\footnotesize] {$3.3\text{V}$} (act);
+
+\end{tikzpicture}
+\caption{Árbol de distribución de potencia y gestión energética para el sistema DR-VF-01.}
+\label{fig:arbol_potencia}
+\end{figure}
+
+\subsection*{Presupuesto Energético y Perfil de Consumo}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|l l c c X|}
+\hline
+\rowcolor{categorybg}
+\textbf{Subcircuito / Módulo} & \textbf{Riel Alimentación} & \textbf{Consumo Activo} & \textbf{Consumo Reposo} & \textbf{Estado / Comentarios} \\ \hline
+ESP32-S3-N16R8 & LDO 3.3V (Interno) & $70\text{--}160~\text{mA}$ & $7~\mu\text{A}$ & CPU activa a 240 MHz / Deep Sleep. \\ \hline
+GPS MAX-M10S & LDO 3.3V (Bus PCB) & $15\text{--}30~\text{mA}$ & $15~\mu\text{A}$ & Muestreo adaptativo $1\text{--}10~\text{Hz}$. \\ \hline
+LoRa SX1262 & LDO 3.3V (Bus PCB) & $118~\text{mA}$ (Pico TX) & $0.2~\mu\text{A}$ & Transmisión por ráfagas cortas. \\ \hline
+IMU LSM6DSOX & LDO 3.3V (Bus PCB) & $0.55~\text{mA}$ & $3~\mu\text{A}$ & Monitoreo continuo (Wake-on-Motion). \\ \hline
+Medidor MAX17048 & LDO 3.3V (Bus PCB) & $0.023~\text{mA}$ & $3~\mu\text{A}$ & Monitoreo pasivo de batería. \\ \hline
+\textbf{Pico Máximo Total} & \textbf{LDO 3.3V} & \textbf{$\approx 221~\text{mA}$} & \textbf{$\approx 28~\mu\text{A}$} & \textbf{Holgado dentro del límite del LDO (500 mA).} \\ \hline
+\rowcolor{phase2orange}
+Quectel BG95-M3 [Fase 2] & Directo $V_{\text{BAT}}$ ($3.7\text{--}4.2\text{V}$) & $400\text{--}600~\text{mA}$ & $3.9~\mu\text{A}$ & \textbf{Alimentación directa desde la celda LiPo.} \\ \hline
+\end{tabularx}
+\end{table}

@@ -1,0 +1,36 @@
+\section*{Descripción del problema de diseño}
+
+En la gestión ganadera extensiva, el control del perímetro mediante cercados físicos tradicionales representa un elevado costo de instalación, mantenimiento constante e inflexibilidad para implementar sistemas de pastoreo rotacional eficiente. El problema de diseño consiste en definir y documentar la arquitectura de grado industrial de un \textbf{Collar Inteligente de Cerca Virtual y Monitoreo en Tiempo Real (DR-VF-01)}, capaz de delimitar potreros dinámicos mediante geolocalización satelital multiconstelación y emitir estímulos disuasivos progresivos cuando el bovino intenta sobrepasar los límites permitidos.
+
+Para conciliar la entrega académica del semestre actual con la hoja de ruta del trabajo de tesis, el desarrollo se estructura formalmente en dos etapas:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Fase 1 (Entregable Semestre Actual -- Rev. 1.0):} Construcción de una tarjeta madre (\emph{Carrier Board}) con sockets modulares, centrada en el microcontrolador ESP32-S3, posicionamiento GPS u-blox MAX-M10S, telemetría LoRa SX1262 (915 MHz), gestión de recarga solar MPPT CN3791 (6V), medidor I$^2$C MAX17048 y emulación segura de la etapa disuasiva mediante optoacoplador VO617A con LED/Buzzer.
+    \item \textbf{Fase 2 (Proyección de Tesis / Escalamiento Comercial):} Integración SMD a nivel de chip, conectividad híbrida con el módem celular Quectel BG95-M3 (LTE Cat-M1/NB-IoT), etapa elevadora de alto voltaje real ($2,5~\text{kV} / 0,2~\text{J}$ bajo norma IEC 60335-2-76) y encapsulado IP68.
+\end{itemize}
+
+\subsection*{Aspectos Críticos de Diseño}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Autonomía y Balance Energético MPPT:} Recarga fotovoltaica conmutada mediante el chip CN3791 regulado a $6~\text{V}$ y batería LiPo de $3,7~\text{V}$ ($1200\text{--}1500~\text{mAh}$ en Fase 1; ampliable a $3200~\text{mAh}$ en Fase 2).
+    \item \textbf{Procesamiento en el Borde e IA (Edge AI):} Ejecución local en el microcontrolador ESP32-S3-N16R8 del algoritmo geométrico \emph{Point-in-Polygon} (a $10~\text{Hz}$) y clasificación de la conducta del animal mediante el núcleo de Machine Learning (MLC) de la IMU ST LSM6DSOX.
+    \item \textbf{Seguridad y Aislamiento Galvánico:} Aislamiento de alto voltaje ($>3000~\text{V}_{\text{RMS}}$) entre la lógica de control ($3,3~\text{V}$) y el circuito disuasivo mediante el optoacoplador VO617A.
+    \item \textbf{Costo Target de Grado Comercial:} Optimización de la lista de materiales (\emph{Target BOM}) por debajo de $\$50.00~\text{USD}$ ($\sim\$200.000~\text{COP}$) por unidad.
+\end{itemize}
+
+\section*{Descripción técnica del sistema}
+La arquitectura funcional del collar se organiza en los siguientes bloques principales:
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Etapa de Cosecha Solar y Gestión de Potencia} \emph{[Fase 1]}: Panel solar monocristalino ($6~\text{V} / 1,5\text{--}3~\text{W}$), regulador MPPT Buck CN3791 (6V), medidor I$^2$C (MAX17048) y batería LiPo de $3,7~\text{V}$.
+    \item \textbf{Unidad de Procesamiento Central (MCU)} \emph{[Fase 1]}: Microcontrolador ESP32-S3 Dual-Core (16 MB Flash, 8 MB PSRAM) a cargo de las geocercas, servidor web local (LittleFS) y punto de acceso Wi-Fi/BLE para configuración offline.
+    \item \textbf{Subsistema de Posicionamiento Satelital GNSS} \emph{[Fase 1]}: Receptor multiconstelación u-blox MAX-M10S (GPS, GLONASS, Galileo, BeiDou) vía UART.
+    \item \textbf{Subsistema de Telemetría Dual (LoRa + Celular IoT)}:
+    \begin{itemize}
+        \item \textbf{Semtech SX1262 (LoRa 915 MHz, $+22~\text{dBm}$) \emph{[Fase 1]}:} Transmisión primaria para zonas rurales.
+        \item \textbf{Quectel BG95-M3 (LTE Cat-M1 / NB-IoT) \emph{[Expansión Futura -- Fase 2]}:} Módem celular de respaldo para reporte directo a la nube.
+    \end{itemize}
+    \item \textbf{Etapa de Estimulación Disuasiva Aislada}:
+    \begin{itemize}
+        \item \textbf{Emulación de Seguridad \emph{[Fase 1]}:} Optoacoplador VO617A con indicación por LED y Zumbador Piezoeléctrico.
+        \item \textbf{Circuito Elevador de HV Real ($2,5~\text{kV} / 0,2~\text{J}$) \emph{[Fase 2]}:} Descarga controlada bajo norma IEC 60335-2-76.
+    \end{itemize}
+    \item \textbf{Subsistema Inercial e Inteligencia de Borde (IMU + MLC)} \emph{[Fase 1]}: ST LSM6DSOX para detección de movimiento (\emph{Wake-on-Motion}) y monitoreo de patrones de conducta.
+\end{enumerate}

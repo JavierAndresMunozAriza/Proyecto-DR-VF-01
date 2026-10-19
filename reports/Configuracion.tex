@@ -1,0 +1,49 @@
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage[margin=1.5cm, top=2.2cm, bottom=2.2cm]{geometry}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{float}
+
+% --- Colores Institucionales y de Tablas ---
+\definecolor{unalnavy}{HTML}{003366}
+\definecolor{unalblue}{HTML}{4682B4}
+\definecolor{unalred}{HTML}{941B27}
+\definecolor{categorybg}{HTML}{EBEBEB}     % Gris claro para encabezados
+\definecolor{categorybgsub}{HTML}{DCDCDC}  % Gris medio para subcategorías
+\definecolor{rowalt}{HTML}{F8F9FA}         % Gris ultra suave para alternar filas
+\definecolor{phase1blue}{HTML}{E6F0FF}     % Fondo Fase 1 (Semestre)
+\definecolor{phase2orange}{HTML}{FFF3E6}   % Fondo Fase 2 (Tesis)
+\definecolor{bordergrey}{HTML}{B0B0B0}
+
+\setlength{\arrayrulewidth}{0.8pt}
+
+% --- Encabezado y Pie de Página (fancyhdr) ---
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\bfseries UNAL - DIEEC}
+\rhead{\bfseries DR-VF-01 --- Cerca Virtual}
+\rfoot{\small Página \thepage}
+\lfoot{\small Septiembre, 2026 | Rev. 1.0}
+\renewcommand{\headrulewidth}{0.8pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% Configuración de Hipervínculos
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=cyan,
+    citecolor=unalnavy
+}
+
+% --- Paquetes para Diagramas TikZ (con protección Babel) ---
+\usepackage{tikz}
+\usetikzlibrary{arrows, arrows.meta, positioning, shapes.geometric, fit, backgrounds, calc, babel}

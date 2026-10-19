@@ -1,4 +1,4 @@
-# Documento Maestro de Arquitectura y Requerimientos — Proyecto DR-VF-01
+# Documento Maestro — Proyecto DR-VF-01
 **Sistema Modular de Cerca Virtual para Ganado (*Virtual Fencing System*)**  
 **Ubicación de Despliegue:** Zona rural del Departamento del Huila, Colombia  
 **Fase Actual:** Desarrollo de Prototipo Funcional (*Carrier Board*) y Firmware Base (Fase 1 & 2)
@@ -27,20 +27,50 @@ El sistema basa su funcionamiento en la integración de tecnologías de ultra ba
 
 ---
 
-## 2. Matriz de Requerimientos
+## 2. Resumen de Requerimientos
 
-### 2.1 Requerimientos Funcionales (RF)
-* **RF-01 (Geolocalización):** El dispositivo debe adquirir la posición global (latitud, longitud) mediante GNSS multiconstelación con un error $< 2.5\text{ m}$.
-* **RF-02 (Evaluación de Cerca Virtual):** El microcontrolador debe determinar en un tiempo inferior a $50\text{ ms}$ si las coordenadas actuales están dentro o fuera del polígono definido.
-* **RF-03 (Acción Disuasiva Simulada):** Al cruzar la geocerca, el sistema debe activar un optoacoplador para aislar la señal y encender un indicador LED de alerta.
-* **RF-04 (Telemetría LoRa):** Envío de paquetes de datos formateados (Lat, Lon, Battery %, Satellites, Fence Status) hacia un Gateway o receptor en la banda $915\text{ MHz}$.
-* **RF-05 (Monitoreo de Energía):** Medición constante del porcentaje de batería e informe vía bus I2C.
+Para la matriz completa con trazabilidad, métricas y estado de implementación, ver: [REQUIREMENTS.md](./REQUIREMENTS.md)
 
-### 2.2 Requerimientos No Funcionales (RNF) y Sistema en Tiempo Real (STR)
-* **RNF-01 (Autonomía Energética):** El collar debe operar indefinidamente con una radiación solar promedio de $4\text{ horas/día}$ (Panel $6\text{V} / 1.5\text{W}$). En oscuridad total, la batería de $1200\text{ mAh}$ debe garantizar mínimo $7\text{ días}$ de operación.
-* **RNF-02 (Tiempo Real y RTOS):** Procesamiento multitarea sobre FreeRTOS en ESP32-S3. La tarea de geocerca y captura GPS debe ejecutarse de forma determinista sin bloquear las tareas de comunicación.
-* **RNF-03 (Consumo en Reposo):** En estado *Deep Sleep*, el consumo total del circuito debe ser inferior a $150\ \mu\text{A}$.
-* **RNF-04 (Fiabilidad Mecánica):** La PCB no debe presentar falsos contactos ni depender de cables de puente (*jumpers*) en el modelo final.
+### 2.1 Requerimientos Funcionales Principales
+* **RF-01:** Geolocalización GNSS con error < 2.5 m
+* **RF-02:** Evaluación de geocerca en < 50 ms  
+* **RF-03:** Activación de optoacoplador/LED al cruzar límites
+* **RF-04:** Telemetría LoRa en 915 MHz
+* **RF-05:** Monitoreo continuo de batería vía I2C
+
+### 2.2 Requerimientos No Funcionales Clave
+* **RNF-01:** Autonomía de 7 días en oscuridad (1200 mAh)
+* **RNF-02:** Procesamiento determinista en FreeRTOS
+* **RNF-03:** Consumo < 150 μA en Deep Sleep
+* **RNF-04:** Fiabilidad mecánica sin cables de puente
+
+---
+
+## 3. Resumen de Arquitectura Técnica
+
+Para detalles técnicos completos, cálculos y justificativos, ver: [ARCHITECTURE.md](./ARCHITECTURE.md)
+
+### 3.1 Arquitectura de Alimentación
+Sistema en dos niveles: línea no regulada (3.6-4.2V) para VIN ESP32 y MAX17048, y línea regulada (3.3V estrictos) desde LDO interno del ESP32 para módulos periféricos.
+
+### 3.2 Componentes Críticos
+* **Procesamiento:** ESP32-S3 Dual-Core 240MHz
+* **Comunicación:** LoRa SX1262 (915 MHz)
+* **Geolocalización:** u-blox MAX-M10S GNSS
+* **Energía:** CN3791 MPPT, MAX17048 Fuel Gauge
+* **Detección:** LSM6DSOX IMU 6-DOF
+
+### 3.3 Consumo Eléctrico
+* **Reposo:** < 50 μA (Deep Sleep)
+* **Activo:** ~88 mA
+* **Pico Máximo:** ~221 mA (dentro de los 500 mA del LDO)
+
+### 3.4 Firmware STR/FreeRTOS
+Arquitectura dual-core con 5 tareas distribuidas:
+* **Core 0:** Gestión de red (LoRa) y energía
+* **Core 1:** Procesamiento determinista (geocerca, GPS, IMU)
+
+---
 
 ---
 
@@ -211,27 +241,31 @@ El polígono de la cerca virtual se almacena en la memoria Flash como un arreglo
 
 ---
 
-## 6. Avances Completados, Pendientes y Estructura del Repositorio
+## 4. Avances Completados y Próximos Pasos
 
-### 6.1 Hitos Alcanzados (Aprobados)
-- [x] Selección y validación del hardware base (ESP32-S3, Core1262, MAX-M10S, LSM6DSOX, CN3791).
-- [x] Modelado teórico del sistema de alimentación fotovoltaica y cálculo de componentes Buck para el CN3791 ($L=14\ \mu\text{H}$, $R_{CS}=0.12\ \Omega$, Divisor 6V).
-- [x] Definición del esquema de distribución de voltajes y protecciones (Capacitores de desacople, pull-ups I2C, optoaislamiento).
-- [x] Formulación de la arquitectura de la PCB tipo *Carrier Board* para la entrega final de semestre.
+### 4.1 Hitos Alcanzados (Aprobados)
+- [x] Selección y validación del hardware base (ESP32-S3, Core1262, MAX-M10S, LSM6DSOX, CN3791)
+- [x] Modelado teórico del sistema de alimentación fotovoltaica y cálculo de componentes Buck para el CN3791 (L=14 μH, R_CS=0.12 Ω, Divisor 6V)
+- [x] Definición del esquema de distribución de voltajes y protecciones (Capacitores de desacople, pull-ups I2C, optoaislamiento)
+- [x] Formulación de la arquitectura de la PCB tipo *Carrier Board* para la entrega final de semestre
 
-### 6.2 Próximos Pasos Inmediatos
-1. **Paso 1:** Configurar la estructura de archivos en el repositorio de GitHub.
-2. **Paso 2 (Fase 1 Firmware):** Crear el código base en PlatformIO/Arduino IDE que inicialice el bus SPI con el LoRa SX1262 y capture tramas GPS.
-3. **Paso 3 (Esquemático Altium):** Dibujar el esquemático de la *Carrier Board* conectando los zócalos de los módulos con las redes de alimentación y señales definidas.
+### 4.2 Próximos Pasos Inmediatos
+1. **Paso 1:** Configurar la estructura de archivos en el repositorio de GitHub
+2. **Paso 2 (Fase 1 Firmware):** Crear el código base en PlatformIO/Arduino IDE que inicialice el bus SPI con el LoRa SX1262 y capture tramas GPS
+3. **Paso 3 (Esquemático Altium):** Dibujar el esquemático de la *Carrier Board* conectando los zócalos de los módulos con las redes de alimentación y señales definidas
 
-### 6.3 Estructura Propuesta para el Repositorio GitHub
+---
+
+## 5. Estructura del Repositorio
 
 ```text
 DR-VF-01/
 ├── docs/
-│   ├── PROJECT_CONTEXT.md          <-- Este documento maestro
+│   ├── PROJECT_CONTEXT.md          <-- Este documento ejecutivo
+│   ├── REQUIREMENTS.md             <-- Matriz de requerimientos
+│   ├── ARCHITECTURE.md             <-- Arquitectura técnica detallada
 │   ├── schematics/                 <-- Diagramas en PDF y bloques
-│   └── math_models/                <-- Sustento matemático del CN3791 y consumo
+│   └── math_models/                <-- Sustento matemático
 ├── firmware/
 │   ├── include/                    <-- Librerías y definiciones de pines
 │   ├── src/
@@ -243,4 +277,19 @@ DR-VF-01/
 └── hardware/
     ├── altium_project/             <-- Proyecto Altium Designer (Carrier Board)
     ├── gerber/                     <-- Archivos para fabricación de PCB
-    └── bom/                        <-- Listado de materiales para compra
+    ├── BOM.md                      <-- Listado de materiales
+    └── pinout.md                   <-- Asignación de pines
+```
+
+## 6. Índice de Documentos
+
+| Documento | Propósito | Contenido Principal |
+|-----------|-----------|---------------------|
+| **[PROJECT_CONTEXT.md](./PROJECT_CONTEXT.md)** | Resumen ejecutivo | Visión, hoja de ruta, avances y estructura general |
+| **[REQUIREMENTS.md](./REQUIREMENTS.md)** | Especificaciones | Matriz de RF/RNF con trazabilidad y estado |
+| **[ARCHITECTURE.md](./ARCHITECTURE.md)** | Diseño técnico | Alimentación, cálculos, consumo, hardware, firmware |
+| **[hardware/BOM.md](../hardware/BOM.md)** | Componentes | Lista completa de materiales para compra |
+| **[hardware/pinout.md](../hardware/pinout.md)** | Interconexión | Asignación detallada de pines y interfaces |
+
+---
+*Documento actualizado como resumen ejecutivo del proyecto DR-VF-01*
