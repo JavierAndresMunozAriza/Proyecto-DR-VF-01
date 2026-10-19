@@ -62,58 +62,47 @@ Quectel BG95-M3 [Fase 2] & UART2 & GPIO 26 (RX2), GPIO 27 (TX2) & \textbf{Pines 
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[node distance=0.8cm and 1.0cm, auto, font=\sffamily\small,
-    pwr_in/.style={rectangle, draw=black, fill=categorybg, thick, minimum width=2.6cm, minimum height=1.0cm, align=center, rounded corners},
-    pwr_mgt/.style={rectangle, draw=unalnavy, fill=phase1blue, thick, minimum width=2.8cm, minimum height=1.0cm, align=center, rounded corners},
-    pwr_bus/.style={rectangle, draw=black, fill=blue!12, thick, minimum width=2.8cm, minimum height=1.0cm, align=center, rounded corners},
-    pwr_load/.style={rectangle, draw=black, fill=white, thick, minimum width=2.5cm, minimum height=1.0cm, align=center, rounded corners},
-    pwr_fase2/.style={rectangle, draw=unalred, dashed, fill=phase2orange, thick, minimum width=2.8cm, minimum height=1.0cm, align=center, rounded corners}]
+\begin{tikzpicture}[node distance=0.8cm and 0.8cm, auto, font=\sffamily\small,
+    pwr_in/.style={rectangle, draw=black, fill=categorybg, thick, text width=2.4cm, align=center, minimum height=1.1cm, rounded corners},
+    pwr_mgt/.style={rectangle, draw=unalnavy, fill=phase1blue, thick, text width=2.6cm, align=center, minimum height=1.1cm, rounded corners},
+    pwr_bus/.style={rectangle, draw=black, fill=blue!12, thick, text width=2.6cm, align=center, minimum height=1.1cm, rounded corners},
+    pwr_load/.style={rectangle, draw=black, fill=white, thick, text width=2.6cm, align=center, minimum height=1.2cm, rounded corners},
+    pwr_fase2/.style={rectangle, draw=unalred, dashed, fill=phase2orange, thick, text width=2.6cm, align=center, minimum height=1.1cm, rounded corners}]
 
-    % Fila Superior
-    \node [pwr_in] (in) {Entrada 6V Solar /\\ USB-C (5V)};
-    \node [pwr_mgt, right=of in] (cn) {Cargador MPPT\\CN3791 (6V)};
-    \node [pwr_bus, right=of cn] (bat) {Batería LiPo 3.7V\\(1200--1500 mAh)};
+    % NODO CENTRAL DE BATERÍA Y ENTRADAS (FILA 1)
+    \node [pwr_bus] (bat) {Batería LiPo 3.7V\\(1200--1500 mAh)};
+    \node [pwr_mgt, left=0.8cm of bat] (cn) {Cargador MPPT\\CN3791 (6V)};
+    \node [pwr_in, left=0.8cm of cn] (in) {Entrada 6V Solar /\\ USB-C (5V)};
 
-    % Fila Media
-    \node [pwr_mgt, below=of bat, xshift=-2.0cm, yshift=-0.2cm] (ldo) {Regulador LDO\\3.3V (500 mA)};
-    \node [pwr_fase2, below=of bat, xshift=2.0cm, yshift=-0.2cm] (bg95) {Quectel BG95-M3\\(Picos 400--600 mA)\\[0.05cm]\footnotesize\textbf{[Fase 2 -- Tesis]}};
+    % REGULADORES Y MÓDEM FASE 2 (FILA 2)
+    \node [pwr_mgt, below=1.5cm of bat, xshift=-2.6cm] (ldo) {Regulador LDO\\3.3V (500 mA)};
+    \node [pwr_fase2, below=1.5cm of bat, xshift=2.6cm] (bg95) {Quectel BG95-M3\\(Picos 400--600 mA)\\[0.05cm]\footnotesize\textbf{[Fase 2 -- Tesis]}};
 
-    % Fila Inferior
-    \node [pwr_load, below=of ldo, xshift=-2.2cm, yshift=-0.3cm] (mcu) {ESP32-S3\\(Microcontrolador)};
-    \node [pwr_load, below=of ldo, yshift=-0.3cm] (sens) {Sensors \& Radio\\(MAX-M10S / LSM6DSOX\\SX1262 / MAX17048)};
-    \node [pwr_load, below=of ldo, xshift=2.2cm, yshift=-0.3cm] (act) {Disuasión Aislada\\(Opto VO617A / Buzzer)};
+    % CARGAS DE 3.3V ALINEADAS DEBAJO DEL LDO (FILA 3)
+    \node [pwr_load, below=1.4cm of ldo] (sens) {Sensores \& Radio\\(MAX-M10S, LSM6DSOX\\SX1262, MAX17048)};
+    \node [pwr_load, left=0.5cm of sens] (mcu) {ESP32-S3\\(Microcontrolador)};
+    \node [pwr_load, right=0.5cm of sens] (act) {Disuasión Aislada\\(Opto VO617A / Buzzer)};
 
-    % Conexiones
+    % CONEXIONES DE ENTRADA Y CARGA
     \draw[->, thick] (in) -- (cn);
     \draw[->, thick] (cn) -- node[above, font=\footnotesize] {$V_{\text{CHG}}$} (bat);
-    \draw[->, thick] (bat) |- node[near start, left, font=\footnotesize] {$V_{\text{BAT}}$ ($3.7\text{--}4.2\text{V}$)} (ldo);
-    \draw[->, thick, dashed, draw=unalred] (bat) |- node[near start, right, font=\footnotesize] {$V_{\text{BAT}}$} (bg95);
 
-    \draw[->, thick] (ldo) |- node[near start, left, font=\footnotesize] {$3.3\text{V}$} (mcu);
-    \draw[->, thick] (ldo) -- node[right, font=\footnotesize] {$3.3\text{V}$} (sens);
-    \draw[->, thick] (ldo) |- node[near start, right, font=\footnotesize] {$3.3\text{V}$} (act);
+    % DISTRIBUCIÓN DESDE BATERÍA A REGULADORES (FILA 1 -> FILA 2)
+    % CORRECCIÓN: El texto V_BAT se ubica a la derecha de la línea vertical que baja
+    \draw[thick] (bat.south) -- node[right, font=\footnotesize] {$V_{\text{BAT}}$ ($3.7\text{--}4.2\text{V}$)} ++(0,-0.8) coordinate (vbat_bus);
+    \draw[->, thick] (vbat_bus) -| (ldo.north);
+    \draw[->, thick, dashed, draw=unalred] (vbat_bus) -| (bg95.north);
+    
+    % BUS DE 3.3V DESDE LDO A CARGAS (FILA 2 -> FILA 3)
+    \draw[thick] (ldo.south) -- ++(0,-0.5) coordinate (bus3v);
+    \draw[->, thick] (bus3v) -| (mcu.north);
+    \draw[->, thick] (bus3v) -- (sens.north);
+    \draw[->, thick] (bus3v) -| (act.north);
+
+    % Etiqueta 3.3V
+    \node[above right, font=\footnotesize] at (bus3v) {$3.3\text{V}$};
 
 \end{tikzpicture}
 \caption{Árbol de distribución de potencia y gestión energética para el sistema DR-VF-01.}
 \label{fig:arbol_potencia}
 \end{figure}
-
-\subsection*{Presupuesto Energético y Perfil de Consumo}
-
-\begin{table}[H]
-\centering
-\small
-\begin{tabularx}{\textwidth}{|l l c c X|}
-\hline
-\rowcolor{categorybg}
-\textbf{Subcircuito / Módulo} & \textbf{Riel Alimentación} & \textbf{Consumo Activo} & \textbf{Consumo Reposo} & \textbf{Estado / Comentarios} \\ \hline
-ESP32-S3-N16R8 & LDO 3.3V (Interno) & $70\text{--}160~\text{mA}$ & $7~\mu\text{A}$ & CPU activa a 240 MHz / Deep Sleep. \\ \hline
-GPS MAX-M10S & LDO 3.3V (Bus PCB) & $15\text{--}30~\text{mA}$ & $15~\mu\text{A}$ & Muestreo adaptativo $1\text{--}10~\text{Hz}$. \\ \hline
-LoRa SX1262 & LDO 3.3V (Bus PCB) & $118~\text{mA}$ (Pico TX) & $0.2~\mu\text{A}$ & Transmisión por ráfagas cortas. \\ \hline
-IMU LSM6DSOX & LDO 3.3V (Bus PCB) & $0.55~\text{mA}$ & $3~\mu\text{A}$ & Monitoreo continuo (Wake-on-Motion). \\ \hline
-Medidor MAX17048 & LDO 3.3V (Bus PCB) & $0.023~\text{mA}$ & $3~\mu\text{A}$ & Monitoreo pasivo de batería. \\ \hline
-\textbf{Pico Máximo Total} & \textbf{LDO 3.3V} & \textbf{$\approx 221~\text{mA}$} & \textbf{$\approx 28~\mu\text{A}$} & \textbf{Holgado dentro del límite del LDO (500 mA).} \\ \hline
-\rowcolor{phase2orange}
-Quectel BG95-M3 [Fase 2] & Directo $V_{\text{BAT}}$ ($3.7\text{--}4.2\text{V}$) & $400\text{--}600~\text{mA}$ & $3.9~\mu\text{A}$ & \textbf{Alimentación directa desde la celda LiPo.} \\ \hline
-\end{tabularx}
-\end{table}
