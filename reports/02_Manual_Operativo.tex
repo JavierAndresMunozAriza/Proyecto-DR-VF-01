@@ -1,0 +1,53 @@
+\documentclass[10pt,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage[margin=2cm, top=2.5cm, bottom=2.5cm]{geometry}
+\usepackage{xcolor}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+
+% Colores
+\definecolor{unalnavy}{HTML}{003366}
+
+% Encabezado
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\bfseries UNAL - DIEEC}
+\rhead{\bfseries DR-VF-01 --- Manual de Operación y Hardware}
+\rfoot{\small Página \thepage}
+\renewcommand{\headrulewidth}{0.8pt}
+
+\begin{document}
+
+\begin{center}
+    {\Large \textbf{MANUAL TÉCNICO DESCRIPTIVO (DR-VF-01)}}\\[0.2cm]
+    {\normalsize \textbf{Roles de Hardware, Interfaces de Usuario y Flujo Operativo}}
+\end{center}
+\vspace{0.3cm}
+
+\section*{1. Roles de los Protocolos Inalámbricos}
+Para evitar saturación de datos y optimizar la batería, el sistema DR-VF-01 divide sus comunicaciones inalámbricas según el caso de uso:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Wi-Fi SoftAP (Fase 1 / Laboratorio):} El collar crea su propia red Wi-Fi. Permite a los ingenieros configurar los polígonos desde cualquier navegador web sin desarrollar una App móvil. Consume alta energía, por lo que se usa solo para pruebas iniciales.
+    \item \textbf{Bluetooth LE 5.0 (Fase 2 / Comercial):} Medio oficial de configuración. El ganadero usa una App en el celular a $<50$ metros de distancia para transferir el polígono al collar. Gasta mínima energía y es transparente para el usuario.
+    \item \textbf{LoRa SX1262 (Telemetría de campo):} Actúa mientras el animal pastorea. Envía latitud, longitud, batería y alertas a varios kilómetros de distancia. \emph{Nota: LoRa es demasiado lento para trazar mapas, por ende, nunca se usa para dibujar geocercas, solo para reportar estado.}
+\end{itemize}
+
+\section*{2. Experiencia de Usuario: Configuración de la Geocerca sin Internet}
+Dado que en entornos rurales no suele haber internet 4G para cargar mapas satelitales, el sistema DR-VF-01 resuelve la creación de geocercas de dos maneras:
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Método Offline (Topografía in situ):} El ganadero enciende el collar en sus manos y se conecta al dispositivo. Camina hasta la esquina física del potrero y presiona el botón "Fijar Vértice" en la interfaz. El GPS del collar lee la coordenada y la guarda. Al recorrer las 4 esquinas del lote, el sistema cierra el polígono. (No requiere mapas ni internet).
+    \item \textbf{Método App con Caché (Fase 2):} El ganadero descarga el mapa de su finca en el celular mientras está en su casa (con Wi-Fi). Al ir al potrero (sin internet), abre la App, dibuja la cerca sobre el mapa guardado (caché), y transfiere los puntos al collar por Bluetooth.
+\end{enumerate}
+
+\section*{3. Flujo de Energía y Decisiones Lógicas en la Placa}
+El ciclo de operación autónoma del hardware sigue esta cadena de eventos físicos:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Energía Limpia:} El panel solar recolecta energía que entra al regulador \textbf{MPPT CN3791}. Este chip maximiza la carga de la batería de LiPo (3.7V).
+    \item \textbf{Prevención de Reinicios (LDO):} El voltaje de la batería entra a un regulador LDO dedicado que lo estabiliza a \textbf{3.3V limpios}. Todos los componentes (ESP32, GPS, LoRa) se alimentan de este riel de 3.3V. Si el LoRa consume mucha corriente al transmitir, el LDO absorbe el golpe, evitando que el ESP32 sufra una caída de voltaje (\emph{brownout}) y se reinicie.
+    \item \textbf{Inteligencia Inercial (IMU LSM6DSOX):} Para no gastar batería calculando GPS inútilmente, el acelerómetro monitorea si la vaca está dormida. Si es así, apaga el ESP32. Apenas el animal camina, el acelerómetro envía una señal de interrupción (\emph{Wake-up}) que enciende la lógica.
+    \item \textbf{Disuasión Aislada:} Si el algoritmo \emph{Point-in-Polygon} detecta que el animal salió de los límites, el ESP32 emite una señal. Esta señal pasa por el \textbf{Optoacoplador VO617A}, el cual actúa como un "muro físico" que protege a la CPU para que los altos voltajes del actuador disuasivo no quemen la placa principal.
+\end{itemize}
+
+\end{document}

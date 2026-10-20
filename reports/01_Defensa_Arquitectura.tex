@@ -1,0 +1,55 @@
+\documentclass[10pt,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage[margin=2cm, top=2.5cm, bottom=2.5cm]{geometry}
+\usepackage{xcolor}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+
+% Colores
+\definecolor{unalnavy}{HTML}{003366}
+\definecolor{categorybg}{HTML}{EBEBEB}
+
+% Encabezado
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\bfseries UNAL - DIEEC}
+\rhead{\bfseries DR-VF-01 --- Defensa de Arquitectura}
+\rfoot{\small Página \thepage}
+\renewcommand{\headrulewidth}{0.8pt}
+
+\begin{document}
+
+\begin{center}
+    {\Large \textbf{MEMORANDO TÉCNICO DE ARQUITECTURA (DR-VF-01)}}\\[0.2cm]
+    {\normalsize \textbf{Evaluación de Sugerencias de Diseño y Manufactura}}
+\end{center}
+\vspace{0.3cm}
+
+Este documento consolida la evaluación técnica del equipo de diseño frente a las recientes sugerencias de optimización comercial, definiendo qué componentes se modifican y cuáles se mantienen para garantizar la viabilidad del proyecto.
+
+\section*{1. Reemplazo del Microcontrolador por módulo nRF (Nordic) para Bluetooth}
+\textbf{Sugerencia evaluada:} Sustituir el ESP32 por un chip nRF52 para ganar alcance Bluetooth a través de la carcasa protectora.
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Postura del Equipo de Diseño:} \textbf{No se reemplazará el núcleo ESP32-S3.}
+    \item \textbf{Justificación Técnica:} El ESP32-S3 ya cuenta con el estándar Bluetooth Low Energy (BLE 5.0) integrado de fábrica, por lo que migrar a Nordic Semiconductor implicaría un retraso severo por el cambio de entorno de desarrollo y la pérdida de la interfaz Wi-Fi requerida para la Fase 1. 
+    \item \textbf{Solución adoptada (Alcance de RF):} Para evitar que la carcasa plástica atenúe la señal Bluetooth, no se utilizará la versión de antena en PCB. Se integrará el módulo \textbf{ESP32-S3-WROOM-1U}, el cual posee un conector U.FL. Esto permite enrutar un cable flexible hacia una antena plana adherida a la cara externa/interna de la carcasa, logrando conexiones estables a $>50$ metros de distancia con el usuario.
+\end{itemize}
+
+\section*{2. Eliminación o sustitución de la telemetría LoRa}
+\textbf{Sugerencia evaluada:} Eliminar el radio LoRa por su dependencia de Gateways o por considerarse obsoleto frente a redes celulares.
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Postura del Equipo de Diseño:} \textbf{Se mantiene el transceptor LoRa SX1262 como red primaria.}
+    \item \textbf{Justificación Técnica:} LoRa es el único protocolo que permite telemetría a kilómetros de distancia en zonas rurales sin cobertura de celular y sin pagar planes de datos mensuales. Su rol es estricto: transmitir la posición de la vaca y las alertas hacia la base de la finca. 
+    \item \textbf{Escalabilidad:} Si el dispositivo se despliega en latifundios extensos (ej. Llanos Orientales) donde un Gateway LoRa no es suficiente, la arquitectura Fase 2 contempla la adición de un módem celular IoT (Quectel BG95-M3). Sin embargo, para fincas estándar, LoRa es la solución más robusta y económica.
+\end{itemize}
+
+\section*{3. Sustitución del GNSS MAX-M10S por el empaque MIA-M10}
+\textbf{Sugerencia evaluada:} Utilizar el módulo GPS ultra-miniatura MIA-M10 para reducir el tamaño de la PCB.
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Postura del Equipo de Diseño:} \textbf{Aprobado únicamente para la Fase 2 (Tesis/Comercial).}
+    \item \textbf{Justificación Técnica (DFM):} El MIA-M10 es un \emph{System-in-Package} (SiP) diminuto (4.5 mm) que requiere soldadura por bolas térmicas (BGA/LGA). Implementarlo en la Fase 1 obliga a tercerizar el ensamble completo en fábricas internacionales (JLCPCB), eliminando la capacidad del equipo para soldar, intervenir y corregir el hardware en los laboratorios de la universidad. Por gestión de riesgos, la Fase 1 usará el MAX-M10S (soldable manualmente), dejando el MIA-M10 documentado para el producto comercial.
+\end{itemize}
+
+\end{document}
