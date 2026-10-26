@@ -20,7 +20,7 @@ jobs:
           root_file: main.tex
           working_directory: reports
           compiler: latexmk
-          args: "-pdf -file-line-error -interaction=nonstopmode -outdir=output"
+          args: "-pdf -f -file-line-error -interaction=nonstopmode -outdir=output"
 
       - name: Guardar PDF compilado como artefacto
         uses: actions/upload-artifact@v4
