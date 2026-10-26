@@ -17,8 +17,9 @@ reports/output/
 *.out
 *.toc
 *.synctex.gz
-# *.pdf  -- Comentado para incluir el PDF principal
-
+*.pdf  
+# EXCEPCIÓN: Mantiene rastreado el PDF final listo para entrega en la raíz
+!DR-VF-01_Reporte_Final.pdf
 # Firmware / Compiladores (Binarios y Build)
 build/
 .pio/
@@ -30,3 +31,4 @@ build/
 
 # Entornos virtuales
 .venv/
+

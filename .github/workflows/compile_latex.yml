@@ -11,6 +11,9 @@ jobs:
       - name: Clonar código fuente
         uses: actions/checkout@v4
 
+      - name: Crear directorio de salida
+        run: mkdir -p reports/output
+
       - name: Compilar PDF con LaTeX en la nube
         uses: xu-cheng/latex-action@v3
         with:
