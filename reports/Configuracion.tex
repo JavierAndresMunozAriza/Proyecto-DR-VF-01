@@ -2,9 +2,10 @@
 % CONFIGURACIÓN GLOBAL Y PAQUETES (UNAL - DIEEC)
 % ==============================================================================
 
-% --- PAQUETES BÁSICOS Y IDIOMA ---
+% --- PAQUETES BÁSICOS E IDIOMA ---
 \usepackage[utf8]{inputenc}
-\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage[spanish,es-nodecimaldot,es-noquoting]{babel}
+\spanishdeactivate{~<>} % Desactiva caracteres activos para evitar conflictos globales con TikZ
 \usepackage[margin=1.5cm, top=2.2cm, bottom=2.2cm, headheight=15pt]{geometry}
 
 % --- PAQUETES DE FORMATO Y ESTILO ---
@@ -16,7 +17,6 @@
 \usepackage{fancyhdr}
 \usepackage{titlesec}
 \usepackage{tocloft}
-%\usepackage{microtype}  % Commented out due to font expansion issues
 
 % --- PAQUETES DE MATEMÁTICAS Y FIGURAS ---
 \usepackage{amsmath}
@@ -27,7 +27,7 @@
 \usepackage{subcaption}
 \usepackage{longtable}
 
-% --- DIAGRAMAS TIKZ (con protección Babel) ---
+% --- DIAGRAMAS TIKZ ---
 \usepackage{tikz}
 \usetikzlibrary{arrows, arrows.meta, positioning, shapes.geometric, fit, backgrounds, calc, babel}
 
@@ -59,7 +59,6 @@
   {\large\bfseries\color{black}}
   {\thesubsection}{1em}{}
 
-% --- ENCABEZADO Y PIE DE PÁGINA ---
 % --- ENCABEZADO Y PIE DE PÁGINA (100% NEGRO) ---
 \pagestyle{fancy}
 \fancyhf{}
@@ -70,7 +69,7 @@
 \renewcommand{\headrulewidth}{0.8pt}
 \renewcommand{\footrulewidth}{0.4pt}
 
-% --- CONFIGURACIÓN DE HIPERVÍNCULOS (Cargar siempre al final) ---
+% --- CONFIGURACIÓN DE HIPERVÍNCULOS ---
 \usepackage{hyperref}
 \hypersetup{
     colorlinks=true,
@@ -82,33 +81,30 @@
 }
 
 % --- PERSONALIZACIÓN DE ÍNDICES ---
-% Cargar tocloft sin opciones para evitar conflictos
-\usepackage{tocloft}
-% Configuración del Índice General
 \renewcommand{\cfttoctitlefont}{\Huge\bfseries}
 \renewcommand{\cftbeforetoctitleskip}{-1em}
 \renewcommand{\cftaftertoctitleskip}{1em}
 
-% Configuración del Índice de Figuras
 \renewcommand{\cftloftitlefont}{\Huge\bfseries}
 \renewcommand{\cftbeforeloftitleskip}{-1em}
 \renewcommand{\cftafterloftitleskip}{1em}
 
-% Configuración del Índice de Tablas
 \renewcommand{\cftlottitlefont}{\Huge\bfseries}
 \renewcommand{\cftbeforelottitleskip}{-1em}
 \renewcommand{\cftafterlottitleskip}{1em}
 
-% Espaciado entre entradas
 \setlength{\cftbeforesecskip}{0.5em}
 \setlength{\cftbeforesubsecskip}{0.3em}
 
-% Asegurar que los índices se muestren correctamente
 \setlength{\cftchapnumwidth}{2em}
 \setlength{\cftsecnumwidth}{3em}
 \setlength{\cftsubsecnumwidth}{4em}
-\setlength{\cftfigpresnum}{\figurename~}
-\setlength{\cfttabpresnum}{\tablename~}
 \renewcommand{\cftchappresnum}{Capítulo~}
 \setlength{\cftfigaftersnum}{:}
 \setlength{\cfttabaftersnum}{:}
+
+% --- PROTECCIÓN DE VARIABLES DE IDIOMA EN ÍNDICES ---
+\AtBeginDocument{
+  \setlength{\cftfigpresnum}{\figurename~}
+  \setlength{\cfttabpresnum}{\tablename~}
+}
