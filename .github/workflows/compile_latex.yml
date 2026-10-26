@@ -1,0 +1,26 @@
+name: Compilar Reporte LaTeX
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build_latex:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clonar código fuente
+        uses: actions/checkout@v4
+
+      - name: Compilar PDF con LaTeX en la nube
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: main.tex
+          working_directory: reports
+          compiler: latexmk
+          args: "-pdf -file-line-error -interaction=nonstopmode -outdir=output"
+
+      - name: Guardar PDF compilado como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: DR-VF-01_Reporte_Final
+          path: reports/output/main.pdf

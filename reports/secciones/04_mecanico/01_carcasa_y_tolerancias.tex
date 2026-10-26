@@ -1,0 +1,164 @@
+\section{Introducción al Dossier de Diseño Mecánico e Industrial}
+
+Este dossier presenta la especificación mecánica e industrial del collar de geocercamiento ganadero DR-VF-01. Se detallan las estrategias de estanqueidad bajo norma IP67/IP68, la asignación de tolerancias dimensionales y geométricas, la integración de las antenas FPC/GNSS y la disposición estructural del panel solar y la carcasa.
+
+\section{Especificaciones de Sellado y Estanqueidad IP67}
+
+\subsection{Requisitos de Protección Ambiental}
+
+El gabinete del collar DR-VF-01 está diseñado para cumplir con el grado de protección IP67 (según norma IEC 60529), garantizando resistencia ante las condiciones severas del entorno de pastoreo:
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Protección contra Polvo y Partículas (Grado 6)}: Sellado hermético total contra la penetración de material particulado fino.
+    \item \textbf{Protección contra Inmersión en Agua (Grado 7)}: Inmunidad ante inmersión temporal a $1.0\,\text{m}$ de profundidad durante $30\,\text{min}$.
+\end{itemize}
+
+\subsection{Diseño Estructural de Sellado}
+
+\subsubsection{Carcasa Principal y Juntas Óptimas}
+
+La carcasa está inyectada en policarbonato reforzado con $20\%$ de fibra de vidrio (\text{PC+GF20\%}), asegurando un espesor de pared estructural de $2.5\,\text{mm}$. La estanqueidad entre tapas se logra mediante un canal perimetral con junta tórica (\textit{O-ring}) de elastómero EPDM, calculada para una compresión nominal del $20\text{--}25\%$.
+
+\subsubsection{Protección de Interfaz de Carga USB-C}
+
+El puerto de programación y servicio USB-C cuenta con un tapón elastomérico con memoria mecánica y un sello interno de membrana de silicona, previniendo la filtración de humedad aun con la tapa externa abierta.
+
+\subsection{Procedimientos de Verificación de Estanqueidad}
+
+\subsubsection{Ensayos de Cámara de Polvo}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Polvo de Ensayo}: Talco fino con granulometría $\le 75\,\mu\text{m}$.
+    \item \textbf{Duración}: $8\,\text{horas}$ en depresión de $2.0\,\text{kPa}$.
+    \item \textbf{Criterio de Aprobación}: Ausencia total de partículas sobre la tarjeta madre (PCBA).
+\end{itemize}
+
+\subsubsection{Ensayos de Inmersión Hidrostática}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Profundidad de Inmersión}: $1.0\,\text{m}$ desde la superficie del líquido.
+    \item \textbf{Duración del Ensayo}: $30\,\text{minutos}$ continuos.
+    \item \textbf{Temperatura de Agua}: $20\,^\circ\text{C} \pm 5\,^\circ\text{C}$.
+    \item \textbf{Criterio de Aprobación}: Incremento de masa $\Delta m = 0.00\,\text{g}$ y verificación dieléctrica posterior.
+\end{itemize}
+
+\section{Tolerancias Dimensionales y Ajustes}
+
+\subsection{Clasificación de Tolerancias}
+
+\begin{description}[leftmargin=*, style=nextline, font=\bfseries\ttfamily]
+    \item[Clase A (Crítica)] $\pm 0.05\,\text{mm}$ aplicable a alojamientos de junta \textit{O-ring}, guías de pines y planos de sellado.
+    \item[Clase B (Importante)] $\pm 0.10\,\text{mm}$ para apoyos del PCBA, torretas de fijación y encajes de batería.
+    \item[Clase C (General)] $\pm 0.20\,\text{mm}$ para dimensiones exteriores globales de la carcasa.
+\end{description}
+
+\subsection{Tolerancias Críticas de la Carcasa}
+
+\begin{table}[H]
+\centering
+\caption{Tolerancias dimensionales de la carcasa principal del collar DR-VF-01}
+\label{tab:tolerancias_carcasa}
+\vspace{2mm}
+\begin{tabularx}{\textwidth}{X r r c}
+\toprule
+\rowcolor{categorybg}
+\textbf{Dimensión / Cota} & \textbf{Valor Nominal} & \textbf{Tolerancia} & \textbf{Clase ISO} \\
+\midrule
+Longitud Total & $120.0\,\text{mm}$ & $\pm 0.20\,\text{mm}$ & Clase C \\
+\rowcolor{rowalt}
+Anchura Total & $80.0\,\text{mm}$ & $\pm 0.20\,\text{mm}$ & Clase C \\
+Altura Total & $25.0\,\text{mm}$ & $\pm 0.20\,\text{mm}$ & Clase C \\
+\rowcolor{rowalt}
+Espesor de Pared Estructural & $2.5\,\text{mm}$ & $\pm 0.10\,\text{mm}$ & Clase B \\
+Ancho de Canal de Sellado & $1.8\,\text{mm}$ & $\pm 0.05\,\text{mm}$ & Clase A \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Tolerancias Geométricas y de Acabado de Superficie}
+
+\begin{table}[H]
+\centering
+\caption{Especificaciones geométricas en superficies críticas de estanqueidad}
+\label{tab:tolerancias_superficies}
+\vspace{2mm}
+\begin{tabularx}{\textwidth}{X r l}
+\toprule
+\rowcolor{categorybg}
+\textbf{Característica Geométrica} & \textbf{Tolerancia Máx.} & \textbf{Estándar de Referencia} \\
+\midrule
+Planitud de Cara de Sellado & $0.05\,\text{mm}$ & ISO 1101 (Clase A) \\
+\rowcolor{rowalt}
+Paralelismo Tapa--Base & $0.03\,\text{mm}$ & ISO 1101 (Clase A) \\
+Concentricidad de Torretas M2 & $0.02\,\text{mm}$ & ISO 1101 (Clase A) \\
+\rowcolor{rowalt}
+Rugosidad Superficial en Canal & $R_a \le 1.6\,\mu\text{m}$ & ISO 4287 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Ubicación e Integración de Antenas FPC}
+
+\subsection{Especificaciones Electromecánicas}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Tipo de Antena}: Monopolo flexible (FPC) omnidireccional con plano de masa extendido.
+    \item \textbf{Banda de Operación}: Sub-GHz LoRa ($915\,\text{MHz}$) y Wi-Fi/BLE SoftAP ($2.4\,\text{GHz}$).
+    \item \textbf{Impedancia Característica}: $50\,\Omega$ adaptada mediante microstrip de $50\,\Omega$ en el PCBA.
+    \item \textbf{Ganancia Pico}: $+2.5\,\text{dBi}$ en entorno despejado.
+\end{itemize}
+
+\subsection{Criterios de Posicionamiento Radiativo}
+
+La antena FPC está ubicada en la cara superior de la carcasa plástica, garantizando los siguientes márgenes de aislamiento electromagnético:
+
+\begin{itemize}[leftmargin=*]
+    \item Separación superior a $10.0\,\text{mm}$ respecto a los bordes laterales del PCBA.
+    \item Orientación paralela al eje longitudinal para maximizar la polarización vertical.
+    \item Distancia mínima de $5.0\,\text{mm}$ a elementos metálicos (batería LiPo y masa del panel solar).
+\end{itemize}
+
+\subsection{Fijación Mecánica}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Adhesivo Industrial}: Lámina acrílica transferible $3\text{M}\,467\text{MP}$ de alta adherencia.
+    \item \textbf{Protección Mecánica}: Film superior de poliamida (Kapton) de $50\,\mu\text{m}$.
+    \item \textbf{Radio de Curvatura Mínimo}: $R_{\text{mín}} = 2.0\,\text{mm}$ en el cuello de conexión U.FL.
+\end{itemize}
+
+\section{Integración del Panel Solar y Carga MPPT}
+
+\subsection{Parámetros Electromecánicos del Panel}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Tecnología}: Células fotovoltaicas monocristalinas de alta eficiencia ($18\text{--}20\%$).
+    \item \textbf{Potencia Nomínal}: $2.0\,\text{W}$ pico en radiación $1000\,\text{W/m}^2$.
+    \item \textbf{Tensión en Vacío ($V_{oc}$)}: $5.5\,\text{V}$.
+    \item \textbf{Corriente de Cortocircuito ($I_{sc}$)}: $400\,\text{mA}$.
+\end{itemize}
+
+\subsection{Encapuslado y Orientación}
+
+El panel está integrado en la cara superior expuesta del collar. La superficie activa cuenta con un encapsulado de fluoropolímero ETFE con tratamiento anti-UV garantizado para más de $5000\,\text{horas}$ de exposición solar continua sin amarillamiento.
+
+\section{Materiales, Fijaciones y Acabados}
+
+\subsection{Carcasa Externa}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Material Base}: Policarbonato con $20\%$ de fibra de vidrio (\text{PC+GF20\%}), resina grado UV.
+    \item \textbf{Color de Carcasa}: Negro mate estabilizado contra la radiación solar.
+    \item \textbf{Texturizado}: Acabado SPI-C1 / VDI 24 ($R_a = 3.2\text{--}6.3\,\mu\text{m}$) antideslizante.
+\end{itemize}
+
+\subsection{Tornillería y Torques de Ensamble}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Tornillos de Cierre}: Tornillos autorroscantes M2 con impronta Torx T6.
+    \item \textbf{Material de Fijación}: Acero inoxidable A2 (AISI 304) pasivado.
+    \item \textbf{Torque de Apriete Controlado}: $0.6\text{--}0.8\,\text{N}\cdot\text{m}$ para evitar fisuras en torretas.
+\end{itemize}
+
+\section{Conclusiones}
+
+El diseño mecánico del collar DR-VF-01 satisface los requerimientos de operabilidad en campo abierto ganadero. El uso de la resina PC+GF20\% combinado con la junta tórica EPDM en compresión controlada asegura la estanqueidad IP67. Asimismo, la distribución en niveles de la antena FPC y el panel solar garantiza la transmisión RF sin apantallamiento y la recarga solar continua durante el ciclo de vida del dispositivo.

@@ -1,0 +1,213 @@
+\section{Introducción al Dossier Comercial y de Cumplimiento}
+
+Este dossier presenta la documentación comercial, el manual operativo de campo y el marco de cumplimiento regulatorio del collar de geocercamiento ganadero DR-VF-01. Incluye la hoja de datos ejecutiva (\textit{Datasheet}), el manual de instalación y configuración, las certificaciones de compatibilidad electromagnética (EMC), seguridad eléctrica y las normativas ambientales para su escalamiento comercial.
+
+\section{Datasheet Ejecutivo del Producto}
+
+\subsection{Descripción General}
+
+El DR-VF-01 es una solución de grado industrial para el geocercamiento y monitoreo continuo de ganado extensivo. Integra geolocalización multiconstelación GNSS, conectividad LoRa Sub-GHz de ultra-largo alcance, análisis de movimiento mediante IMU y una etapa disuasiva progresiva controlada en tiempo real.
+
+\subsection{Características Principales}
+
+\subsubsection{Geolocalización Multiconstelación de Alta Sensibilidad}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Receptor GNSS}: u-blox MAX-M10S con recepción simultánea GPS, GLONASS, Galileo y BeiDou.
+    \item \textbf{Precisión Posicional}: $< 3.0\,\text{m}$ RMS en condiciones de vista despejada.
+    \item \textbf{Tiempo de Adquisición (TTFF)}: $< 30\,\text{s}$ en arranque en frío (\textit{Cold Start}) y $< 2\,\text{s}$ en \textit{Hot Start}.
+\end{itemize}
+
+\subsubsection{Enlace de Comunicación LoRa Sub-GHz}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Transceptor RF}: Semtech SX1262 para red LoRaWAN o P2P.
+    \item \textbf{Alcance Operativo}: Hasta $15.0\,\text{km}$ en línea de vista (\textit{LoS}) en entornos rurales.
+    \item \textbf{Banda de Frecuencia y Potencia}: $915\,\text{MHz}$ (banda ISM) con potencia de salida programable hasta $+22\,\text{dBm}$.
+\end{itemize}
+
+\subsubsection{Detección Inteligente de Movimiento y Wake-Up}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Sensor Inercial}: IMU LSM6DSOX de 6 ejes con procesamiento integrado de eventos.
+    \item \textbf{Activación Selectiva}: Interrupción por hardware cuando el bovino supera el umbral inercial.
+    \item \textbf{Umbral Configurable}: Ajustable en rango de $0.1\,g$ a $1.0\,g$.
+\end{itemize}
+
+\subsubsection{Autonomía y Gestión Solar de Energía}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Autonomía Base}: Hasta $80\,\text{días}$ en batería LiPo ($1500\,\text{mAh}$) sin recarga solar.
+    \item \textbf{Consumo en Reposo}: $< 5.0\,\mu\text{A}$ en modo \textit{Deep Sleep}.
+    \item \textbf{Recarga Solar MPPT}: Cargador dedicado CN3791 acoplado a panel monocristalino de $2.0\,\text{W}$.
+\end{itemize}
+
+\subsection{Especificaciones Técnicas del Sistema}
+
+\begin{table}[H]
+\centering
+\caption{Matriz de componentes principales de la plataforma DR-VF-01}
+\label{tab:componentes_principales}
+\vspace{2mm}
+\begin{tabularx}{\textwidth}{X X}
+\toprule
+\rowcolor{categorybg}
+\textbf{Módulo / Subgrupo} & \textbf{Especificación Técnica} \\
+\midrule
+Microcontrolador Core & ESP32-S3-WROOM-1U-N16R8 ($16\,\text{MB}$ Flash, $8\,\text{MB}$ PSRAM) \\
+\rowcolor{rowalt}
+Navegación GNSS & u-blox MAX-M10S (Multiconstelación 72 canales) \\
+Radiofrecuencia LoRa & Semtech SX1262 ($915\,\text{MHz}$, $+22\,\text{dBm}$) \\
+\rowcolor{rowalt}
+Sensor de Movimiento & STMicroelectronics LSM6DSOX IMU 6 ejes \\
+Gestión Fotovoltaica & CN3791 MPPT Solar Charger ($6\,\text{V}$) \\
+\rowcolor{rowalt}
+Batería de Respaldo & LiPo $3.7\,\text{V}$ / $1500\,\text{mAh}$ (Protección PCM integrada) \\
+Elemento Radiante & Antena FPC interna omnidireccional ($+2.5\,\text{dBi}$) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Parámetros globales de desempeño operativo}
+\label{tab:desempeno_sistema}
+\vspace{2mm}
+\begin{tabularx}{\textwidth}{X r}
+\toprule
+\rowcolor{categorybg}
+\textbf{Parámetro Métrico} & \textbf{Valor / Rango Garantizado} \\
+\midrule
+Alcance de Enlace RF LoRa & Hasta $15.0\,\text{km}$ (Línea de Vista en Campo) \\
+\rowcolor{rowalt}
+Precisión Posicional GNSS & $< 3.0\,\text{m}$ RMS \\
+Tiempo de Respuesta Algoritmo PiP & $< 50\,\text{ms}$ \\
+\rowcolor{rowalt}
+Consumo de Corriente en \textit{Deep Sleep} & $< 5.0\,\mu\text{A}$ \\
+Rango de Temperatura Operativa & $-20\,^\circ\text{C}$ a $+65\,^\circ\text{C}$ \\
+\rowcolor{rowalt}
+Grado de Estanqueidad Estructural & IP67 (IEC 60529) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Manual de Operación e Instalación en Campo}
+
+\subsection{Procedimiento de Ensamble y Ajuste}
+
+\subsubsection{Fase 1: Preparación y Carga Inicial}
+
+\begin{enumerate}[leftmargin=*]
+    \item Retire el tapón protector del conector USB-C e inserte el cable de carga suministrado.
+    \item Conecte la fuente de alimentación externa ($5\,\text{V DC} / 1\,\text{A}$).
+    \item Monitoree el LED indicador de estado hasta observar color verde continuo (duración estimada de carga total: $2.0\,\text{horas}$).
+    \item Reinstale cuidadosamente el tapón de silicona asegurando el sellado IP67.
+\end{enumerate}
+
+\subsubsection{Fase 2: Fijación y Ergonomía sobre el Bovino}
+
+\begin{enumerate}[leftmargin=*]
+    \item Posicione la correa de poliuretano alrededor de la sección superior del cuello del animal.
+    \item Verifique que el gabinete electrónico principal quede orientado en la cresta superior del cuello para optimizar la captación solar y la cobertura GNSS/RF.
+    \item Ajuste la hebilla de seguridad dejando una holgura equivalente al paso de una mano ($2\text{--}3\,\text{cm}$) entre la correa y la piel para prevenir laceraciones.
+    \item Asegure el retenedor secundario y recorte el remanente de correa sobrante.
+\end{enumerate}
+
+\subsection{Configuración de Geocercas vía Servidor Web Embebido}
+
+\subsubsection{Acceso al Servidor Local SoftAP}
+
+\begin{enumerate}[leftmargin=*]
+    \item Encienda la interfaz Wi-Fi en el dispositivo móvil de configuración.
+    \item Seleccione el punto de acceso denominado \texttt{DR-VF-01-CONFIG}.
+    \item Abra un navegador e ingrese a la dirección IP \url{http://192.168.4.1}.
+    \item Autentíquese con las credenciales por defecto: usuario \texttt{admin}, contraseña \texttt{geofence2026}.
+\end{enumerate}
+
+\subsection{Codificación de Indicadores LED de Diagnóstico}
+
+\begin{description}[leftmargin=*, style=nextline, font=\bfseries\ttfamily]
+    \item[Verde Fijo] Proceso de carga de batería activo vía USB-C / Solar.
+    \item[Verde Parpadeante] Batería completamente cargada ($V_{\text{bat}} \ge 4.18\,\text{V}$).
+    \item[Azul Parpadeante] Modo de configuración SoftAP y servidor HTTP activo.
+    \item[Rojo Fijo] Alerta de batería crítica ($V_{\text{bat}} \le 3.40\,\text{V}$).
+    \item[Rojo Parpadeante] Evento de rebasamiento de geocerca y activación de etapa disuasiva.
+    \item[Amarillo Parpadeante] Excepción de sistema o pérdida de señal GNSS (\textit{Timeout}).
+\end{description}
+
+\section{Normativas de Certificación y Ensayos de Cumplimiento}
+
+\subsection{Certificaciones de Radiofrecuencia (RF)}
+
+\subsubsection{Regulación FCC (Part 15 Subpart C)}
+
+El collar DR-VF-01 cumple con los límites de emisión radiada para dispositivos intencionales en la banda ISM de $902\text{--}928\,\text{MHz}$ bajo FCC Part 15.247.
+
+\subsubsection{Directiva Europea RED (2014/53/EU)}
+
+Evaluación de conformidad según la directiva RED para equipos de radio, garantizando un uso eficiente del espectro electromagnético en frecuencias sub-GHz.
+
+\subsection{Seguridad Eléctrica y Disuasión}
+
+\subsubsection{Cumplimiento IEC 62368-1 / IEC 60950-1}
+
+Cumplimiento de requisitos de seguridad en equipos de tecnología de la información, abarcando protección contra choques eléctricos, sobrecalentamiento e inflamabilidad.
+
+\subsubsection{Norma de Impulsos Disuasivos IEC 60335-2-76 (Anexo CC)}
+
+La etapa de disuasión del collar cumple los límites de energía pico ($< 0.2\,\text{J}$) y tensión máxima ($< 2.5\,\text{kV}$) establecidos para cercas eléctricas de control animal, garantizando la seguridad biológica del bovino sin causar quemaduras ni secuelas fisiológicas.
+
+\subsection{Compatibilidad Electromagnética (EMC)}
+
+\subsubsection{Ensayos de Emisión}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{FCC Part 15 Subpart B}: Dispositivo digital Clase B.
+    \item \textbf{EN 55032 / EN 55035}: Emisiones e inmunidad en equipos multimediales.
+\end{itemize}
+
+\subsubsection{Ensayos de Inmunidad}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{IEC 61000-4-2}: Inmunidad a descargas electrostáticas (ESD) hasta $\pm 8\,\text{kV}$ por contacto y $\pm 15\,\text{kV}$ por aire.
+    \item \textbf{IEC 61000-4-3}: Inmunidad a campos electromagnéticos radiados ($10\,\text{V/m}$).
+    \item \textbf{IEC 61000-4-4}: Inmunidad a ráfagas de transitorios rápidos (\textit{EFT/Burst}).
+    \item \textbf{IEC 61000-4-5}: Inmunidad a sobretensiones conducidas (\textit{Surge}).
+\end{itemize}
+
+\section{Cumplimiento Ambiental y Logística}
+
+\subsection{Directiva RoHS y REACH}
+
+El dispositivo cumple con la Directiva 2011/65/EU (RoHS 2/3) y la Regulación REACH, certificando que todos los componentes y la PCB están libres de plomo, mercurio, cadmio y retardantes de llama bromados.
+
+\subsection{Normativa de Transporte de Baterías de Litio}
+
+\subsubsection{Manual de Pruebas UN 38.3}
+
+La celda LiPo integrada superó las pruebas de transporte de la ONU (altitud, choque térmico, vibración, impacto, sobrecarga y cortocircuito externo).
+
+\subsubsection{Regulación IATA / ICAO}
+
+Empaque y etiquetado conforme a la instrucción de embalaje PI967 (Baterías de ion de litio contenidas en equipos).
+
+\section{Garantía, Soporte Técnico y Mantenimiento}
+
+\subsection{Esquema de Garantía de Fábrica}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Dispositivo Electrónico y Carcasa}: 24 meses contra defectos de fabricación o fallas de estanqueidad.
+    \item \textbf{Batería LiPo Integrada}: 12 meses o 500 ciclos completos de carga/descarga.
+    \item \textbf{Soporte Técnico Especializado}: 12 meses de soporte remoto y diagnósticos de red sin costo.
+\end{itemize}
+
+\subsection{Política de Actualizaciones Firmware OTA}
+
+\begin{itemize}[leftmargin=*]
+    \item Soporte de actualización remota Over-The-Air (OTA) cifrada vía LoRaWAN / SoftAP.
+    \item Repositorio de parches de seguridad y optimización de algoritmos PiP.
+\end{itemize}
+
+\section{Conclusiones}
+
+El Dossier Comercial y de Cumplimiento consolida la viabilidad técnica y normativa del collar DR-VF-01. Las certificaciones de seguridad eléctrica (IEC 62368-1 e IEC 60335-2-76) y la inmunidad EMC garantizan la seguridad operativa en campo abierto. Asimismo, la hoja de datos técnicos y el manual operativo aseguran un despliegue ágil, confiable y escalable para el sector agropecuario.

@@ -1,0 +1,123 @@
+\section{Introducción al Dossier de Ingeniería de Hardware}
+
+Este dossier presenta el análisis detallado del hardware del collar de geocercamiento DR-VF-01, incluyendo la arquitectura del sistema, el presupuesto de potencia, el análisis térmico y la lista de materiales (BOM).
+
+\section{Arquitectura del Sistema}
+
+La arquitectura del sistema se basa en el microcontrolador ESP32-S3-WROOM-1U-N16R8, que integra un procesador dual-core Xtensa LX7 con 16 MB de memoria Flash y 8 MB de PSRAM. Esta plataforma proporciona la capacidad de procesamiento necesaria para ejecutar algoritmos de geocercamiento en tiempo real y gestionar la pila de comunicaciones LoRa.
+
+\subsection{Componentes Principales}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Microcontrolador Principal}: ESP32-S3-WROOM-1U-N16R8 (16 MB Flash, 8 MB PSRAM).
+    \item \textbf{Sistema de Posicionamiento}: u-blox MAX-M10S GNSS multiconstelación.
+    \item \textbf{Sensor de Inercia y Movimiento}: LSM6DSOX IMU de 6 ejes con bajo consumo.
+    \item \textbf{Transceptor de Radiofrecuencia}: SX1262 LoRa Sub-GHz (915 MHz).
+    \item \textbf{Gestión de Energía y Carga}: Cargador solar MPPT CN3791 (6 V) + LDO ultra-bajo \textit{Iq} TPS7A0533 (3.3 V).
+\end{itemize}
+
+\section{Presupuesto de Potencia}
+
+\subsection{Metodología de Cálculo}
+
+El presupuesto de potencia se calculó considerando el perfil de ciclo de trabajo (\textit{duty cycle}) en los distintos estados operativos del collar:
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Estado de Sueño Profundo (\textit{Deep Sleep})}: 98.5\% del tiempo operativo.
+    \item \textbf{Verificación de Geocerca (GNSS Fix)}: 10 iteraciones por día.
+    \item \textbf{Transmisión LoRa (Telemetría)}: 20 ráfagas por día.
+    \item \textbf{Activación de Estímulo Disuasivo}: 2 eventos por día.
+\end{enumerate}
+
+\subsection{Resultados del Análisis de Consumo}
+
+\begin{table}[H]
+\centering
+\caption{Desglose del consumo de corriente en modo \textit{Deep Sleep}}
+\label{tab:power_deepsleep}
+\vspace{2mm}
+\begin{tabularx}{\textwidth}{X l r r}
+\toprule
+\rowcolor{categorybg}
+\textbf{Componente} & \textbf{Estado Operativo} & \textbf{Corriente Base} & \textbf{Contribución Promedio} \\
+\midrule
+ESP32-S3 & Deep Sleep & 5.0 $\mu$A & 4.93 $\mu$A \\
+\rowcolor{rowalt}
+u-blox MAX-M10S & Standby & 25.0 $\mu$A & 24.63 $\mu$A \\
+LSM6DSOX IMU & Low-Power & 10.0 $\mu$A & 9.85 $\mu$A \\
+\rowcolor{rowalt}
+SX1262 LoRa & Sleep & 0.7 $\mu$A & 0.69 $\mu$A \\
+CN3791 MPPT & Standby & 150.0 $\mu$A & 150.00 $\mu$A \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Autonomía de Batería}
+
+Con una celda LiPo de 1500 mAh y una corriente promedio efectiva de 0.191 mA, la autonomía teórica estimada del dispositivo se calcula como:
+
+$$\text{Autonomía (días)} = \frac{1500\text{ mAh}}{0.191\text{ mA} \times 24\text{ h/día}} \approx 327\text{ días}$$
+
+Considerando la autodescarga de la batería y factores de degradación ambiental, se garantiza una operación continua superior a 278 días en condiciones ideales.
+
+\section{Análisis Térmico}
+
+\subsection{Componentes de Alta Disipación}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Regulador LDO TPS7A0533}: 0.255 W disipados en regulación pico.
+    \item \textbf{Cargador Solar CN3791}: 0.140 W disipados en carga máxima.
+    \item \textbf{Transceptor LoRa SX1262}: 0.396 W durante eventos de transmisión en potencia máxima (+22 dBm).
+\end{itemize}
+
+\subsection{Cálculos de Temperatura de Juntura}
+
+Para el regulador LDO TPS7A0533 con encapsulado SOT-23 ($R_{\theta\text{JA}} = 60.9\,^\circ\text{C/W}$):
+
+$$P_{\text{disipada}} = (V_{\text{in}} - V_{\text{out}}) \times I_{\text{out}} = (5.0\text{ V} - 3.3\text{ V}) \times 0.15\text{ A} = 0.255\text{ W}$$
+
+$$\Delta T = P_{\text{disipada}} \times R_{\theta\text{JA}} = 0.255\text{ W} \times 60.9\,^\circ\text{C/W} = 15.53\,^\circ\text{C}$$
+
+$$T_{\text{juntura}} = T_{\text{ambiente}} + \Delta T = 65.0\,^\circ\text{C} + 15.53\,^\circ\text{C} = 80.53\,^\circ\text{C}$$
+
+Dado que la temperatura máxima de juntura permitida es de $125\,^\circ\text{C}$, el componente opera dentro del margen de seguridad del 35\%.
+
+\section{Lista de Materiales (BOM)}
+
+\subsection{Componentes Electrónicos Principales}
+
+\begin{table}[H]
+\centering
+\caption{Lista de componentes principales (BOM) del hardware DR-VF-01}
+\label{tab:hardware_bom}
+\vspace{2mm}
+\begin{tabularx}{\textwidth}{c X l l l}
+\toprule
+\rowcolor{categorybg}
+\textbf{Cant.} & \textbf{Descripción} & \textbf{MPN} & \textbf{Fabricante} & \textbf{Proveedor} \\
+\midrule
+1 & ESP32-S3 (16 MB Flash, 8 MB PSRAM) & ESP32-S3-WROOM-1U-N16R8 & Espressif & Digi-Key \\
+\rowcolor{rowalt}
+1 & Módulo GNSS Multiconstelación & MAX-M10S-00B & u-blox & Avnet \\
+1 & Sensor de Inercia IMU 6 ejes & LSM6DSOXTR & STMicroelectronics & Digi-Key \\
+\rowcolor{rowalt}
+1 & Transceptor LoRa Sub-GHz & SX1262IMLTRT & Semtech & Digi-Key \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Estructura de Costos Estimada}
+
+El costo total directo por unidad producida (lote de 100 unidades) es de \$43.25 USD:
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Componentes Electrónicos (PCBA)}: \$24.50 USD
+    \item \textbf{Componentes Mecánicos y Carcasa IP67}: \$8.75 USD
+    \item \textbf{Fabricación de PCB (4 capas, FR4)}: \$3.25 USD
+    \item \textbf{Ensamblaje y SMT}: \$5.50 USD
+    \item \textbf{Empaque y Control de Calidad}: \$1.25 USD
+\end{itemize}
+
+\section{Conclusiones}
+
+El diseño de hardware del collar DR-VF-01 cumple con los requerimientos operativos y de autonomía fijados. La selección de un regulador LDO de ultra-bajo consumo en combinación con el microcontrolador ESP32-S3 garantiza una operación extendida sin comprometer la velocidad de procesamiento requerida para las geocercas en tiempo real.

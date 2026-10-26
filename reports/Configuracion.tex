@@ -1,19 +1,37 @@
+% ==============================================================================
+% CONFIGURACIÓN GLOBAL Y PAQUETES (UNAL - DIEEC)
+% ==============================================================================
+
+% --- PAQUETES BÁSICOS Y IDIOMA ---
 \usepackage[utf8]{inputenc}
 \usepackage[spanish,es-nodecimaldot]{babel}
-\usepackage[margin=1.5cm, top=2.2cm, bottom=2.2cm]{geometry}
+\usepackage[margin=1.5cm, top=2.2cm, bottom=2.2cm, headheight=15pt]{geometry}
+
+% --- PAQUETES DE FORMATO Y ESTILO ---
 \usepackage{xcolor}
 \usepackage{colortbl}
 \usepackage{tabularx}
 \usepackage{booktabs}
 \usepackage{enumitem}
-\usepackage{hyperref}
 \usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tocloft}
+%\usepackage{microtype}  % Commented out due to font expansion issues
+
+% --- PAQUETES DE MATEMÁTICAS Y FIGURAS ---
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{longtable}
 
-% --- Colores Institucionales y de Tablas ---
+% --- DIAGRAMAS TIKZ (con protección Babel) ---
+\usepackage{tikz}
+\usetikzlibrary{arrows, arrows.meta, positioning, shapes.geometric, fit, backgrounds, calc, babel}
+
+% --- COLORES INSTITUCIONALES UNAL Y TABLAS ---
 \definecolor{unalnavy}{HTML}{003366}
 \definecolor{unalblue}{HTML}{4682B4}
 \definecolor{unalred}{HTML}{941B27}
@@ -26,7 +44,23 @@
 
 \setlength{\arrayrulewidth}{0.8pt}
 
-% --- Encabezado y Pie de Página (fancyhdr) ---
+% --- FORMATO DE TÍTULOS EN NEGRO SOBRIO ---
+\titleformat{\chapter}[hang]
+  {\Huge\bfseries\color{black}}
+  {\thechapter\hspace{15pt}}
+  {0pt}
+  {\Huge\bfseries}
+
+\titleformat{\section}
+  {\Large\bfseries\color{black}}
+  {\thesection}{1em}{}
+
+\titleformat{\subsection}
+  {\large\bfseries\color{black}}
+  {\thesubsection}{1em}{}
+
+% --- ENCABEZADO Y PIE DE PÁGINA ---
+% --- ENCABEZADO Y PIE DE PÁGINA (100% NEGRO) ---
 \pagestyle{fancy}
 \fancyhf{}
 \lhead{\bfseries UNAL - DIEEC}
@@ -36,14 +70,45 @@
 \renewcommand{\headrulewidth}{0.8pt}
 \renewcommand{\footrulewidth}{0.4pt}
 
-% Configuración de Hipervínculos
+% --- CONFIGURACIÓN DE HIPERVÍNCULOS (Cargar siempre al final) ---
+\usepackage{hyperref}
 \hypersetup{
     colorlinks=true,
     linkcolor=black,
     urlcolor=cyan,
-    citecolor=unalnavy
+    citecolor=unalnavy,
+    pdftitle={Collar DR-VF-01 - Memoria Técnica Consolidada},
+    pdfauthor={Proyecto DR-VF-01 - UNAL DIEEC}
 }
 
-% --- Paquetes para Diagramas TikZ (con protección Babel) ---
-\usepackage{tikz}
-\usetikzlibrary{arrows, arrows.meta, positioning, shapes.geometric, fit, backgrounds, calc, babel}
+% --- PERSONALIZACIÓN DE ÍNDICES ---
+% Cargar tocloft sin opciones para evitar conflictos
+\usepackage{tocloft}
+% Configuración del Índice General
+\renewcommand{\cfttoctitlefont}{\Huge\bfseries}
+\renewcommand{\cftbeforetoctitleskip}{-1em}
+\renewcommand{\cftaftertoctitleskip}{1em}
+
+% Configuración del Índice de Figuras
+\renewcommand{\cftloftitlefont}{\Huge\bfseries}
+\renewcommand{\cftbeforeloftitleskip}{-1em}
+\renewcommand{\cftafterloftitleskip}{1em}
+
+% Configuración del Índice de Tablas
+\renewcommand{\cftlottitlefont}{\Huge\bfseries}
+\renewcommand{\cftbeforelottitleskip}{-1em}
+\renewcommand{\cftafterlottitleskip}{1em}
+
+% Espaciado entre entradas
+\setlength{\cftbeforesecskip}{0.5em}
+\setlength{\cftbeforesubsecskip}{0.3em}
+
+% Asegurar que los índices se muestren correctamente
+\setlength{\cftchapnumwidth}{2em}
+\setlength{\cftsecnumwidth}{3em}
+\setlength{\cftsubsecnumwidth}{4em}
+\setlength{\cftfigpresnum}{\figurename~}
+\setlength{\cfttabpresnum}{\tablename~}
+\renewcommand{\cftchappresnum}{Capítulo~}
+\setlength{\cftfigaftersnum}{:}
+\setlength{\cfttabaftersnum}{:}

@@ -1,0 +1,204 @@
+\section{Introducción al Dossier de Firmware}
+
+Este dossier presenta la arquitectura y especificación del firmware y software embebido del collar de geocercamiento DR-VF-01. Se detallan la secuencia de arranque, la máquina de estados finitos (FSM), las estrategias de mitigación de latencia en tiempo real y la definición del firmware mínimo viable (MVP).
+
+\section{Secuencia de Arranque (\textit{Power-on Sequence})}
+
+\subsection{Fases de Inicialización}
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Power-On Reset (POR)}: Verificación de estabilización de riel de alimentación ($3.3\text{ V}$) y reinicio del SoC.
+    \item \textbf{Inicialización de Periféricos}: Configuración de buses de comunicación ($\text{I}^2\text{C}$, SPI) y líneas GPIO de interrupción.
+    \item \textbf{Inicialización de Sensores}: Autochequeo (BIST) y configuración del transceptor LoRa SX1262, IMU LSM6DSOX y GNSS MAX-M10S.
+    \item \textbf{Carga de Parámetros de Geocerca}: Lectura del polígono activo y llaves criptográficas desde memoria Flash NVS.
+    \item \textbf{Arranque del RTOS}: Creación de tareas prioritarias y mecanismos de sincronización (\textit{semáforos y colas}).
+\end{enumerate}
+
+\subsection{Presupuesto de Tiempo de Arranque}
+
+El tiempo total de arranque desde el evento de energización hasta el ingreso al bucle operativo principal es de $5.0\text{ s}$:
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{POR y calibración básica de reloj}: $1.2\text{ s}$
+    \item \textbf{Configuración de buses periféricos}: $1.8\text{ s}$
+    \item \textbf{Inicialización y BIST de sensores}: $1.5\text{ s}$
+    \item \textbf{Carga NVS e inicio de RTOS}: $0.5\text{ s}$
+\end{itemize}
+
+\section{Máquina de Estados Finitos (FSM)}
+
+\subsection{Estados Principales del Sistema}
+
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+    node distance=2.2cm and 3.6cm,
+    auto,
+    >=stealth,
+    state/.style={
+        draw=bordergrey,
+        thick,
+        rectangle,
+        rounded corners=6pt,
+        fill=categorybg,
+        text width=2.8cm,
+        minimum height=1.1cm,
+        align=center,
+        font=\small\bfseries
+    },
+    critical/.style={
+        state,
+        fill=phase2orange,
+        draw=unalred
+    },
+    errorstate/.style={
+        state,
+        fill=categorybgsub,
+        draw=unalnavy
+    },
+    line/.style={
+        draw=unalnavy,
+        thick,
+        ->
+    }
+]
+
+    % --- NODOS PRINCIPALES ---
+    \node [state] (init) {\texttt{INIT}};
+    \node [state, right=of init] (sleep) {\texttt{SLEEP}};
+    \node [state, right=of sleep] (check) {\texttt{GEOFENCE\_CHECK}};
+    \node [state, right=of check] (gnss) {\texttt{GNSS\_UPDATE}};
+
+    % --- NODOS DE ALERTA Y ERROR (FILA INFERIOR) ---
+    \node [errorstate, below=of init] (error) {\texttt{ERROR}};
+    \node [critical, below=of sleep] (disuasion) {\texttt{DISUASION}};
+    \node [critical, below=of check] (warning) {\texttt{WARNING}};
+
+    % --- TRANSICIONES ARRANQUE Y CONTROL ---
+    \path [line] (init) -- node[above, font=\scriptsize, align=center] {POR / BIST OK} (sleep);
+    \path [line] (init) -- node[left, font=\scriptsize, align=center] {BIST Fail} (error);
+
+    % --- BUCLE DE BAJO CONSUMO (SLEEP <-> CHECK) ---
+    \path [line] (sleep) edge[bend left=22] node[above, font=\scriptsize, align=center] {RTC / IMU Wakeup} (check);
+    \path [line] (check) edge[bend left=22] node[below, font=\scriptsize, align=center] {In-Fence / Sleep} (sleep);
+
+    % --- BUCLE GNSS UPDATE (HOT START) ---
+    \path [line] (check) edge[bend left=22] node[above, font=\scriptsize, align=center] {Stale Fix} (gnss);
+    \path [line] (gnss) edge[bend left=22] node[below, font=\scriptsize, align=center] {Fix Valid} (check);
+
+    % --- CICLO DE ADVERTENCIA Y DISUASIÓN ---
+    \path [line] (check) -- node[right, font=\scriptsize, align=center] {Near Border} (warning);
+    \path [line] (warning) -- node[below, font=\scriptsize, align=center] {Breach\\[-1pt]{\tiny [Dist $>$ Limit]}} (disuasion);
+    \path [line] (disuasion) -- node[left, font=\scriptsize, align=center] {Secured /\\[-1pt]Timer Expired} (sleep);
+
+    % --- RUTA DEFENSIVA A ERROR (Rodea INIT por el exterior izquierdo) ---
+    \draw [line] (check.north) -- ++(0, 1.5) -| ([xshift=-1.0cm]error.west) node[pos=0.3, above, font=\scriptsize, align=center] {WDT Expired / Hardware Fault} -- (error.west);
+
+\end{tikzpicture}%
+}
+\caption{Máquina de Estados Finitos Defensiva (FSM) del collar DR-VF-01 con soporte para ráfagas GNSS y recubrimiento WDT (según el modelo de Elecia White)}
+\label{fig:fsm_diagram_complete}
+\end{figure}
+
+\subsection{Descripción Formal de los Estados}
+
+\begin{description}[leftmargin=*, style=nextline, font=\bfseries\ttfamily]
+    \item[INIT] Secuencia de arranque, verificación de integridades en Flash/RAM (BIST) y preparación del Kernel RTOS.
+    \item[SLEEP] Modo de bajo consumo activo con dominios de energía secundarios deshabilitados ($I_q < 20\,\mu\text{A}$).
+    \item[GEOFENCE\_CHECK] Ejecución en tiempo real del algoritmo Ray-Casting optimizado para evaluación del perímetro.
+    \item[GNSS\_UPDATE] Ráfaga corta de adquisición GNSS en modo \textit{Hot Start} ante pérdida temporizada de precisión HDOP.
+    \item[WARNING] Emisión de tono acústico progresivo ante aproximación al límite ($< 5\,\text{m}$).
+    \item[DISUASION] Activación de la secuencia de impulsos disuasivos corregidos tras rebasar la geocerca.
+    \item[ERROR] Modo defensivo de aislamiento por desbordamiento de temporizador WDT o falla en buses $\text{I}^2\text{C}$/SPI.
+\end{description}
+
+\subsection{Transición Crítica y Latencia}
+
+La transición más crítica del sistema ocurre entre los estados \texttt{SLEEP} y \texttt{GEOFENCE\_CHECK}. Tras una interrupción externa generada por la IMU, la FSM debe reanudar la ejecución y evaluar la posición en menos de $50\,\text{ms}$.
+
+\section{Análisis de Desafíos en Tiempo Real}
+
+\subsection{Restricción Temporal: Algoritmo Point-in-Polygon ($< 50\,\text{ms}$)}
+
+\subsubsection{Implementación Optimizada del Algoritmo Ray-Casting}
+
+El algoritmo PiP se implementó en C puro optimizando las operaciones de punto flotante para aprovechar la unidad FPU hardware del ESP32-S3:
+
+\begin{verbatim}
+bool pip_optimized(const point_t* p, const polygon_t* poly) {
+    int crosses = 0;
+    const int vertex_count = poly->num_vertices;
+    
+    for (int i = 0; i < vertex_count; i++) {
+        const point_t* v1 = &poly->vertices[i];
+        const point_t* v2 = &poly->vertices[(i + 1) % vertex_count];
+        
+        // Condición de descarte rápido por límites verticales
+        if ((v1->y > p->y) == (v2->y > p->y)) continue;
+        
+        // Cálculo de intersección optimizado para FPU
+        const float vt = (p->y - v1->y) / (v2->y - v1->y);
+        if (p->x < v1->x + vt * (v2->x - v1->x)) {
+            crosses++;
+        }
+    }
+    
+    return (crosses & 1); // Verdadero si el número de cruces es impar
+}
+\end{verbatim}
+
+\subsubsection{Gestión de Memoria y PSRAM}
+
+Para evitar cuellos de botella por latencia de acceso a Flash, la estructura de datos del polígono activo (hasta 64 vértices) se aloja en PSRAM bus octal de alta velocidad.
+
+\subsection{Interrupción de Despertar (\textit{GPIO Wakeup}) desde IMU}
+
+\subsubsection{Configuración del Registro del LSM6DSOX}
+
+\begin{verbatim}
+int lsm6dsox_configure_wakeup(void) {
+    // Configurar umbral de detección de movimiento (0.5g)
+    lsm6dso_write_reg(LSM6DSO_WAKE_UP_THS, 0x20);
+    
+    // Configurar duración mínima (16 muestras consecutivas)
+    lsm6dso_write_reg(LSM6DSO_WAKE_UP_DUR, 0x10);
+    
+    // Habilitar la ruta de interrupción en el pin INT1
+    lsm6dso_write_reg(LSM6DSO_INT1_CTRL, 0x20);
+    
+    // Ajustar tasa ODR en modo bajo consumo (26 Hz)
+    lsm6dso_write_reg(LSM6DSO_CTRL1_XL, 0x10);
+    
+    return 0;
+}
+\end{verbatim}
+
+\section{Firmware Mínimo Viable (MVP)}
+
+\subsection{Módulos Core del MVP}
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Gestor de Movimiento}: Driver IMU LSM6DSOX con detección de umbral de aceleración.
+    \item \textbf{Motor de Geocercamiento}: Algoritmo Ray-Casting optimizado con almacenamiento en RAM.
+    \item \textbf{Pila LoRaWAN / LoRa P2P}: Transmisión de eventos prioritarios mediante SX1262.
+    \item \textbf{Interfaz de Configuración}: Punto de acceso SoftAP con servidor HTTP embebido.
+    \item \textbf{Administrador de Energía}: Gestión de modos \textit{Deep Sleep} e interrupciones del sistema.
+\end{enumerate}
+
+\subsection{Definición de Hilos en RTOS}
+
+\begin{verbatim}
+K_THREAD_DEFINE(imu_monitor, STACK_SIZE, imu_monitor_thread, 
+                NULL, NULL, NULL, IMU_PRIORITY, 0, 0);
+
+K_THREAD_DEFINE(geofence_check, STACK_SIZE, geofence_thread,
+                NULL, NULL, NULL, GEOFENCE_PRIORITY, 0, 0);
+
+K_THREAD_DEFINE(lora_handler, STACK_SIZE, lora_thread,
+                NULL, NULL, NULL, LORA_PRIORITY, 0, 0);
+\end{verbatim}
+
+\section{Conclusiones}
+
+La arquitectura de firmware propuesta para el collar DR-VF-01 combina un esquema determinista multitarea con una gestión rigurosa de bajo consumo. La optimización del algoritmo Point-in-Polygon y el uso eficiente de interrupciones por hardware garantizan tiempos de respuesta inferiores a $50\,\text{ms}$, asegurando el funcionamiento correcto de las acciones de disuasión antes de que el ganado traspase el perímetro configurado.

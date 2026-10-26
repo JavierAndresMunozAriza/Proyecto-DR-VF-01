@@ -1,31 +1,63 @@
-\documentclass[10pt,letterpaper]{article}
+\documentclass[12pt,a4paper,oneside]{report}
 
-% Carga la configuración global
+% Cargar toda la configuración de paquetes y estilos
 \input{Configuracion.tex}
+
+% DATOS DEL DOCUMENTO
+\title{\textbf{Sistema de Geocercamiento para Ganado\\Collar DR-VF-01}}
+\author{\textbf{Universidad Nacional de Colombia}\\Departamento de Ingeniería Eléctrica, Electrónica y Computación (DIEEC)}
+\date{\today}
 
 \begin{document}
 
-% --- ENCABEZADO PRINCIPAL DE LA CARTA DE REQUERIMIENTOS ---
-\begin{center}
-    {\Huge UNAL}\\[0.15cm]
-    {\Large DR-VF-01 --- PRODUCT AND SYSTEM REQUIREMENTS}\\[0.1cm]
-    {\Large \bfseries Collar Inteligente para Cerca Virtual y Monitoreo Ganadero}\\[0.12cm]
-    {\small \color{gray} Departamento de Ingeniería Eléctrica, Electrónica y Computación (DIEEC) -- Sede Manizales}\\[0.05cm]
-    {\small \color{gray} Asignatura: Proyecto de Ingeniería Electrónica --- \url{https://fia.unal.edu.co}}
-\end{center}
+% FRONTMATTER: Portada e Índices
+\pagenumbering{roman}
 
-\vspace{-0.1cm}
-\hrule height 0.8pt
-\vspace{0.4cm}
+\maketitle
+\thispagestyle{empty}
+\clearpage
 
-% --- MÓDULOS DE CONTENIDO SECCIONAL ---
-\input{Secciones/01_descripcion.tex}
-\input{Secciones/02_casos_de_uso.tex}
-\input{Secciones/03_requerimientos_producto.tex}
-\input{Secciones/04_requerimientos_srd.tex}
-\input{Secciones/05_priorizacion.tex}
-\input{Secciones/06_diagramas.tex}
-\input{Secciones/07_conclusiones.tex}
-\input{Secciones/08_revision.tex}
+\tableofcontents
+\clearpage
+
+\listoffigures
+\clearpage
+
+\listoftables
+\clearpage
+
+% MAINMATTER: Contenido Técnico por Dossiers
+\pagenumbering{arabic}
+
+% DOSSIER 1: REQUERIMIENTOS Y ARQUITECTURA
+\chapter{Dossier de Requerimientos y Arquitectura del Sistema}
+\input{secciones/01_requerimientos/01_descripcion.tex}
+\input{secciones/01_requerimientos/02_casos_de_uso.tex}
+\input{secciones/01_requerimientos/03_requerimientos_producto.tex}
+\input{secciones/01_requerimientos/04_requerimientos_srd.tex}
+\input{secciones/01_requerimientos/05_priorizacion.tex}  
+\input{secciones/01_requerimientos/06_diagramas.tex}
+\input{secciones/01_requerimientos/07_conclusiones.tex}
+\input{secciones/01_requerimientos/08_revision.tex}
+
+% DOSSIER 2: HARDWARE
+\chapter{Dossier de Ingeniería de Hardware}
+\input{secciones/02_hardware/01_esquematicos_y_bom.tex}
+
+% DOSSIER 3: FIRMWARE
+\chapter{Dossier de Firmware y Software Embebido}
+\input{secciones/03_firmware/01_arquitectura_y_fsm.tex}
+
+% DOSSIER 4: MECÁNICA
+\chapter{Dossier de Diseño Mecánico e Industrial}
+\input{secciones/04_mecanico/01_carcasa_y_tolerancias.tex}
+
+% DOSSIER 5: COMERCIAL Y CUMPLIMIENTO
+\chapter{Documentación Comercial, de Campo y Cumplimiento}
+\input{secciones/05_comercial/01_ensayos_y_cumplimiento.tex}
+
+% BACKMATTER: Bibliografía
+%\bibliographystyle{plain}
+%\bibliography{references}
 
 \end{document}

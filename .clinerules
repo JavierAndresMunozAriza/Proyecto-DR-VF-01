@@ -20,3 +20,21 @@
 
 ## Entorno de Ejecución
 - Toda compilación de LaTeX, C y comandos de Git se ejecutan en la terminal Bash de Ubuntu (WSL2).
+
+# Reglas de Diseño de Firmware y Arquitectura (Basado en Elecia White - Making Embedded Systems)
+
+1. ABSTRACCIÓN Y PORTABILIDAD (Cap. 2 y 7):
+   - Todo driver de periférico (LoRa, GNSS, IMU) debe implementar el patrón Adapter con una interfaz estándar estilo POSIX (open, read, write, ioctl, test).
+   - El algoritmo de geocerca (geofence.c) debe ser C puro modular, sin dependencias del SDK del ESP32 o Zephyr, permitiendo testing en sandbox/PC.
+
+2. GESTIÓN DE ESTADOS Y CONTROL (Cap. 6):
+   - Estructurar el loop principal mediante una Máquina de Estados Finos (FSM) explícita.
+   - Minimizar el estado global usando variables estáticas o estructuras encapsuladas (patrón Singleton o Data Hiding).
+
+3. OPTIMIZACIÓN Y BAJO CONSUMO (Cap. 11, 12 y 13):
+   - Mantener el microcontrolador en Deep Sleep el mayor tiempo posible.
+   - Despertar por interrupción GPIO desde la IMU (LSM6DSOX) solo tras detectar movimiento significativo.
+   - Ejecutar la verificación del polígono en menos de 50 ms tras despertar del reposo.
+
+4. REGISTRO Y DIAGNÓSTICO (Cap. 2 - Logging):
+   - Implementar un sistema de logs encapsulado con niveles de prioridad (INFO, DEBUG, WARNING, ERROR) y soporte para desactivación global.

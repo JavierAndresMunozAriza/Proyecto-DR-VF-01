@@ -1,0 +1,27 @@
+{
+  "latex-workshop.latex.tools": [
+    {
+      "name": "latexmk",
+      "command": "latexmk",
+      "args": [
+        "-pdf",
+        "-interaction=nonstopmode",
+        "-synctex=1",
+        "-outdir=%OUTDIR%",
+        "%DOC%"
+      ],
+      "env": {}
+    }
+  ],
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "latexmk",
+      "tools": [
+        "latexmk"
+      ]
+    }
+  ],
+  "latex-workshop.latex.outDir": "output",
+  "latex-workshop.latex.autoBuild.run": "onSave",
+  "latex-workshop.view.pdf.viewer": "tab"
+}

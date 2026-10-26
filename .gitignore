@@ -6,11 +6,14 @@
 *.OutJob.Preview
 *.~(lock)*
 
-# LaTeX (Archivos auxiliares de compilación)
+# Archivos temporales de LaTeX (Archivos de compilacion)
+reports/output/
 *.aux
 *.fdb_latexmk
 *.fls
 *.log
+*.lof
+*.lot
 *.out
 *.toc
 *.synctex.gz
@@ -24,3 +27,6 @@ build/
 *.elf
 *.bin
 *.hex
+
+# Entornos virtuales
+.venv/
