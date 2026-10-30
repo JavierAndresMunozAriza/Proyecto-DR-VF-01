@@ -15,8 +15,8 @@ Evidence: `odd/tasks/repo-audit-report.md`. Remove both files when the feature c
 
 ## Tasks
 
-- [ ] T1 (S5, S6, S7) Consolidate rules in `CLAUDE.md`, remove `.clinerules`, set `opusplan`. Route: delegated, user's Sonnet rule.
-- [ ] T2 (S2) Remove unused files with no unique content. Route: delegated, user's Sonnet rule.
+- [x] T1 (S5, S6, S7) Consolidate rules in `CLAUDE.md`, remove `.clinerules`, set `opusplan`. Route: delegated, user's Sonnet rule. Commit: 9cc2ee6 (after e21e4ad, which holds the user's reorganization).
+- [x] T2 (S2) Remove unused files with no unique content. Route: delegated, user's Sonnet rule. Commit: 4bbd982.
 - [ ] T3 (S1) Make the LaTeX report build. Route: delegated, user's Sonnet rule.
 - [ ] T4 (S1, S2) Fix `geofence.c` bugs, port what only the backup holds, merge the tests, remove `simple_test.c` and the backup. Route: delegated, user's Sonnet rule.
 - [ ] T5 (S1, S3) Repair scrambled Markdown, stale references, arithmetic, and claims of measurements that have no data. Route: delegated, user's Sonnet rule.
