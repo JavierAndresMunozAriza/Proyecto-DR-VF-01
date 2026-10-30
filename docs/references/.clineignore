@@ -1,3 +1,0 @@
-# Ignorar archivos pesados para ahorrar tokens en Cline
-docs/references/*.pdf
-*.pdf
