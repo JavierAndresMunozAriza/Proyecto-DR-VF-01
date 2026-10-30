@@ -14,7 +14,7 @@ DR-VF-01 is a virtual-fencing collar for cattle: embedded C firmware, hardware d
 ## Before committing
 
 1. Review the staged diff. The worktree may hold unrelated changes, so stage only what the task needs.
-2. Run the checks for what changed: host tests for `firmware/`, `./build.sh` for `reports/`.
+2. Run the checks for what changed: host tests for `firmware/`. `reports/` has no local check; Overleaf compiles it.
 3. Commit without `--no-verify`. The pre-commit hook runs `gga run`, which reviews staged `*.c`, `*.h`, `*.conf` and `*.overlay` files against `AGENTS.md` using the `claude` provider. It blocks on violations but does not fix them: fix the findings, stage again, and retry. Commits with no matching files pass with a warning.
 
 The hook lives in `.git/hooks/`, so a new clone needs `gga install`. Commit messages use Conventional Commits, and the history is written in Spanish.
@@ -39,7 +39,7 @@ Report, from `reports/` (wraps `latexmk`, output in `reports/output/`):
 ./build.sh
 ```
 
-The report currently does not build: `./build.sh` exits 1 with the first error at `\spanishdeactivate{~<>}` (`reports/Configuracion.tex:8`), and `latexmk -f` produces no PDF either.
+The final PDF is compiled in Overleaf, not here, and committed as `docs/DR-VF-01_Memoria_Tecnica.pdf` (the README links to it). Keep the `.tex` sources consistent, but do not spend time making `./build.sh` work: it exits 1 at `\spanishdeactivate{~<>}` (`reports/Configuracion.tex:8`) and that is accepted.
 
 ## Architecture
 
@@ -60,7 +60,7 @@ Firmware design rules, based on Elecia White's *Making Embedded Systems*:
 
 Do not assume either side. Ask when the answer affects the work.
 
-- **Target:** the README says Nordic Thingy:91 X, Zephyr with nRF Connect SDK, and LTE-M/NB-IoT. `docs/PROJECT_CONTEXT.md` and `docs/ARCHITECTURE.md` say ESP32-S3, FreeRTOS, and LoRa SX1262.
+- **Target (decided 2026-10-30):** two boards, one codebase on Zephyr. Proof of concept on the Nordic Thingy:91 X (nRF9151, nRF Connect SDK, LTE-M/NB-IoT/GNSS), then the final PCB on the ESP32-S3-WROOM-1U-N16R8 (LoRa SX1262, external GNSS, LSM6DSOX). `geofence.c`, the FSM and logging are shared; each board has its own overlay, `prj.conf` and `gnss`/`comms`/`imu` adapters. The README and `docs/` still describe one target or the other, and that contradiction is being removed. FreeRTOS is no longer the plan.
 - **Local toolchain:** `west`, Zephyr SDK 1.0.1 (`~/zephyr-sdk-1.0.1`) and upstream Zephyr (`~/zephyrproject`) are installed. nRF Connect SDK, `nrfutil` and `nrfjprog` are not, and `zephyr/boards/nordic` has no `thingy91x`.
 - **Geofence math:** the README claims a fixed-point kernel with no `malloc`. `geofence.c` uses `double`, `malloc`, and ray casting.
 - **Layout:** the README's `docs/3_Firmware/`, `docs/5_Comercial/` and `firmware/include/drivers/` are out of date. The real paths are `docs/firmware_docs/`, `docs/comercial_docs/` and `firmware/include/`.
