@@ -2,7 +2,7 @@
 
 El presente documento consolida la descripción técnica de alto nivel y el conjunto de requerimientos de producto y sistema del collar inteligente para cerca virtual (DR-VF-01). Se establecieron las funciones esenciales que debe cumplir el dispositivo, así como las restricciones de diseño térmico, energético y de aislamiento galvánico.
 
-Este documento establece la línea base sobre la cual se realizarán el diseño esquemático detallado en Altium Designer / EasyEDA, la fabricación de la placa de circuito impreso de prueba (\emph{Carrier Board}) y el desarrollo del firmware en FreeRTOS. Entre los aspectos más relevantes del diseño destacan:
+Este documento establece la línea base sobre la cual se realizarán el diseño esquemático detallado en Altium Designer / EasyEDA, la fabricación de la placa de circuito impreso de prueba (\emph{Carrier Board}) y el desarrollo del firmware en Zephyr RTOS. Entre los aspectos más relevantes del diseño destacan:
 \begin{itemize}[leftmargin=*]
     \item La selección del regulador solar \textbf{CN3791 de 6V MPPT}, el cual maximiza la recarga de la batería LiPo sin elevar la complejidad ni el costo de la tarjeta de circuito impreso.
     \item La utilización de \textbf{LoRa SX1262} como red primaria de comunicaciones, resolviendo la falta de cobertura celular en zonas rurales extensas sin generar costos operativos por suscripción.

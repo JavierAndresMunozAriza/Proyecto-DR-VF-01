@@ -119,7 +119,7 @@ int lora_send_geofence_alert(geopoint_t* location) {
 1. **Aplicación**: Tareas de geocerca y comunicación
 2. **Middleware**: Algoritmos de procesamiento y lógica de negocio
 3. **HAL**: Abstracción de hardware para portabilidad
-4. **RTOS**: Zephyr RTOS para gestión de tareas
+4. **RTOS**: Zephyr RTOS para gestión de tareas. Un solo código base para la prueba de concepto (Nordic Thingy:91 X) y el producto final (ESP32-S3); cada placa aporta su overlay, su `prj.conf` y sus adaptadores de GNSS, comunicaciones e IMU
 5. **Drivers**: Controladores específicos de hardware
 
 ### Tareas RTOS Principales
@@ -153,7 +153,7 @@ K_THREAD_DEFINE(lora_handler, STACK_SIZE, lora_thread,
 | Precisión GNSS | < 3m | Comparación con GPS comercial |
 
 ### Entregables del MVP
-1. Firmware funcional para ESP32-S3
+1. Firmware Zephyr funcional para el ESP32-S3 (placa final), con el mismo código base verificable en la Nordic Thingy:91 X (prueba de concepto)
 2. Documentación de configuración inicial
 3. Guía de pruebas y validación
 4. Código fuente con comentarios explicativos

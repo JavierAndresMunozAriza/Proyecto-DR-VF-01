@@ -40,7 +40,7 @@ Para la matriz completa con trazabilidad, métricas y estado de implementación,
 
 ### 2.2 Requerimientos No Funcionales Clave
 * **RNF-01:** Autonomía de 7 días en oscuridad (1200 mAh)
-* **RNF-02:** Procesamiento determinista en FreeRTOS
+* **RNF-02:** Procesamiento determinista en Zephyr RTOS
 * **RNF-03:** Consumo < 150 μA en Deep Sleep
 * **RNF-04:** Fiabilidad mecánica sin cables de puente
 
@@ -54,7 +54,8 @@ Para detalles técnicos completos, cálculos y justificativos, ver: [ARCHITECTUR
 Sistema en dos niveles: línea no regulada (3.6-4.2V) para VIN ESP32 y MAX17048, y línea regulada (3.3V estrictos) desde LDO interno del ESP32 para módulos periféricos.
 
 ### 3.2 Componentes Críticos
-* **Procesamiento:** ESP32-S3 Dual-Core 240MHz
+* **Procesamiento:** ESP32-S3 Dual-Core 240MHz (PCB final)
+* **Objetivos de hardware:** un solo código base Zephyr para dos placas. Prueba de concepto en la Nordic Thingy:91 X (nRF9151, nRF Connect SDK, LTE-M/NB-IoT/GNSS); producto final en la PCB con ESP32-S3-WROOM-1U-N16R8 (LoRa SX1262, GNSS externo MAX-M10S, IMU LSM6DSOX). Se comparten `geofence.c`, la FSM y el logging; cada placa aporta su overlay, su `prj.conf` y los adaptadores de GNSS, comunicaciones e IMU.
 * **Comunicación:** LoRa SX1262 (915 MHz)
 * **Geolocalización:** u-blox MAX-M10S GNSS
 * **Energía:** CN3791 MPPT, MAX17048 Fuel Gauge
@@ -65,8 +66,8 @@ Sistema en dos niveles: línea no regulada (3.6-4.2V) para VIN ESP32 y MAX17048,
 * **Activo:** ~88 mA
 * **Pico Máximo:** ~221 mA (dentro de los 500 mA del LDO)
 
-### 3.4 Firmware STR/FreeRTOS
-Arquitectura dual-core con 5 tareas distribuidas:
+### 3.4 Firmware STR/Zephyr
+Arquitectura dual-core (ESP32-S3) con 5 tareas distribuidas:
 * **Core 0:** Gestión de red (LoRa) y energía
 * **Core 1:** Procesamiento determinista (geocerca, GPS, IMU)
 
@@ -160,26 +161,16 @@ Para la entrega de final de semestre no se soldarán CI microscópicos directos,
 
 ### 4.3 Asignación de Pines e Interfaces (Pinout ESP32-S3)
 
-```text
-[ESP32-S3 DevKitC-1 (N16R8)]
- ├─ Bus SPI (LoRa SX1262)
- │   ├─ GPIO 11 ──► MOSI
- │   ├─ GPIO 12 ──► MISO
- │   ├─ GPIO 13 ──► SCK
- │   ├─ GPIO 10 ──► CS (NSS)
- │   ├─ GPIO 14 ──► DIO1
- │   ├─ GPIO 9  ──► BUSY
- │   └─ GPIO 21 ──► RST
- ├─ Bus I2C (IMU, Fuel Gauge, GPS)
- │   ├─ GPIO 1  ──► SDA (con Pull-up 4.7kΩ)
- │   └─ GPIO 2  ──► SCL (con Pull-up 4.7kΩ)
- ├─ UART (GPS Backup)
- │   ├─ GPIO 43 ──► TXD (hacia RXD GPS)
- │   └─ GPIO 44 ──► RXD (desde TXD GPS)
- └─ GPIOs Especiales
-     ├─ GPIO 4  ──► Interruptor INT1 IMU (Wake-up)
-     └─ GPIO 5  ──► Ánodo Optoacoplador VO617A (vía R 330Ω)
-```
+El único mapa de pines vigente es [hardware/pinout.md](../hardware/pinout.md). La PCB final y la ESP32-S3-DevKitC-1 (N16R8) usan los mismos GPIO. Resumen de los pines esenciales:
+
+| Función | Periférico | GPIO |
+| :--- | :--- | :--- |
+| Bus SPI | LoRa SX1262 | NSS 10, MOSI 11, SCK 12, MISO 13 (BUSY 14, DIO1 6, NRESET 5) |
+| Bus I2C | LSM6DSOX, MAX17048 | SDA 8, SCL 9 (pull-up 4.7 kΩ) |
+| UART1 | GNSS MAX-M10S | TX 17, RX 18 |
+| IMU | LSM6DSOX INT1 (wake-up) | 4 |
+| Actuador | Optoacoplador VO617A (`OPTO_CTRL`) | 1 |
+| Módem Fase 2 | UART2 TX / RX, PWRKEY | 47 / 48, 42 |
 
 ### 4.4 Bill of Materials (BOM) — Componentes Clave
 
@@ -204,13 +195,13 @@ Para la entrega de final de semestre no se soldarán CI microscópicos directos,
 
 ---
 
-## 5. Arquitectura Planeada del Firmware (STR / FreeRTOS)
+## 5. Arquitectura Planeada del Firmware (STR / Zephyr)
 
-El firmware se diseñará bajo un enfoque de **Sistema en Tiempo Real (STR)** utilizando las capacidades Dual-Core del ESP32-S3 bajo FreeRTOS:
+El firmware se diseñará bajo un enfoque de **Sistema en Tiempo Real (STR)** sobre **Zephyr RTOS**, con un único código base para la prueba de concepto (Nordic Thingy:91 X) y el producto final (ESP32-S3). El reparto siguiente aprovecha las capacidades Dual-Core del ESP32-S3:
 
 ```text
                ┌──────────────────────────────────────────┐
-               │         ESP32-S3 (FreeRTOS)              │
+               │         ESP32-S3 (Zephyr)                │
                └────────────────────┬─────────────────────┘
                                     │
          ┌──────────────────────────┴──────────────────────────┐
@@ -229,9 +220,11 @@ El firmware se diseñará bajo un enfoque de **Sistema en Tiempo Real (STR)** ut
 2. **`Task_PowerMgmt` (Prioridad Baja - 1):** Lee la batería desde el MAX17048 cada 60 segundos y gestiona la transición a *Deep Sleep* si la IMU no detecta movimiento durante más de 5 minutos.
 
 #### **Core 1 (APP_CPU) — Cálculo Determinista y Adquisición:**
-1. **`Task_Geofence` (Prioridad Máxima - 4):** Ejecuta el algoritmo *Ray-Casting / Point-in-Polygon* al recibir nuevas coordenadas. Si el animal está fuera de la zona, activa inmediatamente el GPIO 5 (Optoacoplador) sin esperar ciclo de transmisión.
+1. **`Task_Geofence` (Prioridad Máxima - 4):** Ejecuta el algoritmo *Ray-Casting / Point-in-Polygon* al recibir nuevas coordenadas. Si el animal está fuera de la zona, activa inmediatamente `OPTO_CTRL` (GPIO 1, Optoacoplador) sin esperar ciclo de transmisión.
 2. **`Task_GPSRead` (Prioridad Media - 2):** Decodifica tramas NMEA/UBX del u-blox MAX-M10S y actualiza la estructura de posición global.
 3. **`Task_IMU_Check` (Prioridad Baja - 1):** Configura los umbrales de interrupción por movimiento en la IMU LSM6DSOX.
+
+**Nota:** Los nombres `Task_*` se conservan del diseño original; en Zephyr cada tarea es un hilo. La numeración de prioridades usada aquí (4 = más crítica) debe traducirse al esquema de Zephyr, donde un número menor indica mayor prioridad.
 
 ### 5.2 Algoritmo de Geocerca (*Ray-Casting*)
 El polígono de la cerca virtual se almacena en la memoria Flash como un arreglo de vértices $(X_i, Y_i)$ representando Latitud y Longitud. El algoritmo evalúa si un punto $(P_x, P_y)$ está dentro lanzando un rayo horizontal e incrementando un contador cada vez que cruza un segmento del polígono:
@@ -251,7 +244,7 @@ El polígono de la cerca virtual se almacena en la memoria Flash como un arreglo
 
 ### 4.2 Próximos Pasos Inmediatos
 1. **Paso 1:** Configurar la estructura de archivos en el repositorio de GitHub
-2. **Paso 2 (Fase 1 Firmware):** Crear el código base en PlatformIO/Arduino IDE que inicialice el bus SPI con el LoRa SX1262 y capture tramas GPS
+2. **Paso 2 (Fase 1 Firmware):** Crear el código base Zephyr (un solo código para Thingy:91 X y ESP32-S3) que inicialice el bus SPI con el LoRa SX1262 y capture tramas GPS
 3. **Paso 3 (Esquemático Altium):** Dibujar el esquemático de la *Carrier Board* conectando los zócalos de los módulos con las redes de alimentación y señales definidas
 
 ---
@@ -269,11 +262,12 @@ DR-VF-01/
 ├── firmware/
 │   ├── include/                    <-- Librerías y definiciones de pines
 │   ├── src/
-│   │   ├── main.cpp                <-- Inicialización FreeRTOS y Tareas
-│   │   ├── geofence.cpp            <-- Algoritmo Ray-Casting
+│   │   ├── main.c                  <-- Inicialización Zephyr e hilos
+│   │   ├── geofence.c              <-- Algoritmo Ray-Casting
 │   │   ├── lora_management.cpp     <-- Drivers SX1262
 │   │   └── power_management.cpp    <-- Gestión Sleep y MAX17048
-│   └── platformio.ini
+│   ├── CMakeLists.txt, prj.conf    <-- Configuración Zephyr compartida
+│   └── boards/                     <-- Overlay y prj.conf por placa (Thingy:91 X, ESP32-S3)
 └── hardware/
     ├── altium_project/             <-- Proyecto Altium Designer (Carrier Board)
     ├── gerber/                     <-- Archivos para fabricación de PCB

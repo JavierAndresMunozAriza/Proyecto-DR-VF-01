@@ -14,19 +14,19 @@ Esta documentación describe la secuencia de arranque del sistema siguiendo los 
 
 ## 2. Inicialización de Periféricos
 1. **GPIO Configuration**
-   - Configuración de pines según `pinout.md`
+   - Configuración de pines según `hardware/pinout.md` (mapa del ESP32-S3; en la Nordic Thingy:91 X lo define su overlay de devicetree)
    - Habilitación de pull-ups/pull-downs
    - Verificación de configuración mediante lectura de estado
 
 2. **I2C Bus Initialization**
-   - SCL: GPIO18, SDA: GPIO17 (puertos configurables)
+   - SDA: GPIO8, SCL: GPIO9 (ver `hardware/pinout.md`)
    - Velocidad: 400kHz estándar
    - Timeout: 100ms
    - **Verificación de bus**: Detección de dispositivos en el bus I2C
 
 3. **SPI Bus Initialization**
    - Para comunicación con SX1262 LoRa
-   - CLK: GPIO5, MISO: GPIO6, MOSI: GPIO7, CS: GPIO8
+   - SCK: GPIO12, MISO: GPIO13, MOSI: GPIO11, NSS: GPIO10 (ver `hardware/pinout.md`)
    - **Prueba de conexión**: Verificación de comunicación SPI antes de uso
 
 ## 3. Inicialización de Sensores
@@ -55,7 +55,7 @@ Esta documentación describe la secuencia de arranque del sistema siguiendo los 
 - **Valores por defecto**: Carga de configuración segura si datos inválidos
 
 ## 5. Inicialización del Sistema Operativo
-- Creación de tareas RTOS:
+- Creación de tareas RTOS (hilos de Zephyr):
   - `geofence_task` (prioridad alta)
   - `lora_tx_task` (prioridad media)
   - `imu_monitor_task` (prioridad baja)

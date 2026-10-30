@@ -93,29 +93,27 @@ Diseño de PCB receptora con conectores hembra (Female Headers paso 2.54mm) para
 - **Pistas Alimentación (VIN, 3V3, BAT):** 0.6 mm (24 mils)
 - **Pistas Señal (SPI, I2C, UART):** 0.25 mm (10 mils)
 
-### 5.3 Asignación de Pines ESP32-S3 DevKitC-1 (N16R8)
-```text
-[ESP32-S3 DevKitC-1-N16R8]
- ├─ Bus SPI (LoRa SX1262)
- │   ├─ GPIO 11 ──► MOSI
- │   ├─ GPIO 12 ──► MISO
- │   ├─ GPIO 13 ──► SCK
- │   ├─ GPIO 10 ──► CS (NSS)
- │   ├─ GPIO 14 ──► DIO1
- │   ├─ GPIO 9  ──► BUSY
- │   └─ GPIO 21 ──► RST
- ├─ Bus I2C (IMU, Fuel Gauge, GPS)
- │   ├─ GPIO 1  ──► SDA (con Pull-up 4.7kΩ)
- │   └─ GPIO 2  ──► SCL (con Pull-up 4.7kΩ)
- ├─ UART (GPS Backup)
- │   ├─ GPIO 43 ──► TXD (haya RXD GPS)
- │   └─ GPIO 44 ──► RXD (desde TXD GPS)
- └─ GPIOs Especiales
-      ├─ GPIO 4  ──► Interruptor INT1 IMU (Wake-up)
-      └─ GPIO 5  ──► Ánodo Optoacoplador VO617A (vía R 330Ω)
-```
+### 5.3 Asignación de Pines ESP32-S3 (PCB final y DevKitC-1 N16R8)
 
-**Nota Técnica:** GPIO 43/44 son UART0, normalmente usado para consola. El GPS también está en I2C.
+El único mapa de pines vigente es [hardware/pinout.md](../hardware/pinout.md). La PCB final (ESP32-S3-WROOM-1U-N16R8) y la DevKitC-1 (N16R8) usan los mismos GPIO, de modo que el firmware es idéntico en ambas. Resumen:
+
+| Función | Periférico | GPIO |
+| :--- | :--- | :--- |
+| Bus SPI | LoRa SX1262 | NSS 10, MOSI 11, SCK 12, MISO 13 |
+| Control LoRa | SX1262 | BUSY 14, DIO1 6 (despierta), NRESET 5 |
+| Bus I2C | LSM6DSOX, MAX17048 | SDA 8, SCL 9 (pull-up 4.7 kΩ) |
+| UART1 | GNSS MAX-M10S | TX 17 (hacia RXD), RX 18 (desde TXD) |
+| GNSS | MAX-M10S EXTINT | 21 (despierta) |
+| IMU | LSM6DSOX INT1 | 4 (despierta de Deep Sleep) |
+| Actuador | Optoacoplador VO617A (`OPTO_CTRL`) | 1 |
+| Buzzer | PWM | 2 |
+| Botón de usuario | Entrada | 7 (despierta) |
+| LED RGB | R / G / B | 38 / 39 / 40 |
+| Estado de carga | CN3791 CHRG | 41 |
+| Módem Fase 2 | UART2 TX / RX, PWRKEY | 47 / 48, 42 |
+| Consola | UART0 TX / RX | 43 / 44 (puntos de prueba) |
+
+**Nota Técnica:** El GNSS usa UART1 (GPIO 17/18), no el bus I2C. GPIO 43/44 (UART0) quedan como puntos de prueba para consola. Las reglas del módulo (pines de strapping, USB nativo en GPIO 19/20, PSRAM octal) están en [hardware/pinout.md](../hardware/pinout.md).
 
 ### 5.4 Bill of Materials (BOM) — Componentes Clave
 
@@ -142,13 +140,15 @@ Diseño de PCB receptora con conectores hembra (Female Headers paso 2.54mm) para
 - [hardware/BOM.md](../hardware/BOM.md)
 - [hardware/pinout.md](../hardware/pinout.md)
 
-## 6. Arquitectura de Firmware (STR / FreeRTOS)
+## 6. Arquitectura de Firmware (STR / Zephyr)
+
+El firmware es un único código base sobre **Zephyr RTOS** para dos placas: la prueba de concepto en la **Nordic Thingy:91 X** (nRF9151, nRF Connect SDK, LTE-M/NB-IoT/GNSS) y el producto final en la **PCB con ESP32-S3-WROOM-1U-N16R8** (LoRa SX1262, GNSS externo MAX-M10S, IMU LSM6DSOX). Se comparten `geofence.c`, la FSM y el logging; cada placa aporta su overlay, su `prj.conf` y los adaptadores de GNSS, comunicaciones e IMU.
 
 ### 6.1 Distribución de Tareas por Núcleo
 
 ```text
                ┌──────────────────────────────────────────┐
-               │         ESP32-S3 (FreeRTOS)              │
+               │         ESP32-S3 (Zephyr)                │
                └────────────────────┬─────────────────────┘
                                     │
           ┌──────────────────────────┴──────────────────────────┐
@@ -165,9 +165,11 @@ Diseño de PCB receptora con conectores hembra (Female Headers paso 2.54mm) para
 2. **`Task_PowerMgmt` (Prioridad 1):** Lee batería desde MAX17048 cada 60s, gestiona transición a Deep Sleep
 
 #### **Core 1 (APP_CPU) — Cálculo Determinista y Adquisición:**
-1. **`Task_Geofence` (Prioridad 4):** Ejecuta algoritmo Ray-Casting/Point-in-Polygon, activa GPIO 5 si animal fuera de zona
+1. **`Task_Geofence` (Prioridad 4):** Ejecuta algoritmo Ray-Casting/Point-in-Polygon, activa `OPTO_CTRL` (GPIO 1) si animal fuera de zona
 2. **`Task_GPSRead` (Prioridad 2):** Decodifica tramas NMEA/UBX del u-blox MAX-M10S
 3. **`Task_IMU_Check` (Prioridad 1):** Configura umbrales de interrupción por movimiento en LSM6DSOX
+
+**Nota:** Los nombres `Task_*` y el reparto por núcleos (válido para el ESP32-S3) se conservan del diseño original. En Zephyr cada tarea es un hilo; la numeración de prioridades usada aquí (4 = más crítica) debe traducirse al esquema de Zephyr, donde un número menor indica mayor prioridad.
 
 ### 6.2 Algoritmo de Geocerca (Ray-Casting)
 

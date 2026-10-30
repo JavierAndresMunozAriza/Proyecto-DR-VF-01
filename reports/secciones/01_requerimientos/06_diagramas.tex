@@ -13,18 +13,18 @@ En la Figura \ref{fig:bloques_hw}, los bloques en línea continua representan el
     \node [mcu] (esp) {\textbf{NÚCLEO CENTRAL}\\[0.1cm]\textbf{ESP32-S3-N16R8}\\(Dual-Core 240 MHz)\\[0.1cm]\emph{3.3V Logic}};
 
     % ENTRADAS
-    \node [block1, left=of esp, yshift=1.2cm] (gps) {GPS MAX-M10S\\(UART1: GPIO 16/17)};
-    \node [block1, left=of esp, yshift=-1.2cm] (imu) {IMU LSM6DSOX\\(I$^2$C: GPIO 21/22)};
+    \node [block1, left=of esp, yshift=1.2cm] (gps) {GPS MAX-M10S\\(UART1: GPIO 17/18)};
+    \node [block1, left=of esp, yshift=-1.2cm] (imu) {IMU LSM6DSOX\\(I$^2$C: GPIO 8/9)};
     
     % ENERGIA
     \node [block1, below=of esp, yshift=-0.2cm] (pwr) {MPPT CN3791 6V\\+ LiPo 3.7V + MAX17048};
 
     % SALIDAS Y TELEMETRIA
-    \node [block1, right=of esp, yshift=1.4cm] (lora) {LoRa SX1262 (915 MHz)\\(SPI: GPIO 5/18/19/23)};
-    \node [block1, right=of esp, yshift=0.1cm] (opto) {VO617A Optoacoplador\\+ Buzzer / LED (GPIO 13)};
+    \node [block1, right=of esp, yshift=1.4cm] (lora) {LoRa SX1262 (915 MHz)\\(SPI: GPIO 10/11/12/13)};
+    \node [block1, right=of esp, yshift=0.1cm] (opto) {VO617A Optoacoplador\\+ Buzzer / LED (GPIO 1/2)};
     
     % EXPANSION FASE 2
-    \node [block2, right=of esp, yshift=-1.3cm] (gsm) {Módem Quectel BG95-M3\\(UART2: GPIO 26/27)\\[0.05cm]\footnotesize\textbf{[Fase 2 -- Tesis]}};
+    \node [block2, right=of esp, yshift=-1.3cm] (gsm) {Módem Quectel BG95-M3\\(UART2: GPIO 47/48)\\[0.05cm]\footnotesize\textbf{[Fase 2 -- Tesis]}};
 
     % CONEXIONES
     \draw[<->, thick] (gps) -- (esp);
@@ -48,15 +48,17 @@ En la Figura \ref{fig:bloques_hw}, los bloques en línea continua representan el
 \hline
 \rowcolor{categorybg}
 \textbf{Módulo / Periférico} & \textbf{Protocolo} & \textbf{Pines ESP32-S3} & \textbf{Notas de Ruteo en PCB} \\ \hline
-GPS u-blox MAX-M10S & UART1 & GPIO 16 (RX1), GPIO 17 (TX1) & Intercambiar TX/RX en ruteo de pista. \\ \hline
-IMU ST LSM6DSOX & I$^2$C & GPIO 21 (SDA), GPIO 22 (SCL) & Requiere resistencias pull-up de $4.7~\text{k}\Omega$ a 3.3V. \\ \hline
-Medidor MAX17048 & I$^2$C & GPIO 21 (SDA), GPIO 22 (SCL) & Comparte bus I$^2$C con la IMU. \\ \hline
-LoRa SX1262 & SPI & GPIO 5 (CS), 18 (SCK), 19 (MISO), 23 (MOSI) & Líneas DIO1 (GPIO 4) y BUSY (GPIO 2) mapeadas. \\ \hline
-Optoacoplador / Buzzer & GPIO Digital & GPIO 13 (Disparo), GPIO 14 (PWM) & Separación estricta de plano de masa. \\ \hline
+GPS u-blox MAX-M10S & UART1 & GPIO 18 (RX1), GPIO 17 (TX1) & Intercambiar TX/RX en ruteo de pista. EXTINT en GPIO 21. \\ \hline
+IMU ST LSM6DSOX & I$^2$C & GPIO 8 (SDA), GPIO 9 (SCL) & Requiere resistencias pull-up de $4.7~\text{k}\Omega$ a 3.3V. INT1 en GPIO 4 (despierta de Deep Sleep). \\ \hline
+Medidor MAX17048 & I$^2$C & GPIO 8 (SDA), GPIO 9 (SCL) & Comparte bus I$^2$C con la IMU. \\ \hline
+LoRa SX1262 & SPI & GPIO 10 (NSS), 12 (SCK), 13 (MISO), 11 (MOSI) & Líneas DIO1 (GPIO 6), BUSY (GPIO 14) y NRESET (GPIO 5) mapeadas. \\ \hline
+Optoacoplador / Buzzer & GPIO Digital & GPIO 1 (Disparo), GPIO 2 (PWM) & Separación estricta de plano de masa. \\ \hline
 \rowcolor{phase2orange}
-Quectel BG95-M3 [Fase 2] & UART2 & GPIO 26 (RX2), GPIO 27 (TX2) & \textbf{Pines reservados en PCB para expansión de tesis.} \\ \hline
+Quectel BG95-M3 [Fase 2] & UART2 & GPIO 48 (RX2), GPIO 47 (TX2), GPIO 42 (PWRKEY) & \textbf{Pines reservados en PCB para expansión de tesis.} \\ \hline
 \end{tabularx}
 \end{table}
+
+Este mapa aplica a la PCB final y a la ESP32-S3-DevKitC-1 (ambas usan los mismos GPIO); el mapa completo y vigente está en \texttt{hardware/pinout.md}. La prueba de concepto en la Nordic Thingy:91 X define sus pines en su propio \emph{overlay} de devicetree.
 
 \subsection*{Árbol de Distribución de Potencia y Gestión Energética}
 

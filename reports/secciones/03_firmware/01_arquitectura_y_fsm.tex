@@ -2,6 +2,8 @@
 
 Este dossier presenta la arquitectura y especificación del firmware y software embebido del collar de geocercamiento DR-VF-01. Se detallan la secuencia de arranque, la máquina de estados finitos (FSM), las estrategias de mitigación de latencia en tiempo real y la definición del firmware mínimo viable (MVP).
 
+El firmware es un único código base sobre \textbf{Zephyr RTOS} para dos placas: la prueba de concepto en la \textbf{Nordic Thingy:91 X} (nRF9151, nRF Connect SDK, LTE-M/NB-IoT/GNSS) y el producto final en la \textbf{PCB con ESP32-S3-WROOM-1U-N16R8} (LoRa SX1262, GNSS externo MAX-M10S, IMU LSM6DSOX). Se comparten \texttt{geofence.c}, la FSM y el registro de eventos (\emph{logging}); cada placa aporta su \emph{overlay} de devicetree, su \texttt{prj.conf} y los adaptadores de GNSS, comunicaciones e IMU.
+
 \section{Secuencia de Arranque (\textit{Power-on Sequence})}
 
 \subsection{Fases de Inicialización}
@@ -11,7 +13,7 @@ Este dossier presenta la arquitectura y especificación del firmware y software 
     \item \textbf{Inicialización de Periféricos}: Configuración de buses de comunicación ($\text{I}^2\text{C}$, SPI) y líneas GPIO de interrupción.
     \item \textbf{Inicialización de Sensores}: Autochequeo (BIST) y configuración del transceptor LoRa SX1262, IMU LSM6DSOX y GNSS MAX-M10S.
     \item \textbf{Carga de Parámetros de Geocerca}: Lectura del polígono activo y llaves criptográficas desde memoria Flash NVS.
-    \item \textbf{Arranque del RTOS}: Creación de tareas prioritarias y mecanismos de sincronización (\textit{semáforos y colas}).
+    \item \textbf{Arranque del RTOS (Zephyr)}: Creación de tareas prioritarias y mecanismos de sincronización (\textit{semáforos y colas}).
 \end{enumerate}
 
 \subsection{Presupuesto de Tiempo de Arranque}

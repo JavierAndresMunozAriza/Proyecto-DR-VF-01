@@ -165,7 +165,7 @@ Según Elecia White, "design for failure":
 3. **Validate edge cases** - Verificación de condiciones límite
 4. **Continuous improvement** - Mejora continua basada en datos
 
-### A. Pruebas en Nordic Thingy:91 X
+### A. Pruebas en Nordic Thingy:91 X (prueba de concepto)
 - Ejecutar algoritmo PIP con coordenadas mock
 - Medir tiempo de ejecución con stopwatch de osciloscopio
 - Verificar precisión contra implementación de referencia
@@ -252,7 +252,7 @@ static atomic_uint log_index;
 
 ## 5. Validación en Campo
 
-### A. Pruebas en Nordic Thingy:91 X
+### A. Pruebas en Nordic Thingy:91 X (prueba de concepto)
 - Ejecutar algoritmo PIP con coordenadas mock
 - Medir tiempo de ejecución con stopwatch de osciloscopio
 - Verificar precisión contra implementación de referencia
