@@ -35,9 +35,8 @@ build/
 # Firmware build artifacts
 *.o
 *.backup
-firmware/src/geofence/simple_test
-firmware/src/geofence/fixed_test_geofence
-firmware/src/geofence/comprehensive_test
+firmware/src/geofence/geofence_test
+firmware/src/geofence/geofence_test_debug
 
 # Gentle AI skill registry
 .atl/

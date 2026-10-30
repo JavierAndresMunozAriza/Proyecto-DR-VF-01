@@ -21,15 +21,13 @@ The hook lives in `.git/hooks/`, so a new clone needs `gga install`. Commit mess
 
 ## Commands
 
-Host tests run from `firmware/src/geofence`. Each test file is its own executable, so this also runs a single test:
+Host tests run from `firmware/src/geofence`. There is a single test file, `test_geofence.c`, and it exits non-zero on any failed check:
 
 ```bash
-gcc -std=c99 -Wall -Wextra -I../../include geofence.c comprehensive_test.c -o comprehensive_test -lm && ./comprehensive_test
+make test
 ```
 
-The working test files are `simple_test.c`, `comprehensive_test.c` and `fixed_test_geofence.c`.
-
-`make` and `make test` build only `test_geofence.c`, and they currently fail at link: `geofence_validate_polygon` is implemented only in `geofence.c.backup`, which is git-ignored. Port that function to `geofence.c` before deleting the backup. The README's `make` then `./comprehensive_test` steps do not work, because the Makefile never builds that binary.
+`make debug` adds debug flags and `make clean` removes every build artifact. Host timing printed by the tests proves nothing about the 50 ms target (RF-02); that needs a measurement on the board.
 
 No linter or formatter is configured; GCC warnings are the only static check.
 

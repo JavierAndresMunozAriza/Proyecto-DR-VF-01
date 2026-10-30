@@ -1,14 +1,20 @@
 #
-# Makefile for geofence implementation
+# Makefile for the geofence engine and its host test
 #
 # Following Elecia White's principles:
 # - Simple, clear build process
 # - Separate compilation and linking
 # - Easy testing integration
-# - Cross-platform compatibility
+#
+# `make` and `make test` build and run the single test binary,
+# test_geofence.c. Override the compiler with `make CC=clang`.
 
-# Compiler settings
+# Compiler settings. make predefines CC as "cc", so a plain `CC ?= gcc`
+# would never apply; keep the default gcc but honor CC from the
+# environment or the command line.
+ifeq ($(origin CC),default)
 CC = gcc
+endif
 CFLAGS = -Wall -Wextra -std=c99 -O2 -I../../include
 LDFLAGS = -lm
 
@@ -17,7 +23,6 @@ SRCDIR = .
 INCDIR = ../../include
 TESTDIR = .
 
-# Source files
 SOURCES = $(SRCDIR)/geofence.c
 HEADERS = $(INCDIR)/geofence.h
 TEST_SOURCES = $(TESTDIR)/test_geofence.c
@@ -29,8 +34,9 @@ TEST_OBJECTS = $(TEST_SOURCES:.c=.o)
 # Targets
 TARGET = geofence_test
 EXECUTABLE = $(TARGET)
+DEBUG_EXECUTABLE = $(TARGET)_debug
 
-.PHONY: all clean test
+.PHONY: all test clean debug help depend
 
 all: $(EXECUTABLE)
 
@@ -47,13 +53,13 @@ test: $(EXECUTABLE)
 	./$(EXECUTABLE)
 
 clean:
-	rm -f $(OBJECTS) $(TEST_OBJECTS) $(EXECUTABLE)
+	rm -f $(OBJECTS) $(TEST_OBJECTS) $(EXECUTABLE) $(DEBUG_EXECUTABLE)
 	@echo "Cleaned build artifacts"
 
 # Debug target
 debug:
-	$(CC) $(CFLAGS) -g -DDEBUG $(SOURCES) $(TEST_SOURCES) -o $(EXECUTABLE)_debug $(LDFLAGS)
-	@echo "Debug build created: $(EXECUTABLE)_debug"
+	$(CC) $(CFLAGS) -g -DDEBUG $(SOURCES) $(TEST_SOURCES) -o $(DEBUG_EXECUTABLE) $(LDFLAGS)
+	@echo "Debug build created: $(DEBUG_EXECUTABLE)"
 
 # Help target
 help:
@@ -62,6 +68,7 @@ help:
 	@echo "  test    - Build and run tests"
 	@echo "  clean   - Remove build artifacts"
 	@echo "  debug   - Build debug version"
+	@echo "  depend  - Print source dependencies"
 	@echo "  help    - Show this help"
 
 # Dependencies
@@ -69,5 +76,5 @@ depend: $(SOURCES) $(HEADERS) $(TEST_SOURCES)
 	@echo "Dependencies:"
 	@for file in $(SOURCES) $(TEST_SOURCES); do \
 		echo "$$file:"; \
-		gcc -MM $$file -I$(INCDIR) | sed 's/^/  /'; \
+		$(CC) -MM $$file -I$(INCDIR) | sed 's/^/  /'; \
 	done
