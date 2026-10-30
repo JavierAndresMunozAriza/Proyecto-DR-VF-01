@@ -117,7 +117,7 @@ El tiempo total de arranque desde el evento de energización hasta el ingreso al
 
 \subsection{Transición Crítica y Latencia}
 
-La transición más crítica del sistema ocurre entre los estados \texttt{SLEEP} y \texttt{GEOFENCE\_CHECK}. Tras una interrupción externa generada por la IMU, la FSM debe reanudar la ejecución y evaluar la posición en menos de $50\,\text{ms}$.
+La transición más crítica del sistema ocurre entre los estados \texttt{SLEEP} y \texttt{GEOFENCE\_CHECK}. Tras una interrupción externa generada por la IMU, la FSM debe reanudar la ejecución y evaluar la posición en menos de $50\,\text{ms}$ de tiempo de procesamiento (RF-02), sin contar la salida de \emph{Deep Sleep}.
 
 \section{Análisis de Desafíos en Tiempo Real}
 
@@ -125,7 +125,7 @@ La transición más crítica del sistema ocurre entre los estados \texttt{SLEEP}
 
 \subsubsection{Implementación Optimizada del Algoritmo Ray-Casting}
 
-El algoritmo PiP se implementó en C puro optimizando las operaciones de punto flotante para aprovechar la unidad FPU hardware del ESP32-S3:
+El algoritmo PiP se propone en C puro optimizando las operaciones de punto flotante para aprovechar la unidad FPU hardware del ESP32-S3 (propuesta de diseño: el motor actual del repositorio, \texttt{geofence.c}, usa aritmética \texttt{double}):
 
 \begin{verbatim}
 bool pip_optimized(const point_t* p, const polygon_t* poly) {
@@ -176,6 +176,8 @@ int lsm6dsox_configure_wakeup(void) {
 }
 \end{verbatim}
 
+\noindent\emph{Nota:} los valores de registro de este ejemplo no están verificados contra la hoja de datos del LSM6DSOX. Según la cabecera de registros de ST, el bit 5 de \texttt{INT1\_CTRL} es \texttt{int1\_fifo\_full} (el \emph{wake-up} se enruta a INT1 con \texttt{MD1\_CFG}) y \texttt{CTRL1\_XL} = \texttt{0x10} corresponde a 12.5 Hz, no a 26 Hz.
+
 \section{Firmware Mínimo Viable (MVP)}
 
 \subsection{Módulos Core del MVP}
@@ -203,4 +205,4 @@ K_THREAD_DEFINE(lora_handler, STACK_SIZE, lora_thread,
 
 \section{Conclusiones}
 
-La arquitectura de firmware propuesta para el collar DR-VF-01 combina un esquema determinista multitarea con una gestión rigurosa de bajo consumo. La optimización del algoritmo Point-in-Polygon y el uso eficiente de interrupciones por hardware garantizan tiempos de respuesta inferiores a $50\,\text{ms}$, asegurando el funcionamiento correcto de las acciones de disuasión antes de que el ganado traspase el perímetro configurado.
+La arquitectura de firmware propuesta para el collar DR-VF-01 combina un esquema determinista multitarea con una gestión rigurosa de bajo consumo. La optimización del algoritmo Point-in-Polygon y el uso eficiente de interrupciones por hardware buscan tiempos de respuesta inferiores a $50\,\text{ms}$ (objetivo aún no medido en hardware), para asegurar el funcionamiento correcto de las acciones de disuasión antes de que el ganado traspase el perímetro configurado.

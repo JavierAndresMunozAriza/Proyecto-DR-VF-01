@@ -23,7 +23,7 @@ Este documento detalla la ubicación, diseño y consideraciones técnicas para l
 ### 3. Materiales
 - **Substrato**: Duroid 5880LCP (Constante dieléctrica: 2.95)
 - **Conductor**: Cobre electrolítico 18μm
-- **Cubierta**: Polimida rígida (12.5μm)
+- **Cubierta**: Poliimida rígida (12.5μm)
 - **Adhesivo**: Acrílico termoplástico
 
 ## Ubicación en la Carcasa
@@ -42,7 +42,7 @@ Este documento detalla la ubicación, diseño y consideraciones técnicas para l
 
 ### 3. Integración Mecánica
 - **Fijación**: Adhesivo acrílico de doble cara (3M 467MP)
-- **Protección**: Cubierta de polimida adicional
+- **Protección**: Cubierta de poliimida adicional
 - **Sellado**: Compatible con requerimientos IP67
 - **Durabilidad**: Resistente a ciclos térmicos -40°C a +85°C
 
@@ -110,14 +110,14 @@ Este documento detalla la ubicación, diseño y consideraciones técnicas para l
 ## Consideraciones de Certificación
 
 ### 1. Compatibilidad Electromagnética
-- **Emisión**: Cumple con FCC Part 15 Class B
-- **Inmunidad**: Resistente a 3V/m campo electromagnético
+- **Emisión (objetivo)**: FCC Part 15 Class B; pendiente de ensayo
+- **Inmunidad (objetivo)**: resistir un campo electromagnético de 3V/m; pendiente de ensayo
 - **Armónicos**: < -30dBc en frecuencias fundamentales
 
 ### 2. Certificaciones RF
 - **CE Marking**: Directiva RED 2014/53/EU
 - **FCC ID**: Pendiente de asignación
-- **IC RSS**: Cumple con RSS-Gen y RSS-247
+- **IC RSS (objetivo)**: RSS-Gen y RSS-247; pendiente de evaluación
 
 ### 3. Seguridad Eléctrica
 - **Voltaje máximo**: 3.3V pico en elementos activos
@@ -154,7 +154,6 @@ Este documento detalla la ubicación, diseño y consideraciones técnicas para l
 - Especificaciones del adhesivo 3M 467MP
 - Certificados de conformidad de materiales
 
-Esta documentación asegura la implementación correcta de la antena FPC en el collar DR-VF-01, garantizando el rendimiento óptimo del sistema de comunicaciones inalámbricas.
 ## Principios de Diseño Basados en Elecia White
 
 ### Optimización de Rendimiento

@@ -47,7 +47,7 @@ Todas las dimensiones están expresadas en milímetros (mm) a menos que se indiq
 | Longitud | 75.0 | ±0.1 | B |
 | Anchura | 50.0 | ±0.1 | B |
 | Grosor | 1.6 | ±0.05 | C |
-| Posición taladros montaje | ±0.05 | A |
+| Posición taladros montaje | - | ±0.05 | A |
 
 ### 2. Conector USB-C
 | Característica | Tolerancia | Notas |
@@ -63,6 +63,7 @@ Todas las dimensiones están expresadas en milímetros (mm) a menos que se indiq
 | Diámetro exterior | 8.0 | ±0.05 | A |
 | Recorrido útil | 0.3 | ±0.02 | A |
 | Fuerza actuación | 150g | ±20g | B |
+
 ## Elementos de Fijación
 
 ### 1. Tornillos Autofresantes M2
@@ -82,6 +83,34 @@ Todas las dimensiones están expresadas en milímetros (mm) a menos que se indiq
 
 ### 1. Junta Tórica (EPDM)
 | Dimensión | Tolerancia | Norma |
+|-----------|------------|-------|
+| Diámetro interior | ±0.05 | ISO 3601 |
+| Sección transversal | ±0.02 | ISO 3601 |
+| Compresión recomendada | 15-30% | Interna |
+
+### 2. Superficies de Contacto
+| Parámetro | Valor máximo | Notas |
+|-----------|--------------|-------|
+| Rugosidad (Ra) | 1.6 μm | ISO 4287 |
+| Ondulación (Wt) | 4.0 μm | ISO 4287 |
+| Desviación planitud | 0.05 mm | Clase A |
+
+## Antena FPC
+
+### 1. Dimensiones Físicas
+| Dimensión | Nominal | Tolerancia | Clase |
+|-----------|---------|------------|-------|
+| Longitud total | 65.0 | ±0.5 | C |
+| Anchura útil | 15.0 | ±0.2 | B |
+| Grosor dieléctrico | 0.1 | ±0.01 | A |
+
+### 2. Puntos de Soldadura
+| Característica | Tolerancia | Notas |
+|----------------|------------|-------|
+| Posición pads | ±0.05 | A |
+| Dimensiones pad | ±0.02 | A |
+| Coplanaridad | 0.075 | IPC-A-610 |
+
 ## Correa de Ajuste
 
 ### 1. Dimensiones Nominales
@@ -102,6 +131,18 @@ Todas las dimensiones están expresadas en milímetros (mm) a menos que se indiq
 
 ### 1. Posicionamiento Relativo
 | Control | Tolerancia | Datum reference |
+|---------|------------|-----------------|
+| Posición PCB | 0.1 | A-B-C |
+| Perpendicularidad USB | 0.05 | A |
+| Paralelismo tapa | 0.03 | B |
+
+### 2. Forma y Orientación
+| Control | Tolerancia | Aplicación |
+|---------|------------|------------|
+| Planitud | 0.05 | Superficies sellado |
+| Circularidad | 0.03 | Agujeros montaje |
+| Cilindricidad | 0.02 | Ejes de simetría |
+
 ## Materiales y Acabados
 
 ### 1. Carcasa Principal (PC+GF20%)
@@ -145,45 +186,6 @@ Cualquier cambio en estas tolerancias requiere:
 3. Actualización de documentación asociada
 4. Validación en prototipo funcional
 
-Estas tolerancias aseguran la interoperabilidad, durabilidad y calidad del producto final, manteniendo los estándares exigidos para equipos electrónicos expuestos a condiciones ambientales severas.
-|---------|------------|-----------------|
-| Posición PCB | 0.1 | A-B-C |
-| Perpendicularidad USB | 0.05 | A |
-| Paralelismo tapa | 0.03 | B |
-
-### 2. Forma y Orientación
-| Control | Tolerancia | Aplicación |
-|---------|------------|------------|
-| Planitud | 0.05 | Superficies sellado |
-| Circularidad | 0.03 | Agujeros montaje |
-| Cilindricidad | 0.02 | Ejes de simetría |
-|-----------|------------|-------|
-| Diámetro interior | ±0.05 | ISO 3601 |
-| Sección transversal | ±0.02 | ISO 3601 |
-| Compresión recomendada | 15-30% | Interna |
-
-### 2. Superficies de Contacto
-| Parámetro | Valor máximo | Notas |
-|-----------|--------------|-------|
-| Rugosidad (Ra) | 1.6 μm | ISO 4287 |
-| Ondulación (Wt) | 4.0 μm | ISO 4287 |
-| Desviación planitud | 0.05 mm | Clase A |
-
-## Antena FPC
-
-### 1. Dimensiones Físicas
-| Dimensión | Nominal | Tolerancia | Clase |
-|-----------|---------|------------|-------|
-| Longitud total | 65.0 | ±0.5 | C |
-| Anchura útil | 15.0 | ±0.2 | B |
-| Grosor dieléctrico | 0.1 | ±0.01 | A |
-
-### 2. Puntos de Soldadura
-| Característica | Tolerancia | Notas |
-|----------------|------------|-------|
-| Posición pads | ±0.05 | A |
-| Dimensiones pad | ±0.02 | A |
-| Coplanaridad | 0.075 | IPC-A-610 |
 ## Estrategia de Verificación Basada en Principios de Elecia White
 
 ### Verificación Sistemática

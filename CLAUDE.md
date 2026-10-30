@@ -60,5 +60,4 @@ Do not assume either side. Ask when the answer affects the work.
 
 - **Target (decided 2026-10-30):** two boards, one codebase on Zephyr. Proof of concept on the Nordic Thingy:91 X (nRF9151, nRF Connect SDK, LTE-M/NB-IoT/GNSS), then the final PCB on the ESP32-S3-WROOM-1U-N16R8 (LoRa SX1262, external GNSS, LSM6DSOX). `geofence.c`, the FSM and logging are shared; each board has its own overlay, `prj.conf` and `gnss`/`comms`/`imu` adapters. The README and `docs/` still describe one target or the other, and that contradiction is being removed. FreeRTOS is no longer the plan.
 - **Local toolchain:** `west`, Zephyr SDK 1.0.1 (`~/zephyr-sdk-1.0.1`) and upstream Zephyr (`~/zephyrproject`) are installed. nRF Connect SDK, `nrfutil` and `nrfjprog` are not, and `zephyr/boards/nordic` has no `thingy91x`.
-- **Geofence math:** the README claims a fixed-point kernel with no `malloc`. `geofence.c` uses `double`, `malloc`, and ray casting.
-- **Layout:** the README's `docs/3_Firmware/`, `docs/5_Comercial/` and `firmware/include/drivers/` are out of date. The real paths are `docs/firmware_docs/`, `docs/comercial_docs/` and `firmware/include/`.
+- **Geofence math:** the README now matches the code (`double`, ray casting, `malloc`/`realloc`); a fixed-point kernel is only planned.

@@ -1,4 +1,4 @@
-\section*{Casos de uso -- Collar Inteligente (Arquitectura V4.1)}
+\section*{Casos de uso -- Collar Inteligente}
 
 \begin{table}[H]
 \centering
@@ -6,7 +6,7 @@
 \begin{tabularx}{\textwidth}{|c X X c|}
 \hline
 \rowcolor{categorybg}
-\textbf{Caso} & \textbf{Descripción} & \textbf{Requerimientos derivados (Hardware V4.1)} & \textbf{Fase} \\ \hline
+\textbf{Caso} & \textbf{Descripción} & \textbf{Requerimientos derivados} & \textbf{Fase} \\ \hline
 1 & Monitoreo estándar dentro de zona segura: El animal se desplaza libremente en el polígono. & GNSS u-blox MAX-M10S en muestreo adaptativo, envío periódico por LoRa SX1262 (915 MHz). & Fase 1 \\ \hline
 2 & Aproximación a zona de advertencia ($3\text{ a }5~\text{m}$ del borde): IMU/GNSS detecta trayectoria. & Incremento dinámico del GNSS a 10 Hz y activación del zumbador piezoeléctrico preventivo. & Fase 1 \\ \hline
 3 & Traspaso del límite (Infracción de geocerca): El bovino ignora el sonido y cruza el perímetro. & Disparo de señal aislada vía optoacoplador VO617A (LED en Fase 1 / Pulso HV 0,2 J en Fase 2); envío de alerta. & Fase 1/2 \\ \hline
@@ -17,6 +17,6 @@
 7 & Ahorro de energía por inactividad/rumia: El animal descansa en el potrero. & El MLC de la IMU LSM6DSOX clasifica la conducta; ESP32-S3 entra en Deep Sleep (7 $\mu$A). & Fase 1 \\ \hline
 8 & Carga previa / Diagnóstico por cable: Mantenimiento rápido en establo. & Puerto USB-C nativo del ESP32-S3 y calibración de estado de carga mediante el medidor MAX17048. & Fase 1 \\ \hline
 9 & Degradación de señal GNSS por follaje denso: Atenuación satelital en dosel forestal. & Operación multiconstelación (GPS, GLONASS, Galileo, BeiDou) con filtrado local. & Fase 1 \\ \hline
-10 & Alerta de carga crítica de batería: Disminución de capacidad tras días nublados. & Medidor MAX17048 por I2C detecta SoC < 10\%, envía alerta LoRa y conmuta a modo supervivencia. & Fase 1 \\ \hline
+10 & Alerta de carga crítica de batería: Disminución de capacidad tras días nublados. & Medidor MAX17048 por I2C detecta SoC $<$ 10\%, envía alerta LoRa y conmuta a modo supervivencia. & Fase 1 \\ \hline
 \end{tabularx}
 \end{table}

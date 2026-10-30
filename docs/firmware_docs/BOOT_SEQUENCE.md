@@ -43,7 +43,7 @@ Esta documentación describe la secuencia de arranque del sistema siguiendo los 
 
 3. **SX1262 LoRa Transceiver**
    - Frecuencia: 915MHz (banda ISM americana)
-   - Potencia: +22dBm (máximo legal)
+   - Potencia: +22dBm (máximo del transceptor SX1262)
    - SF: 12 (para rango extendido)
    - **Prueba de comunicación**: Envío de mensaje de prueba y confirmación de recepción
 

@@ -1,15 +1,10 @@
 # Análisis Térmico del Collar DR-VF-01
 
-# Análisis Térmico del Collar DR-VF-01
-
 ## Descripción General
 
 Este documento presenta el análisis térmico detallado de todos los componentes del collar de geocercamiento DR-VF-01. El análisis incluye cálculos de disipación de potencia, incrementos de temperatura y verificación de límites térmicos bajo condiciones de operación normales y extremas.
 
 *Nota: Este análisis sigue los principios de gestión térmica de sistemas embebidos descritos en "Making Embedded Systems" por Elecia White, enfocándose en estrategias de disipación pasiva y protección contra sobrecalentamiento.*
-## Descripción General
-
-Este documento presenta el análisis térmico detallado de todos los componentes del collar de geocercamiento DR-VF-01. El análisis incluye cálculos de disipación de potencia, incrementos de temperatura y verificación de límites térmicos bajo condiciones de operación normales y extremas.
 
 ## Componentes de Alta Disipación
 
@@ -61,7 +56,7 @@ Este documento presenta el análisis térmico detallado de todos los componentes
 ### 1. Escenario de Operación Normal
 | Componente | Potencia Disipada | Contribución |
 |------------|-------------------|---------------|
-| LDO TPS7A0533 | 0.255W | 64.6% |
+| LDO TPS7A0533 | 0.255W | 64.4% |
 | CN3791 | 0.140W | 35.4% |
 | SX1262 (promedio) | 0.001W | 0.3% |
 | **TOTAL** | **0.396W** | **100%** |
@@ -73,6 +68,7 @@ Este documento presenta el análisis térmico detallado de todos los componentes
 | CN3791 | 0.200W | 41.8% |
 | SX1262 (TX) | 0.024W | 5.0% |
 | **TOTAL** | **0.479W** | **100%** |
+
 ## Distribución Térmica en PCB
 
 ### 1. Zonas de Calor Críticas
@@ -92,26 +88,69 @@ Este documento presenta el análisis térmico detallado de todos los componentes
 - **Plano de masa extenso**: Para disipación de calor
 - **Vías térmicas**: Conectando planos internos para transferencia
 - **Separación de componentes**: Entre alta y baja temperatura
-- **Materiales PCB**: FR4 estándar con buena conductividad térmica
+- **Materiales PCB**: FR4 estándar (baja conductividad térmica propia; la disipación depende de los planos de cobre y las vías)
 
 ## Verificación en Condiciones Extremas
 
 ### 1. Temperatura Ambiente Máxima (+65°C)
 | Componente | Potencia | ΔT | Tj |
 |-----------|----------|----|----|
-## Validación Experimental
+| LDO | 0.255W | 15.5°C | 80.5°C |
+| CN3791 | 0.140W | 8.5°C | 73.5°C |
+| **Máximo** | | | **80.5°C** |
 
-### 1. Pruebas Térmicas Realizadas
+### 2. Sobrecarga de Componentes
+- **LDO a 200mA**: P = 0.340W, ΔT = 20.7°C, Tj = 85.7°C
+- **CN3791 a 300mA**: P = 0.172W, ΔT = 10.5°C, Tj = 75.5°C
+
+## Estrategias de Gestión Térmica
+
+### 1. Diseño Mecánico
+- **Ventilación pasiva**: Aprovechamiento de convección natural
+- **Contacto con carcasa**: Disipación a través de plástico
+- **Colocación estratégica**: Componentes calientes en áreas ventiladas
+
+### 2. Selección de Componentes
+- **LDO de bajo dropout**: Minimiza disipación
+- **Eficiencia del cargador**: 88% reduce pérdidas
+- **Componentes SMD**: Mejor transferencia térmica que through-hole
+
+### 3. Protección Térmica
+- **Monitoreo de temperatura**: Sensor NTC en PCB
+- **Reducción de carga dinámica**: En condiciones extremas
+- **Shutdown térmico**: A 100°C para protección de componentes
+
+## Estrategia de Gestión Térmica Basada en Principios de Sistemas Embebidos
+
+### Filosofía de Diseño Térmico
+Siguiendo los principios de Elecia White sobre diseño robusto de sistemas embebidos:
+1. **Fail-safe thermal design** - El sistema debe operar de forma segura incluso bajo condiciones térmicas extremas
+2. **Predictive thermal management** - Monitoreo proactivo de condiciones térmicas
+3. **Graceful thermal degradation** - Reducción controlada de funcionalidad bajo estrés térmico
+
+### Arquitectura de Protección Térmica
+Implementamos una estrategia de protección en múltiples capas:
+
+| Nivel | Mecanismo | Acción |
+|-------|-----------|--------|
+| 1. Prevención | Diseño térmico optimizado | Disipación pasiva |
+| 2. Detección | Monitoreo continuo | Alertas tempranas |
+| 3. Respuesta | Reducción de carga | Degradación controlada |
+| 4. Protección | Shutdown térmico | Protección de componentes |
+
+## Validación Experimental (pendiente: aún no hay hardware construido)
+
+### 1. Pruebas Térmicas Planificadas
 - **Cámara térmica FLIR ONE**: Mediciones en condiciones reales
 - **Cámara de temperatura controlada**: De -20°C a +65°C
 - **Perfil de estrés térmico**: Ciclos acelerados de envejecimiento
 
-### 2. Resultados Obtenidos
+### 2. Resultados (pendientes de medición)
 | Condición | Temperatura Máxima Medida | Comparación con Cálculo |
 |-----------|---------------------------|-------------------------|
-| 25°C ambiente | 45°C en LDO | 10% menor que cálculo |
-| 65°C ambiente | 82°C en LDO | 2% mayor que cálculo |
-| Carga solar | 55°C en CN3791 | Coincidencia exacta |
+| 25°C ambiente | Pendiente (cálculo: 40.5°C en LDO) | Pendiente |
+| 65°C ambiente | Pendiente (cálculo: 80.5°C en LDO) | Pendiente |
+| Carga solar | Pendiente | Pendiente |
 
 ## Consideraciones Ambientales
 
@@ -140,66 +179,16 @@ Este documento presenta el análisis térmico detallado de todos los componentes
 ## Conclusiones
 
 El análisis térmico del collar DR-VF-01 demuestra que:
-1. Todos los componentes operan dentro de límites seguros térmicamente
-2. Hay margen adecuado para condiciones extremas
-3. La disipación está bien distribuida en la PCB
-4. No se requieren soluciones de enfriamiento activas
-
-Las temperaturas máximas calculadas y medidas están bien por debajo de los límites máximos de los componentes, asegurando vida útil prolongada y operación confiable en todas las condiciones ambientales previstas.
-| LDO | 0.255W | 15.5°C | 80.5°C |
-| CN3791 | 0.140W | 8.5°C | 73.5°C |
-| **Máximo** | | | **80.5°C** |
-
-### 2. Sobrecarga de Componentes
-- **LDO a 200mA**: P = 0.340W, ΔT = 20.7°C, Tj = 85.7°C
-- **CN3791 a 300mA**: P = 0.168W, ΔT = 10.2°C, Tj = 75.2°C
-
-## Estrategias de Gestión Térmica
-
-### 1. Diseño Mecánico
-- **Ventilación pasiva**: Aprovechamiento de convección natural
-- **Contacto con carcasa**: Disipación a través de plástico
-- **Colocación estratégica**: Componentes calientes en áreas ventiladas
-
-### 2. Selección de Componentes
-- **LDO de bajo dropout**: Minimiza disipación
-- **Eficiencia del cargador**: 88% reduce pérdidas
-- **Componentes SMD**: Mejor transferencia térmica que through-hole
-
-### 3. Protección Térmica
-## Estrategia de Gestión Térmica Basada en Principios de Sistemas Embebidos
-
-### Filosofía de Diseño Térmico
-Siguiendo los principios de Elecia White sobre diseño robusto de sistemas embebidos:
-1. **Fail-safe thermal design** - El sistema debe operar de forma segura incluso bajo condiciones térmicas extremas
-2. **Predictive thermal management** - Monitoreo proactivo de condiciones térmicas
-3. **Graceful thermal degradation** - Reducción controlada de funcionalidad bajo estrés térmico
-
-## Conclusiones
-
-El análisis térmico del collar DR-VF-01 demuestra que:
 
 1. Todos los componentes operan dentro de límites seguros térmicamente
 2. Hay margen adecuado para condiciones extremas
 3. La disipación está bien distribuida en la PCB
 4. No se requieren soluciones de enfriamiento activas
 
-Las temperaturas máximas calculadas y medidas están bien por debajo de los límites máximos de los componentes, asegurando vida útil prolongada y operación confiable en todas las condiciones ambientales previstas.
+Las temperaturas máximas calculadas (las mediciones están pendientes) están bien por debajo de los límites máximos de los componentes, asegurando vida útil prolongada y operación confiable en todas las condiciones ambientales previstas.
 
 Este diseño térmico sigue las mejores prácticas de sistemas embebidos descritas por Elecia White en "Making Embedded Systems", garantizando:
 - **Robustez térmica** mediante diseño defensivo
 - **Monitoreo proactivo** de condiciones críticas
 - **Respuesta controlada** a eventos térmicos extremos
 - **Protección integral** de componentes sensibles
-### Arquitectura de Protección Térmica
-Implementamos una estrategia de protección en múltiples capas:
-
-| Nivel | Mecanismo | Acción |
-|-------|-----------|--------|
-| 1. Prevención | Diseño térmico optimizado | Disipación pasiva |
-| 2. Detección | Monitoreo continuo | Alertas tempranas |
-| 3. Respuesta | Reducción de carga | Degradación controlada |
-| 4. Protección | Shutdown térmico | Protección de componentes |
-- **Monitoreo de temperatura**: Sensor NTC en PCB
-- **Reducción de carga dinámica**: En condiciones extremas
-- **Shutdown térmico**: A 100°C para protección de componentes

@@ -9,7 +9,7 @@ Esta especificación detalla los requisitos de sellado IP67 para el collar de ge
 ### 1. Protección contra Polvo (Primera cifra: 6)
 - **Grado de protección**: Totalmente sellado contra el polvo
 - **Verificación**: No debe penetrar ningún polvo en cantidad suficiente para interferir con el funcionamiento seguro
-- **Prueba estándar**: ASTM F2412-11, IEC 60529
+- **Prueba estándar**: IEC 60529
 
 ### 2. Protección contra Agua (Segunda cifra: 7)
 - **Grado de protección**: Protegido contra inmersión temporal
@@ -94,10 +94,9 @@ Esta especificación detalla los requisitos de sellado IP67 para el collar de ge
 ### 1. Normas Internacionales
 - **IEC 60529**: Grado de protección IP
 - **ISO 16750-2**: Condiciones ambientales para vehículos
-- **ASTM F2412-11**: Prácticas estándar para pisos
 
 ### 2. Certificaciones Regionales
-- **CE Marking**: Directiva de Equipos de Radio y Telecomunicaciones Terminales (R&TTE)
+- **CE Marking**: Directiva de Equipos Radioeléctricos (RED 2014/53/UE)
 - **FCC Part 15**: Compatibilidad electromagnética
 - **IP67 Rating**: Certificación por laboratorio acreditado
 
@@ -134,7 +133,6 @@ Esta especificación detalla los requisitos de sellado IP67 para el collar de ge
 - **Exposición continua**: ≥5000 horas a radiación UV equivalente
 - **Degradación permisible**: ≤5% cambio dimensional, ≤10% cambio de color
 
-Esta especificación garantiza que el collar DR-VF-01 cumpla con los más altos estándares de protección ambiental, asegurando su funcionamiento confiable en las condiciones más exigentes del entorno ganadero.
 ## Estrategia de Diseño Basada en Principios de Elecia White
 
 ### Robustez Ambiental
@@ -152,4 +150,4 @@ Esta especificación garantiza que el collar DR-VF-01 cumpla con los más altos 
 - **Self-contained protection**: Protección integral sin dependencia de infraestructura externa
 - **Continuous operation**: Capaz de operar continuamente en campo por períodos extendidos
 
-Esta especificación garantiza que el collar DR-VF-01 cumpla con los más altos estándares de protección ambiental, asegurando su funcionamiento confiable en las condiciones más exigentes del entorno ganadero, siguiendo los principios de diseño robusto de Elecia White.
+Esta especificación busca que el collar DR-VF-01 cumpla con los más altos estándares de protección ambiental, para un funcionamiento confiable en las condiciones más exigentes del entorno ganadero, siguiendo los principios de diseño robusto de Elecia White.

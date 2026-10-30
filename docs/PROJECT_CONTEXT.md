@@ -64,14 +64,12 @@ Sistema en dos niveles: línea no regulada (3.6-4.2V) para VIN ESP32 y MAX17048,
 ### 3.3 Consumo Eléctrico
 * **Reposo:** < 50 μA (Deep Sleep)
 * **Activo:** ~88 mA
-* **Pico Máximo:** ~221 mA (dentro de los 500 mA del LDO)
+* **Pico Máximo:** ~224 mA (dentro de los 500 mA del LDO)
 
 ### 3.4 Firmware STR/Zephyr
 Arquitectura dual-core (ESP32-S3) con 5 tareas distribuidas:
 * **Core 0:** Gestión de red (LoRa) y energía
 * **Core 1:** Procesamiento determinista (geocerca, GPS, IMU)
-
----
 
 ---
 
@@ -99,7 +97,7 @@ El sistema utiliza una topología distribuida que aprovecha el regulador interno
 ```
 
 * **Línea No Regulada ($3.6\text{V} - 4.2\text{V}$):** Conecta la salida de la batería directamente al pin `VIN` del ESP32-S3 y al medidor MAX17048.
-* **Línea Regulada ($3.3\text{V}$ Estrictos):** Suministrada por el pin `3V3` del ESP32-S3. Entrega hasta $500\text{ mA}$, cubriendo sobradamente la demanda máxima del sistema ($\sim 221\text{ mA}$).
+* **Línea Regulada ($3.3\text{V}$ Estrictos):** Suministrada por el pin `3V3` del ESP32-S3. Entrega hasta $500\text{ mA}$, cubriendo sobradamente la demanda máxima del sistema ($\sim 224\text{ mA}$).
 
 ### 3.2 Sustento Teórico del Cargador Solar CN3791
 El CN3791 es un convertidor reductor conmutado (*Buck*) especializado con frecuencia de conmutación de $f_{sw} = 300\text{ kHz}$.
@@ -112,13 +110,13 @@ $$L = \frac{V_{BAT} \cdot (V_{IN} - V_{BAT})}{V_{IN} \cdot f_{sw} \cdot \Delta I
 * **Selección Comercial:** Inductor de potencia SMD de **$10\ \mu\text{H}$ a $22\ \mu\text{H}$** (Estándar en el módulo CN3791).
 
 #### **B. Divisor Tensión MPPT (Fijación a 6V)**
-El pin `MPPT` compara el voltaje del panel con una referencia interna de $2.0\text{ V}$:
+El pin `MPPT` compara el voltaje del panel con una referencia interna (se asume $2.0\text{ V}$; debe verificarse en el datasheet del CN3791, ver [ARCHITECTURE.md](./ARCHITECTURE.md)):
 
 $$V_{MPPT} = 2.0\text{ V} \cdot \left(1 + \frac{R_1}{R_2}\right) \implies 6.0 = 2.0 \cdot \left(1 + \frac{R_1}{R_2}\right) \implies R_1 = 2 \cdot R_2$$
 
 * **Selección Comercial:** $R_1 = 200\text{ k}\Omega$, $R_2 = 100\text{ k}\Omega$ ($1\%$ precisión).
 
-#### **C. Senso de Corriente ($R_{CS}$)**
+#### **C. Sensado de Corriente ($R_{CS}$)**
 Para limitar la carga rápida a $1\text{ A}$ con referencia de $120\text{ mV}$:
 
 $$R_{CS} = \frac{0.12\text{ V}}{1.0\text{ A}} = 0.12\ \Omega\ (120\text{ m}\Omega)$$
@@ -127,12 +125,12 @@ $$R_{CS} = \frac{0.12\text{ V}}{1.0\text{ A}} = 0.12\ \Omega\ (120\text{ m}\Omeg
 
 | Módulo | Estado Reposo | Estado Activo | Pico Máximo | Observaciones |
 | :--- | :--- | :--- | :--- | :--- |
-| **ESP32-S3** | $10\ \mu\text{A}$ (*Deep Sleep*) | $70\text{ mA}$ (240MHz) | $240\text{ mA}$ (WiFi/BT) | WiFi deshabilitado en firmware |
+| **ESP32-S3** | $10\ \mu\text{A}$ (*Deep Sleep*) | $70\text{ mA}$ (240MHz) | $240\text{ mA}$ (WiFi/BT) | Wi-Fi activo solo en modo de configuración (SoftAP); deshabilitado en operación normal |
 | **u-blox MAX-M10S** | $15\ \mu\text{A}$ | $12\text{ mA}$ | $35\text{ mA}$ | Adquisición multiconstelación |
 | **Core1262 (SX1262)** | $0.6\ \mu\text{A}$ | $5.3\text{ mA}$ (Rx) | $118\text{ mA}$ (Tx @ +22dBm) | Ráfagas de raras fracciones de segundo |
 | **LSM6DSOX** | $3\ \mu\text{A}$ | $0.55\text{ mA}$ | $1\text{ mA}$ | Sensor de movimiento continuo |
 | **MAX17048** | $3\ \mu\text{A}$ | $0.023\text{ mA}$ | $0.05\text{ mA}$ | Medición I2C |
-| **Total Sistema** | **$< 50\ \mu\text{A}$** | **$\sim 88\text{ mA}$** | **$\sim 221\text{ mA}$** | **Completamente dentro del margen de 500mA del LDO** |
+| **Total Sistema** | **$< 50\ \mu\text{A}$** | **$\sim 88\text{ mA}$** | **$\sim 224\text{ mA}$** | **Completamente dentro del margen de 500mA del LDO** |
 
 *Nota sobre la escalabilidad a 4G (A7670SA):* Los módulos de telefonía celular generan picos de hasta $2.0\text{ A}$. Al implementarlo en la tesis, se alimentará directamente de los bornes de la batería LiPo utilizando un capacitor de desacople dedicado de $470\ \mu\text{F}$.
 
@@ -257,22 +255,21 @@ DR-VF-01/
 │   ├── PROJECT_CONTEXT.md          <-- Este documento ejecutivo
 │   ├── REQUIREMENTS.md             <-- Matriz de requerimientos
 │   ├── ARCHITECTURE.md             <-- Arquitectura técnica detallada
-│   ├── schematics/                 <-- Diagramas en PDF y bloques
-│   └── math_models/                <-- Sustento matemático
+│   ├── firmware_docs/              <-- Secuencia de arranque, FSM, MVP y riesgos de tiempo real
+│   ├── comercial_docs/             <-- Datasheet y manual de usuario
+│   └── DR-VF-01_Memoria_Tecnica.pdf <-- Informe técnico compilado
 ├── firmware/
-│   ├── include/                    <-- Librerías y definiciones de pines
-│   ├── src/
-│   │   ├── main.c                  <-- Inicialización Zephyr e hilos
-│   │   ├── geofence.c              <-- Algoritmo Ray-Casting
-│   │   ├── lora_management.cpp     <-- Drivers SX1262
-│   │   └── power_management.cpp    <-- Gestión Sleep y MAX17048
-│   ├── CMakeLists.txt, prj.conf    <-- Configuración Zephyr compartida
-│   └── boards/                     <-- Overlay y prj.conf por placa (Thingy:91 X, ESP32-S3)
-└── hardware/
-    ├── altium_project/             <-- Proyecto Altium Designer (Carrier Board)
-    ├── gerber/                     <-- Archivos para fabricación de PCB
-    ├── BOM.md                      <-- Listado de materiales
-    └── pinout.md                   <-- Asignación de pines
+│   ├── include/geofence.h          <-- API del motor de geocerca
+│   ├── src/geofence/               <-- Motor Ray-Casting (geofence.c), Makefile y pruebas en host
+│   └── (planeado)                  <-- main.c, CMakeLists.txt, prj.conf y boards/ (aplicación Zephyr compartida; overlay y prj.conf por placa)
+├── hardware/
+│   ├── BOM.md                      <-- Listado de materiales
+│   ├── pinout.md                   <-- Asignación de pines
+│   ├── POWER_BUDGET.md, THERMAL.md <-- Presupuesto de potencia y análisis térmico
+│   ├── datasheets/                 <-- Índice de hojas de datos
+│   └── (planeado)                  <-- altium_project/ (Carrier Board) y gerber/ (fabricación de PCB)
+├── mechanical/                     <-- Especificaciones mecánicas (sellado, tolerancias, antena)
+└── reports/                        <-- Fuentes LaTeX del informe técnico
 ```
 
 ## 6. Índice de Documentos

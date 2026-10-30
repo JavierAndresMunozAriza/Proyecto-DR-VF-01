@@ -1,19 +1,19 @@
 # DR-VF-01: Industrial IoT Virtual Fencing System for Precision Livestock Management
 
-[![Firmware Status](https://img.shields.io/badge/firmware-passing-brightgreen.svg)]()
+[![Firmware Status](https://img.shields.io/badge/firmware-in_development-yellow.svg)]()
 [![Target Hardware](https://img.shields.io/badge/Hardware-Thingy:91_X_(PoC)_%7C_ESP32--S3_(final_PCB)-00a4e4.svg)]()
 [![RTOS Engine](https://img.shields.io/badge/RTOS-Zephyr_RTOS-orange.svg)]()
 [![Enclosure Standard](https://img.shields.io/badge/Enclosure-IP67_Rated-blue.svg)]()
 [![Documentation](https://img.shields.io/badge/Docs-Technical_Specification_PDF-red.svg)](./docs/DR-VF-01_Memoria_Tecnica.pdf)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)]()
 
-> **Production-grade Embedded System** designed for autonomous livestock monitoring, adaptive geofencing, and real-time containment metrics. Built on **Zephyr RTOS** as a single codebase for two boards: the **Nordic Thingy:91 X (nRF9151 Cellular IoT SiP + nRF5340 BLE/Network SoC, nRF Connect SDK)** as the proof of concept, and the **ESP32-S3-WROOM-1U-N16R8** on the final PCB (LoRa SX1262, external u-blox MAX-M10S GNSS, LSM6DSOX IMU).
+> **Embedded system under development** designed for autonomous livestock monitoring, adaptive geofencing, and real-time containment metrics. Built on **Zephyr RTOS** as a single codebase for two boards: the **Nordic Thingy:91 X (nRF9151 Cellular IoT SiP + nRF5340 BLE/Network SoC, nRF Connect SDK)** as the proof of concept, and the **ESP32-S3-WROOM-1U-N16R8** on the final PCB (LoRa SX1262, external u-blox MAX-M10S GNSS, LSM6DSOX IMU).
 
 ---
 
 ## 📄 Full Technical Specification
 
-The complete academic and industrial memory technical report (UNAL standard) detailing math models, RF link budget, thermal dissipation, and hardware schematics is available here:
+The complete academic and industrial memory technical report (UNAL standard) covering requirements, power budget, thermal dissipation, firmware architecture, enclosure tolerances and compliance is available here. An RF link budget and hardware schematics are planned and not yet part of the report:
 
 👉 **[Download Full Technical Specification (PDF)](./docs/DR-VF-01_Memoria_Tecnica.pdf)**
 
@@ -48,7 +48,7 @@ stateDiagram-v2
 
     INSIDE_ZONE --> TELEMETRY_DISPATCH: Log State
     WARNING_ZONE --> AUDIO_CUE_TRIGGER: Audio Pulse
-    VIOLATION_ZONE --> CORRECTION_STIMULUS: Haptic / Pulse Stimulus
+    VIOLATION_ZONE --> CORRECTION_STIMULUS: Opto-coupled Pulse Stimulus
 
     AUDIO_CUE_TRIGGER --> TELEMETRY_DISPATCH
     CORRECTION_STIMULUS --> TELEMETRY_DISPATCH
@@ -56,24 +56,26 @@ stateDiagram-v2
     TELEMETRY_DISPATCH --> DEEP_SLEEP: Payload Queued (LTE-M / NB-IoT / LoRa)
 ``` 
 
+> **Note:** conceptual draft. The implemented geofence engine (`firmware/src/geofence/geofence.c`) decides inside/outside a polygon with ray casting; the radius zones and the warning zone drawn above are planned, not implemented. The state machine under design is in `docs/firmware_docs/FSM_DESIGN.md`.
+
 | Parameter | Specification | Engineering Note |
 | :--- | :--- | :--- |
 | **Proof-of-Concept Target** | Nordic Thingy:91 X (PCA20065) | nRF9151 (LTE-M/NB-IoT/GNSS) + nRF5340 (BLE), built with nRF Connect SDK |
 | **Final Product Target** | ESP32-S3-WROOM-1U-N16R8 (custom PCB) | LoRa SX1262, external GNSS MAX-M10S, IMU LSM6DSOX. Pin map: `hardware/pinout.md` |
 | **Operating System** | Zephyr RTOS (both boards) | Native DeviceTree & Kconfig driver architecture |
 | **Shared / Per-Board Code** | Shared: `geofence.c`, FSM, logging | Per board: overlay, `prj.conf`, GNSS / comms / IMU adapters |
-| **Geofencing Kernel** | Fixed-Point Haversine Algorithm | Zero Floating-Point Unit (FPU) overhead |
-| **Power Consumption** | $< 15\,\mu\text{A}$ in Deep Sleep | Adaptive duty-cycling based on GNSS velocity |
+| **Geofencing Kernel** | Polygon ray casting in `double` (`geofence.c`) | Allocates the vertex array dynamically (`malloc` / `realloc`). A fixed-point, allocation-free kernel is planned, not implemented |
+| **Power Consumption (target)** | $< 15\,\mu\text{A}$ in Deep Sleep, not yet measured | Adaptive duty-cycling based on GNSS velocity is planned |
 
 ## ⚙️ Engineering Trade-Offs & Design Decisions
 ### 1. Zephyr RTOS Portability via HAL
 To ensure long-term industrial viability and prevent vendor lock-in, the codebase strictly isolates POSIX-compliant system calls and hardware drivers. Moving between the Nordic Thingy:91 X (proof of concept) and the ESP32-S3 PCB (final product) requires updating only the per-board devicetree overlay, `prj.conf` and the GNSS / communications / IMU adapters; 100% of the geofencing logic, FSM transitions, and risk metrics remain untouched.
-### 2. Fixed-Point Math vs. Floating-Point Engine 
-Calculations on embedded processors often suffer performance penalties when performing trigonometric operations (sin, cos, atan2) for GPS distances. The geofence engine relies on a custom fixed-point mathematical kernel (geofence.c), eliminating the need for dynamic memory allocation (malloc) and reducing calculation time per tick to under $1.2\,\text{ms}$.
+### 2. Floating-Point Engine Today, Fixed-Point Port Planned
+Calculations on embedded processors often suffer performance penalties when performing trigonometric operations (sin, cos, atan2) for GPS distances. The geofence engine (`geofence.c`) currently uses `double` arithmetic with ray casting and allocates the vertex array dynamically (`malloc` / `realloc`). A fixed-point, allocation-free kernel is a planned optimization. No execution time has been measured on a target; the requirement is a processing time under 50 ms (RF-02).
 ### 3. Dynamic Power Budgeting 
-Batteries in remote cattle collars cannot be replaced frequently. The firmware implements an adaptive sampling strategy:
+Batteries in remote cattle collars cannot be replaced frequently. The firmware is designed to implement an adaptive sampling strategy (planned; the intervals below are under review and differ between documents):
 - **Static Animal (IMU Stationary):** GNSS enters deep sleep; heartbeat telemetry sent every 6 hours.
-- **Normal Grazing:** GNSS fix every 15 minutes.- 
+- **Normal Grazing:** GNSS fix every 15 minutes.
 - **Perimeter Boundary Approach:** GNSS fix interval ramps up dynamically to 5 seconds.
  
  ## 📂 Repository Structure
@@ -81,16 +83,16 @@ Batteries in remote cattle collars cannot be replaced frequently. The firmware i
  Proyecto-DR-VF-01/
 ├── docs/                        # Specifications, Architecture, & Final PDF
 │   ├── DR-VF-01_Memoria_Tecnica.pdf  <-- Full Compiled Technical Report
-│   ├── 3_Firmware/              # Boot sequences, FSM logic, Risk evaluation
-│   └── 5_Comercial/             # System Datasheet & User Manual
-├── firmware/                    # Production Firmware Source Code
-│   ├── include/drivers/         # Hardware Abstraction Layer API headers (geofence.h)
-│   └── src/geofence/            # Core C Engine, Makefiles, & Unit Tests
-├── hardware/                    # EDA Design Files (Altium / KiCad)
-│   ├── gerber/                  # PCB Fabrication Files
+│   ├── firmware_docs/           # Boot sequences, FSM logic, Risk evaluation
+│   └── comercial_docs/          # System Datasheet & User Manual
+├── firmware/                    # Firmware source code (geofence engine so far)
+│   ├── include/                 # Public C headers (geofence.h)
+│   └── src/geofence/            # Core C Engine, Makefile, & Unit Tests
+├── hardware/                    # Hardware design notes (no EDA files tracked yet)
 │   ├── BOM.md                   # Bill of Materials
+│   ├── pinout.md                # Pin map
 │   └── POWER_BUDGET.md          # Current Consumption Breakdown
-├── mechanical/                  # Enclosure CAD & Environmental Tolerances
+├── mechanical/                  # Enclosure specifications & Environmental Tolerances
 │   └── IP67_SPEC.md             # Ingress Protection Specifications
 ├── reports/                     # LaTeX Source Files (Modular LaTeX structure)
 └── README.md                    # Project Entrypoint & Fictional Datasheet
@@ -101,11 +103,10 @@ The core geofencing algorithm contains standalone unit tests that can be compile
 # Navigate to the geofence engine directory
 cd firmware/src/geofence
 
-# Compile and run the comprehensive test suite
-make -f Makefile
-
-# Run execution binary
-./comprehensive_test
+# Build and run the test suite (exits non-zero on any failed check)
+make test
 ```
+Timing printed by the host tests says nothing about the 50 ms requirement on the target; that needs a measurement on the board.
+
 ## 🛡️ License & Contact
-Distributed under the MIT License. Developed by engineering team for UNAL academic defense and industrial remote deployment readiness.
+Distributed under the MIT License (see [LICENSE](./LICENSE)). Developed by engineering team for UNAL academic defense and industrial remote deployment readiness.

@@ -28,7 +28,7 @@ El sistema utiliza una topología distribuida que aprovecha el regulador interno
 ```
 
 - **Línea No Regulada (3.6V - 4.2V):** Conecta la salida de la batería directamente al pin `VIN` del ESP32-S3 y al medidor MAX17048.
-- **Línea Regulada (3.3V Estrictos):** Suministrada por el pin `3V3` del ESP32-S3. Entrega hasta 500 mA, cubriendo la demanda máxima del sistema (~221 mA).
+- **Línea Regulada (3.3V Estrictos):** Suministrada por el pin `3V3` del ESP32-S3. Entrega hasta 500 mA, cubriendo la demanda máxima del sistema (~224 mA).
 
 **Nota Técnica:** El LDO interno de la DevKitC-1 (AMS1117) tiene una caída de voltaje de ~1V. Con batería a 3.6V, el voltaje regulado podría caer por debajo de 3.3V. Requiere verificación del esquemático de la placa.
 
@@ -53,7 +53,7 @@ $$6.0 = 2.0 \cdot \left(1 + \frac{R_1}{R_2}\right) \implies R_1 = 2 \cdot R_2$$
 
 **Nota Técnica:** La referencia interna del CN3791 debe verificarse en el datasheet (posiblemente 1.04V en lugar de 2.0V).
 
-### 2.3 Senso de Corriente (R_CS)
+### 2.3 Sensado de Corriente (R_CS)
 Para limitar la carga rápida a 1 A con referencia de 120 mV:
 
 $$R_{CS} = \frac{0.12\text{ V}}{1.0\text{ A}} = 0.12\ \Omega\ (120\text{ m}\Omega)$$
@@ -62,12 +62,12 @@ $$R_{CS} = \frac{0.12\text{ V}}{1.0\text{ A}} = 0.12\ \Omega\ (120\text{ m}\Omeg
 
 | Módulo | Estado Reposo | Estado Activo | Pico Máximo | Observaciones |
 | :--- | :--- | :--- | :--- | :--- |
-| **ESP32-S3** | 10 μA (Deep Sleep) | 70 mA (240MHz) | 240 mA (WiFi/BT) | WiFi deshabilitado en firmware |
+| **ESP32-S3** | 10 μA (Deep Sleep) | 70 mA (240MHz) | 240 mA (WiFi/BT) | Wi-Fi activo solo en modo de configuración (SoftAP); deshabilitado en operación normal |
 | **u-blox MAX-M10S** | 15 μA | 12 mA | 35 mA | Adquisición multiconstelación |
 | **Core1262 (SX1262)** | 0.6 μA | 5.3 mA (Rx) | 118 mA (Tx @ +22dBm) | Ráfagas de fracciones de segundo |
 | **LSM6DSOX** | 3 μA | 0.55 mA | 1 mA | Sensor de movimiento continuo |
 | **MAX17048** | 3 μA | 0.023 mA | 0.05 mA | Medición I2C |
-| **Total Sistema** | **< 50 μA** | **~88 mA** | **~221 mA** | **Dentro del margen de 500mA del LDO** |
+| **Total Sistema** | **< 50 μA** | **~88 mA** | **~224 mA** | **Dentro del margen de 500mA del LDO** |
 
 **Nota sobre escalabilidad a 4G (A7670SA):** Los módulos celulares generan picos de hasta 2.0 A. En implementación futura, se alimentarán directamente de la batería LiPo con capacitor de desacople dedicado de 470 μF.
 
@@ -76,8 +76,8 @@ $$R_{CS} = \frac{0.12\text{ V}}{1.0\text{ A}} = 0.12\ \Omega\ (120\text{ m}\Omeg
 1. **Desacople en Alta Frecuencia:** Capacitores cerámicos 100 nF (0805) en pines de alimentación de cada módulo
 2. **Capacitor Tanque (Bulk):** Capacitor de 10 μF - 100 μF en bus de 3.3V para transitorios LoRa
 3. **Resistencias de Pull-Up I2C:** Dos resistencias de 4.7 kΩ en líneas SDA y SCL
-4. **Red RC de Reset:** 10 kΩ a 3.3V and 1 μF a GND en pin EN del ESP32-S3
-5. **Aislamiento Galvánico para Actuador:** Optoacoplador VO617A con resistencia de 330 Ω (limita corriente GPIO a ~6.6 mA) and pull-down de 10 kΩ
+4. **Red RC de Reset:** 10 kΩ a 3.3V y 1 μF a GND en pin EN del ESP32-S3
+5. **Aislamiento Galvánico para Actuador:** Optoacoplador VO617A con resistencia de 330 Ω (limita corriente GPIO a ~6.6 mA) y pull-down de 10 kΩ
 
 ## 5. Especificaciones de Hardware y BOM
 
@@ -181,7 +181,7 @@ El polígono se almacena en Flash como arreglo de vértices (X_i, Y_i) represent
 ## 7. Hallazgos Técnicos y Puntos Abiertos
 
 1. **Regulador LDO:** El AMS1117 de la DevKitC-1 tiene dropout voltage de ~1V. Con batería a 3.6V, el voltaje regulado podría caer por debajo de 3.3V. Requiere verificación del esquemático.
-2. **Cálculo de Picos:** La suma de picos individuales (sin WiFi) da ~224 mA, no exactamente 221 mA. Con pico ESP32 de 240 mA da ~394 mA. Ambos valores caben en los 500 mA del LDO.
+2. **Cálculo de Picos:** La suma de picos individuales (sin Wi-Fi, con el ESP32 a 70 mA) da ~224 mA, valor usado en la tabla. Con pico ESP32 de 240 mA da ~394 mA. Ambos valores caben en los 500 mA del LDO.
 3. **Referencia MPPT CN3791:** La referencia interna debe verificarse en datasheet (posiblemente 1.04V en lugar de 2.0V).
 4. **Consumo Deep Sleep:** El LDO y chip USB-UART de la DevKit probablemente superan el límite de 150 μA de RNF-03.
 

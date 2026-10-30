@@ -54,11 +54,11 @@ CN3791 MPPT & Standby & 150.0 $\mu$A & 150.00 $\mu$A \\
 
 \subsection{Autonomía de Batería}
 
-Con una celda LiPo de 1500 mAh y una corriente promedio efectiva de 0.191 mA, la autonomía teórica estimada del dispositivo se calcula como:
+Con una celda LiPo de 1500 mAh y una corriente promedio efectiva de 0.362 mA, la autonomía teórica estimada del dispositivo se calcula como:
 
-$$\text{Autonomía (días)} = \frac{1500\text{ mAh}}{0.191\text{ mA} \times 24\text{ h/día}} \approx 327\text{ días}$$
+$$\text{Autonomía (días)} = \frac{1500\text{ mAh}}{0.362\text{ mA} \times 24\text{ h/día}} \approx 173\text{ días}$$
 
-Considerando la autodescarga de la batería y factores de degradación ambiental, se garantiza una operación continua superior a 278 días en condiciones ideales.
+Considerando la autodescarga de la batería y factores de degradación ambiental, se estima una operación continua superior a 147 días en condiciones ideales (capacidad efectiva de 1275 mAh, con factor de degradación de 0.85).
 
 \section{Análisis Térmico}
 
@@ -120,4 +120,4 @@ El costo total directo por unidad producida (lote de 100 unidades) es de \$43.25
 
 \section{Conclusiones}
 
-El diseño de hardware del collar DR-VF-01 cumple con los requerimientos operativos y de autonomía fijados. La selección de un regulador LDO de ultra-bajo consumo en combinación con el microcontrolador ESP32-S3 garantiza una operación extendida sin comprometer la velocidad de procesamiento requerida para las geocercas en tiempo real.
+El diseño de hardware del collar DR-VF-01 se orienta a cumplir los requerimientos operativos y de autonomía fijados; sin embargo, el consumo calculado en \emph{Deep Sleep} ($190\,\mu\text{A}$) supera el límite de $150\,\mu\text{A}$ de \texttt{docs/REQUIREMENTS.md} (RNF-03) y está pendiente de revisión. La selección de un regulador LDO de ultra-bajo consumo en combinación con el microcontrolador ESP32-S3 garantiza una operación extendida sin comprometer la velocidad de procesamiento requerida para las geocercas en tiempo real.

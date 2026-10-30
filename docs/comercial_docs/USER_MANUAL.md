@@ -22,7 +22,7 @@ Antes de usar el collar por primera vez:
 
 1. Conecte el cable USB-C al puerto de carga del collar
 2. Conecte el otro extremo a un cargador USB de 5V/1A
-3. Espere hasta que el LED indicador se vuelva verde (aproximadamente 2 horas)
+3. Espere hasta que el LED verde pase de fijo a parpadeante, lo que indica carga completa (aproximadamente 2 horas)
 4. Desconecte el cable de carga
 
 ### Paso 2: Ajuste de la Correa
@@ -52,7 +52,7 @@ Antes de usar el collar por primera vez:
    - Centrar en la ubicación de su pastoreo
    - Dibujar el perímetro de la zona permitida tocando puntos en el mapa
    - Ajustar vértices arrastrándolos
-3. Configure las zonas de exclusión si es necesario
+3. Configure las zonas de exclusión si es necesario (función planificada; la versión actual admite un único polígono)
 4. Guarde la configuración
 
 ### Configuración de Sensibilidad
@@ -67,7 +67,7 @@ Antes de usar el collar por primera vez:
 1. Seleccione "Comunicación" en el menú
 2. Configure las opciones de LoRa:
    - Frecuencia: 915MHz (predeterminado)
-   - Potencia: +22dBm (máximo legal)
+   - Potencia: +22dBm (máximo del transceptor SX1262)
    - Intervalo de reporte: 1-60 minutos
 3. Si dispone de gateway LoRa, ingrese sus credenciales
 
@@ -95,6 +95,7 @@ Antes de usar el collar por primera vez:
 2. **Inspección visual**: Verifique daños en correa y carcasa
 3. **Carga**: Cargue cuando el LED se vuelva rojo
 4. **Actualizaciones**: Verifique actualizaciones mensualmente
+
 ## Solución de Problemas
 
 ### Problema: El collar no se enciende
@@ -117,6 +118,19 @@ Antes de usar el collar por primera vez:
 3. Reinicie el sensor IMU desde la interfaz web
 
 ### Problema: Las alertas de geocerca son falsas
+**Soluciones**:
+1. Verifique la precisión del GPS en su área
+2. Ajuste la geocerca para incluir un margen de seguridad
+3. Considere interferencias magnéticas en la zona
+
+## Reinicio de Fábrica
+
+Para restaurar la configuración de fábrica:
+1. Presione y mantenga el botón lateral por 30 segundos
+2. Espere a que el LED parpadee rápidamente en rojo y azul
+3. El dispositivo se reiniciará con configuración predeterminada
+4. Vuelva a realizar la configuración inicial
+
 ## Especificaciones Técnicas
 
 ### Dimensiones y Peso
@@ -142,77 +156,7 @@ Antes de usar el collar por primera vez:
 ## Garantía y Soporte
 
 ### Garantía
-## Seguridad y Precausión
 
-### Para Animales
-- No utilice en animales menores a 6 meses
-- Inspeccione regularmente la zona del cuello
-- Retire inmediatamente si observa signos de incomodidad
-- Consulte a un veterinario si hay irritación persistente
-
-### Para Usuarios
-- Evite exponer el dispositivo a agua salada por períodos prolongados
-- No sumerja el collar en agua
-- Mantenga alejado de fuentes de calor extremo
-- No intente abrir la carcasa sellada
-
-### Disposal
-Este dispositivo contiene materiales electrónicos que deben desecharse adecuadamente:
-- Contacte centros de reciclaje electrónicos locales
-- No deseche en basura doméstica normal
-- Remueva la batería antes de desechar (servicio disponible en centros autorizados)
-
-## Apendice A: Cuidado del Panel Solar
-
-### Limpieza
-- Limpie la superficie solar con un paño suave y agua limpia
-- Evite productos químicos abrasivos
-- Limpie regularmente para mantener eficiencia óptima
-
-### Posicionamiento
-- Asegure que la superficie solar reciba luz directa
-- Evite sombras permanentes de la correa u otros objetos
-- Oriente hacia el sur para máxima exposición diaria
-
-## Apendice B: Interpretación de Alertas
-
-### Alertas Visuales
-| Color LED | Estado | Acción Requerida |
-|-----------|--------|------------------|
-| Rojo fijo | Batería baja | Cargar inmediatamente |
-| Rojo parpadeante | Alerta geocerca | Verificar posición animal |
-| Amarillo parpadeante | Error del sistema | Contactar soporte |
-| Verde/Azul alterno | Reinicio de fábrica | Esperar reinicio completo |
-
-### Mensajes LoRa
-Los mensajes enviados por LoRa incluyen:
-- ID único del collar
-- Coordenadas GPS actuales
-- Estado de batería (porcentaje)
-- Código de evento (normal/movimiento/alerta/error)
-
-## Apendice C: Consejos para Pastoreo Óptimo
-
-### Configuración de Geocercas
-- Incluya un margen de seguridad de 50 metros del perímetro físico
-- Cree múltiples geocercas para áreas de pastoreo rotacional
-- Defina zonas de exclusión para áreas peligrosas (ríos, carreteras)
-
-### Monitoreo de Animales
-- Verifique alertas diariamente
-- Preste atención a patrones de movimiento inusuales
-- Documente comportamientos para mejorar manejo del hato
-
-### Mantenimiento Preventivo
-- Inspeccione físicamente cada collar mensualmente
-- Reemplace correas cada 6 meses o según desgaste
-- Actualice firmware trimestralmente
-
----
-
-*Este manual está sujeto a cambios sin previo aviso. Consulte www.dr-vf-01.com/manual para la versión más reciente.*
-
-© 2024 DR-VF-01 Technologies. Todos los derechos reservados.
 El DR-VF-01 viene con una garantía de 2 años contra defectos de fabricación. Esta garantía cubre:
 - Fallas en componentes electrónicos
 - Problemas de fabricación
@@ -236,12 +180,73 @@ Visite regularmente www.dr-vf-01.com/updates para:
 - Descargar nuevas versiones de firmware
 - Acceder a mejoras de funcionalidad
 - Obtener correcciones de seguridad
-**Soluciones**:
-1. Verifique la precisión del GPS en su área
-2. Ajuste la geocerca para incluir un margen de seguridad
-3. Considere interferencias magnéticas en la zona
 
-## Reinicio de Fábrica
+## Seguridad y Precaución
+
+### Para Animales
+- No utilice en animales menores a 6 meses
+- Inspeccione regularmente la zona del cuello
+- Retire inmediatamente si observa signos de incomodidad
+- Consulte a un veterinario si hay irritación persistente
+
+### Para Usuarios
+- Evite exponer el dispositivo a agua salada por períodos prolongados
+- No sumerja el collar en agua
+- Mantenga alejado de fuentes de calor extremo
+- No intente abrir la carcasa sellada
+
+### Disposal
+Este dispositivo contiene materiales electrónicos que deben desecharse adecuadamente:
+- Contacte centros de reciclaje electrónicos locales
+- No deseche en basura doméstica normal
+- La batería debe ser removida por un centro autorizado antes de desechar el dispositivo
+
+## Apéndice A: Cuidado del Panel Solar
+
+### Limpieza
+- Limpie la superficie solar con un paño suave y agua limpia
+- Evite productos químicos abrasivos
+- Limpie regularmente para mantener eficiencia óptima
+
+### Posicionamiento
+- Asegure que la superficie solar reciba luz directa
+- Evite sombras permanentes de la correa u otros objetos
+- Mantenga la superficie solar hacia arriba, en la parte superior del cuello, para máxima exposición diaria
+
+## Apéndice B: Interpretación de Alertas
+
+### Alertas Visuales
+| Color LED | Estado | Acción Requerida |
+|-----------|--------|------------------|
+| Rojo fijo | Batería baja | Cargar inmediatamente |
+| Rojo parpadeante | Alerta geocerca | Verificar posición animal |
+| Amarillo parpadeante | Error del sistema | Contactar soporte |
+| Verde/Azul alterno | Reinicio de fábrica | Esperar reinicio completo |
+
+### Mensajes LoRa
+Los mensajes enviados por LoRa incluyen:
+- ID único del collar
+- Coordenadas GPS actuales
+- Estado de batería (porcentaje)
+- Código de evento (normal/movimiento/alerta/error)
+
+## Apéndice C: Consejos para Pastoreo Óptimo
+
+### Configuración de Geocercas
+- Incluya un margen de seguridad de 50 metros del perímetro físico
+- Cree múltiples geocercas para áreas de pastoreo rotacional (función planificada; la versión actual admite un único polígono)
+- Defina zonas de exclusión para áreas peligrosas (ríos, carreteras) (función planificada)
+
+### Monitoreo de Animales
+- Verifique alertas diariamente
+- Preste atención a patrones de movimiento inusuales
+- Documente comportamientos para mejorar manejo del hato
+
+### Mantenimiento Preventivo
+- Inspeccione físicamente cada collar mensualmente
+- Reemplace correas cada 6 meses o según desgaste
+- Actualice firmware trimestralmente
+
 ## Principios de Diseño Inspirados en Elecia White
 
 ### Facilidad de Uso
@@ -261,8 +266,9 @@ Este producto fue diseñado siguiendo los principios de "Making Embedded Systems
 - **Alertas proactivas**: Notificación anticipada de condiciones que requieren atención
 
 Estos principios garantizan que el DR-VF-01 sea una solución confiable y fácil de usar para sus necesidades de pastoreo extensivo.
-Para restaurar la configuración de fábrica:
-1. Presione y mantenga el botón lateral por 30 segundos
-2. Espere a que el LED parpadee rápidamente en rojo y azul
-3. El dispositivo se reiniciará con configuración predeterminada
-4. Vuelva a realizar la configuración inicial
+
+---
+
+*Este manual está sujeto a cambios sin previo aviso. Consulte www.dr-vf-01.com/manual para la versión más reciente.*
+
+© 2026 DR-VF-01 Technologies. Todos los derechos reservados.

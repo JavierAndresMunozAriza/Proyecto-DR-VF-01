@@ -13,7 +13,7 @@ El DR-VF-01 es un sistema avanzado de geocercamiento para ganado que combina tec
 ### Comunicación de Largo Alcance
 - **Radio LoRa**: SX1262 con alcance de hasta 15km en campo abierto
 - **Frecuencia**: 915MHz (banda ISM americana)
-- **Potencia de Transmisión**: +22dBm (máximo legal)
+- **Potencia de Transmisión**: +22dBm (máximo del transceptor SX1262)
 - **Protocolo Propietario**: Optimizado para bajo consumo y alta fiabilidad
 
 ### Detección Inteligente de Movimiento
@@ -60,14 +60,14 @@ El DR-VF-01 es un sistema avanzado de geocercamiento para ganado que combina tec
 
 ### Sistema de Disuasión Inteligente
 - **Optoacoplador VO617A**: Para activación selectiva de disuasión
-- **Feedback Háptico**: Vibración controlada para entrenamiento animal
+- **Feedback Háptico (planificado)**: Vibración controlada para entrenamiento animal; el BOM actual no incluye motor de vibración
 - **Programación Personalizable**: Intensidad y duración ajustables
 
 ### Configuración Flexible
 - **Wi-Fi SoftAP**: Para configuración inicial sin necesidad de infraestructura
 - **Interfaz Web Responsiva**: Compatible con dispositivos móviles
-- **Geocercas Multipunto**: Definición de áreas complejas con múltiples polígonos
-- **Zonas de Exclusión**: Áreas peligrosas o restringidas
+- **Geocercas Multipunto (planificado)**: Definición de áreas complejas con múltiples polígonos; el motor actual admite un único polígono
+- **Zonas de Exclusión (planificado)**: Áreas peligrosas o restringidas
 
 ### Monitoreo y Diagnóstico
 - **Registro de Eventos**: Historial completo de movimientos y alertas
@@ -93,10 +93,10 @@ El DR-VF-01 es un sistema avanzado de geocercamiento para ganado que combina tec
 
 ## Ventajas Competitivas
 
-### Tecnología Probada
+### Tecnología Seleccionada
 - Componentes industriales seleccionados por fiabilidad
-- Validación en condiciones reales de campo
-- Certificaciones RF y seguridad eléctrica
+- Validación en condiciones reales de campo (planificada; aún no realizada)
+- Certificaciones RF y seguridad eléctrica (objetivo; pendientes de ensayo)
 
 ### Facilidad de Uso
 - Instalación intuitiva con guía paso a paso
@@ -118,7 +118,7 @@ El DR-VF-01 es un sistema avanzado de geocercamiento para ganado que combina tec
 ### Resistencia Ambiental
 - **Grado de Protección**: IP67 (protección contra polvo y agua sumergido temporalmente)
 - **Resistencia UV**: Carcasa formulada para exposición solar prolongada
-- **Resistencia a Impactos**: IK08 según norma IEC 62262
+- **Resistencia a Impactos**: IK08 según norma IEC 62262 (objetivo de diseño, sin ensayar)
 
 ## Soporte y Garantía
 
@@ -138,7 +138,7 @@ El DR-VF-01 es un sistema avanzado de geocercamiento para ganado que combina tec
 | Modelo | Descripción | Precio Sugerido |
 |--------|-------------|-----------------|
 | DR-VF-01-BAS | Modelo básico con LoRa | $149.99 |
-| DR-VF-01-PRO | Modelo profesional con BLE | $179.99 (proximamente) |
+| DR-VF-01-PRO | Modelo profesional con BLE | $179.99 (próximamente) |
 
 ### Incluido en el Kit
 - Collar DR-VF-01 completamente ensamblado
@@ -152,9 +152,6 @@ El DR-VF-01 es un sistema avanzado de geocercamiento para ganado que combina tec
 - **Correas Extra**: $14.99
 - **Kit de Reparación**: $39.99
 
----
-
-*Para más información técnica o solicitudes de muestra, contacte a nuestro equipo de ventas.*
 ## Principios de Diseño Inspirados en Elecia White
 
 ### Robustez del Sistema
@@ -173,3 +170,7 @@ El DR-VF-01 es un sistema avanzado de geocercamiento para ganado que combina tec
 - **Reliable communication**: Protocolos robustos para condiciones de campo
 
 Este producto representa la aplicación práctica de los principios de sistemas embebidos confiables descritos por Elecia White, garantizando operación estable y mantenimiento mínimo en aplicaciones ganaderas extensivas.
+
+---
+
+*Para más información técnica o solicitudes de muestra, contacte a nuestro equipo de ventas.*
