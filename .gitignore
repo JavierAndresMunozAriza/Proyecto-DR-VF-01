@@ -19,7 +19,7 @@ reports/output/
 *.synctex.gz
 *.pdf  
 # EXCEPCIÓN: Mantiene rastreado el PDF final listo para entrega en la raíz
-!DR-VF-01_Reporte_Final.pdf
+!DR-VF-01_Memoria_Tecnica.pdf
 # Firmware / Compiladores (Binarios y Build)
 build/
 .pio/
@@ -32,3 +32,12 @@ build/
 # Entornos virtuales
 .venv/
 
+# Firmware build artifacts
+*.o
+*.backup
+firmware/src/geofence/simple_test
+firmware/src/geofence/fixed_test_geofence
+firmware/src/geofence/comprehensive_test
+
+# Gentle AI skill registry
+.atl/
