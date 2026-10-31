@@ -1,6 +1,6 @@
 # Asignación de Pines del Collar DR-VF-01
 
-**Estado:** PROPUESTA v2.0 (2026-10-30), pendiente de revisión del autor. Es el **único mapa de pines** del proyecto: la PCB y la ESP32-S3-DevKitC-1 (N16R8) usan los mismos GPIO para que el firmware sea idéntico en ambas. Cualquier otro mapa en `docs/` o `reports/` debe remitir a este archivo.
+**Estado:** PROPUESTA v2.2 (2026-10-31), pendiente de revisión del autor. Es el **único mapa de pines** del proyecto: la PCB y la ESP32-S3-DevKitC-1 (N16R8) usan los mismos GPIO para que el firmware sea idéntico en ambas. Cualquier otro mapa en `docs/` o `reports/` debe remitir a este archivo.
 
 **Fuente verificada:** *ESP32-S3-WROOM-1 & WROOM-1U Datasheet v1.8*, Tabla 3-1 (pines del módulo) y Tabla 4-1 (strapping). Las hojas de datos se descargan según `hardware/datasheets/README.md`.
 
@@ -54,7 +54,7 @@
 | 47 | 24 | LORA_TXEN | Módulo LoRa, pin TX (pin 7, conmutador de antena) | Salida. Si el conmutador lo gobierna DIO2 (pin 8 unido a pin 7), dejar libre |
 | 48 | 25 | RESERVA_F2 | Módem Fase 2 (PWRKEY) | Libre en Fase 1 |
 
-**Señales retiradas del mapa anterior:** `POWER_GOOD` y `ENABLE_CHG` (CN3791). El datasheet del CN3791 (`hardware/datasheets/cn3791_datasheet.pdf`) confirma que no tiene esos pines: sus pines son VG, GND, CHRG, DONE, COM, MPPT, BAT, CSP, VCC y DRV, y CHRG y DONE son salidas de drenador abierto. El TP4056 (carga por USB-C) tiene su propia salida de estado. Si se quiere leer alguna, GPIO42 es el candidato.
+**Señales retiradas del mapa anterior:** `POWER_GOOD` y `ENABLE_CHG` (CN3791). El datasheet del CN3791 (`hardware/datasheets/cn3791_datasheet.pdf`) confirma que no tiene esos pines: sus pines son VG, GND, CHRG, DONE, COM, MPPT, BAT, CSP, VCC y DRV, y CHRG y DONE son salidas de drenador abierto. El TP4056 (carga por USB-C) tiene dos salidas de estado de drenador abierto (pines 6 y 7), pero no queda un GPIO libre para leerlas: ver la sección del TP4056.
 
 ## Conexiones de periféricos
 
@@ -76,7 +76,9 @@ Los números de pin físico de los CI van solo donde se verificaron en la hoja d
 
 SDA y SCL a GPIO8 y GPIO9. INT1 a GPIO4. Para I2C: CS a VDDIO, SDO/SA0 define la dirección (0x6A o 0x6B). Salida INT configurable como push-pull u open-drain: si se deja push-pull no se necesita pull-up externo en GPIO4.
 
-### Módulo LoRa DX-LR30-900M22S (SX1262, SPI; pines verificados en `docs/datasheets/`)
+Las asignaciones de SDA, SCL e INT1 valen para el LSM6DSOX y para el LSM6DS3TR-C del docente una vez verificadas en el datasheet de cada uno; la elección de IMU es **POR DECIDIR** (`BOM.md`).
+
+### Módulo LoRa DX-LR30-900M22S (SX1262, SPI; pines tomados del folleto del vendedor, `hardware/datasheets/lr30-900m22s_vendor_brochure.pdf`)
 
 Variante a comprar: **LR30-900M22S** (módulo SMD de 20x14x2.3 mm, 1.8 a 3.7 V). No la "SP", que es una placa con STM32 y UART.
 
@@ -107,6 +109,37 @@ GPIO1 → resistencia serie → LED de entrada. Calcular `R = (3.3 V − V_F) / 
 
 32.768 kHz entre GPIO15 y GPIO16 con sus dos capacitores de carga. Ver `BOM.md`, sección Pasivos.
 
+### Medidor de batería MAX17048 (datasheet verificado)
+
+SDA y SCL en el mismo bus I2C que el IMU (GPIO8 y GPIO9). Dirección de 7 bits 0x36 (0110110), sin conflicto con el LSM6DSOX (0x6A o 0x6B). VDD a la batería (2.5 a 4.5 V), no a 3V3. ALRT (drenador abierto): sin GPIO asignado; **POR DECIDIR** si se usa.
+
+### Cargador USB-C TP4056 (pines verificados)
+
+| TP4056 | Pin | Conexión |
+|--------|-----|----------|
+| TEMP | 1 | NTC del paquete de batería; a GND si no se usa |
+| PROG | 2 | RPROG de 2.4 kΩ a GND (500 mA) |
+| GND | 3 | GND |
+| VCC | 4 | VBUS del USB-C, después de la protección ESD (4.0 a 8.0 V) |
+| BAT | 5 | batería, después de la protección |
+| Salida de carga terminada | 6 | drenador abierto; sin GPIO asignado |
+| Salida de carga en curso | 7 | drenador abierto; sin GPIO asignado |
+| CE | 8 | nivel alto = operación normal |
+
+Ningún GPIO del módulo queda libre para leer el estado (GPIO42 es LORA_RXEN y todos los GPIO0-21 y 38-48 están asignados). Opciones por decidir: GPIO47 si DIO2 gobierna el conmutador de antena, GPIO48 en la Fase 1, o dejar el estado solo en un LED.
+
+### Cargador solar CN3791 (pines verificados)
+
+CHRG (pin 3) a GPIO41 como CHRG_STAT. DONE (pin 4): la salida de estado que no se use se conecta a GND (datasheet del CN3791). Sin pines de temperatura, habilitación ni power-good.
+
+### USB-C y protección ESD
+
+D+ a GPIO20 y D- a GPIO19 (USB nativo, para programación). CC1 y CC2 con 5.1 kΩ a GND (el collar es dispositivo). USBLC6-2SC6 en D+, D- y VBUS; su pinout se confirma con el datasheet de ST, que está pendiente de bajar. VBUS solo alimenta al TP4056, nunca al LDO.
+
+### Protección de batería
+
+Pieza por identificar: el `BQ2975DRBR` del BOM no existe. Sin pieza no hay pines que asignar.
+
 ## Consideraciones de diseño
 
 1. Niveles lógicos de 3.3 V en todos los pines.
@@ -128,4 +161,5 @@ GPIO1 → resistencia serie → LED de entrada. Calcular `R = (3.3 V − V_F) / 
 |---------|-------|---------|
 | 1.0-1.1 | 2024 | Diseño inicial (con GPIO inexistentes y duplicados) |
 | 2.1 | 2026-10-30 | Pines del módulo LoRa DX-LR30 verificados (RXEN/TXEN en GPIO42/47). Fase 2 pasa a UART0 (GPIO43/44) con PWRKEY en GPIO48. Corregido: EXTINT es entrada del GNSS, no fuente de despertar |
+| 2.2 | 2026-10-31 | Secciones de MAX17048, TP4056, CN3791, USB-C y protección de batería; corregido el candidato de GPIO del TP4056 (GPIO42 es LORA_RXEN); nota de IMU; folleto del módulo LoRa movido a `hardware/datasheets/` |
 | 2.0 | 2026-10-30 | Rehecho contra el datasheet v1.8 del módulo. GPIO05 ya no se repite. Sin GPIO22-34. USB D+/D- corregidos. GNSS con TX/RX cruzados |

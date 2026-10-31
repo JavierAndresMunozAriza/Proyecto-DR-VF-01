@@ -20,10 +20,11 @@ Verifique que su kit incluya:
 ### Paso 1: Carga Inicial
 Antes de usar el collar por primera vez:
 
-1. Conecte el cable USB-C al puerto de carga del collar
-2. Conecte el otro extremo a un cargador USB de 5V/1A
-3. Espere hasta que el LED verde pase de fijo a parpadeante, lo que indica carga completa (aproximadamente 2 horas)
-4. Desconecte el cable de carga
+1. Retire la tapa ciega del puerto USB-C (tapas ciegas USB-C: POR DECIDIR; sellado pendiente)
+2. Conecte el cable USB-C al puerto de carga del collar
+3. Conecte el otro extremo a un cargador USB de 5V (el collar limita la carga a 500mA, no se necesita un cargador de 1A)
+4. Espere el tiempo de carga: no menos de 2.4 horas con una batería de 1200mAh o 3 horas con una de 1500mAh (capacidad POR DECIDIR), antes de la fase final de tensión constante. La indicación por LED de carga completa por USB-C está POR DECIDIR (hardware no definido)
+5. Desconecte el cable de carga y vuelva a colocar la tapa del puerto USB-C hasta que cierre por completo
 
 ### Paso 2: Ajuste de la Correa
 1. Coloque el collar alrededor del cuello del animal
@@ -74,8 +75,8 @@ Antes de usar el collar por primera vez:
 ## Uso Diario
 
 ### Indicadores LED
-- **Verde fijo**: Cargando
-- **Verde parpadeante**: Carga completa
+- **Verde fijo**: Cargando (indicación de carga por USB-C POR DECIDIR; hardware no definido)
+- **Verde parpadeante**: Carga completa (indicación de carga por USB-C POR DECIDIR; hardware no definido)
 - **Azul parpadeante**: Modo configuración
 - **Rojo fijo**: Batería baja
 - **Rojo parpadeante**: Alerta de geocerca activa
@@ -139,18 +140,18 @@ Para restaurar la configuración de fábrica:
 - Correa: Nylon resistente UV, ajustable
 
 ### Autonomía
-- Batería: LiPo 3.7V 1500mAh
-- Autonomía típica: 60-80 días
-- Tiempo de carga: 2-3 horas con panel solar
+- Batería: LiPo 3.7V, 1200mAh o 1500mAh (capacidad POR DECIDIR)
+- Autonomía teórica: unos 190 días con 1200mAh (calculado; unos 238 días con 1500mAh; sin medir)
+- Tiempo de carga: por USB-C a 500mA, no menos de 2.4 horas con 1200mAh o 3 horas con 1500mAh; con panel solar POR DECIDIR (depende del panel, MPN pendiente; sin medir)
 
 ### Conectividad
 - Wi-Fi: 2.4GHz para configuración inicial
-- LoRa: 915MHz, hasta 15km de alcance
-- GNSS: GPS/GLONASS/Galileo/BeiDou
+- LoRa: 915MHz, alcance objetivo de más de 5km en campo abierto (sin medir)
+- GNSS: solo L1; GPS, Galileo y BeiDou B1I por defecto, GLONASS configurable
 
 ### Resistencia Ambiental
-- Grado de protección: IP67
-- Temperatura de operación: -20°C a +65°C
+- Grado de protección: IP67 (objetivo de diseño; pendiente de ensayo)
+- Temperatura de operación: -20°C a +65°C (no se declara operación por encima de 65°C)
 - Resistencia UV: Clasificación industrial
 
 ## Garantía y Soporte

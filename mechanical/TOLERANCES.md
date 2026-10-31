@@ -50,6 +50,8 @@ Todas las dimensiones están expresadas en milímetros (mm) a menos que se indiq
 | Posición taladros montaje | - | ±0.05 | A |
 
 ### 2. Conector USB-C
+El MPN del conector USB-C está POR DECIDIR (BOM, sección 1.6): revisar estas tolerancias al elegirlo.
+
 | Característica | Tolerancia | Notas |
 |----------------|------------|-------|
 | Posición eje X | ±0.1 | B |
@@ -64,12 +66,24 @@ Todas las dimensiones están expresadas en milímetros (mm) a menos que se indiq
 | Recorrido útil | 0.3 | ±0.02 | A |
 | Fuerza actuación | 150g | ±20g | B |
 
+### 4. Tapa Ciega USB-C, Panel Solar y Batería
+Sin tolerancias definidas: dependen de piezas aún no elegidas. No se asigna ningún valor hasta cerrar los puntos POR DECIDIR del BOM.
+
+| Elemento | Nominal | Tolerancia | Estado |
+|----------|---------|------------|--------|
+| Tapa ciega USB-C | POR DECIDIR (BOM, sección 2.2) | Pendiente | Tipo de sellado POR DECIDIR |
+| Hueco y fijación del panel solar | Pendiente (6V, al menos 1W, MPN POR DECIDIR) | Pendiente | Panel sin MPN |
+| Paso del cable del panel (JST PH) | Pendiente | Pendiente | Ver `mechanical/IP67_SPEC.md`, sección 5 |
+| Alojamiento de la batería | Pendiente (LiPo de 1200mAh o 1500mAh, POR DECIDIR) | Pendiente | Tamaño de la celda abierto |
+
 ## Elementos de Fijación
 
-### 1. Tornillos Autofresantes M2
+### 1. Tornillos M2x6 Cabeza Allen e Insertos Roscados M2
+Según el BOM, sección 2.1 (tornillo M2x6 cabeza allen e inserto roscado M2).
+
 | Característica | Tolerancia | Notas |
 |----------------|------------|-------|
-| Diámetro nominal | M2 | ISO 7046 |
+| Diámetro nominal | M2 | ISO 7046 (norma por verificar: el BOM indica cabeza allen) |
 | Longitud útil | ±0.1 | C |
 | Torque apriete | 0.7 N·m ±0.1 | Especificación crítica |
 
@@ -95,21 +109,24 @@ Todas las dimensiones están expresadas en milímetros (mm) a menos que se indiq
 | Ondulación (Wt) | 4.0 μm | ISO 4287 |
 | Desviación planitud | 0.05 mm | Clase A |
 
-## Antena FPC
+## Antenas
+
+El BOM lista tres antenas (ver `mechanical/ANTENNA_PLACEMENT.md`). Las tolerancias están pendientes: no hay hoja de datos del Würth 2015301200 ni del parche GNSS. Los valores del texto anterior para una sola antena FPC (65.0mm x 15.0mm, 0.1mm de dieléctrico, pads de soldadura) no proceden de la hoja de datos de esa pieza, describían una soldadura directa que el BOM no usa y se retiraron.
 
 ### 1. Dimensiones Físicas
-| Dimensión | Nominal | Tolerancia | Clase |
-|-----------|---------|------------|-------|
-| Longitud total | 65.0 | ±0.5 | C |
-| Anchura útil | 15.0 | ±0.2 | B |
-| Grosor dieléctrico | 0.1 | ±0.01 | A |
+| Antena | Dimensión | Nominal | Tolerancia |
+|--------|-----------|---------|------------|
+| FPC Wi-Fi/BLE 2.4 GHz (Würth 2015301200) | Longitud, anchura y grosor | Pendiente | Pendiente |
+| Flexible LoRa 915 MHz con u.FL | Longitud | 80.0 (8 cm, BOM) | Pendiente |
+| Parche GNSS pasivo (MPN POR DECIDIR) | Largo x ancho x alto | 18.0 x 18.0 x 4.0 (BOM) | Pendiente |
 
-### 2. Puntos de Soldadura
+### 2. Conectores u.FL
 | Característica | Tolerancia | Notas |
 |----------------|------------|-------|
-| Posición pads | ±0.05 | A |
-| Dimensiones pad | ±0.02 | A |
-| Coplanaridad | 0.075 | IPC-A-610 |
+| Posición del conector u.FL SMD de la antena LoRa | Pendiente | U.FL-R-SMT-1 a verificar (BOM, sección 1.3) |
+| Conector U.FL del módulo ESP32-S3-WROOM-1U (FPC Wi-Fi/BLE) | Pendiente | Pieza del módulo |
+| Recorrido del cable de la antena LoRa | Pendiente | 8 cm de largo |
+| Conexión de la antena GNSS | Pendiente | POR DECIDIR |
 
 ## Correa de Ajuste
 
@@ -178,6 +195,7 @@ Todas las dimensiones están expresadas en milímetros (mm) a menos que se indiq
 |---------|-------|-------------------|
 | 1.0 | 2024-05-15 | Versión inicial |
 | 1.1 | 2024-06-20 | Ajuste tolerancia USB-C |
+| 1.2 | 2026-10-31 | Antenas según el BOM (tres antenas, tolerancias pendientes); tornillos M2x6 allen con insertos; tapa USB-C, panel solar y batería marcados pendientes |
 
 ### 2. Procedimiento de Modificación
 Cualquier cambio en estas tolerancias requiere:

@@ -6,25 +6,26 @@ El DR-VF-01 es un sistema avanzado de geocercamiento para ganado que combina tec
 ## Características Principales
 
 ### Localización Precisa
-- **GNSS de Alta Sensibilidad**: u-blox MAX-M10S con recepción cuádruple (GPS/GLONASS/Galileo/BeiDou)
-- **Precisión Horizontal**: < 3 metros RMS
+- **GNSS de Alta Sensibilidad**: u-blox MAX-M10S (solo L1) con recepción concurrente de hasta cuatro constelaciones (GPS, GLONASS, Galileo, BeiDou) según la configuración; por defecto GPS, Galileo y BeiDou B1I
+- **Precisión Horizontal**: < 3 metros RMS (objetivo; sin medir en el collar. La hoja de datos del MAX-M10S indica 1.5 m CEP en condiciones de prueba estáticas)
 - **Tiempo de Adquisición**: < 30 segundos en condiciones normales
 
 ### Comunicación de Largo Alcance
-- **Radio LoRa**: SX1262 con alcance de hasta 15km en campo abierto
+- **Radio LoRa**: módulo DX-LR30-900M22S (SX1262) con alcance objetivo de más de 5 km en campo abierto (sin medir; el vendedor del módulo indica 8 km de distancia de transmisión abierta, dato de marketing)
 - **Frecuencia**: 915MHz (banda ISM americana)
 - **Potencia de Transmisión**: +22dBm (máximo del transceptor SX1262)
 - **Protocolo Propietario**: Optimizado para bajo consumo y alta fiabilidad
 
 ### Detección Inteligente de Movimiento
-- **Sensor IMU Integrado**: LSM6DSOX para detección precisa de movimiento
+- **Sensor IMU Integrado**: IMU de 6 ejes para detección de movimiento (LSM6DSOX en el BOM; la elección entre LSM6DSOX y LSM6DS3TR-C está POR DECIDIR)
 - **Wake-up Selectivo**: Solo activo cuando el animal se mueve significativamente
 - **Umbral Ajustable**: Configurable entre 0.1g y 1.0g
 
 ### Eficiencia Energética Revolucionaria
-- **Autonomía Extendida**: Hasta 80 días con batería LiPo de 1500mAh
-- **Modo Deep Sleep**: < 5μA de consumo en reposo
-- **Carga Solar Integrada**: CN3791 MPPT con panel solar de 2W
+- **Autonomía Extendida**: unos 190 días con batería LiPo de 1200mAh (teórico, calculado con un factor de degradación de 0.85; unos 238 días con 1500mAh; la capacidad de la batería está POR DECIDIR; sin medir)
+- **Modo Deep Sleep**: unos 124μA de consumo en reposo del sistema (calculado; sin medir)
+- **Carga Solar Integrada**: CN3791 MPPT con panel solar de 6V y al menos 1W (MPN POR DECIDIR)
+- **Carga por USB-C**: TP4056 a 500mA (carga de banco); el puerto USB-C no alimenta el sistema
 - **Gestión Inteligente de Energía**: Optimización automática según perfil de uso
 
 ## Especificaciones Técnicas
@@ -33,22 +34,28 @@ El DR-VF-01 es un sistema avanzado de geocercamiento para ganado que combina tec
 | Componente | Especificación |
 |------------|---------------|
 | Microcontrolador | ESP32-S3-WROOM-1U-N16R8 (16MB Flash, 8MB PSRAM) |
-| GNSS | u-blox MAX-M10S |
-| Radio LoRa | SX1262 |
-| IMU | LSM6DSOX |
-| Cargador Solar | CN3791 MPPT |
-| Batería | LiPo 3.7V 1200-1500mAh |
-| Antena | FPC interna flexible de 8 dBi |
+| GNSS | u-blox MAX-M10S (solo L1) |
+| Radio LoRa | Módulo DX-LR30-900M22S (SX1262 integrado, SPI, 915MHz) |
+| IMU | POR DECIDIR (LSM6DSOX o LSM6DS3TR-C) |
+| Regulador | LDO TLV75733PDBVR (3.3V, 1A) |
+| Cargador Solar | CN3791 MPPT, solo para el panel solar |
+| Cargador USB-C | TP4056, 500mA |
+| Medidor de batería | MAX17048 |
+| Protección ESD USB | USBLC6-2SC6 en las líneas del USB-C |
+| Protección de batería | POR DECIDIR |
+| Batería | LiPo 3.7V, 1200mAh o 1500mAh (POR DECIDIR) |
+| Panel solar | 6V, al menos 1W (MPN POR DECIDIR) |
+| Antenas | LoRa: flexible de 8cm con conector u.FL. Wi-Fi/BLE: FPC de 2.4GHz (Würth 2015301200). GNSS: parche pasivo de 18x18x4mm (MPN POR DECIDIR). Ganancias sin verificar |
 
 ### Desempeño
 | Parámetro | Valor |
 |-----------|-------|
-| Rango LoRa | Hasta 15km (campo abierto) |
-| Precisión GNSS | < 3m RMS |
-| Tiempo de Respuesta PIP | < 50ms |
-| Consumo en Sleep | < 5μA |
-| Temperatura de Operación | -20°C a +65°C |
-| Grado de Protección | IP67 |
+| Rango LoRa | Objetivo > 5km (campo abierto; sin medir) |
+| Precisión GNSS | < 3m RMS (objetivo; sin medir) |
+| Tiempo de Respuesta PIP | < 50ms (objetivo RF-02; pendiente de medir en la placa) |
+| Consumo en Sleep | Unos 124μA (calculado; sin medir) |
+| Temperatura de Operación | -20°C a +65°C (límite superior fijado por el módulo ESP32-S3-WROOM-1U-N16R8) |
+| Grado de Protección | IP67 (objetivo de diseño; pendiente de ensayo) |
 
 ### Dimensiones y Peso
 - **Dimensiones**: 120mm x 80mm x 25mm
@@ -111,12 +118,12 @@ El DR-VF-01 es un sistema avanzado de geocercamiento para ganado que combina tec
 ## Especificaciones Ambientales
 
 ### Condiciones de Operación
-- **Temperatura**: -20°C a +65°C
+- **Temperatura**: -20°C a +65°C ambiente (el módulo ESP32-S3-WROOM-1U-N16R8 está especificado de -40°C a 65°C ambiente; no se declara operación por encima de 65°C)
 - **Humedad**: 5% a 95% sin condensación
 - **Altitud**: Hasta 5000m sobre el nivel del mar
 
 ### Resistencia Ambiental
-- **Grado de Protección**: IP67 (protección contra polvo y agua sumergido temporalmente)
+- **Grado de Protección**: IP67 (protección contra polvo y agua sumergido temporalmente; objetivo de diseño, pendiente de ensayo)
 - **Resistencia UV**: Carcasa formulada para exposición solar prolongada
 - **Resistencia a Impactos**: IK08 según norma IEC 62262 (objetivo de diseño, sin ensayar)
 

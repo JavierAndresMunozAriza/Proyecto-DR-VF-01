@@ -10,7 +10,7 @@ Este BOM cubre **solo la PCB final** (ESP32-S3-WROOM-1U-N16R8). La Nordic Thingy
 
 1. Componentes con historial comprobado y disponibilidad a largo plazo.
 2. Reemplazables en campo.
-3. Rango de temperatura de -20 °C a +65 °C para todos los componentes.
+3. Rango de temperatura de -20 °C a +65 °C para todos los componentes. El módulo ESP32-S3-WROOM-1U-N16R8 admite -40 a 65 °C de ambiente (con ECC de la PSRAM activado, 85 °C y 1/16 menos de PSRAM utilizable; datasheet WROOM-1 v1.8): el límite de 65 °C no deja margen.
 4. Al menos dos fuentes de suministro para los componentes críticos.
 
 ## 1. Componentes electrónicos
@@ -26,7 +26,7 @@ La flash externa GD25Q128CWIGR y la SRAM externa IS62WVS5128GBLL-10NL **se elimi
 | Cant. | Descripción | MPN | Fabricante | Proveedor |
 |-------|-------------|-----|------------|-----------|
 | 1 | Módulo GNSS MAX-M10S | MAX-M10S-00B | u-blox | Avnet |
-| 1 | Antena GNSS cerámica (1575 MHz) | ANNMS-420.A | Toko | Digi-Key |
+| 1 | Antena GNSS pasiva tipo parche 18x18x4 mm (1575.42 MHz) | por decidir (el ANNMS-420.A no se pudo verificar) | por decidir | Digi-Key / Mouser |
 
 **POR DECIDIR:** la ANNMS-420.A no se pudo verificar (el código parece corrupto y el fabricante "Toko" es dudoso). El MAX-M10S recibe solo L1 (GPS/QZSS 1575.42 MHz, Galileo E1, BeiDou B1I, GLONASS L1; datasheet), así que **una antena L1+L5 no aporta nada**. Como el módulo ya integra LNA y filtro SAW, se recomienda un **parche cerámico pasivo de 18x18x4 mm a 1575.42 MHz** con datasheet de un fabricante conocido y plano de masa definido en el layout. Una antena activa solo se justifica con cable largo: consume 15-25 mA (el VCC_RF del MAX-M10S entrega como máximo 50 mA). Antena descartada: A-SKY AK521 activa L1+L5 (25 mm, 20 dB de LNA).
 
@@ -44,7 +44,7 @@ El chip SX1262 suelto se sustituye por un módulo: ya integra el cristal de 32 M
 
 Pendiente de confirmar con el vendedor: para qué sirve DIO2 y si el pin TX va unido a él por dentro (de eso depende si GPIO47 hace falta), y si el oscilador de 32 MHz es cristal o TCXO. La ficha exige conectar la antena antes de energizar. La antena por defecto sale por el pad ANT; la PCB necesita una línea de 50 ohm hasta el conector u.FL.
 
-**POR DECIDIR:** la antena de 8 cm es un monopolo de cuarto de onda y su rendimiento depende del plano de masa de la PCB. Probar alcance real. Para bancada, el kit SMA de 3 dBi con pigtail es suficiente.
+**POR DECIDIR:** la antena de 8 cm es un monopolo de cuarto de onda y su rendimiento depende del plano de masa de la PCB. Probar alcance real. Para bancada, el kit SMA de 3 dBi con pigtail es suficiente. Conector de la antena LoRa: el módulo trae una pastilla IPX y una pata ANT; confirmar con el vendedor cómo se selecciona y mantener solo una opción (el conector u.FL de la PCB o el IPX del módulo).
 
 ### 1.4 Sensores y actuadores
 | Cant. | Descripción | MPN | Fabricante | Proveedor |
@@ -63,17 +63,17 @@ El MAX17048 lo exigen `docs/REQUIREMENTS.md` y `docs/ARCHITECTURE.md` y no estab
 |-------|-------------|-----|------------|-----------|
 | 1 | Regulador LDO 3.3 V, **1 A**, Iq 25 µA, SOT-23-5 (reemplaza al TPS7A0533, de 200 mA) | TLV75733PDBVR | Texas Instruments | Digi-Key |
 | 1 | Cargador solar MPPT CN3791 | CN3791 | Consonance | AliExpress |
-| 1 | Cargador lineal para la carga por USB-C (1 A máx.; se limita a 500 mA con RPROG de 2.4 kΩ) | TP4056 (ESOP-8) | NanJing Top Power | Docente (sin compra) |
+| 1 | Cargador lineal para la carga por USB-C (1 A máx.; se limita a 500 mA con RPROG de 2.4 kΩ) | TP4056 (ESOP-8) | NanJing Top Power | Docente (prototipo); producción: distribuidor por definir |
 | 1 | Protección de batería | BQ2975DRBR | Texas Instruments | Digi-Key |
 | 1 | Batería LiPo 3.7 V 1500 mAh | PL063-1500 | PowerStream | Digi-Key |
 
-**Regulador (decidido el 2026-10-30):** el TPS7A0533 entrega 200 mA como máximo y las cargas del repo suman 221 a 394 mA, así que se sustituye por el TLV757P de 3.3 V. Datasheet (`TLV757P`, verificado): 1 A, corriente quiescente de 25 µA típicos, entrada de 1.45 a 5.5 V, caída máxima de 425 mV a 1 A, descarga activa de la salida. Referencia exacta: **TLV75733PDBVR** (SOT-23-5, carrete de 3000). También existen TLV75733PDRVR (WSON-6) y TLV75733PDYDR (SOT-23-5 con pad térmico). Para pocas unidades, el sufijo T es el de 250 piezas según la nomenclatura del datasheet; comprobar la existencia en el distribuidor. Con entrada de 4.2 V y 300 mA disipa unos 0.27 W. La resistencia térmica del DBV es 100.8 °C/W en la placa de evaluación de TI y 231.1 °C/W en la placa JEDEC, de modo que en régimen continuo el DYD con pad térmico (60.3 °C/W) es más seguro; en ráfagas cortas, como el TX de LoRa, el DBV basta. El TLV755P (TLV75533PDBVR) es de solo 500 mA. Hay que recalcular `hardware/POWER_BUDGET.md` con una Iq de 25 µA en lugar de 1 µA. El regulador DS8570F8 de 3 A que tiene el docente no se usa: un LDO de esa corriente suele tener Iq de cientos de µA o más, y el presupuesto de sleep es de unos 95 µA; revisar su datasheet antes de descartarlo.
+**Regulador (decidido el 2026-10-30):** el TPS7A0533 entrega 200 mA como máximo y las cargas del repo suman 224 a 394 mA, así que se sustituye por el TLV757P de 3.3 V. Datasheet (`TLV757P`, verificado): 1 A, corriente quiescente de 25 µA típicos, entrada de 1.45 a 5.5 V, caída máxima de 425 mV a 1 A, descarga activa de la salida. Referencia exacta: **TLV75733PDBVR** (SOT-23-5, carrete de 3000). También existen TLV75733PDRVR (WSON-6) y TLV75733PDYDR (SOT-23-5 con pad térmico). Para pocas unidades, el sufijo T es el de 250 piezas según la nomenclatura del datasheet; comprobar la existencia en el distribuidor. Con entrada de 4.2 V y 300 mA disipa unos 0.27 W. La resistencia térmica del DBV es 100.8 °C/W en la placa de evaluación de TI y 231.1 °C/W en la placa JEDEC, de modo que en régimen continuo el DYD con pad térmico (60.3 °C/W) es más seguro; en ráfagas cortas, como el TX de LoRa, el DBV basta. El TLV755P (TLV75533PDBVR) es de solo 500 mA. Hay que recalcular `hardware/POWER_BUDGET.md` con una Iq de 25 µA en lugar de 1 µA. El regulador DS8570F8 de 3 A que tiene el docente no se usa: un LDO de esa corriente suele tener Iq de cientos de µA o más, y el presupuesto de sleep es de unos 124 µA; revisar su datasheet antes de descartarlo.
 
 **POR DECIDIR:**
 - BQ2975 necesita MOSFET externos y resistencia de sensado que no están en el BOM. Confirmar si la batería PL063-1500 ya trae su propia protección, porque entonces el BQ2975 duplica la función.
-- CN3791: componentes externos pendientes (inductor, MOSFET de paso, resistencia de sensado, divisor del MPPT, diodos D1 y D2). Fuente: `hardware/datasheets/cn3791_datasheet.pdf`. El divisor para 6 V es R3 = 402 kΩ y R4 = 100 kΩ (referencia de 1.205 V; ver `docs/ARCHITECTURE.md`, sección 2.2). **El CN3791 no tiene pin de temperatura ni de habilitación** (sus pines son VG, GND, CHRG, DONE, COM, MPPT, BAT, CSP, VCC y DRV), así que no admite un NTC directo. Cargar por debajo de 0 °C daña la LiPo: hace falta otra solución para el corte por frío (por ejemplo, un NTC leído por el MCU).
+- CN3791: componentes externos pendientes (inductor, MOSFET de paso, resistencia de sensado, divisor del MPPT, diodos D1 y D2). Fuente: `hardware/datasheets/cn3791_datasheet.pdf`. El divisor para 6 V es R3 = 402 kΩ y R4 = 100 kΩ (referencia de 1.205 V; ver `docs/ARCHITECTURE.md`, sección 2.2). **El CN3791 no tiene pin de temperatura ni de habilitación** (sus pines son VG, GND, CHRG, DONE, COM, MPPT, BAT, CSP, VCC y DRV), así que no admite un NTC directo. Cargar por debajo de 0 °C daña la LiPo: hace falta otra solución para el corte por frío (por ejemplo, un NTC leído por el MCU). El TP4056 sí tiene pin TEMP (pin 1) para el NTC de la batería; sin NTC, ese pin va a GND (datasheet del TP4056).
 - Carga por USB-C (decidida el 2026-10-31): VBUS al TP4056 y de ahí a la batería, con RPROG de 2.4 kΩ para limitar a 500 mA. El USB-C no alimenta al LDO. El CN3791 queda solo para el panel solar porque con el divisor de 6 V no inicia carga desde 5 V. Pendiente: sumar al presupuesto de sleep la corriente del TP4056 sin USB (el datasheet da 2.5 µA típicos en standby con entrada presente; sin entrada no está tabulada) y decidir si se lee su salida de estado.
-- Batería: la PL063-1500 es difícil de conseguir y el envío es caro. Con 0.267 mA promedio, 1200 mAh ya da 159 días, así que no hace falta 1500. Opciones: LiPo 603450 de unos 1200 mAh con protección, LiPo 103450 de 1800-2000 mAh, o celda 18650 protegida (de marca verificable, con lengüetas soldadas o conductores: un portapilas de resortes es poco fiable con la vibración y el sellado IP67 del collar). Revisar la polaridad del conector JST contra la PCB. Si la celda trae protección propia, el BQ2975 sobra. Eléctricamente todas son iguales (1S, 3.7 V nominal, 4.2 V cargada): se conectan igual al cargador, así que la elección puede esperar. Lo que cambia es la capacidad, el tamaño, el conector y la polaridad. **POR DECIDIR.** Panel solar: ver sección 2.3.
+- Batería: la PL063-1500 es difícil de conseguir y el envío es caro. Con 0.223 mA promedio, 1200 mAh ya da 191 días, así que no hace falta 1500. Opciones: LiPo 603450 de unos 1200 mAh con protección, LiPo 103450 de 1800-2000 mAh, o celda 18650 protegida (de marca verificable, con lengüetas soldadas o conductores: un portapilas de resortes es poco fiable con la vibración y el sellado IP67 del collar). Revisar la polaridad del conector JST contra la PCB. Si la celda trae protección propia, el BQ2975 sobra. Eléctricamente todas son iguales (1S, 3.7 V nominal, 4.2 V cargada): se conectan igual al cargador, así que la elección puede esperar. Lo que cambia es la capacidad, el tamaño, el conector y la polaridad. **POR DECIDIR.** Panel solar: ver sección 2.3.
 
 ### 1.6 Conectores e interfaces
 | Cant. | Descripción | MPN | Fabricante | Proveedor |
@@ -106,6 +106,8 @@ El MAX17048 lo exigen `docs/REQUIREMENTS.md` y `docs/ARCHITECTURE.md` y no estab
 | 2 | Capacitor de tantalio 100 µF | TAJA107K016RNJ | AVX | Digi-Key |
 | 3 | Resistor 10 kΩ 1 % | RC0603FR-0710KL | Yageo | Digi-Key |
 | 2 | Resistor 100 kΩ 1 % | RC0603FR-07100KL | Yageo | Digi-Key |
+| 1 | Resistor 402 kΩ 1 % (R3 del divisor MPPT del CN3791, punto de 6 V) | por definir (serie RC0603FR-07) | Yageo | Digi-Key |
+| 1 | Resistor 2.4 kΩ 1 % (RPROG del TP4056, 500 mA) | por definir (serie RC0603FR-07) | Yageo | Digi-Key |
 
 **Corrección:** la fila antes decía "Cristal 40 MHz" con el código ECS-.327-12-5PXDN-TR. El prefijo ECS-.327 corresponde a un cristal de 32.768 kHz y el módulo ya incluye su cristal de 40 MHz (datasheet v1.8, sección de características). El MPN completo **POR DECIDIR**: el texto anterior estaba corrupto.
 
@@ -182,11 +184,14 @@ Plazos típicos: componentes estándar 1-2 semanas, personalizados 4-6, carcasa 
 
 | Componente | Dónde aparece | Estado |
 |------------|---------------|--------|
-| Waveshare Core1262-HF | ARCHITECTURE.md | Módulo de prototipo, no va en la PCB |
+| Waveshare Core1262-HF | ARCHITECTURE.md | Sustituido por el módulo DX-LR30-900M22S (decisión del 2026-10-30); si algún documento aún lo nombra, la mención es obsoleta |
 | ESP32-S3-DevKitC-1 y AMS1117 | ARCHITECTURE.md | Placa de prototipo, no va en la PCB |
 | PC817 | ARCHITECTURE.md | Optoacoplador de prototipo; la PCB usa el VO617A |
 | A7670SA y BG95-M3 | ARCHITECTURE.md / informe | Se contradicen como módem de Fase 2. **POR DECIDIR** |
 | Nordic Thingy:91 X | README, docs | Prueba de concepto, fuera de la PCB |
+| Placas de desarrollo de MAX17048, LSM6DSOX, MAX-M10S y CN3791, LED de 3 mm y cabeceras de 2.54 mm | ARCHITECTURE.md | Solo prototipo, no van en la PCB |
+| Antena de 5 dBi SMA y placa MAX-M10S con u.FL | COMPRAS.md (A4, A8) | Solo banco, no van en el producto |
+| LSM6DS3TR-C y TMP102 | Sección 7 (piezas del docente) | Prototipo; la elección de IMU es **POR DECIDIR** |
 
 ## 7. Biblioteca Altium del docente (`shared_lib.IntLib`)
 
@@ -211,4 +216,4 @@ No cubre y hay que crear o descargar: huella del ESP32-S3-WROOM-1U (la entrada `
 | 1.2 | 2026-10-30 | Estructura reparada (tabla solar, resistores y costos estaban desordenados). Eliminadas flash y SRAM externas (redundantes con el módulo). Cristal 40 MHz corregido a 32.768 kHz. MAX17048 añadido. Puntos bloqueantes marcados POR DECIDIR |
 | 1.3 | 2026-10-30 | SX1262 suelto reemplazado por módulo SPI, antena LoRa u.FL de 8 cm, USBLC6-2SC6, parche GNSS pasivo recomendado, opciones de batería, requisitos de Espressif para EN y alimentación |
 | 1.4 | 2026-10-30 | Módulo LoRa DX-LR30-900M22S confirmado (SPI), regulador TLV75733PDBVR de 1 A, panel de 6 V, IMU del docente, notas de USB-C y USBLC6 |
-| 1.5 | 2026-10-31 | Carga por USB-C con TP4056 (del docente) y CN3791 solo para el panel; divisor MPPT recalculado con la referencia real de 1.205 V; CN3791 sin pin de temperatura; presupuesto de sleep de 95 µA y autonomía de 159 días (1200 mAh) |
+| 1.5 | 2026-10-31 | Carga por USB-C con TP4056 (del docente) y CN3791 solo para el panel; divisor MPPT recalculado con la referencia real de 1.205 V; CN3791 sin pin de temperatura; presupuesto de sleep de 124 µA (123.76 µA) y autonomía de 191 días (1200 mAh) |

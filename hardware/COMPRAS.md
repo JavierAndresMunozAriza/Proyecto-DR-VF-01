@@ -24,7 +24,7 @@ Según el autor, el docente tiene estas piezas físicamente (mensaje del docente
 | D6 | Transceptor RS-485 | TP8485E-SR | Sin uso | |
 | D7 | Monitor de corriente | INA139NA/3K | Sin uso por ahora | |
 | D8 | Potenciómetro 10 kΩ | TC33X-2-103E | Sin uso | |
-| D9 | Regulador 3 A | DS8570F8 | No se usa hasta revisar su Iq | Un LDO de 3 A suele tener Iq alta; el sleep presupuestado es de unos 95 µA |
+| D9 | Regulador 3 A | DS8570F8 | No se usa hasta revisar su Iq | Un LDO de 3 A suele tener Iq alta; el sleep presupuestado es de unos 124 µA |
 | D10 | Pasivos, USB-C 16P, TVS, Schottky, MOSFET, LED RGB | ver biblioteca | Esquemático y prototipo | La biblioteca no trae ESP32-S3-WROOM-1U confirmado, MAX-M10S, LSM6DSOX, MAX17048, módulo LoRa, CN3791, VO617A, buzzer, cristal 32.768 kHz, u.FL ni JST SH |
 
 ## 2. AliExpress
@@ -37,10 +37,10 @@ Resumen de lo que se compra (detalle en las fichas):
 | A2 | Antena LoRa 8 cm con u.FL (10 uds) | $16.562 | aceptado |
 | A3 | Kit antena SMA 3 dBi + pigtail (2 uds) | $22.240 | aceptado |
 | A4 | Antena 915 MHz 5 dBi SMA con cable | $14.662 | propuesto |
-| A5 | MAX17048G+T10 (2 uds) | $6.729 | propuesto |
+| A5 | MAX17048G+T10 (2 uds) | $6.729 | aceptado |
 | A6 | USBLC6-2SC6 (10 uds) | $3.203 | propuesto |
-| A7 | Placa cargadora CN3791 6 V | $3.526 | propuesto |
-| A8 | Placa MAX-M10S con antena u.FL | $21.389 | propuesto |
+| A7 | Placa cargadora CN3791 6 V | $3.526 | aceptado |
+| A8 | Placa MAX-M10S con antena u.FL | $21.389 | aceptado |
 | R1 | Antena GNSS activa L1+L5 A-SKY | $25.404 | rechazado |
 | R2 | Antena corta GIZONT "10 dBi" | $38.690 | rechazado |
 | R3 | Antena GNSS activa 18x18 mm | $9.432 | rechazado |
@@ -51,7 +51,7 @@ Resumen de lo que se compra (detalle en las fichas):
 - **Vendedor:** ZC Technology Store. 4.5★, 24 valoraciones, 356 vendidos.
 - **Precio visto:** $18.762 (tachado $25.231,38; descuento nuevo comprador de $6.469,38). Máximo 1 unidad por comprador a ese precio. Envío gratis, entrega estimada 12 a 22 de noviembre.
 - **Variante a elegir:** **"LR30 900M22S"** (módulo SMD de 20x14x2.3 mm). No elegir la "900M22SP": es una placa con STM32 y UART.
-- **Aviso sobre el título:** dice "5V UART", pero eso describe la placa de desarrollo. El módulo es **SPI** y trabaja a 1.8 a 3.7 V, según el folleto del vendedor (`docs/datasheets/SX1262 LoRa módulo desarrollador.pdf`). Ese folleto es marketing, no el datasheet de Semtech.
+- **Aviso sobre el título:** dice "5V UART", pero eso describe la placa de desarrollo. El módulo es **SPI** y trabaja a 1.8 a 3.7 V, según el folleto del vendedor (`hardware/datasheets/lr30-900m22s_vendor_brochure.pdf`). Ese folleto es marketing, no el datasheet de Semtech.
 - **Para qué:** radio LoRa 915 MHz del collar. Pines en `hardware/pinout.md`.
 - **Cantidad sugerida:** 2 (collar y receptor, para pruebas de alcance). La oferta limita 1 por comprador: el segundo costaría más o requiere otra cuenta u otro pedido.
 - **Antes de comprar o al recibir:** pedir al vendedor para qué sirve DIO2 y si el pin TX va unido a él, y si el oscilador de 32 MHz es cristal o TCXO. Conectar la antena antes de energizar.
@@ -82,15 +82,17 @@ Resumen de lo que se compra (detalle en las fichas):
 - **Precio visto:** $14.662 (tachado $44.023,71; descuento nuevo comprador de $29.361,71). Envío gratis, entrega estimada 12 a 22 de noviembre.
 - **Variante a elegir:** **"915 antenna cable"** (la marcada en la captura; hay también variantes de 868 MHz).
 - **Para qué:** pruebas de alcance con buena ganancia. Es larga (unos 20 cm): no cabe en el collar.
+- **Estado:** propuesto. Ninguna decisión la acepta y hace lo mismo que la A3 (aceptada) con más ganancia: decidir si se compra.
 - **URL:** (pendiente)
 
-### A5. MAX17048G+T10 (propuesto)
+### A5. MAX17048G+T10 (aceptado)
 - **Título del listado:** "2-10 piezas MAX17048G+T10 DFN-8 MAX17048G MAX17048 Chip IC Venta al por mayor".
 - **Vendedor:** JINTAIXIN Global Store. 4.7★, más de 3.000 vendidos.
 - **Precio visto:** $6.729 por 2 unidades ($3.364,50 cada una; tachado $13.689,90). Envío gratis, entrega estimada 11 a 18 de noviembre.
 - **Variante a elegir:** "MAX17048G DFN-8"; número de modelo **2Pcs** (también 5 y 10).
 - **Para qué:** medidor de batería (fuel gauge) por I2C, dirección 0x36.
-- **Reservas:** el marcaje del chip de la foto no se puede confirmar sin el datasheet (no se pudo descargar). Para prototipo es razonable; para producción, Digi-Key.
+- **Por qué se acepta:** RF-05 exige el porcentaje de batería por I2C y el BOM lo incluye. El datasheet (`hardware/datasheets/max17048_datasheet.pdf`) confirma TDFN de 8 pines, VDD de 2.5 a 4.5 V, 3 µA en hibernación, 23 µA activo y dirección I2C 0x36.
+- **Reservas:** el marcaje del chip de la foto no se puede confirmar desde la foto. Para prototipo es razonable; para producción, Digi-Key.
 - **Al recibir:** debe responder en I2C en 0x36.
 - **URL:** (pendiente)
 
@@ -101,23 +103,26 @@ Resumen de lo que se compra (detalle en las fichas):
 - **Variante a elegir:** **USBLC6-2SC6**. En la captura el listado traía marcada por defecto la **USBLC6-4SC6** (4 líneas, otro pinout, sin pin de VBUS): no sirve para USB 2.0 D+/D-.
 - **Para qué:** protección ESD de D+, D- y VBUS del USB-C.
 - **Reservas:** marca no ST. El "manual de usuario" que trae el vendedor es texto genérico sin parámetros: no es un datasheet. Para producción, comprar el ST en Digi-Key o Mouser. Verificar el pinout con el datasheet de ST (no descargado).
+- **Estado:** propuesto hasta bajar el datasheet de ST y confirmar el pinout (pendiente en `hardware/datasheets/README.md`). El manual del vendedor era texto genérico y se borró.
 - **URL:** (pendiente)
 
-### A7. Placa cargadora solar CN3791 de 6 V (propuesta, para prototipo)
+### A7. Placa cargadora solar CN3791 de 6 V (aceptada, para prototipo)
 - **Título del listado:** "CN3791 Panel de cargador Solar ajustable MPPT 3,7 V 18650 Placa de cargador de batería de litio 6V/9V/12V PMW protección contra sobretensión".
 - **Vendedor:** Realpoy Module Wholesale. 4.9★, 459 valoraciones, más de 5.000 vendidos.
 - **Precio visto:** $3.526 (tachado $9.853,54; descuento nuevo comprador de $6.327,54). Envío gratis, entrega estimada 12 a 20 de noviembre.
 - **Variante a elegir:** **6V** (también 9V y 12V).
 - **Aviso:** es una **placa cargadora**, no un panel solar. El panel de 6 V (al menos 1 W) se compra aparte.
 - **Para qué:** probar la carga solar antes de dibujar la PCB.
+- **Por qué se acepta:** el CN3791 de 6 V coincide con el panel de 6 V de RNF-01 y con la decisión del 2026-10-30. Al recibir: medir desde qué tensión de entrada empieza a cargar (con 5 V de USB no debe cargar) y su consumo desde la batería sin entrada; la placa trae LEDs y otras piezas que el chip solo no tiene.
 - **URL:** (pendiente)
 
-### A8. Placa MAX-M10S con antena u.FL (propuesta, para banco)
+### A8. Placa MAX-M10S con antena u.FL (aceptada, para banco)
 - **Título del listado:** "U-BLOX MAX-M10S-00B-01 de 10.ª Generación, Módulo de Posicionamiento Beidou GPS GLONASS, Placa de Desarrollo, Placa Base, Antena".
 - **Vendedor:** Shenzhen Zhumengxin E... 4.9★, 12 valoraciones, 350 vendidos. 32.518 disponibles.
 - **Precio visto:** $21.389. Envío estándar $14.743,57, entrega estimada 11 a 21 de noviembre.
 - **Variante a elegir:** la captura muestra "**MAX-M10S Board**" (3 opciones en total). **Comprobar cuál incluye la antena u.FL**: el listado muestra fotos con antena, pero la opción marcada puede ser solo la placa.
 - **Para qué:** probar el GNSS con la DevKit del ESP32-S3 antes de la PCB. No es el componente del BOM final.
+- **Por qué se acepta:** RF-01 exige GNSS multiconstelación con el MAX-M10S. La referencia del listado, MAX-M10S-00B-01, es la versión de producción en masa de la MAX-M10S-00B del BOM (tabla de tipos del datasheet de u-blox).
 - **Al recibir:** leer `UBX-MON-VER` en u-center y comparar con el datasheet del MAX-M10S.
 - **URL:** (pendiente)
 
@@ -135,7 +140,7 @@ Resumen de lo que se compra (detalle en las fichas):
 
 ### R4. Reguladores TPS7A05xx/TPS7A20xx de Digalai (rechazado)
 - **Título:** "Original TPS7A05285PDBVR TPS7A05xx/20xxPDBVR TPS7A2015PDBVR regulador LDO de ruido ultrabajo 1,2-6V 0.5A circuito integrado SOT-23-". Vendedor: Digalai Store, 4.9★, más de 2.000 vendidos. $6.418 por 5 uds (tachado $12.887,38). Variantes: TPS7A2055, TPS7A2032, TPS7A0533, TPS7A0530, TPS7A05285 y TPS7A2015; la preseleccionada es TPS7A2055PDBVR, no la TPS7A0533. URL: no registrada.
-- **Motivo:** el TPS7A05 entrega 200 mA como máximo (`hardware/datasheets/tps7a05_datasheet.pdf`) y las cargas del repo suman 221 a 394 mA; el BOM v1.4 ya lo sustituyó por el TLV75733PDBVR de 1 A (O1). El "0.5 A" del título y del resumen de IA de la página no coincide con el datasheet del TPS7A05. Además es un "Original" sin trazabilidad, y para un regulador de potencia conviene Digi-Key o Mouser.
+- **Motivo:** el TPS7A05 entrega 200 mA como máximo (datasheet de TI, https://www.ti.com/lit/ds/symlink/tps7a05.pdf) y las cargas del repo suman 224 a 394 mA; el BOM v1.4 ya lo sustituyó por el TLV75733PDBVR de 1 A (O1). El "0.5 A" del título y del resumen de IA de la página no coincide con el datasheet del TPS7A05. Además es un "Original" sin trazabilidad, y para un regulador de potencia conviene Digi-Key o Mouser.
 
 ## 3. Otras fuentes (Digi-Key, Mouser, tiendas locales)
 
@@ -143,7 +148,7 @@ Para cada pieza: qué buscar exactamente y qué comprobar.
 
 | Código | Pieza | Qué buscar | Dónde | Qué comprobar | Estado |
 |--------|-------|------------|-------|---------------|--------|
-| O1 | Regulador LDO 3.3 V, 1 A | **TLV75733PDBVR** (SOT-23-5, carrete de 3000); alternativa TLV75733PDYDR (con pad térmico) | Digi-Key / Mouser | Datasheet TLV757P: 1 A, Iq 25 µA, entrada de 1.45 a 5.5 V. Para pocas unidades, sufijo T (250 uds) si existe | propuesto |
+| O1 | Regulador LDO 3.3 V, 1 A | **TLV75733PDBVR** (SOT-23-5, carrete de 3000); alternativa TLV75733PDYDR (con pad térmico) | Digi-Key / Mouser | Datasheet TLV757P: 1 A, Iq 25 µA, entrada de 1.45 a 5.5 V. Para pocas unidades, sufijo T (250 uds) si existe | aceptado |
 | O2 | Módulo ESP32-S3 | **ESP32-S3-WROOM-1U-N16R8** | Digi-Key / Mouser | Es la variante con U.FL. En "artículos similares" de una captura apareció un listado de AliExpress de este módulo a $11.123; no se evaluó | pendiente |
 | O3 | Parche GNSS pasivo | 18x18x4 mm, 1575.42 MHz, con datasheet de fabricante conocido | Digi-Key / Mouser | Plano de masa requerido por el fabricante | pendiente |
 | O4 | Conector u.FL SMD | p. ej. Hirose U.FL-R-SMT-1 | Digi-Key | Huella y 50 ohm | pendiente |
@@ -151,6 +156,16 @@ Para cada pieza: qué buscar exactamente y qué comprobar.
 | O6 | Batería 1S Li-ion/LiPo | 18650 protegida de marca, o LiPo 603450 de unos 1200 mAh con protección | tienda local | Polaridad del JST, protección, capacidad real | pendiente |
 | O7 | Panel solar de 6 V, al menos 1 W | por definir | por definir | Voltaje en circuito abierto compatible con el CN3791 de 6 V | pendiente |
 | O8 | Cristal 32.768 kHz, CL 12.5 pF | serie ECS-.327 | Digi-Key | MPN completo y capacitores de carga (unos 18 a 22 pF) | pendiente |
+| O9 | Antena FPC 2.4 GHz (Wi-Fi/BLE del módulo) | **2015301200** | Mouser | Ganancia y huella; datasheet de Würth pendiente (la descarga automática responde 403) | pendiente |
+| O10 | Conector SMA hembra (solo banco) | **6521011000** | Mouser | Huella; datasheet de Würth pendiente | pendiente |
+| O11 | Módulo GNSS MAX-M10S | **MAX-M10S-00B** (MAX-M10S-00B-01 es la versión de producción) | Avnet / Digi-Key | A8 es una placa de desarrollo, no el componente del BOM final | pendiente |
+| O12 | IMU | **LSM6DSOXTR**, o el LSM6DS3TR-C del docente | Digi-Key | La elección es **POR DECIDIR** en `BOM.md` | pendiente |
+| O13 | Optoacoplador | **VO617A-1-E** | Mouser | CTR y bins en `hardware/datasheets/vo617a_datasheet.pdf` | pendiente |
+| O14 | Zumbador | **PKMCS0909E4000-R1** (el BOM decía PKMCS0909E000-R1, que no aparece en distribuidores) | Digi-Key | Un listado anota una fecha de última compra (31-mar-2027): comprobar disponibilidad | pendiente |
+| O15 | LEDs | RGB L-154A4SURK/G5T (sin datasheet con ese código) y LTST-C193KGKT-5A | Digi-Key / Mouser | Confirmar los códigos exactos | pendiente |
+| O16 | Protección de batería 1S con MOSFET externos | **por identificar** (el BQ2975DRBR del BOM no existe) | Digi-Key | Elegir la pieza y sus MOSFET y resistencia de sensado | pendiente |
+| O17 | Conectores JST | B2B-PH-K-S(LF)(SN) (PH, 2 pines); el B4B-SH-SM4-TB no aparece, existe B4B-PH-SM4-TB(LF)(SN) | Mouser | Confirmar serie y código | pendiente |
+| O18 | Pulsador 6x6 mm | PTS645SL50SMTR92 LFS | Digi-Key | Huella; datasheet de C&K pendiente | pendiente |
 
 ## 4. Qué comprobar al recibir
 
@@ -159,3 +174,5 @@ Para cada pieza: qué buscar exactamente y qué comprobar.
 - **A6, USBLC6:** que sea la variante de 2 líneas y que el pinout coincida con la huella.
 - **A8, MAX-M10S:** leer `UBX-MON-VER` en u-center.
 - **O6, batería:** polaridad del conector JST contra la PCB, y que traiga protección.
+- **A7, placa CN3791:** a qué tensión empieza a cargar y su consumo desde la batería sin entrada.
+- **O14, zumbador:** disponibilidad (aviso de última compra).

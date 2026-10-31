@@ -12,7 +12,7 @@ Este documento presenta el análisis térmico detallado de todos los componentes
 **Especificaciones:**
 - Voltaje de entrada: 4.2V como máximo (batería llena). El USB carga la batería con el TP4056 y no alimenta el LDO
 - Voltaje de salida: 3.3V
-- Corriente de salida: 300mA en ráfaga (las cargas del BOM suman 221 a 394mA; máximo del regulador 1A)
+- Corriente de salida: 300mA en ráfaga (las cargas del BOM suman 224 a 394mA; máximo del regulador 1A)
 - Resistencia térmica (RθJA, datasheet TLV757P, tabla 5.4): DBV 100.8°C/W en la EVM de TI y 231.1°C/W en la placa JEDEC; DYD con pad térmico 60.3°C/W (EVM) y 92.5°C/W (JEDEC)
 - Límite de temperatura de unión: 125°C
 
@@ -31,14 +31,14 @@ Este documento presenta el análisis térmico detallado de todos los componentes
 **Verificación:**
 - Margen con DBV en la EVM (4.2V, 300mA): 125°C - 92.2°C = 32.8°C (ADECUADO)
 - Con la resistencia térmica de la placa JEDEC (2s2p, sin vías) el DBV supera los 125°C si los 300mA fueran continuos
-- El perfil real es de ráfagas: la corriente promedio es de unos 0.27mA y el LDO disipa unos 0.24mW. No hay datos de la constante de tiempo térmica, así que el cálculo en régimen estacionario es una cota, no una predicción
+- El perfil real es de ráfagas: la corriente promedio es de unos 0.22mA y el LDO disipa unos 0.20mW. No hay datos de la constante de tiempo térmica, así que el cálculo en régimen estacionario es una cota, no una predicción
 - El DBV basta en ráfagas cortas, como la transmisión LoRa. Si una carga de unos 300mA fuera continua, se usa el TLV75733PDYDR (mismo regulador con pad térmico)
 
 ### 2. Cargador Solar (CN3791)
 **Especificaciones:**
-- Voltaje de entrada: 5.0V (panel solar)
+- Voltaje de entrada: 6V nominal (panel solar). Con el divisor de 6V la carga solo inicia por encima de unos 6.2V
 - Voltaje de salida: 4.2V (batería LiPo)
-- Eficiencia típica: 88%
+- Eficiencia típica: 88% (sin fuente, no verificado)
 - Corriente de salida: 250mA máxima
 
 **Cálculos:**
@@ -53,7 +53,7 @@ Este documento presenta el análisis térmico detallado de todos los componentes
 ### 3. Radio LoRa (SX1262) - Modo TX
 **Especificaciones:**
 - Voltaje de operación: 3.3V
-- Corriente en TX (+22dBm): 120mA
+- Corriente en TX (+22dBm): 120mA (el datasheet del SX1262 da unos 118mA; el módulo DX-LR30-900M22S no tiene datasheet con corrientes)
 - Duración típica de TX: 0.5 segundos por transmisión
 
 **Cálculos:**
@@ -92,6 +92,15 @@ Este documento presenta el análisis térmico detallado de todos los componentes
 
 *Nota: el LDO se calcula a Vin = 4.2V y 300mA, el punto de referencia del BOM. Los porcentajes están redondeados a un decimal y suman 100.1% en esta tabla.*
 
+### 3. Escenario de Carga por USB (banco)
+| Componente | Potencia Disipada | Contribución |
+|------------|-------------------|---------------|
+| TP4056 (500mA, 5.0V, celda a 3.7V) | 0.650W | 99.97% |
+| LDO TLV75733P (promedio) | 0.0002W | 0.03% |
+| **TOTAL** | **0.650W** | **100%** |
+
+*Nota: el TP4056 es el mayor disipador del sistema y trabaja junto a la batería. No se calcula su temperatura de unión porque el repo no tiene la resistencia térmica del ESOP-8 en el datasheet.*
+
 ## Distribución Térmica en PCB
 
 ### 1. Zonas de Calor Críticas
@@ -107,10 +116,15 @@ Este documento presenta el análisis térmico detallado de todos los componentes
    - Picos térmicos breves durante transmisión
    - No representa riesgo continuo
 
+4. **Área del TP4056**: Mayor disipación del sistema durante la carga por USB
+   - Unos 0.65W con 5V de entrada y la celda a 3.7V (500mA)
+   - Está junto a la batería LiPo: separarlo de ella (distancia por definir). Su regulación térmica limita la corriente a 145°C
+
 ### 2. Consideraciones de Diseño PCB
 - **Plano de masa extenso**: Para disipación de calor
 - **Vías térmicas**: Conectando planos internos para transferencia
 - **Separación de componentes**: Entre alta y baja temperatura
+- **Piezas sin análisis térmico (por definir)**: MOSFET externos y resistencia de sensado de la protección de batería, y la etapa de potencia del CN3791 (inductor, MOSFET de paso, resistencia de sensado, diodos D1 y D2)
 - **Materiales PCB**: FR4 estándar (baja conductividad térmica propia; la disipación depende de los planos de cobre y las vías)
 
 ## Verificación en Condiciones Extremas
@@ -139,7 +153,7 @@ Este documento presenta el análisis térmico detallado de todos los componentes
 - **Componentes SMD**: Mejor transferencia térmica que through-hole
 
 ### 3. Protección Térmica
-- **Monitoreo de temperatura**: Sensor NTC en PCB
+- **Monitoreo de temperatura**: sensor por definir (el CN3791 no tiene pin de temperatura; el TP4056 tiene pin TEMP para el NTC de la batería; el TMP102 del docente es una opción)
 - **Reducción de carga dinámica**: En condiciones extremas
 - **Shutdown térmico**: A 100°C para protección de componentes
 
@@ -184,6 +198,7 @@ Implementamos una estrategia de protección en múltiples capas:
 
 ### 2. Efecto Solar Directo
 - **Incremento térmico**: Hasta 15°C adicional en exposición directa
+- **Límite del módulo**: el ESP32-S3-WROOM-1U-N16R8 admite -40 a 65°C de ambiente (con ECC de la PSRAM activado, 85°C y 1/16 menos de PSRAM utilizable; datasheet WROOM-1 v1.8). Con sol directo dentro de la carcasa sellada el ambiente puede superar los 65°C: el módulo queda fuera de rango antes que el LDO
 - **Gradiente térmico**: Variaciones en carcasa pueden causar estrés
 - **Compensación**: Diseño con margen térmico adicional
 
@@ -195,7 +210,7 @@ Implementamos una estrategia de protección en múltiples capas:
 3. **Mejora de disipación**: Vías térmicas adicionales en PCB
 
 ### 2. Monitoreo Continuo
-- **Sensor de temperatura**: Integrado en próxima revisión
+- **Sensor de temperatura**: por definir (ver Estrategias de Gestión Térmica)
 - **Registro térmico**: En memoria no volátil para diagnóstico
 - **Alertas térmicas**: Por LoRa en condiciones extremas
 

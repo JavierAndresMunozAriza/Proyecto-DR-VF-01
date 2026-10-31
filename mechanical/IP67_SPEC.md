@@ -2,7 +2,7 @@
 
 ## Descripción General
 
-Esta especificación detalla los requisitos de sellado IP67 para el collar de geocercamiento DR-VF-01. El grado de protección IP67 garantiza que el dispositivo sea completamente resistente al polvo y pueda soportar inmersión temporal en agua hasta 1 metro de profundidad.
+Esta especificación detalla los requisitos de sellado IP67 para el collar de geocercamiento DR-VF-01. El grado de protección IP67 implica que el dispositivo sea completamente resistente al polvo y pueda soportar inmersión temporal en agua hasta 1 metro de profundidad. Es un objetivo de diseño, pendiente de ensayo por laboratorio acreditado.
 
 ## Requisitos de Sellado
 
@@ -21,14 +21,15 @@ Esta especificación detalla los requisitos de sellado IP67 para el collar de ge
 ### 1. Carcasa Principal
 - **Material**: Policarbonato reforzado con fibra de vidrio (PC+GF)
 - **Espesor de pared**: 2.5mm mínimo
-- **Superficie de sellado**: Junta tórica de silicona EPDM
+- **Superficie de sellado**: Junta tórica EPDM (AS0139 en el BOM)
 - **Clase de rugosidad**: Ra ≤ 1.6μm en superficies de contacto
 
-### 2. Conector de Carga USB-C
-- **Tipo de conector**: USB Type-C receptáculo con tapa sellada
-- **Mecanismo de sellado**: Tapa pivotante con junta tórica integrada
-- **Resistencia a la corrosión**: Recubrimiento de níquel en contactos
-- **Protección contra polvo**: Diafragma protector interno
+### 2. Conector USB-C (carga y programación)
+- **Función**: carga por USB-C (TP4056, 500mA) y programación por USB nativo
+- **Tipo de conector**: USB Type-C receptáculo; el MPN está POR DECIDIR (BOM, sección 1.6) y su grado de protección no está verificado
+- **Mecanismo de sellado**: POR DECIDIR. El BOM lista 2 tapas ciegas USB-C con MPN POR DECIDIR; el informe describe un tapón elastomérico o de silicona; la versión anterior de esta especificación describía una tapa pivotante. Sellado pendiente
+- **Resistencia a la corrosión**: pendiente (depende del conector elegido)
+- **Protección contra polvo**: pendiente (depende del conector elegido)
 
 ### 3. Botón de Accionamiento
 - **Tipo**: Botón sellado tipo "tact switch"
@@ -41,6 +42,20 @@ Esta especificación detalla los requisitos de sellado IP67 para el collar de ge
 - **Sellado**: Encapsulado en resina epoxi transparente
 - **Protección UV**: Recubrimiento resistente a rayos UV
 - **Visibilidad**: Angular de 120° horizontal, 60° vertical
+- **LED indicadores simples**: el BOM lista 3 LED LTST-C193KGKT; su ubicación y si van sellados está POR DECIDIR
+
+### 5. Panel Solar y su Cable (pendiente)
+- **Panel solar**: 6V, al menos 1W, MPN POR DECIDIR (BOM, sección 2.3). Método de fijación y sellado del perímetro: pendiente
+- **Cable del panel (JST PH de 2 pines)**: paso del cable por la carcasa y sellado: pendiente
+- No hay valores de sellado definidos para este elemento
+
+### 6. Salida Acústica del Zumbador (pendiente)
+- **Zumbador piezoeléctrico**: PKMCS0909E000-R1 (BOM). Su requisito acústico es > 80 dBA a 1 m (SR-30 del informe)
+- **Orificio, membrana o ventilación del zumbador**: pendiente. No hay valores de sellado definidos
+
+### 7. Antenas y Cables Internos (pendiente)
+- **Zona libre de las antenas**: pendiente (ver `mechanical/ANTENNA_PLACEMENT.md`)
+- **Paso de los cables u.FL por la carcasa**: pendiente
 
 ## Procedimientos de Verificación
 
@@ -72,7 +87,7 @@ Esta especificación detalla los requisitos de sellado IP67 para el collar de ge
 ### 2. Juntas Tóricas
 - **Diámetro interior**: ±0.05mm
 - **Sección transversal**: ±0.02mm
-- **Material**: Silicona EPDM (durometer Shore A 40-50)
+- **Material**: EPDM (durometer Shore A 40-50)
 - **Compresión recomendada**: 15-30%
 
 ## Materiales y Acabados
@@ -84,7 +99,7 @@ Esta especificación detalla los requisitos de sellado IP67 para el collar de ge
 - **Tratamiento UV**: Recubrimiento UV resistente ≥5000 horas
 
 ### 2. Elementos de Fijación
-- **Tipo**: Tornillos autofresantes M2
+- **Tipo**: Tornillo M2x6 cabeza allen con inserto roscado M2 (BOM, sección 2.1)
 - **Material**: Acero inoxidable A2 (AISI 304)
 - **Recubrimiento**: Pasivado con acabado mate
 - **Torque de apriete**: 0.6-0.8 N·m
@@ -121,7 +136,7 @@ Esta especificación detalla los requisitos de sellado IP67 para el collar de ge
 ## Consideraciones Ambientales
 
 ### 1. Temperatura Extrema
-- **Operación continua**: -20°C a +65°C
+- **Operación continua**: -20°C a +65°C (el módulo ESP32-S3-WROOM-1U-N16R8 está especificado de -40°C a 65°C ambiente; no se declara operación por encima de 65°C)
 - **Almacenamiento**: -40°C a +85°C
 - **Choque térmico**: Capaz de soportar diferencia de 100°C
 
