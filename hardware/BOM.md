@@ -2,6 +2,8 @@
 
 **Estado:** REVISIÓN v1.4 (2026-10-30), pendiente de revisión del autor. Estructura reparada y corregida contra la auditoría `odd/tasks/repo-audit-report.md`. Los cambios de contenido están en el historial al final. Lo marcado **POR DECIDIR** no está resuelto: requiere una decisión del autor o una hoja de datos que aún no se ha leído.
 
+Dónde comprar cada pieza, con sus URL y su estado: `hardware/COMPRAS.md`.
+
 Este BOM cubre **solo la PCB final** (ESP32-S3-WROOM-1U-N16R8). La Nordic Thingy:91 X es la prueba de concepto y no forma parte del producto.
 
 ## Criterios de selección
