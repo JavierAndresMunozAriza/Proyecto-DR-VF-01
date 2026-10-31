@@ -19,7 +19,7 @@ El sistema opera en diferentes estados de potencia según el modelo de máquinas
 
 | Estado | Descripción | Corriente Promedio | Tiempo Estimado |
 |--------|-------------|-------------------|-----------------|
-| DEEP_SLEEP | Solo IMU activo | ~190μA | 98.5% del tiempo |
+| DEEP_SLEEP | Solo IMU activo | ~215μA | 98.5% del tiempo |
 | ACTIVE_GNSS | Posicionamiento activo | ~80mA | 20 segundos por evento |
 | ACTIVE_LORA | Transmisión de datos | ~120mA (pico) | 0.5 segundos por transmisión |
 | ACTIVE_DISUASION | Mecanismo de disuasión | ~50mA | 5 segundos por activación |
@@ -87,6 +87,12 @@ El sistema opera en diferentes estados de potencia según el modelo de máquinas
 - **Eficiencia típica**: 88% a 250mA salida
 - **Corriente de operación**: 150μA en standby
 
+### 7. Regulador LDO (TLV75733P)
+**Alimentación de 3.3V desde la batería:**
+- **Voltaje de entrada**: 1.45 a 5.5V
+- **Corriente máxima de salida**: 1A
+- **Corriente quiescente (Iq)**: 25μA típica, siempre presente. El TPS7A0533 anterior tenía 1μA pero solo entrega 200mA, menos que las cargas del sistema (221 a 394mA).
+
 ## Perfiles de Operación
 
 ### 1. Estado de Sueño Profundo (SLEEP)
@@ -99,7 +105,8 @@ El sistema opera en diferentes estados de potencia según el modelo de máquinas
 | LSM6DSOX | Low-Power | 10μA | 98.5% | 9.85μA |
 | SX1262 | Sleep | 0.7μA | 98.5% | 0.69μA |
 | CN3791 | Standby | 150μA | 100% | 150μA |
-| **TOTAL** | | | | **190.09μA** |
+| TLV75733P | Iq | 25μA | 100% | 25μA |
+| **TOTAL** | | | | **215.09μA** |
 
 ### 2. Verificación de Geocerca (GEOFENCE_CHECK)
 **Descripción**: Activación por detección de movimiento para verificar posición dentro de geocerca.
@@ -111,7 +118,8 @@ El sistema opera en diferentes estados de potencia según el modelo de máquinas
 | LSM6DSOX | Normal | 650μA | 22s | 14.3mAs |
 | SX1262 | Sleep | 1.5μA | 22s | 33μAs |
 | CN3791 | Standby | 150μA | 22s | 3.3mAs |
-| **TOTAL** | | | | **1077.63mAs** |
+| TLV75733P | Iq | 25μA | 22s | 0.55mAs |
+| **TOTAL** | | | | **1078.18mAs** |
 
 ### 3. Transmisión LoRa (LORA_TX)
 **Descripción**: Envío de coordenadas y estado del sistema cuando se detecta alerta.
@@ -123,7 +131,8 @@ El sistema opera en diferentes estados de potencia según el modelo de máquinas
 | LSM6DSOX | Sleep | 10μA | 1s | 10μAs |
 | SX1262 | TX | 120mA | 0.5s | 60mAs |
 | CN3791 | Standby | 150μA | 1s | 150μAs |
-| **TOTAL** | | | | **140.185mAs** |
+| TLV75733P | Iq | 25μA | 1s | 25μAs |
+| **TOTAL** | | | | **140.21mAs** |
 
 ### 4. Activación de Disuasión (DISUASION)
 **Descripción**: Activación del mecanismo de disuasión por violación de geocerca.
@@ -136,7 +145,8 @@ El sistema opera en diferentes estados de potencia según el modelo de máquinas
 | SX1262 | Sleep | 1.5μA | 5s | 7.5μAs |
 | VO617A | On | 50mA | 5s | 250mAs |
 | CN3791 | Standby | 150μA | 5s | 750μAs |
-| **TOTAL** | | | | **650.9325mAs** |
+| TLV75733P | Iq | 25μA | 5s | 125μAs |
+| **TOTAL** | | | | **651.0575mAs** |
 
 ## Cálculo de Consumo Diario
 
@@ -149,15 +159,15 @@ El sistema opera en diferentes estados de potencia según el modelo de máquinas
 ### 2. Cálculo Detallado
 | Actividad | Ocurrencias/día | Consumo por evento | Total diario |
 |-----------|----------------|-------------------|--------------|
-| SLEEP (base) | 86400s | 190.09μA promedio | 16.42 A·s |
-| GEOFENCE_CHECK | 10 | 1077.63mAs | 10.78 A·s |
-| LORA_TX | 20 | 140.185mAs | 2.80 A·s |
-| DISUASION | 2 | 650.9325mAs | 1.30 A·s |
-| **TOTAL** | | | **31.30 A·s** |
+| SLEEP (base) | 86400s | 215.09μA promedio | 18.584 A·s |
+| GEOFENCE_CHECK | 10 | 1078.18mAs | 10.782 A·s |
+| LORA_TX | 20 | 140.21mAs | 2.804 A·s |
+| DISUASION | 2 | 651.0575mAs | 1.302 A·s |
+| **TOTAL** | | | **33.472 A·s** |
 
 ### 3. Conversión a Consumo Promedio
-- **Consumo diario total**: 31.30 A·s ÷ 3600 s/h ÷ 24 h/día = 0.362 mA promedio
-- **Corriente promedio diaria**: 0.362 mA
+- **Consumo diario total**: 33.472 A·s ÷ 3600 s/h ÷ 24 h/día = 0.387 mA promedio
+- **Corriente promedio diaria**: 0.387 mA
 
 ## Autonomía de Batería
 
@@ -165,13 +175,13 @@ El sistema opera en diferentes estados de potencia según el modelo de máquinas
 - **Capacidad nominal**: 1200 mAh
 - **Factor de degradación**: 0.85 (considerando temperatura y envejecimiento)
 - **Capacidad efectiva**: 1200 mAh × 0.85 = 1020 mAh
-- **Autonomía teórica**: 1020 mAh ÷ 0.362 mA = 2818 horas ≈ 117 días
+- **Autonomía teórica**: 1020 mAh ÷ 0.387 mA = 2636 horas ≈ 110 días
 
 ### 2. Cálculo con Batería de 1500mAh
 - **Capacidad nominal**: 1500 mAh
 - **Factor de degradación**: 0.85
 - **Capacidad efectiva**: 1500 mAh × 0.85 = 1275 mAh
-- **Autonomía teórica**: 1275 mAh ÷ 0.362 mA = 3522 horas ≈ 147 días
+- **Autonomía teórica**: 1275 mAh ÷ 0.387 mA = 3295 horas ≈ 137 días
 
 ## Consideraciones Ambientales
 
@@ -187,10 +197,10 @@ El sistema opera en diferentes estados de potencia según el modelo de máquinas
 ### 3. Autonomía Ajustada
 | Condición | Autonomía 1200mAh | Autonomía 1500mAh |
 |-----------|-------------------|-------------------|
-| Condiciones ideales | 117 días | 147 días |
-| Temperatura extrema | 82 días | 103 días |
-| 500 ciclos | 94 días | 117 días |
-| 1000 ciclos | 76 días | 95 días |
+| Condiciones ideales | 110 días | 137 días |
+| Temperatura extrema | 77 días | 96 días |
+| 500 ciclos | 88 días | 110 días |
+| 1000 ciclos | 71 días | 89 días |
 
 ## Carga Solar
 
@@ -205,7 +215,7 @@ El sistema opera en diferentes estados de potencia según el modelo de máquinas
 - **Corriente generada**: 9Wh ÷ 3.7V = 2430mAh equivalentes diarios
 
 ### 3. Balance Energético
-- **Consumo diario**: 0.362 mA × 24h = 8.69 mAh
+- **Consumo diario**: 0.387 mA × 24h = 9.29 mAh
 - **Generación diaria**: 2430 mAh
 - **Balance neto**: +2421 mAh (superavit significativo)
 
@@ -237,7 +247,7 @@ Siguiendo los principios de sistemas tolerantes a fallos de Elecia White:
 
 ## Conclusiones
 
-El sistema DR-VF-01 está diseñado para operar durante más de 100 días con una sola carga (estimación teórica: 117 días con 1200 mAh y 147 días con 1500 mAh), gracias a:
+El sistema DR-VF-01 está diseñado para operar durante más de 100 días con una sola carga (estimación teórica: 110 días con 1200 mAh y 137 días con 1500 mAh), gracias a:
 1. Una estrategia de sueño profundo eficiente (>98% del tiempo)
 2. Componentes de bajo consumo seleccionados cuidadosamente
 3. Un sistema de carga solar robusto que supera ampliamente el consumo

@@ -24,7 +24,7 @@ Según el autor, el docente tiene estas piezas físicamente (mensaje del docente
 | D6 | Transceptor RS-485 | TP8485E-SR | Sin uso | |
 | D7 | Monitor de corriente | INA139NA/3K | Sin uso por ahora | |
 | D8 | Potenciómetro 10 kΩ | TC33X-2-103E | Sin uso | |
-| D9 | Regulador 3 A | DS8570F8 | No se usa hasta revisar su Iq | Un LDO de 3 A suele tener Iq alta; el sleep presupuestado es de unos 190 µA |
+| D9 | Regulador 3 A | DS8570F8 | No se usa hasta revisar su Iq | Un LDO de 3 A suele tener Iq alta; el sleep presupuestado es de unos 215 µA |
 | D10 | Pasivos, USB-C 16P, TVS, Schottky, MOSFET, LED RGB | ver biblioteca | Esquemático y prototipo | La biblioteca no trae ESP32-S3-WROOM-1U confirmado, MAX-M10S, LSM6DSOX, MAX17048, módulo LoRa, CN3791, VO617A, buzzer, cristal 32.768 kHz, u.FL ni JST SH |
 
 ## 2. AliExpress
@@ -44,6 +44,7 @@ Resumen de lo que se compra (detalle en las fichas):
 | R1 | Antena GNSS activa L1+L5 A-SKY | $25.404 | rechazado |
 | R2 | Antena corta GIZONT "10 dBi" | $38.690 | rechazado |
 | R3 | Antena GNSS activa 18x18 mm | $9.432 | rechazado |
+| R4 | Reguladores TPS7A05xx/TPS7A20xx (5 uds) | $6.418 | rechazado |
 
 ### A1. Módulo LoRa SX1262, LR30-900M22S (aceptado)
 - **Título del listado:** "SX1262 LoRa módulo desarrollador SET DX-LR30 430 ~ 470MHz 868 ~ 915Mhz 22dBm 8km rango 5V UART GPIO ISM banda LoRa módulo RF".
@@ -131,6 +132,10 @@ Resumen de lo que se compra (detalle en las fichas):
 ### R3. Antena GNSS activa de 18x18 mm (rechazada)
 - **Título:** "Antena GPS activa 1575,42 MHz 18x18mm antena GNSS de cerámica de alta ganancia para rastreador de mascotas DIY posicionamiento preciso GPS activo". Vendedor: Tienda oficial BDLXGNSS. 5.0★, 20 valoraciones, 244 vendidos. $9.432 (tachado $16.916,36).
 - **Motivo:** sin datasheet ni número de parte. El módulo ya trae LNA, así que se prefiere un parche pasivo.
+
+### R4. Reguladores TPS7A05xx/TPS7A20xx de Digalai (rechazado)
+- **Título:** "Original TPS7A05285PDBVR TPS7A05xx/20xxPDBVR TPS7A2015PDBVR regulador LDO de ruido ultrabajo 1,2-6V 0.5A circuito integrado SOT-23-". Vendedor: Digalai Store, 4.9★, más de 2.000 vendidos. $6.418 por 5 uds (tachado $12.887,38). Variantes: TPS7A2055, TPS7A2032, TPS7A0533, TPS7A0530, TPS7A05285 y TPS7A2015; la preseleccionada es TPS7A2055PDBVR, no la TPS7A0533. URL: no registrada.
+- **Motivo:** el TPS7A05 entrega 200 mA como máximo (`hardware/datasheets/tps7a05_datasheet.pdf`) y las cargas del repo suman 221 a 394 mA; el BOM v1.4 ya lo sustituyó por el TLV75733PDBVR de 1 A (O1). El "0.5 A" del título y del resumen de IA de la página no coincide con el datasheet del TPS7A05. Además es un "Original" sin trazabilidad, y para un regulador de potencia conviene Digi-Key o Mouser.
 
 ## 3. Otras fuentes (Digi-Key, Mouser, tiendas locales)
 

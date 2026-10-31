@@ -77,7 +77,7 @@ Este mapa aplica a la PCB final y a la ESP32-S3-DevKitC-1 (ambas usan los mismos
     \node [pwr_in, left=0.8cm of cn] (in) {Entrada 6V Solar /\\ USB-C (5V)};
 
     % REGULADORES Y MÓDEM FASE 2 (FILA 2)
-    \node [pwr_mgt, below=1.5cm of bat, xshift=-2.6cm] (ldo) {Regulador LDO\\3.3V (500 mA)};
+    \node [pwr_mgt, below=1.5cm of bat, xshift=-2.6cm] (ldo) {Regulador LDO\\3.3V (1 A)};
     \node [pwr_fase2, below=1.5cm of bat, xshift=2.6cm] (bg95) {Quectel BG95-M3\\(Picos 400--600 mA)\\[0.05cm]\footnotesize\textbf{[Fase 2 -- Tesis]}};
 
     % CARGAS DE 3.3V ALINEADAS DEBAJO DEL LDO (FILA 3)

@@ -8,21 +8,31 @@ Este documento presenta el análisis térmico detallado de todos los componentes
 
 ## Componentes de Alta Disipación
 
-### 1. Regulador de Voltaje LDO (TPS7A0533PDBVR)
+### 1. Regulador de Voltaje LDO (TLV75733PDBVR)
 **Especificaciones:**
-- Voltaje de entrada: 5.0V (USB/CN3791)
+- Voltaje de entrada: 4.2V (batería llena); 5.0V solo si el USB alimentara el LDO directamente (ruta pendiente de decidir)
 - Voltaje de salida: 3.3V
-- Corriente de salida: 150mA típica (máximo 200mA)
-- Resistencia térmica (RθJA): 60.9°C/W (en PCB de 4 capas)
+- Corriente de salida: 300mA en ráfaga (las cargas del BOM suman 221 a 394mA; máximo del regulador 1A)
+- Resistencia térmica (RθJA, datasheet TLV757P, tabla 5.4): DBV 100.8°C/W en la EVM de TI y 231.1°C/W en la placa JEDEC; DYD con pad térmico 60.3°C/W (EVM) y 92.5°C/W (JEDEC)
+- Límite de temperatura de unión: 125°C
 
-**Cálculos:**
-- Potencia disipada: P = (Vin - Vout) × Iout = (5.0V - 3.3V) × 0.15A = 0.255W
-- Incremento de temperatura: ΔT = P × RθJA = 0.255W × 60.9°C/W = 15.5°C
-- Temperatura de unión: Tj = Tamb + ΔT = 65°C + 15.5°C = 80.5°C
+**Cálculos (Vin = 4.2V, Iout = 300mA, DBV en la EVM):**
+- Potencia disipada: P = (Vin - Vout) × Iout = (4.2V - 3.3V) × 0.3A = 0.270W
+- Incremento de temperatura: ΔT = P × RθJA = 0.270W × 100.8°C/W = 27.2°C
+- Temperatura de unión: Tj = Tamb + ΔT = 65°C + 27.2°C = 92.2°C
+
+**Sensibilidad** (Tj a 65°C de ambiente, corriente continua, régimen estacionario):
+
+| Caso | P | DBV EVM (100.8) | DBV JEDEC (231.1) | DYD EVM (60.3) | DYD JEDEC (92.5) |
+|------|---|-----------------|-------------------|----------------|------------------|
+| 4.2V, 300mA | 0.270W | 92.2°C | **127.4°C** | 81.3°C | 90.0°C |
+| 5.0V, 300mA | 0.510W | 116.4°C | **182.9°C** | 95.8°C | 112.2°C |
 
 **Verificación:**
-- Límite de temperatura de unión: 125°C
-- Margen térmico: 125°C - 80.5°C = 44.5°C (ADECUADO)
+- Margen con DBV en la EVM (4.2V, 300mA): 125°C - 92.2°C = 32.8°C (ADECUADO)
+- Con la resistencia térmica de la placa JEDEC (2s2p, sin vías) el DBV supera los 125°C si los 300mA fueran continuos
+- El perfil real es de ráfagas: la corriente promedio es de unos 0.4mA y el LDO disipa unos 0.35mW. No hay datos de la constante de tiempo térmica, así que el cálculo en régimen estacionario es una cota, no una predicción
+- El DBV basta en ráfagas cortas, como la transmisión LoRa. Si una carga de unos 300mA fuera continua, o si el USB alimentara el LDO a 5.0V, se usa el TLV75733PDYDR (mismo regulador con pad térmico)
 
 ### 2. Cargador Solar (CN3791)
 **Especificaciones:**
@@ -56,24 +66,26 @@ Este documento presenta el análisis térmico detallado de todos los componentes
 ### 1. Escenario de Operación Normal
 | Componente | Potencia Disipada | Contribución |
 |------------|-------------------|---------------|
-| LDO TPS7A0533 | 0.255W | 64.4% |
-| CN3791 | 0.140W | 35.4% |
-| SX1262 (promedio) | 0.001W | 0.3% |
-| **TOTAL** | **0.396W** | **100%** |
+| LDO TLV75733P | 0.270W | 65.7% |
+| CN3791 | 0.140W | 34.1% |
+| SX1262 (promedio) | 0.001W | 0.2% |
+| **TOTAL** | **0.411W** | **100%** |
 
 ### 2. Escenario de Carga Solar Máxima
 | Componente | Potencia Disipada | Contribución |
 |------------|-------------------|---------------|
-| LDO TPS7A0533 | 0.255W | 53.2% |
-| CN3791 | 0.200W | 41.8% |
-| SX1262 (TX) | 0.024W | 5.0% |
-| **TOTAL** | **0.479W** | **100%** |
+| LDO TLV75733P | 0.270W | 54.7% |
+| CN3791 | 0.200W | 40.5% |
+| SX1262 (TX) | 0.024W | 4.9% |
+| **TOTAL** | **0.494W** | **100%** |
+
+*Nota: el LDO se calcula a Vin = 4.2V y 300mA, el punto de referencia del BOM. Los porcentajes están redondeados a un decimal y suman 100.1% en esta tabla.*
 
 ## Distribución Térmica en PCB
 
 ### 1. Zonas de Calor Críticas
 1. **Área del LDO**: Mayor concentración térmica
-   - Temperatura superficial estimada: 75°C
+   - Temperatura de unión calculada: 92.2°C a 65°C de ambiente (DBV, EVM de TI)
    - Separación recomendada de componentes sensibles: 5mm
 
 2. **Área del Cargador Solar**: Moderada disipación
@@ -95,12 +107,12 @@ Este documento presenta el análisis térmico detallado de todos los componentes
 ### 1. Temperatura Ambiente Máxima (+65°C)
 | Componente | Potencia | ΔT | Tj |
 |-----------|----------|----|----|
-| LDO | 0.255W | 15.5°C | 80.5°C |
+| LDO (4.2V, 300mA, DBV en EVM) | 0.270W | 27.2°C | 92.2°C |
 | CN3791 | 0.140W | 8.5°C | 73.5°C |
-| **Máximo** | | | **80.5°C** |
+| **Máximo** | | | **92.2°C** |
 
 ### 2. Sobrecarga de Componentes
-- **LDO a 200mA**: P = 0.340W, ΔT = 20.7°C, Tj = 85.7°C
+- **LDO a 394mA** (suma máxima de las cargas del BOM, 4.2V, DBV en EVM): P = 0.355W, ΔT = 35.7°C, Tj = 100.7°C
 - **CN3791 a 300mA**: P = 0.172W, ΔT = 10.5°C, Tj = 75.5°C
 
 ## Estrategias de Gestión Térmica
@@ -148,8 +160,8 @@ Implementamos una estrategia de protección en múltiples capas:
 ### 2. Resultados (pendientes de medición)
 | Condición | Temperatura Máxima Medida | Comparación con Cálculo |
 |-----------|---------------------------|-------------------------|
-| 25°C ambiente | Pendiente (cálculo: 40.5°C en LDO) | Pendiente |
-| 65°C ambiente | Pendiente (cálculo: 80.5°C en LDO) | Pendiente |
+| 25°C ambiente | Pendiente (cálculo: 52.2°C en LDO) | Pendiente |
+| 65°C ambiente | Pendiente (cálculo: 92.2°C en LDO) | Pendiente |
 | Carga solar | Pendiente | Pendiente |
 
 ## Consideraciones Ambientales
@@ -180,12 +192,12 @@ Implementamos una estrategia de protección en múltiples capas:
 
 El análisis térmico del collar DR-VF-01 demuestra que:
 
-1. Todos los componentes operan dentro de límites seguros térmicamente
-2. Hay margen adecuado para condiciones extremas
-3. La disipación está bien distribuida en la PCB
+1. El LDO TLV75733PDBVR queda en 92.2°C a 65°C de ambiente con 300mA continuos y la resistencia térmica de la EVM (límite 125°C). Con la de la placa JEDEC llegaría a 127.4°C, así que el margen depende del cobre de la PCB y de que la carga sea de ráfagas
+2. Si una carga de unos 300mA fuera continua, o si el USB alimentara el LDO a 5.0V, se usa el TLV75733PDYDR con pad térmico (112.2°C como máximo en esos casos)
+3. El resto de componentes opera dentro de sus límites y la disipación está distribuida en la PCB
 4. No se requieren soluciones de enfriamiento activas
 
-Las temperaturas máximas calculadas (las mediciones están pendientes) están bien por debajo de los límites máximos de los componentes, asegurando vida útil prolongada y operación confiable en todas las condiciones ambientales previstas.
+Las temperaturas máximas calculadas son de régimen estacionario y las mediciones están pendientes; el caso del DBV con carga continua es el único que supera el límite, y el DYD lo cubre.
 
 Este diseño térmico sigue las mejores prácticas de sistemas embebidos descritas por Elecia White en "Making Embedded Systems", garantizando:
 - **Robustez térmica** mediante diseño defensivo

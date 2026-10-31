@@ -13,7 +13,7 @@ La arquitectura del sistema se basa en el microcontrolador ESP32-S3-WROOM-1U-N16
     \item \textbf{Sistema de Posicionamiento}: u-blox MAX-M10S GNSS multiconstelación.
     \item \textbf{Sensor de Inercia y Movimiento}: LSM6DSOX IMU de 6 ejes con bajo consumo.
     \item \textbf{Transceptor de Radiofrecuencia}: SX1262 LoRa Sub-GHz (915 MHz).
-    \item \textbf{Gestión de Energía y Carga}: Cargador solar MPPT CN3791 (6 V) + LDO ultra-bajo \textit{Iq} TPS7A0533 (3.3 V).
+    \item \textbf{Gestión de Energía y Carga}: Cargador solar MPPT CN3791 (6 V) + LDO de 1 A con \textit{Iq} de 25~$\mu$A TLV75733P (3.3 V).
 \end{itemize}
 
 \section{Presupuesto de Potencia}
@@ -48,39 +48,41 @@ LSM6DSOX IMU & Low-Power & 10.0 $\mu$A & 9.85 $\mu$A \\
 \rowcolor{rowalt}
 SX1262 LoRa & Sleep & 0.7 $\mu$A & 0.69 $\mu$A \\
 CN3791 MPPT & Standby & 150.0 $\mu$A & 150.00 $\mu$A \\
+\rowcolor{rowalt}
+TLV75733P LDO & \textit{Iq} & 25.0 $\mu$A & 25.00 $\mu$A \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \subsection{Autonomía de Batería}
 
-Con una celda LiPo de 1500 mAh y una corriente promedio efectiva de 0.362 mA, la autonomía teórica estimada del dispositivo se calcula como:
+Con una celda LiPo de 1500 mAh y una corriente promedio efectiva de 0.387 mA, la autonomía teórica estimada del dispositivo se calcula como:
 
-$$\text{Autonomía (días)} = \frac{1500\text{ mAh}}{0.362\text{ mA} \times 24\text{ h/día}} \approx 173\text{ días}$$
+$$\text{Autonomía (días)} = \frac{1500\text{ mAh}}{0.387\text{ mA} \times 24\text{ h/día}} \approx 161\text{ días}$$
 
-Considerando la autodescarga de la batería y factores de degradación ambiental, se estima una operación continua superior a 147 días en condiciones ideales (capacidad efectiva de 1275 mAh, con factor de degradación de 0.85).
+Considerando la autodescarga de la batería y factores de degradación ambiental, se estima una operación continua superior a 137 días en condiciones ideales (capacidad efectiva de 1275 mAh, con factor de degradación de 0.85).
 
 \section{Análisis Térmico}
 
 \subsection{Componentes de Alta Disipación}
 
 \begin{itemize}[leftmargin=*]
-    \item \textbf{Regulador LDO TPS7A0533}: 0.255 W disipados en regulación pico.
+    \item \textbf{Regulador LDO TLV75733P}: 0.270 W disipados en regulación pico (4.2 V de entrada, 300 mA).
     \item \textbf{Cargador Solar CN3791}: 0.140 W disipados en carga máxima.
     \item \textbf{Transceptor LoRa SX1262}: 0.396 W durante eventos de transmisión en potencia máxima (+22 dBm).
 \end{itemize}
 
 \subsection{Cálculos de Temperatura de Juntura}
 
-Para el regulador LDO TPS7A0533 con encapsulado SOT-23 ($R_{\theta\text{JA}} = 60.9\,^\circ\text{C/W}$):
+Para el regulador LDO TLV75733PDBVR con encapsulado SOT-23-5 ($R_{\theta\text{JA}} = 100.8\,^\circ\text{C/W}$ en la placa de evaluación de Texas Instruments):
 
-$$P_{\text{disipada}} = (V_{\text{in}} - V_{\text{out}}) \times I_{\text{out}} = (5.0\text{ V} - 3.3\text{ V}) \times 0.15\text{ A} = 0.255\text{ W}$$
+$$P_{\text{disipada}} = (V_{\text{in}} - V_{\text{out}}) \times I_{\text{out}} = (4.2\text{ V} - 3.3\text{ V}) \times 0.3\text{ A} = 0.270\text{ W}$$
 
-$$\Delta T = P_{\text{disipada}} \times R_{\theta\text{JA}} = 0.255\text{ W} \times 60.9\,^\circ\text{C/W} = 15.53\,^\circ\text{C}$$
+$$\Delta T = P_{\text{disipada}} \times R_{\theta\text{JA}} = 0.270\text{ W} \times 100.8\,^\circ\text{C/W} = 27.22\,^\circ\text{C}$$
 
-$$T_{\text{juntura}} = T_{\text{ambiente}} + \Delta T = 65.0\,^\circ\text{C} + 15.53\,^\circ\text{C} = 80.53\,^\circ\text{C}$$
+$$T_{\text{juntura}} = T_{\text{ambiente}} + \Delta T = 65.0\,^\circ\text{C} + 27.22\,^\circ\text{C} = 92.22\,^\circ\text{C}$$
 
-Dado que la temperatura máxima de juntura permitida es de $125\,^\circ\text{C}$, el componente opera dentro del margen de seguridad del 35\%.
+Dado que la temperatura máxima de juntura permitida es de $125\,^\circ\text{C}$, el componente opera con un margen del 26\%. Con la resistencia térmica de la placa JEDEC del datasheet ($231.1\,^\circ\text{C/W}$) la juntura llegaría a $127.4\,^\circ\text{C}$ si los 300 mA fueran continuos; el perfil real es de ráfagas (corriente promedio de unos 0.4 mA) y, si una carga de ese orden fuera continua, se usa la variante TLV75733PDYDR con pad térmico ($60.3\,^\circ\text{C/W}$).
 
 \section{Lista de Materiales (BOM)}
 
@@ -120,4 +122,4 @@ El costo total directo por unidad producida (lote de 100 unidades) es de \$43.25
 
 \section{Conclusiones}
 
-El diseño de hardware del collar DR-VF-01 se orienta a cumplir los requerimientos operativos y de autonomía fijados; sin embargo, el consumo calculado en \emph{Deep Sleep} ($190\,\mu\text{A}$) supera el límite de $150\,\mu\text{A}$ de \texttt{docs/REQUIREMENTS.md} (RNF-03) y está pendiente de revisión. La selección de un regulador LDO de ultra-bajo consumo en combinación con el microcontrolador ESP32-S3 garantiza una operación extendida sin comprometer la velocidad de procesamiento requerida para las geocercas en tiempo real.
+El diseño de hardware del collar DR-VF-01 se orienta a cumplir los requerimientos operativos y de autonomía fijados; sin embargo, el consumo calculado en \emph{Deep Sleep} ($215\,\mu\text{A}$) supera el límite de $150\,\mu\text{A}$ de \texttt{docs/REQUIREMENTS.md} (RNF-03) y está pendiente de revisión. El regulador LDO TLV75733P (1 A) cubre los picos de corriente del sistema, pero su corriente quiescente de $25\,\mu\text{A}$ se suma al consumo en \emph{Deep Sleep}.
