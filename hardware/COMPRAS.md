@@ -4,6 +4,8 @@
 
 **Estados:** `aceptado` (se compra), `propuesto` (falta que el autor confirme), `rechazado` (con motivo), `del docente` (sin compra), `pendiente` (sin definir).
 
+**Acceso a las URL:** la herramienta de navegación del asistente no puede leer AliExpress (devuelve solo el menú de la página) y no se evade su verificación anticontrol de bots. Las URL se guardan sin parámetros de rastreo y los datos del producto se toman de capturas.
+
 **Regla de verificación:** una URL o una captura prueba qué dice el vendedor, no que la pieza sea original ni que cumpla lo que anuncia. Lo que no se pueda comprobar con una hoja de datos queda como "no verificado".
 
 ## 1. Del docente (sin compra)
@@ -28,7 +30,7 @@ Según el autor, el docente tiene estas piezas físicamente. Falta confirmar can
 | Pieza | Modelo | Vendedor | Precio visto | URL | Estado | Notas de verificación |
 |-------|--------|----------|--------------|-----|--------|-----------------------|
 | Módulo LoRa SX1262 | LR30-900M22S (variante SMD, no "SP") | ZC Technology Store | $18.762 | (pendiente) | aceptado | SPI confirmado en el folleto. Confirmar con el vendedor: DIO2/TX y cristal vs TCXO |
-| Antena LoRa 915 MHz, u.FL, 8 cm | "IPEX 1.13 868/915 MHz 2 dBi" | wishiot | $16.562 (10 uds) | (pendiente) | aceptado | Probar alcance real; depende de la masa de la PCB |
+| Antena LoRa 915 MHz, u.FL, 8 cm | "IPEX 1.13 868/915 MHz 2 dBi" | wishiot | $16.562 (10 uds) | https://es.aliexpress.com/item/1005010805433737.html | aceptado | Probar alcance real; depende de la masa de la PCB |
 | Kit antena SMA 3 dBi + pigtail u.FL a SMA 15 cm | "GSM 868/915 3 dBi" | XYANT Wireless Store | $22.240 (2 uds) | (pendiente) | aceptado | Para banco |
 | Antena 915 MHz 5 dBi SMA con cable 10 cm | "Omnidireccional 868/915 5 dBi" | Science Education Store | $14.662 | (pendiente) | propuesto | Larga: solo banco |
 | Módulo MAX17048 | MAX17048G+T10 (DFN-8) | JINTAIXIN Global Store | $6.729 (2 uds) | (pendiente) | propuesto | Verificar dirección I2C 0x36 al recibir. Producción: Digi-Key |
