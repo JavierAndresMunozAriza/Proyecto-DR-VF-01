@@ -24,7 +24,7 @@ En la Figura \ref{fig:bloques_hw}, los bloques en línea continua representan el
     \node [block1, right=of esp, yshift=0.1cm] (opto) {VO617A Optoacoplador\\+ Buzzer / LED (GPIO 1/2)};
     
     % EXPANSION FASE 2
-    \node [block2, right=of esp, yshift=-1.3cm] (gsm) {Módem Quectel BG95-M3\\(UART2: GPIO 47/48)\\[0.05cm]\footnotesize\textbf{[Fase 2 -- Tesis]}};
+    \node [block2, right=of esp, yshift=-1.3cm] (gsm) {Módem Quectel BG95-M3\\(UART: GPIO 43/44)\\[0.05cm]\footnotesize\textbf{[Fase 2 -- Tesis]}};
 
     % CONEXIONES
     \draw[<->, thick] (gps) -- (esp);
@@ -51,10 +51,10 @@ En la Figura \ref{fig:bloques_hw}, los bloques en línea continua representan el
 GPS u-blox MAX-M10S & UART1 & GPIO 18 (RX1), GPIO 17 (TX1) & Intercambiar TX/RX en ruteo de pista. EXTINT en GPIO 21. \\ \hline
 IMU ST LSM6DSOX & I$^2$C & GPIO 8 (SDA), GPIO 9 (SCL) & Requiere resistencias pull-up de $4.7~\text{k}\Omega$ a 3.3V. INT1 en GPIO 4 (despierta de Deep Sleep). \\ \hline
 Medidor MAX17048 & I$^2$C & GPIO 8 (SDA), GPIO 9 (SCL) & Comparte bus I$^2$C con la IMU. \\ \hline
-LoRa SX1262 & SPI & GPIO 10 (NSS), 12 (SCK), 13 (MISO), 11 (MOSI) & Líneas DIO1 (GPIO 6), BUSY (GPIO 14) y NRESET (GPIO 5) mapeadas. \\ \hline
+LoRa SX1262 & SPI & GPIO 10 (NSS), 12 (SCK), 13 (MISO), 11 (MOSI) & Líneas DIO1 (GPIO 6), BUSY (GPIO 14), NRESET (GPIO 5), RXEN (GPIO 42) y TXEN (GPIO 47) mapeadas. \\ \hline
 Optoacoplador / Buzzer & GPIO Digital & GPIO 1 (Disparo), GPIO 2 (PWM) & Separación estricta de plano de masa. \\ \hline
 \rowcolor{phase2orange}
-Quectel BG95-M3 [Fase 2] & UART2 & GPIO 48 (RX2), GPIO 47 (TX2), GPIO 42 (PWRKEY) & \textbf{Pines reservados en PCB para expansión de tesis.} \\ \hline
+Quectel BG95-M3 [Fase 2] & UART & GPIO 44 (RX), GPIO 43 (TX), GPIO 48 (PWRKEY) & \textbf{Pines reservados en PCB para expansión de tesis.} \\ \hline
 \end{tabularx}
 \end{table}
 

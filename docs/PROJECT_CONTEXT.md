@@ -163,12 +163,12 @@ El único mapa de pines vigente es [hardware/pinout.md](../hardware/pinout.md). 
 
 | Función | Periférico | GPIO |
 | :--- | :--- | :--- |
-| Bus SPI | LoRa SX1262 | NSS 10, MOSI 11, SCK 12, MISO 13 (BUSY 14, DIO1 6, NRESET 5) |
+| Bus SPI | LoRa SX1262 | NSS 10, MOSI 11, SCK 12, MISO 13 (BUSY 14, DIO1 6, NRESET 5, RXEN 42, TXEN 47) |
 | Bus I2C | LSM6DSOX, MAX17048 | SDA 8, SCL 9 (pull-up 4.7 kΩ) |
 | UART1 | GNSS MAX-M10S | TX 17, RX 18 |
 | IMU | LSM6DSOX INT1 (wake-up) | 4 |
 | Actuador | Optoacoplador VO617A (`OPTO_CTRL`) | 1 |
-| Módem Fase 2 | UART2 TX / RX, PWRKEY | 47 / 48, 42 |
+| Módem Fase 2 | UART TX / RX, PWRKEY | 43 / 44, 48 |
 
 ### 4.4 Bill of Materials (BOM) — Componentes Clave
 

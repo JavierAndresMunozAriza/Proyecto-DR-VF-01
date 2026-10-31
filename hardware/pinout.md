@@ -41,18 +41,18 @@
 | 18 | 11 | GNSS_RX | MAX-M10S **TXD** (pin 2) | UART1 RX del ESP32 |
 | 19 | 13 | USB_D- | USB-C D- | USB nativo |
 | 20 | 14 | USB_D+ | USB-C D+ | USB nativo |
-| 21 | 23 | GNSS_EXTINT | MAX-M10S EXTINT (pin 5) | RTC. Despertar del GNSS |
+| 21 | 23 | GNSS_EXTINT | MAX-M10S EXTINT (pin 5) | Salida del ESP32 hacia una entrada del GNSS (opcional: dejar abierta si no se usa) |
 | 35-37 | 28-30 | no disponibles | — | PSRAM octal |
 | 38 | 31 | LED_R | LED RGB rojo | Resistencia serie. En DevKitC-1 v1.1 coincide con el LED integrado |
 | 39 | 32 | LED_G | LED RGB verde | Resistencia serie |
 | 40 | 33 | LED_B | LED RGB azul | Resistencia serie |
 | 41 | 34 | CHRG_STAT | CN3791 CHRG | Colector abierto: pull-up 10 kΩ |
-| 42 | 35 | RESERVA_F2 | Módem Fase 2 (PWRKEY) | Libre en Fase 1 |
-| 43 | 37 | TXD0 | Punto de prueba | Consola |
-| 44 | 36 | RXD0 | Punto de prueba | Consola |
+| 42 | 35 | LORA_RXEN | Módulo LoRa, pin RX (pin 6, conmutador de antena) | Salida. **POR DECIDIR** |
+| 43 | 37 | TXD0 | Punto de prueba / UART TX del módem de Fase 2 | Consola; en Fase 2 la consola pasa a USB CDC. **POR DECIDIR** |
+| 44 | 36 | RXD0 | Punto de prueba / UART RX del módem de Fase 2 | Ídem |
 | 45, 46 | 26, 16 | (reservados) | — | Strapping. No conectar |
-| 47 | 24 | RESERVA_F2 | Módem Fase 2 (UART2 TX) | Libre en Fase 1 |
-| 48 | 25 | RESERVA_F2 | Módem Fase 2 (UART2 RX) | Libre en Fase 1 |
+| 47 | 24 | LORA_TXEN | Módulo LoRa, pin TX (pin 7, conmutador de antena) | Salida. Si el conmutador lo gobierna DIO2 (pin 8 unido a pin 7), dejar libre |
+| 48 | 25 | RESERVA_F2 | Módem Fase 2 (PWRKEY) | Libre en Fase 1 |
 
 **Señales retiradas del mapa anterior:** `POWER_GOOD` y `ENABLE_CHG` (CN3791). No se ha confirmado que ese cargador tenga esos pines; la hoja de datos del CN3791 aún no está en `hardware/datasheets/`. Si resultan necesarios, GPIO42 es el candidato para una de ellas.
 
@@ -76,9 +76,28 @@ Los números de pin físico de los CI van solo donde se verificaron en la hoja d
 
 SDA y SCL a GPIO8 y GPIO9. INT1 a GPIO4. Para I2C: CS a VDDIO, SDO/SA0 define la dirección (0x6A o 0x6B). Salida INT configurable como push-pull u open-drain: si se deja push-pull no se necesita pull-up externo en GPIO4.
 
-### LoRa SX1262
+### Módulo LoRa DX-LR30-900M22S (SX1262, SPI; pines verificados en `docs/datasheets/`)
 
-Se asume un módulo LoRa SX1262 con SPI (ver `BOM.md` 1.3). SPI en los pines FSPI por defecto del chip (GPIO10 a 13). Si el módulo expone TXEN/RXEN, hacen falta dos GPIO más (candidatos GPIO47 y GPIO48 si se renuncia a la reserva de la Fase 2; **POR DECIDIR**). BUSY, DIO1 y NRESET en GPIO14, 6 y 5. DIO2 gobierna el conmutador RF (`SetDio2AsRfSwitchCtrl`) y DIO3 alimenta el TCXO (`SetDio3AsTcxoCtl`): ninguno va al ESP32.
+Variante a comprar: **LR30-900M22S** (módulo SMD de 20x14x2.3 mm, 1.8 a 3.7 V). No la "SP", que es una placa con STM32 y UART.
+
+| Módulo | Pin | ESP32-S3 |
+|--------|-----|----------|
+| NSS | 19 | GPIO10 |
+| SCK | 18 | GPIO12 |
+| MOSI | 17 | GPIO11 |
+| MISO | 16 | GPIO13 |
+| RESET | 15 | GPIO5 |
+| BUSY | 14 | GPIO14 |
+| DIO1 | 13 | GPIO6 |
+| RX (conmutador de antena) | 6 | GPIO42 (LORA_RXEN) |
+| TX (conmutador de antena) | 7 | GPIO47 (LORA_TXEN) |
+| DIO2 | 8 | sin conectar, o unido al pin 7 si DIO2 gobierna el conmutador (`SetDio2AsRfSwitchCtrl`) |
+| DIO3 | 5 | alimentación del TCXO externo: sin conectar si el módulo usa cristal |
+| VCC | 9 | 3V3 |
+| ANT | 21 | línea de 50 ohm hacia el conector u.FL de la PCB |
+| GND | 1, 2, 3, 4, 10, 11, 12, 20, 22 | GND |
+
+El módulo trae su propio conector u.FL, pero la antena por defecto sale por el pad ANT (stamp hole). Pendiente de confirmar con el vendedor: si el pin TX va unido a DIO2 por dentro, qué hace DIO2 en la práctica, y si el cristal de 32 MHz es TCXO. La ficha exige conectar la antena antes de energizar. Zephyr usa `semtech,sx1262` con `busy-gpios`, `dio1-gpios`, `tx-enable-gpios`, `rx-enable-gpios`, `dio2-tx-enable` y `dio3-tcxo-voltage`.
 
 ### Optoacoplador VO617A
 
@@ -91,7 +110,7 @@ GPIO1 → resistencia serie → LED de entrada. Calcular `R = (3.3 V − V_F) / 
 ## Consideraciones de diseño
 
 1. Niveles lógicos de 3.3 V en todos los pines.
-2. Fuentes de despertar de deep sleep: IMU_INT1 (GPIO4), LORA_DIO1 (GPIO6), BUTTON (GPIO7), GNSS_EXTINT (GPIO21).
+2. Fuentes de despertar de deep sleep: IMU_INT1 (GPIO4), LORA_DIO1 (GPIO6), BUTTON (GPIO7). EXTINT es una entrada del GNSS y no despierta al ESP32.
 3. Mantener `OPTO_CTRL` en bajo durante deep sleep con la retención de GPIO RTC (`rtc_gpio_hold_en`) además del pull-down externo.
 4. Pines SPI con longitudes de pista similares y lejos de la antena del módulo.
 5. Puntos de prueba en TXD0, RXD0, EN, GPIO0, 3V3 y GND.
@@ -108,4 +127,5 @@ GPIO1 → resistencia serie → LED de entrada. Calcular `R = (3.3 V − V_F) / 
 | Versión | Fecha | Cambios |
 |---------|-------|---------|
 | 1.0-1.1 | 2024 | Diseño inicial (con GPIO inexistentes y duplicados) |
+| 2.1 | 2026-10-30 | Pines del módulo LoRa DX-LR30 verificados (RXEN/TXEN en GPIO42/47). Fase 2 pasa a UART0 (GPIO43/44) con PWRKEY en GPIO48. Corregido: EXTINT es entrada del GNSS, no fuente de despertar |
 | 2.0 | 2026-10-30 | Rehecho contra el datasheet v1.8 del módulo. GPIO05 ya no se repite. Sin GPIO22-34. USB D+/D- corregidos. GNSS con TX/RX cruzados |

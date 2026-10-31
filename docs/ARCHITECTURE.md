@@ -100,18 +100,18 @@ El único mapa de pines vigente es [hardware/pinout.md](../hardware/pinout.md). 
 | Función | Periférico | GPIO |
 | :--- | :--- | :--- |
 | Bus SPI | LoRa SX1262 | NSS 10, MOSI 11, SCK 12, MISO 13 |
-| Control LoRa | SX1262 | BUSY 14, DIO1 6 (despierta), NRESET 5 |
+| Control LoRa | Módulo SX1262 | BUSY 14, DIO1 6 (despierta), NRESET 5, RXEN 42, TXEN 47 |
 | Bus I2C | LSM6DSOX, MAX17048 | SDA 8, SCL 9 (pull-up 4.7 kΩ) |
 | UART1 | GNSS MAX-M10S | TX 17 (hacia RXD), RX 18 (desde TXD) |
-| GNSS | MAX-M10S EXTINT | 21 (despierta) |
+| GNSS | MAX-M10S EXTINT (entrada del GNSS, opcional) | 21 |
 | IMU | LSM6DSOX INT1 | 4 (despierta de Deep Sleep) |
 | Actuador | Optoacoplador VO617A (`OPTO_CTRL`) | 1 |
 | Buzzer | PWM | 2 |
 | Botón de usuario | Entrada | 7 (despierta) |
 | LED RGB | R / G / B | 38 / 39 / 40 |
 | Estado de carga | CN3791 CHRG | 41 |
-| Módem Fase 2 | UART2 TX / RX, PWRKEY | 47 / 48, 42 |
-| Consola | UART0 TX / RX | 43 / 44 (puntos de prueba) |
+| Módem Fase 2 | UART TX / RX, PWRKEY | 43 / 44, 48 |
+| Consola | UART0 TX / RX | 43 / 44 (puntos de prueba; en Fase 2 la consola pasa a USB CDC) |
 
 **Nota Técnica:** El GNSS usa UART1 (GPIO 17/18), no el bus I2C. GPIO 43/44 (UART0) quedan como puntos de prueba para consola. Las reglas del módulo (pines de strapping, USB nativo en GPIO 19/20, PSRAM octal) están en [hardware/pinout.md](../hardware/pinout.md).
 
