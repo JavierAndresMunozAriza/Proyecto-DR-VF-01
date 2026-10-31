@@ -24,7 +24,7 @@ Según el autor, el docente tiene estas piezas físicamente (mensaje del docente
 | D6 | Transceptor RS-485 | TP8485E-SR | Sin uso | |
 | D7 | Monitor de corriente | INA139NA/3K | Sin uso por ahora | |
 | D8 | Potenciómetro 10 kΩ | TC33X-2-103E | Sin uso | |
-| D9 | Regulador 3 A | DS8570F8 | No se usa hasta revisar su Iq | Un LDO de 3 A suele tener Iq alta; el sleep presupuestado es de unos 215 µA |
+| D9 | Regulador 3 A | DS8570F8 | No se usa hasta revisar su Iq | Un LDO de 3 A suele tener Iq alta; el sleep presupuestado es de unos 95 µA |
 | D10 | Pasivos, USB-C 16P, TVS, Schottky, MOSFET, LED RGB | ver biblioteca | Esquemático y prototipo | La biblioteca no trae ESP32-S3-WROOM-1U confirmado, MAX-M10S, LSM6DSOX, MAX17048, módulo LoRa, CN3791, VO617A, buzzer, cristal 32.768 kHz, u.FL ni JST SH |
 
 ## 2. AliExpress

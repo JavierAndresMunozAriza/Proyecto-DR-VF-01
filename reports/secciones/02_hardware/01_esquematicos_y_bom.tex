@@ -47,7 +47,7 @@ u-blox MAX-M10S & Standby & 25.0 $\mu$A & 24.63 $\mu$A \\
 LSM6DSOX IMU & Low-Power & 10.0 $\mu$A & 9.85 $\mu$A \\
 \rowcolor{rowalt}
 SX1262 LoRa & Sleep & 0.7 $\mu$A & 0.69 $\mu$A \\
-CN3791 MPPT & Standby & 150.0 $\mu$A & 150.00 $\mu$A \\
+CN3791 MPPT & Sleep (sin entrada) & 30.0 $\mu$A & 30.00 $\mu$A \\
 \rowcolor{rowalt}
 TLV75733P LDO & \textit{Iq} & 25.0 $\mu$A & 25.00 $\mu$A \\
 \bottomrule
@@ -56,11 +56,11 @@ TLV75733P LDO & \textit{Iq} & 25.0 $\mu$A & 25.00 $\mu$A \\
 
 \subsection{Autonomía de Batería}
 
-Con una celda LiPo de 1500 mAh y una corriente promedio efectiva de 0.387 mA, la autonomía teórica estimada del dispositivo se calcula como:
+Con una celda LiPo de 1500 mAh y una corriente promedio efectiva de 0.267 mA, la autonomía teórica estimada del dispositivo se calcula como:
 
-$$\text{Autonomía (días)} = \frac{1500\text{ mAh}}{0.387\text{ mA} \times 24\text{ h/día}} \approx 161\text{ días}$$
+$$\text{Autonomía (días)} = \frac{1500\text{ mAh}}{0.267\text{ mA} \times 24\text{ h/día}} \approx 234\text{ días}$$
 
-Considerando la autodescarga de la batería y factores de degradación ambiental, se estima una operación continua superior a 137 días en condiciones ideales (capacidad efectiva de 1275 mAh, con factor de degradación de 0.85).
+Considerando la autodescarga de la batería y factores de degradación ambiental, se estima una operación continua superior a 199 días en condiciones ideales (capacidad efectiva de 1275 mAh, con factor de degradación de 0.85).
 
 \section{Análisis Térmico}
 
@@ -82,7 +82,7 @@ $$\Delta T = P_{\text{disipada}} \times R_{\theta\text{JA}} = 0.270\text{ W} \ti
 
 $$T_{\text{juntura}} = T_{\text{ambiente}} + \Delta T = 65.0\,^\circ\text{C} + 27.22\,^\circ\text{C} = 92.22\,^\circ\text{C}$$
 
-Dado que la temperatura máxima de juntura permitida es de $125\,^\circ\text{C}$, el componente opera con un margen del 26\%. Con la resistencia térmica de la placa JEDEC del datasheet ($231.1\,^\circ\text{C/W}$) la juntura llegaría a $127.4\,^\circ\text{C}$ si los 300 mA fueran continuos; el perfil real es de ráfagas (corriente promedio de unos 0.4 mA) y, si una carga de ese orden fuera continua, se usa la variante TLV75733PDYDR con pad térmico ($60.3\,^\circ\text{C/W}$).
+Dado que la temperatura máxima de juntura permitida es de $125\,^\circ\text{C}$, el componente opera con un margen del 26\%. Con la resistencia térmica de la placa JEDEC del datasheet ($231.1\,^\circ\text{C/W}$) la juntura llegaría a $127.4\,^\circ\text{C}$ si los 300 mA fueran continuos; el perfil real es de ráfagas (corriente promedio de unos 0.27 mA) y, si una carga de ese orden fuera continua, se usa la variante TLV75733PDYDR con pad térmico ($60.3\,^\circ\text{C/W}$).
 
 \section{Lista de Materiales (BOM)}
 
@@ -122,4 +122,4 @@ El costo total directo por unidad producida (lote de 100 unidades) es de \$43.25
 
 \section{Conclusiones}
 
-El diseño de hardware del collar DR-VF-01 se orienta a cumplir los requerimientos operativos y de autonomía fijados; sin embargo, el consumo calculado en \emph{Deep Sleep} ($215\,\mu\text{A}$) supera el límite de $150\,\mu\text{A}$ de \texttt{docs/REQUIREMENTS.md} (RNF-03) y está pendiente de revisión. El regulador LDO TLV75733P (1 A) cubre los picos de corriente del sistema, pero su corriente quiescente de $25\,\mu\text{A}$ se suma al consumo en \emph{Deep Sleep}.
+El diseño de hardware del collar DR-VF-01 se orienta a cumplir los requerimientos operativos y de autonomía fijados; el consumo calculado en \emph{Deep Sleep} ($95\,\mu\text{A}$) queda por debajo del límite de $150\,\mu\text{A}$ de \texttt{docs/REQUIREMENTS.md} (RNF-03), sin contar la fuga del diodo de recirculación del CN3791, que depende de la pieza elegida. El regulador LDO TLV75733P (1 A) cubre los picos de corriente del sistema, pero su corriente quiescente de $25\,\mu\text{A}$ se suma al consumo en \emph{Deep Sleep}.

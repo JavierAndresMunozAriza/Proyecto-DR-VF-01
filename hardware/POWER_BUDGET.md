@@ -19,7 +19,7 @@ El sistema opera en diferentes estados de potencia según el modelo de máquinas
 
 | Estado | Descripción | Corriente Promedio | Tiempo Estimado |
 |--------|-------------|-------------------|-----------------|
-| DEEP_SLEEP | Solo IMU activo | ~215μA | 98.5% del tiempo |
+| DEEP_SLEEP | Solo IMU activo | ~95μA | 98.5% del tiempo |
 | ACTIVE_GNSS | Posicionamiento activo | ~80mA | 20 segundos por evento |
 | ACTIVE_LORA | Transmisión de datos | ~120mA (pico) | 0.5 segundos por transmisión |
 | ACTIVE_DISUASION | Mecanismo de disuasión | ~50mA | 5 segundos por activación |
@@ -85,7 +85,8 @@ El sistema opera en diferentes estados de potencia según el modelo de máquinas
 **Gestión Energética Inteligente:**
 - **Voltaje de entrada**: 4.5-24V (panel solar)
 - **Eficiencia típica**: 88% a 250mA salida
-- **Corriente de operación**: 150μA en standby
+- **Corriente desde la batería en sleep** (sin entrada, de noche): unos 30μA según el datasheet del CN3791 (9μA en los pines BAT y CSP más unos 21μA por el MOSFET de paso). No incluye la fuga del diodo de recirculación D2, que depende de la pieza elegida
+- **Corriente de operación** (desde el panel, sin conmutar): 1.0mA típica. No sale de la batería
 
 ### 7. Regulador LDO (TLV75733P)
 **Alimentación de 3.3V desde la batería:**
@@ -104,9 +105,9 @@ El sistema opera en diferentes estados de potencia según el modelo de máquinas
 | MAX-M10S | Standby | 25μA | 98.5% | 24.63μA |
 | LSM6DSOX | Low-Power | 10μA | 98.5% | 9.85μA |
 | SX1262 | Sleep | 0.7μA | 98.5% | 0.69μA |
-| CN3791 | Standby | 150μA | 100% | 150μA |
+| CN3791 | Sleep (sin entrada) | 30μA | 100% | 30μA |
 | TLV75733P | Iq | 25μA | 100% | 25μA |
-| **TOTAL** | | | | **215.09μA** |
+| **TOTAL** | | | | **95.09μA** |
 
 ### 2. Verificación de Geocerca (GEOFENCE_CHECK)
 **Descripción**: Activación por detección de movimiento para verificar posición dentro de geocerca.
@@ -117,9 +118,9 @@ El sistema opera en diferentes estados de potencia según el modelo de máquinas
 | MAX-M10S | Tracking | 45mA | 20s | 900mAs |
 | LSM6DSOX | Normal | 650μA | 22s | 14.3mAs |
 | SX1262 | Sleep | 1.5μA | 22s | 33μAs |
-| CN3791 | Standby | 150μA | 22s | 3.3mAs |
+| CN3791 | Sleep (sin entrada) | 30μA | 22s | 0.66mAs |
 | TLV75733P | Iq | 25μA | 22s | 0.55mAs |
-| **TOTAL** | | | | **1078.18mAs** |
+| **TOTAL** | | | | **1075.54mAs** |
 
 ### 3. Transmisión LoRa (LORA_TX)
 **Descripción**: Envío de coordenadas y estado del sistema cuando se detecta alerta.
@@ -130,9 +131,9 @@ El sistema opera en diferentes estados de potencia según el modelo de máquinas
 | MAX-M10S | Standby | 25μA | 1s | 25μAs |
 | LSM6DSOX | Sleep | 10μA | 1s | 10μAs |
 | SX1262 | TX | 120mA | 0.5s | 60mAs |
-| CN3791 | Standby | 150μA | 1s | 150μAs |
+| CN3791 | Sleep (sin entrada) | 30μA | 1s | 30μAs |
 | TLV75733P | Iq | 25μA | 1s | 25μAs |
-| **TOTAL** | | | | **140.21mAs** |
+| **TOTAL** | | | | **140.09mAs** |
 
 ### 4. Activación de Disuasión (DISUASION)
 **Descripción**: Activación del mecanismo de disuasión por violación de geocerca.
@@ -144,9 +145,9 @@ El sistema opera en diferentes estados de potencia según el modelo de máquinas
 | LSM6DSOX | Sleep | 10μA | 5s | 50μAs |
 | SX1262 | Sleep | 1.5μA | 5s | 7.5μAs |
 | VO617A | On | 50mA | 5s | 250mAs |
-| CN3791 | Standby | 150μA | 5s | 750μAs |
+| CN3791 | Sleep (sin entrada) | 30μA | 5s | 150μAs |
 | TLV75733P | Iq | 25μA | 5s | 125μAs |
-| **TOTAL** | | | | **651.0575mAs** |
+| **TOTAL** | | | | **650.4575mAs** |
 
 ## Cálculo de Consumo Diario
 
@@ -159,15 +160,15 @@ El sistema opera en diferentes estados de potencia según el modelo de máquinas
 ### 2. Cálculo Detallado
 | Actividad | Ocurrencias/día | Consumo por evento | Total diario |
 |-----------|----------------|-------------------|--------------|
-| SLEEP (base) | 86400s | 215.09μA promedio | 18.584 A·s |
-| GEOFENCE_CHECK | 10 | 1078.18mAs | 10.782 A·s |
-| LORA_TX | 20 | 140.21mAs | 2.804 A·s |
-| DISUASION | 2 | 651.0575mAs | 1.302 A·s |
-| **TOTAL** | | | **33.472 A·s** |
+| SLEEP (base) | 86400s | 95.09μA promedio | 8.216 A·s |
+| GEOFENCE_CHECK | 10 | 1075.54mAs | 10.755 A·s |
+| LORA_TX | 20 | 140.09mAs | 2.802 A·s |
+| DISUASION | 2 | 650.4575mAs | 1.301 A·s |
+| **TOTAL** | | | **23.074 A·s** |
 
 ### 3. Conversión a Consumo Promedio
-- **Consumo diario total**: 33.472 A·s ÷ 3600 s/h ÷ 24 h/día = 0.387 mA promedio
-- **Corriente promedio diaria**: 0.387 mA
+- **Consumo diario total**: 23.074 A·s ÷ 3600 s/h ÷ 24 h/día = 0.267 mA promedio
+- **Corriente promedio diaria**: 0.267 mA
 
 ## Autonomía de Batería
 
@@ -175,13 +176,13 @@ El sistema opera en diferentes estados de potencia según el modelo de máquinas
 - **Capacidad nominal**: 1200 mAh
 - **Factor de degradación**: 0.85 (considerando temperatura y envejecimiento)
 - **Capacidad efectiva**: 1200 mAh × 0.85 = 1020 mAh
-- **Autonomía teórica**: 1020 mAh ÷ 0.387 mA = 2636 horas ≈ 110 días
+- **Autonomía teórica**: 1020 mAh ÷ 0.267 mA = 3820 horas ≈ 159 días
 
 ### 2. Cálculo con Batería de 1500mAh
 - **Capacidad nominal**: 1500 mAh
 - **Factor de degradación**: 0.85
 - **Capacidad efectiva**: 1500 mAh × 0.85 = 1275 mAh
-- **Autonomía teórica**: 1275 mAh ÷ 0.387 mA = 3295 horas ≈ 137 días
+- **Autonomía teórica**: 1275 mAh ÷ 0.267 mA = 4775 horas ≈ 199 días
 
 ## Consideraciones Ambientales
 
@@ -197,10 +198,10 @@ El sistema opera en diferentes estados de potencia según el modelo de máquinas
 ### 3. Autonomía Ajustada
 | Condición | Autonomía 1200mAh | Autonomía 1500mAh |
 |-----------|-------------------|-------------------|
-| Condiciones ideales | 110 días | 137 días |
-| Temperatura extrema | 77 días | 96 días |
-| 500 ciclos | 88 días | 110 días |
-| 1000 ciclos | 71 días | 89 días |
+| Condiciones ideales | 159 días | 199 días |
+| Temperatura extrema | 111 días | 139 días |
+| 500 ciclos | 127 días | 159 días |
+| 1000 ciclos | 103 días | 129 días |
 
 ## Carga Solar
 
@@ -215,9 +216,9 @@ El sistema opera en diferentes estados de potencia según el modelo de máquinas
 - **Corriente generada**: 9Wh ÷ 3.7V = 2430mAh equivalentes diarios
 
 ### 3. Balance Energético
-- **Consumo diario**: 0.387 mA × 24h = 9.29 mAh
+- **Consumo diario**: 0.267 mA × 24h = 6.41 mAh
 - **Generación diaria**: 2430 mAh
-- **Balance neto**: +2421 mAh (superavit significativo)
+- **Balance neto**: +2424 mAh (superavit significativo)
 
 ## Optimización de Consumo
 
@@ -247,7 +248,7 @@ Siguiendo los principios de sistemas tolerantes a fallos de Elecia White:
 
 ## Conclusiones
 
-El sistema DR-VF-01 está diseñado para operar durante más de 100 días con una sola carga (estimación teórica: 110 días con 1200 mAh y 137 días con 1500 mAh), gracias a:
+El sistema DR-VF-01 está diseñado para operar durante más de 100 días con una sola carga (estimación teórica: 159 días con 1200 mAh y 199 días con 1500 mAh), gracias a:
 1. Una estrategia de sueño profundo eficiente (>98% del tiempo)
 2. Componentes de bajo consumo seleccionados cuidadosamente
 3. Un sistema de carga solar robusto que supera ampliamente el consumo

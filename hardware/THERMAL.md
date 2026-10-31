@@ -31,7 +31,7 @@ Este documento presenta el análisis térmico detallado de todos los componentes
 **Verificación:**
 - Margen con DBV en la EVM (4.2V, 300mA): 125°C - 92.2°C = 32.8°C (ADECUADO)
 - Con la resistencia térmica de la placa JEDEC (2s2p, sin vías) el DBV supera los 125°C si los 300mA fueran continuos
-- El perfil real es de ráfagas: la corriente promedio es de unos 0.4mA y el LDO disipa unos 0.35mW. No hay datos de la constante de tiempo térmica, así que el cálculo en régimen estacionario es una cota, no una predicción
+- El perfil real es de ráfagas: la corriente promedio es de unos 0.27mA y el LDO disipa unos 0.24mW. No hay datos de la constante de tiempo térmica, así que el cálculo en régimen estacionario es una cota, no una predicción
 - El DBV basta en ráfagas cortas, como la transmisión LoRa. Si una carga de unos 300mA fuera continua, o si el USB alimentara el LDO a 5.0V, se usa el TLV75733PDYDR (mismo regulador con pad térmico)
 
 ### 2. Cargador Solar (CN3791)
