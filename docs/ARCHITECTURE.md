@@ -8,7 +8,34 @@
 
 ## 1. Arquitectura de Alimentación en Dos Niveles
 
-El sistema utiliza una topología distribuida que aprovecha el regulador interno LDO de la placa DevKit:
+La batería es el nodo central: dos cargadores independientes la cargan y todo el sistema se alimenta de ella. El USB-C no alimenta al sistema: solo carga la batería (TP4056) y lleva los datos de programación.
+
+### 1.1 PCB final (ESP32-S3-WROOM-1U)
+
+```text
+[Panel Solar 6V] ──► [CN3791 MPPT] ──┐
+                                      ├──► [Batería LiPo 3.7V] (tras la protección BQ2975)
+[USB-C VBUS 5V] ──► [TP4056] ────────┘            │
+                                                  ├─► [MAX17048 Fuel Gauge]
+                                                  ▼
+                                      [LDO TLV75733P, 1 A]
+                                                  │
+                                                  ▼
+                                        [Bus 3.3V de la PCB]
+                                                  ├─► ESP32-S3-WROOM-1U
+                                                  ├─► GPS u-blox MAX-M10S
+                                                  ├─► Módulo LoRa DX-LR30-900M22S
+                                                  └─► IMU LSM6DSOX
+```
+
+- **Dos cargadores:** el CN3791 regula la entrada a la tensión MPPT (6 V) y solo inicia carga si el pin MPPT supera 1.23 V, es decir, con más de unos 6.2 V en la entrada (sección 2.2). Un USB de 5 V nunca la inicia. El TP4056 acepta de 4.0 a 8.0 V y entrega hasta 1 A.
+- **TP4056:** carga lineal con terminación a C/10. Con RPROG de 2.4 kΩ limita a 500 mA y disipa unos 0.65 W con 5 V de entrada y la celda a 3.7 V; su regulación térmica protege el chip a 145 °C.
+- **LDO TLV75733P:** la entrada nunca pasa de 4.2 V, así que a 300 mA disipa 0.27 W (ver `hardware/THERMAL.md`). Sin batería la placa no arranca desde el USB.
+- **Programación:** por el USB-C, con el USB nativo del ESP32-S3 (GPIO19 y GPIO20) y el botón BOOT a GND para el modo descarga (`hardware/pinout.md`). La placa debe tener la batería conectada.
+
+### 1.2 Prototipo con DevKitC-1
+
+El prototipo aprovecha el regulador interno LDO de la placa DevKit:
 
 ```text
 [Panel Solar 6V] ──► [CN3791 MPPT] ──► [Batería LiPo 3.7V]
@@ -42,16 +69,16 @@ $$L = \frac{V_{BAT} \cdot (V_{IN} - V_{BAT})}{V_{IN} \cdot f_{sw} \cdot \Delta I
 **Selección Comercial:** Inductor de potencia SMD de **10 μH a 22 μH** (estándar en el módulo CN3791).
 
 ### 2.2 Divisor Tensión MPPT (Fijación a 6V)
-El pin `MPPT` compara el voltaje del panel con una referencia interna:
+El pin `MPPT` se regula a 1.205 V (mínimo 1.18 V, máximo 1.23 V; datasheet CN3791 Rev 1.0, `hardware/datasheets/cn3791_datasheet.pdf`). El divisor R₃/R₄ fija la tensión a la que trabaja el panel:
 
-$$V_{MPPT} = V_{ref} \cdot \left(1 + \frac{R_1}{R_2}\right)$$
+$$V_{MPPT} = 1.205 \cdot \left(1 + \frac{R_3}{R_4}\right)$$
 
-Con V_MPPT = 6.0 V y asumiendo V_ref = 2.0 V:
-$$6.0 = 2.0 \cdot \left(1 + \frac{R_1}{R_2}\right) \implies R_1 = 2 \cdot R_2$$
+Con V_MPPT = 6.0 V:
+$$6.0 = 1.205 \cdot \left(1 + \frac{R_3}{R_4}\right) \implies \frac{R_3}{R_4} = 3.98$$
 
-**Selección Comercial:** R₁ = 200 kΩ, R₂ = 100 kΩ (1% precisión).
+**Selección Comercial:** R₃ = 402 kΩ, R₄ = 100 kΩ (1% precisión), que da V_MPPT = 1.205 · 5.02 = 6.05 V. El valor de 6 V es provisional hasta elegir el panel (su tensión de máxima potencia).
 
-**Nota Técnica:** La referencia interna del CN3791 debe verificarse en el datasheet (posiblemente 1.04V en lugar de 2.0V).
+**Nota Técnica:** el ciclo de carga solo inicia cuando el pin MPPT supera 1.23 V, es decir, con más de 1.23 · 5.02 = 6.17 V en la entrada. Por eso un USB de 5 V no puede usar este cargador y la carga por USB va por el TP4056 (sección 1.1).
 
 ### 2.3 Sensado de Corriente (R_CS)
 Para limitar la carga rápida a 1 A con referencia de 120 mV:
@@ -68,6 +95,8 @@ $$R_{CS} = \frac{0.12\text{ V}}{1.0\text{ A}} = 0.12\ \Omega\ (120\text{ m}\Omeg
 | **LSM6DSOX** | 3 μA | 0.55 mA | 1 mA | Sensor de movimiento continuo |
 | **MAX17048** | 3 μA | 0.023 mA | 0.05 mA | Medición I2C |
 | **Total Sistema** | **< 50 μA** | **~88 mA** | **~224 mA** | **Dentro del margen de 500mA del LDO** |
+
+**Nota:** el margen de 500 mA es el del LDO de la DevKit (prototipo). El TLV75733P de la PCB final entrega 1 A.
 
 **Nota sobre escalabilidad a 4G (A7670SA):** Los módulos celulares generan picos de hasta 2.0 A. En implementación futura, se alimentarán directamente de la batería LiPo con capacitor de desacople dedicado de 470 μF.
 

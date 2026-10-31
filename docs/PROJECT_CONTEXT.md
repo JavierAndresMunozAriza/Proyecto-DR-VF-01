@@ -51,14 +51,14 @@ Para la matriz completa con trazabilidad, métricas y estado de implementación,
 Para detalles técnicos completos, cálculos y justificativos, ver: [ARCHITECTURE.md](./ARCHITECTURE.md)
 
 ### 3.1 Arquitectura de Alimentación
-Sistema en dos niveles: línea no regulada (3.6-4.2V) para VIN ESP32 y MAX17048, y línea regulada (3.3V estrictos) desde LDO interno del ESP32 para módulos periféricos.
+Sistema en dos niveles: línea no regulada (3.6-4.2V, la batería) y línea regulada (3.3V) para los módulos. En la PCB final la batería la cargan dos cargadores (CN3791 con el panel solar y TP4056 con el USB-C) y alimenta un LDO TLV75733P de 1 A; el USB-C no alimenta al sistema (ver [ARCHITECTURE.md](./ARCHITECTURE.md), sección 1.1). En el prototipo con DevKit se usa el LDO interno de la placa.
 
 ### 3.2 Componentes Críticos
 * **Procesamiento:** ESP32-S3 Dual-Core 240MHz (PCB final)
 * **Objetivos de hardware:** un solo código base Zephyr para dos placas. Prueba de concepto en la Nordic Thingy:91 X (nRF9151, nRF Connect SDK, LTE-M/NB-IoT/GNSS); producto final en la PCB con ESP32-S3-WROOM-1U-N16R8 (LoRa SX1262, GNSS externo MAX-M10S, IMU LSM6DSOX). Se comparten `geofence.c`, la FSM y el logging; cada placa aporta su overlay, su `prj.conf` y los adaptadores de GNSS, comunicaciones e IMU.
 * **Comunicación:** LoRa SX1262 (915 MHz)
 * **Geolocalización:** u-blox MAX-M10S GNSS
-* **Energía:** CN3791 MPPT, MAX17048 Fuel Gauge
+* **Energía:** CN3791 MPPT (solar), TP4056 (carga por USB-C), TLV75733P (LDO de 1 A), MAX17048 Fuel Gauge
 * **Detección:** LSM6DSOX IMU 6-DOF
 
 ### 3.3 Consumo Eléctrico
@@ -77,7 +77,7 @@ Arquitectura dual-core (ESP32-S3) con 5 tareas distribuidas:
 
 ### 3.1 Arquitectura de Alimentación en Dos Niveles
 
-El sistema utiliza una topología distribuida que aprovecha el regulador interno LDO de la placa DevKit para evitar la adición de etapas de regulación externas redundantes:
+En la PCB final la batería es el nodo central: el CN3791 la carga desde el panel solar, el TP4056 desde el USB-C, y un LDO TLV75733P de 1 A genera los 3.3 V (diagrama y justificación en [ARCHITECTURE.md](./ARCHITECTURE.md), sección 1.1). El prototipo con DevKit aprovecha el regulador interno LDO de la placa para evitar la adición de etapas de regulación externas redundantes:
 
 ```text
 [Panel Solar 6V] ──► [CN3791 MPPT] ──► [Batería LiPo 3.7V]
@@ -110,11 +110,11 @@ $$L = \frac{V_{BAT} \cdot (V_{IN} - V_{BAT})}{V_{IN} \cdot f_{sw} \cdot \Delta I
 * **Selección Comercial:** Inductor de potencia SMD de **$10\ \mu\text{H}$ a $22\ \mu\text{H}$** (Estándar en el módulo CN3791).
 
 #### **B. Divisor Tensión MPPT (Fijación a 6V)**
-El pin `MPPT` compara el voltaje del panel con una referencia interna (se asume $2.0\text{ V}$; debe verificarse en el datasheet del CN3791, ver [ARCHITECTURE.md](./ARCHITECTURE.md)):
+El pin `MPPT` se regula a $1.205\text{ V}$ (datasheet del CN3791, ver [ARCHITECTURE.md](./ARCHITECTURE.md)):
 
-$$V_{MPPT} = 2.0\text{ V} \cdot \left(1 + \frac{R_1}{R_2}\right) \implies 6.0 = 2.0 \cdot \left(1 + \frac{R_1}{R_2}\right) \implies R_1 = 2 \cdot R_2$$
+$$V_{MPPT} = 1.205\text{ V} \cdot \left(1 + \frac{R_3}{R_4}\right) \implies 6.0 = 1.205 \cdot \left(1 + \frac{R_3}{R_4}\right) \implies \frac{R_3}{R_4} = 3.98$$
 
-* **Selección Comercial:** $R_1 = 200\text{ k}\Omega$, $R_2 = 100\text{ k}\Omega$ ($1\%$ precisión).
+* **Selección Comercial:** $R_3 = 402\text{ k}\Omega$, $R_4 = 100\text{ k}\Omega$ ($1\%$ precisión), que da $V_{MPPT} = 6.05\text{ V}$. La carga solo inicia con más de $6.17\text{ V}$ en la entrada, así que un USB de $5\text{ V}$ no puede usar este cargador: la carga por USB-C va por el TP4056.
 
 #### **C. Sensado de Corriente ($R_{CS}$)**
 Para limitar la carga rápida a $1\text{ A}$ con referencia de $120\text{ mV}$:

@@ -54,7 +54,7 @@
 | 47 | 24 | LORA_TXEN | Módulo LoRa, pin TX (pin 7, conmutador de antena) | Salida. Si el conmutador lo gobierna DIO2 (pin 8 unido a pin 7), dejar libre |
 | 48 | 25 | RESERVA_F2 | Módem Fase 2 (PWRKEY) | Libre en Fase 1 |
 
-**Señales retiradas del mapa anterior:** `POWER_GOOD` y `ENABLE_CHG` (CN3791). No se ha confirmado que ese cargador tenga esos pines; la hoja de datos del CN3791 aún no está en `hardware/datasheets/`. Si resultan necesarios, GPIO42 es el candidato para una de ellas.
+**Señales retiradas del mapa anterior:** `POWER_GOOD` y `ENABLE_CHG` (CN3791). El datasheet del CN3791 (`hardware/datasheets/cn3791_datasheet.pdf`) confirma que no tiene esos pines: sus pines son VG, GND, CHRG, DONE, COM, MPPT, BAT, CSP, VCC y DRV, y CHRG y DONE son salidas de drenador abierto. El TP4056 (carga por USB-C) tiene su propia salida de estado. Si se quiere leer alguna, GPIO42 es el candidato.
 
 ## Conexiones de periféricos
 

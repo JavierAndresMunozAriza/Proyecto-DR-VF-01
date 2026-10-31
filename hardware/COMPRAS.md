@@ -17,7 +17,7 @@ Según el autor, el docente tiene estas piezas físicamente (mensaje del docente
 | Código | Pieza | Referencia | Uso en el proyecto | Notas |
 |--------|-------|------------|--------------------|-------|
 | D1 | Biblioteca de Altium | `shared_lib.IntLib` | Símbolos y huellas (ver `BOM.md` sección 7) | Solo símbolos y huellas |
-| D2 | Cargador Li-ion/LiPo | TP4056 (ESOP-8) | Posible carga por USB 5 V | Sin power-path: verificar su datasheet |
+| D2 | Cargador Li-ion/LiPo | TP4056 (ESOP-8) | Se usa: carga por USB-C (decidido el 2026-10-31) | Lineal, 4.0 a 8.0 V, hasta 1 A, sin power-path (datasheet verificado); RPROG de 2.4 kΩ para 500 mA |
 | D3 | IMU | LSM6DS3TR-C | Prototipo; el BOM usa LSM6DSOX | No es el mismo chip: probar el wake-up por movimiento |
 | D4 | Sensor de temperatura | TMP102AIDRLR | Posible corte de carga por temperatura | I2C |
 | D5 | Amplificador | TLV9064IDR | Sin uso por ahora | |

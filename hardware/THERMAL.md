@@ -10,7 +10,7 @@ Este documento presenta el análisis térmico detallado de todos los componentes
 
 ### 1. Regulador de Voltaje LDO (TLV75733PDBVR)
 **Especificaciones:**
-- Voltaje de entrada: 4.2V (batería llena); 5.0V solo si el USB alimentara el LDO directamente (ruta pendiente de decidir)
+- Voltaje de entrada: 4.2V como máximo (batería llena). El USB carga la batería con el TP4056 y no alimenta el LDO
 - Voltaje de salida: 3.3V
 - Corriente de salida: 300mA en ráfaga (las cargas del BOM suman 221 a 394mA; máximo del regulador 1A)
 - Resistencia térmica (RθJA, datasheet TLV757P, tabla 5.4): DBV 100.8°C/W en la EVM de TI y 231.1°C/W en la placa JEDEC; DYD con pad térmico 60.3°C/W (EVM) y 92.5°C/W (JEDEC)
@@ -26,13 +26,13 @@ Este documento presenta el análisis térmico detallado de todos los componentes
 | Caso | P | DBV EVM (100.8) | DBV JEDEC (231.1) | DYD EVM (60.3) | DYD JEDEC (92.5) |
 |------|---|-----------------|-------------------|----------------|------------------|
 | 4.2V, 300mA | 0.270W | 92.2°C | **127.4°C** | 81.3°C | 90.0°C |
-| 5.0V, 300mA | 0.510W | 116.4°C | **182.9°C** | 95.8°C | 112.2°C |
+| 4.2V, 394mA | 0.355W | 100.7°C | **146.9°C** | 86.4°C | 97.8°C |
 
 **Verificación:**
 - Margen con DBV en la EVM (4.2V, 300mA): 125°C - 92.2°C = 32.8°C (ADECUADO)
 - Con la resistencia térmica de la placa JEDEC (2s2p, sin vías) el DBV supera los 125°C si los 300mA fueran continuos
 - El perfil real es de ráfagas: la corriente promedio es de unos 0.27mA y el LDO disipa unos 0.24mW. No hay datos de la constante de tiempo térmica, así que el cálculo en régimen estacionario es una cota, no una predicción
-- El DBV basta en ráfagas cortas, como la transmisión LoRa. Si una carga de unos 300mA fuera continua, o si el USB alimentara el LDO a 5.0V, se usa el TLV75733PDYDR (mismo regulador con pad térmico)
+- El DBV basta en ráfagas cortas, como la transmisión LoRa. Si una carga de unos 300mA fuera continua, se usa el TLV75733PDYDR (mismo regulador con pad térmico)
 
 ### 2. Cargador Solar (CN3791)
 **Especificaciones:**
@@ -60,6 +60,17 @@ Este documento presenta el análisis térmico detallado de todos los componentes
 - Potencia consumida: P = 3.3V × 0.120A = 0.396W
 - Energía por transmisión: E = 0.396W × 0.5s = 0.198J
 - Disipación promedio diaria: Depende de frecuencia de transmisión
+
+### 4. Cargador USB (TP4056)
+**Especificaciones** (datasheet TP4056, `hardware/datasheets/tp4056_datasheet.pdf`):
+- Voltaje de entrada: 5.0V del USB-C (rango 4.0 a 8.0V)
+- Corriente de carga: 500mA con RPROG de 2.4kΩ (máximo 1A con 1.2kΩ)
+- Regulación térmica: reduce la corriente cuando el chip llega a 145°C
+
+**Cálculos** (carga con la celda a 3.7V):
+- Potencia disipada: P = (Vin - Vbat) × Ibat = (5.0V - 3.7V) × 0.5A = 0.650W
+- Con 1A serían 1.3W y la regulación térmica reduciría la corriente
+- Solo disipa mientras hay USB conectado (carga de banco), así que no entra en las tablas de disipación total, que son del uso en campo
 
 ## Análisis de Disipación Total
 
@@ -193,7 +204,7 @@ Implementamos una estrategia de protección en múltiples capas:
 El análisis térmico del collar DR-VF-01 demuestra que:
 
 1. El LDO TLV75733PDBVR queda en 92.2°C a 65°C de ambiente con 300mA continuos y la resistencia térmica de la EVM (límite 125°C). Con la de la placa JEDEC llegaría a 127.4°C, así que el margen depende del cobre de la PCB y de que la carga sea de ráfagas
-2. Si una carga de unos 300mA fuera continua, o si el USB alimentara el LDO a 5.0V, se usa el TLV75733PDYDR con pad térmico (112.2°C como máximo en esos casos)
+2. Si una carga de unos 300mA fuera continua, se usa el TLV75733PDYDR con pad térmico (90.0°C como máximo a 4.2V y 300mA)
 3. El resto de componentes opera dentro de sus límites y la disipación está distribuida en la PCB
 4. No se requieren soluciones de enfriamiento activas
 

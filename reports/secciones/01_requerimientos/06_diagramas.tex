@@ -17,7 +17,7 @@ En la Figura \ref{fig:bloques_hw}, los bloques en línea continua representan el
     \node [block1, left=of esp, yshift=-1.2cm] (imu) {IMU LSM6DSOX\\(I$^2$C: GPIO 8/9)};
     
     % ENERGIA
-    \node [block1, below=of esp, yshift=-0.2cm] (pwr) {MPPT CN3791 6V\\+ LiPo 3.7V + MAX17048};
+    \node [block1, below=of esp, yshift=-0.2cm] (pwr) {MPPT CN3791 6V\\+ TP4056 (USB-C)\\+ LiPo 3.7V + MAX17048};
 
     % SALIDAS Y TELEMETRIA
     \node [block1, right=of esp, yshift=1.4cm] (lora) {LoRa SX1262 (915 MHz)\\(SPI: GPIO 10/11/12/13)};
@@ -74,7 +74,9 @@ Este mapa aplica a la PCB final y a la ESP32-S3-DevKitC-1 (ambas usan los mismos
     % NODO CENTRAL DE BATERÍA Y ENTRADAS (FILA 1)
     \node [pwr_bus] (bat) {Batería LiPo 3.7V\\(1200--1500 mAh)};
     \node [pwr_mgt, left=0.8cm of bat] (cn) {Cargador MPPT\\CN3791 (6V)};
-    \node [pwr_in, left=0.8cm of cn] (in) {Entrada 6V Solar /\\ USB-C (5V)};
+    \node [pwr_in, left=0.8cm of cn] (in) {Panel solar\\6V};
+    \node [pwr_mgt, above=0.8cm of bat] (tp) {Cargador USB\\TP4056};
+    \node [pwr_in, above=0.8cm of cn] (usb) {USB-C VBUS\\(5V)};
 
     % REGULADORES Y MÓDEM FASE 2 (FILA 2)
     \node [pwr_mgt, below=1.5cm of bat, xshift=-2.6cm] (ldo) {Regulador LDO\\3.3V (1 A)};
@@ -88,6 +90,8 @@ Este mapa aplica a la PCB final y a la ESP32-S3-DevKitC-1 (ambas usan los mismos
     % CONEXIONES DE ENTRADA Y CARGA
     \draw[->, thick] (in) -- (cn);
     \draw[->, thick] (cn) -- node[above, font=\footnotesize] {$V_{\text{CHG}}$} (bat);
+    \draw[->, thick] (usb) -- (tp);
+    \draw[->, thick] (tp) -- node[right, font=\footnotesize] {$V_{\text{CHG}}$} (bat);
 
     % DISTRIBUCIÓN DESDE BATERÍA A REGULADORES (FILA 1 -> FILA 2)
     % CORRECCIÓN: El texto V_BAT se ubica a la derecha de la línea vertical que baja

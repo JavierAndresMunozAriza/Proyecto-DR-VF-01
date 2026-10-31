@@ -1,6 +1,6 @@
 # Lista de Materiales (BOM) - Collar DR-VF-01
 
-**Estado:** REVISIÓN v1.4 (2026-10-30), pendiente de revisión del autor. Estructura reparada y corregida contra la auditoría `odd/tasks/repo-audit-report.md`. Los cambios de contenido están en el historial al final. Lo marcado **POR DECIDIR** no está resuelto: requiere una decisión del autor o una hoja de datos que aún no se ha leído.
+**Estado:** REVISIÓN v1.5 (2026-10-31), pendiente de revisión del autor. Estructura reparada y corregida contra la auditoría `odd/tasks/repo-audit-report.md`. Los cambios de contenido están en el historial al final. Lo marcado **POR DECIDIR** no está resuelto: requiere una decisión del autor o una hoja de datos que aún no se ha leído.
 
 Dónde comprar cada pieza, con sus URL y su estado: `hardware/COMPRAS.md`.
 
@@ -63,6 +63,7 @@ El MAX17048 lo exigen `docs/REQUIREMENTS.md` y `docs/ARCHITECTURE.md` y no estab
 |-------|-------------|-----|------------|-----------|
 | 1 | Regulador LDO 3.3 V, **1 A**, Iq 25 µA, SOT-23-5 (reemplaza al TPS7A0533, de 200 mA) | TLV75733PDBVR | Texas Instruments | Digi-Key |
 | 1 | Cargador solar MPPT CN3791 | CN3791 | Consonance | AliExpress |
+| 1 | Cargador lineal para la carga por USB-C (1 A máx.; se limita a 500 mA con RPROG de 2.4 kΩ) | TP4056 (ESOP-8) | NanJing Top Power | Docente (sin compra) |
 | 1 | Protección de batería | BQ2975DRBR | Texas Instruments | Digi-Key |
 | 1 | Batería LiPo 3.7 V 1500 mAh | PL063-1500 | PowerStream | Digi-Key |
 
@@ -70,8 +71,8 @@ El MAX17048 lo exigen `docs/REQUIREMENTS.md` y `docs/ARCHITECTURE.md` y no estab
 
 **POR DECIDIR:**
 - BQ2975 necesita MOSFET externos y resistencia de sensado que no están en el BOM. Confirmar si la batería PL063-1500 ya trae su propia protección, porque entonces el BQ2975 duplica la función.
-- CN3791: componentes externos pendientes (inductor, MOSFET, resistencia de sensado, divisores del MPPT, NTC). Una hoja de datos del CN3791 es la fuente (aún no descargada). Cargar por debajo de 0 °C daña la LiPo, de modo que el NTC es necesario.
-- El BOM no tiene ruta de carga por USB-C (VBUS al cargador) aunque los documentos dicen que existe.
+- CN3791: componentes externos pendientes (inductor, MOSFET de paso, resistencia de sensado, divisor del MPPT, diodos D1 y D2). Fuente: `hardware/datasheets/cn3791_datasheet.pdf`. El divisor para 6 V es R3 = 402 kΩ y R4 = 100 kΩ (referencia de 1.205 V; ver `docs/ARCHITECTURE.md`, sección 2.2). **El CN3791 no tiene pin de temperatura ni de habilitación** (sus pines son VG, GND, CHRG, DONE, COM, MPPT, BAT, CSP, VCC y DRV), así que no admite un NTC directo. Cargar por debajo de 0 °C daña la LiPo: hace falta otra solución para el corte por frío (por ejemplo, un NTC leído por el MCU).
+- Carga por USB-C (decidida el 2026-10-31): VBUS al TP4056 y de ahí a la batería, con RPROG de 2.4 kΩ para limitar a 500 mA. El USB-C no alimenta al LDO. El CN3791 queda solo para el panel solar porque con el divisor de 6 V no inicia carga desde 5 V. Pendiente: sumar al presupuesto de sleep la corriente del TP4056 sin USB (el datasheet da 2.5 µA típicos en standby con entrada presente; sin entrada no está tabulada) y decidir si se lee su salida de estado.
 - Batería: la PL063-1500 es difícil de conseguir y el envío es caro. Con 0.267 mA promedio, 1200 mAh ya da 159 días, así que no hace falta 1500. Opciones: LiPo 603450 de unos 1200 mAh con protección, LiPo 103450 de 1800-2000 mAh, o celda 18650 protegida (de marca verificable, con lengüetas soldadas o conductores: un portapilas de resortes es poco fiable con la vibración y el sellado IP67 del collar). Revisar la polaridad del conector JST contra la PCB. Si la celda trae protección propia, el BQ2975 sobra. Eléctricamente todas son iguales (1S, 3.7 V nominal, 4.2 V cargada): se conectan igual al cargador, así que la elección puede esperar. Lo que cambia es la capacidad, el tamaño, el conector y la polaridad. **POR DECIDIR.** Panel solar: ver sección 2.3.
 
 ### 1.6 Conectores e interfaces
@@ -210,3 +211,4 @@ No cubre y hay que crear o descargar: huella del ESP32-S3-WROOM-1U (la entrada `
 | 1.2 | 2026-10-30 | Estructura reparada (tabla solar, resistores y costos estaban desordenados). Eliminadas flash y SRAM externas (redundantes con el módulo). Cristal 40 MHz corregido a 32.768 kHz. MAX17048 añadido. Puntos bloqueantes marcados POR DECIDIR |
 | 1.3 | 2026-10-30 | SX1262 suelto reemplazado por módulo SPI, antena LoRa u.FL de 8 cm, USBLC6-2SC6, parche GNSS pasivo recomendado, opciones de batería, requisitos de Espressif para EN y alimentación |
 | 1.4 | 2026-10-30 | Módulo LoRa DX-LR30-900M22S confirmado (SPI), regulador TLV75733PDBVR de 1 A, panel de 6 V, IMU del docente, notas de USB-C y USBLC6 |
+| 1.5 | 2026-10-31 | Carga por USB-C con TP4056 (del docente) y CN3791 solo para el panel; divisor MPPT recalculado con la referencia real de 1.205 V; CN3791 sin pin de temperatura; presupuesto de sleep de 95 µA y autonomía de 159 días (1200 mAh) |
