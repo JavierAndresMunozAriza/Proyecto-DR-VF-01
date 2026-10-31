@@ -1,6 +1,6 @@
 # Lista de Materiales (BOM) - Collar DR-VF-01
 
-**Estado:** REVISIÓN v1.2 (2026-10-30), pendiente de revisión del autor. Estructura reparada y corregida contra la auditoría `odd/tasks/repo-audit-report.md`. Los cambios de contenido están en el historial al final. Lo marcado **POR DECIDIR** no está resuelto: requiere una decisión del autor o una hoja de datos que aún no se ha leído.
+**Estado:** REVISIÓN v1.3 (2026-10-30), pendiente de revisión del autor. Estructura reparada y corregida contra la auditoría `odd/tasks/repo-audit-report.md`. Los cambios de contenido están en el historial al final. Lo marcado **POR DECIDIR** no está resuelto: requiere una decisión del autor o una hoja de datos que aún no se ha leído.
 
 Este BOM cubre **solo la PCB final** (ESP32-S3-WROOM-1U-N16R8). La Nordic Thingy:91 X es la prueba de concepto y no forma parte del producto.
 
@@ -26,19 +26,24 @@ La flash externa GD25Q128CWIGR y la SRAM externa IS62WVS5128GBLL-10NL **se elimi
 | 1 | Módulo GNSS MAX-M10S | MAX-M10S-00B | u-blox | Avnet |
 | 1 | Antena GNSS cerámica (1575 MHz) | ANNMS-420.A | Toko | Digi-Key |
 
-**POR DECIDIR:** comprobar que la ANNMS-420.A es una antena pasiva de 1575.42 MHz y qué plano de masa necesita. El MAX-M10S-00B es la variante estándar con TCXO, LNA y filtro SAW integrados (datasheet, tabla de variantes).
+**POR DECIDIR:** la ANNMS-420.A no se pudo verificar (el código parece corrupto y el fabricante "Toko" es dudoso). El MAX-M10S recibe solo L1 (GPS/QZSS 1575.42 MHz, Galileo E1, BeiDou B1I, GLONASS L1; datasheet), así que **una antena L1+L5 no aporta nada**. Como el módulo ya integra LNA y filtro SAW, se recomienda un **parche cerámico pasivo de 18x18x4 mm a 1575.42 MHz** con datasheet de un fabricante conocido y plano de masa definido en el layout. Una antena activa solo se justifica con cable largo: consume 15-25 mA (el VCC_RF del MAX-M10S entrega como máximo 50 mA). Antena descartada: A-SKY AK521 activa L1+L5 (25 mm, 20 dB de LNA).
 
 ### 1.3 Comunicaciones
 | Cant. | Descripción | MPN | Fabricante | Proveedor |
 |-------|-------------|-----|------------|-----------|
-| 1 | Transceptor LoRa SX1262 (QFN) | SX1262IMLTRT | Semtech | Digi-Key |
+| 1 | Módulo LoRa SX1262 915 MHz, interfaz **SPI** (reemplaza al chip SX1262 suelto SX1262IMLTRT) | DX-LR30-900M22S o E22-900M22S: **POR DECIDIR** | DX-SMART o Ebyte | AliExpress |
+| 1 | Antena LoRa 915 MHz flexible de 8 cm con conector u.FL | sin MPN (listado "IPEX 1.13 868/915 MHz 2 dBi 8 cm") | genérico | AliExpress |
+| 1 | Conector u.FL SMD para la antena LoRa | p. ej. U.FL-R-SMT-1 (verificar) | Hirose | Digi-Key |
 | 1 | Antena FPC 2.4 GHz (Wi-Fi/BLE del módulo, vía U.FL) | 2015301200 | Würth Elektronik | Mouser |
-| 1 | Conector SMA hembra (antena LoRa) | 6521011000 | Würth Elektronik | Mouser |
+| 1 | Conector SMA hembra (solo pruebas de banco con la antena larga) | 6521011000 | Würth Elektronik | Mouser |
 
-**POR DECIDIR, bloqueante:**
-- **No hay antena de 915 MHz** en este BOM. La FPC de 2.4 GHz no sirve para LoRa ni para GNSS. Elegir una antena de 915 MHz con su conector (el SMA ya está) y confirmar la ganancia: la hoja de la FPC y `mechanical/ANTENNA_PLACEMENT.md` dan 8 dBi y 2.5 dBi respectivamente.
-- **Falta toda la sección RF del SX1262**: cristal de 32 MHz o TCXO de 32 MHz, inductor del DC-DC, conmutador RF controlado por DIO2, red de adaptación y filtro paso bajo. Sin ella el transceptor no funciona. La referencia es el diseño de referencia de Semtech para SX1262 (hoja de datos aún no descargada).
-- Si la aplicación no usa Wi-Fi ni BLE, la antena FPC de 2.4 GHz sobra.
+El chip SX1262 suelto se sustituye por un módulo: ya integra cristal o TCXO, conmutador RF y adaptación, lo que cierra el bloqueante de la sección RF. Antes de comprarlo, confirmar con el vendedor:
+- **Interfaz:** la tabla del listado dice SPI, pero el título y el resumen mencionan UART. Debe exponer el SX1262 en SPI con BUSY, DIO1 y NRESET (como pide el driver `semtech,sx1262` de Zephyr). Una variante UART con firmware propio no sirve. En Ebyte, la serie "M" es SPI y la "T" es UART.
+- **Alimentación:** la tabla dice 1.8 a 3.7 V y el texto 3 a 5.5 V. Con 3.3 V funciona en ambos casos.
+- **Control del conmutador RF:** si el módulo expone TXEN/RXEN hacen falta dos GPIO más; si lo gobierna DIO2 internamente, no. Pedir el datasheet con el pinout.
+- **Antena antes de energizar:** lo exige la ficha del módulo.
+
+**POR DECIDIR:** la antena de 8 cm es un monopolo de cuarto de onda y su rendimiento depende del plano de masa de la PCB. Probar alcance real. Para bancada se puede usar una antena de 5 dBi con SMA.
 
 ### 1.4 Sensores y actuadores
 | Cant. | Descripción | MPN | Fabricante | Proveedor |
@@ -64,7 +69,7 @@ El MAX17048 lo exigen `docs/REQUIREMENTS.md` y `docs/ARCHITECTURE.md` y no estab
 - BQ2975 necesita MOSFET externos y resistencia de sensado que no están en el BOM. Confirmar si la batería PL063-1500 ya trae su propia protección, porque entonces el BQ2975 duplica la función.
 - CN3791: componentes externos pendientes (inductor, MOSFET, resistencia de sensado, divisores del MPPT, NTC). Una hoja de datos del CN3791 es la fuente (aún no descargada). Cargar por debajo de 0 °C daña la LiPo, de modo que el NTC es necesario.
 - El BOM no tiene ruta de carga por USB-C (VBUS al cargador) aunque los documentos dicen que existe.
-- Capacidad de batería: 1500 mAh en este BOM, 1200 mAh en `docs/REQUIREMENTS.md`. Panel solar: ver sección 3.
+- Batería: la PL063-1500 es difícil de conseguir y el envío es caro. Con 0.362 mA promedio, 1200 mAh ya da 117 días, así que no hace falta 1500. Opciones: LiPo 603450 de unos 1200 mAh con protección, LiPo 103450 de 1800-2000 mAh, o celda 18650 protegida (de marca verificable, con lengüetas soldadas o conductores: un portapilas de resortes es poco fiable con la vibración y el sellado IP67 del collar). Revisar la polaridad del conector JST contra la PCB. Si la celda trae protección propia, el BQ2975 sobra. **POR DECIDIR.** Panel solar: ver sección 2.3.
 
 ### 1.6 Conectores e interfaces
 | Cant. | Descripción | MPN | Fabricante | Proveedor |
@@ -73,8 +78,13 @@ El MAX17048 lo exigen `docs/REQUIREMENTS.md` y `docs/ARCHITECTURE.md` y no estab
 | 2 | Conector JST PH 2 pines | B2B-PH-K-S(LF)(SN) | JST | Mouser |
 | 4 | Conector JST SH 4 pines | B4B-SH-SM4-TB(LF)(SN) | JST | Mouser |
 | 1 | Botón táctil 6x6 mm | PTS645SL50SMTR92 LFS | C&K | Digi-Key |
+| 1 | Protección ESD USB 2.0 de 2 líneas, SOT23-6 (D+/D- y VBUS) | USBLC6-2SC6 | STMicroelectronics | Digi-Key |
+| 2 | Resistencia CC1/CC2 5.1 kΩ (USB-C como dispositivo) | por definir | — | — |
 
-**POR DECIDIR:** el código del USB-C es un número de Digi-Key; obtener el MPN real del fabricante. Faltan resistencias CC (5.1 kΩ x2), protección ESD y fusible/PTC del USB-C. Falta un conector o pads para el cristal RTC y los puntos de prueba de `hardware/pinout.md`. Ninguno de los conectores JST tiene un uso documentado: asignar uso al dibujar el esquemático.
+
+**Nota sobre USBLC6:** el listado de AliExpress marca por defecto la variante **USBLC6-4SC6** (4 líneas, otro pinout y sin pin de VBUS); para D+/D- se necesita la **-2SC6**. Es de marca SUHMS, no ST, y "100 % original" no se puede comprobar: sirve para prototipo, y para producción comprar el ST en Digi-Key. La biblioteca de Altium del docente trae `TVS_5.25V_2CH_SOT23-6` (verificar que su pinout coincida con el del USBLC6-2SC6).
+
+**POR DECIDIR:** el código del USB-C es un número de Digi-Key; obtener el MPN real del fabricante. Faltan fusible/PTC del USB-C y las resistencias en serie de D+/D- que recomienda Espressif. Falta un conector o pads para el cristal RTC y los puntos de prueba de `hardware/pinout.md`. Ninguno de los conectores JST tiene un uso documentado: asignar uso al dibujar el esquemático.
 
 ### 1.7 LEDs
 | Cant. | Descripción | MPN | Fabricante | Proveedor |
@@ -95,7 +105,9 @@ El MAX17048 lo exigen `docs/REQUIREMENTS.md` y `docs/ARCHITECTURE.md` y no estab
 
 **Corrección:** la fila antes decía "Cristal 40 MHz" con el código ECS-.327-12-5PXDN-TR. El prefijo ECS-.327 corresponde a un cristal de 32.768 kHz y el módulo ya incluye su cristal de 40 MHz (datasheet v1.8, sección de características). El MPN completo **POR DECIDIR**: el texto anterior estaba corrupto.
 
-**Faltan en el BOM** (se añaden al dibujar el esquemático, sus valores salen de `hardware/pinout.md`): 2 resistencias de 4.7 kΩ (pull-up I2C), 1 de 100 kΩ (pull-down del optoacoplador), resistencias en serie de los LED, resistencia en serie del optoacoplador (la ARCHITECTURE usa 330 Ω), y los capacitores de carga del cristal de 32.768 kHz (a partir de CL: unos 18-22 pF cada uno).
+**Faltan en el BOM, según la guía de diseño de Espressif** (`hardware/datasheets/`): RC de reset en EN con R = 10 kΩ y C = 1 µF (EN no puede quedar flotante), diodo ESD y condensador de al menos 10 µF en la entrada de alimentación, 10 µF más 100 nF junto al módulo, resistencia en serie en el TX de UART0 (la guía sugiere 499 Ω) y serie más condensador en SCK del SPI.
+
+**Faltan además** (se añaden al dibujar el esquemático, sus valores salen de `hardware/pinout.md`): 2 resistencias de 4.7 kΩ (pull-up I2C), 1 de 100 kΩ (pull-down del optoacoplador), resistencias en serie de los LED, resistencia en serie del optoacoplador (la ARCHITECTURE usa 330 Ω), y los capacitores de carga del cristal de 32.768 kHz (a partir de CL: unos 18-22 pF cada uno).
 
 ## 2. Componentes mecánicos
 
@@ -172,6 +184,20 @@ Plazos típicos: componentes estándar 1-2 semanas, personalizados 4-6, carcasa 
 | A7670SA y BG95-M3 | ARCHITECTURE.md / informe | Se contradicen como módem de Fase 2. **POR DECIDIR** |
 | Nordic Thingy:91 X | README, docs | Prueba de concepto, fuera de la PCB |
 
+## 7. Biblioteca Altium del docente (`shared_lib.IntLib`)
+
+Son símbolos y huellas de la biblioteca, no existencias físicas: no prueban que el docente tenga esas piezas en el laboratorio. Para dibujar el esquemático sirven así:
+
+| Cubre | Entradas de la biblioteca |
+|-------|---------------------------|
+| Pasivos | capacitores 0603/0805 (100 nF, 1 µF, 10 µF, 22 µF, 33 pF, 470 nF), resistencias 0603 (4k7, 10k, 330R, 1k y otras), ferrita 0603, inductores de 2.2 a 47 µH |
+| Conectores | USB-C de 16 pines, JST 2 mm, bornes de 2 y 3 posiciones, pulsador 4.5x4.5 |
+| Protección y potencia | TVS 5.25 V de 2 canales SOT23-6 (USB), TVS de 3.3, 5 y 12 V, diodos Schottky de 40 V (1 y 3 A), MOSFET P de 30 V y N de 20 V |
+| Otros | LED RGB 3535, LED 0805, cargador Li-ion genérico `IC_BAT_CHG_4.2V_1A`, convertidores buck/boost genéricos |
+| LDO `LDO_3V3_1A_FIXED` | Por su descripción (1 A, 60 dB a 120 Hz) parece de la familia LM1117/AMS1117: dropout de 1 V o más y corriente quiescente de mA. No sirve con la LiPo (necesitaría unos 4.4 V de entrada) ni con el presupuesto de sleep. Confirmar su MPN en las propiedades del componente |
+
+No cubre y hay que crear o descargar: huella del ESP32-S3-WROOM-1U (la entrada `MCU_ESP32-...-WROOM` de la biblioteca es de variante con antena de PCB; el datasheet indica que la 1U no lleva zona de exclusión de antena), MAX-M10S, LSM6DSOX, MAX17048, el módulo LoRa, CN3791, VO617A, buzzer, cristal de 32.768 kHz, conector u.FL y JST SH.
+
 ## Historial de revisiones
 
 | Versión | Fecha | Cambios |
@@ -179,3 +205,4 @@ Plazos típicos: componentes estándar 1-2 semanas, personalizados 4-6, carcasa 
 | 1.0 | 2024-05-15 | Versión inicial |
 | 1.1 | 2024-06-20 | Actualización de precios y MPN |
 | 1.2 | 2026-10-30 | Estructura reparada (tabla solar, resistores y costos estaban desordenados). Eliminadas flash y SRAM externas (redundantes con el módulo). Cristal 40 MHz corregido a 32.768 kHz. MAX17048 añadido. Puntos bloqueantes marcados POR DECIDIR |
+| 1.3 | 2026-10-30 | SX1262 suelto reemplazado por módulo SPI, antena LoRa u.FL de 8 cm, USBLC6-2SC6, parche GNSS pasivo recomendado, opciones de batería, requisitos de Espressif para EN y alimentación |

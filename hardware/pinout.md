@@ -78,7 +78,7 @@ SDA y SCL a GPIO8 y GPIO9. INT1 a GPIO4. Para I2C: CS a VDDIO, SDO/SA0 define la
 
 ### LoRa SX1262
 
-SPI en los pines FSPI por defecto del chip (GPIO10 a 13). BUSY, DIO1 y NRESET en GPIO14, 6 y 5. DIO2 gobierna el conmutador RF (`SetDio2AsRfSwitchCtrl`) y DIO3 alimenta el TCXO (`SetDio3AsTcxoCtl`): ninguno va al ESP32.
+Se asume un módulo LoRa SX1262 con SPI (ver `BOM.md` 1.3). SPI en los pines FSPI por defecto del chip (GPIO10 a 13). Si el módulo expone TXEN/RXEN, hacen falta dos GPIO más (candidatos GPIO47 y GPIO48 si se renuncia a la reserva de la Fase 2; **POR DECIDIR**). BUSY, DIO1 y NRESET en GPIO14, 6 y 5. DIO2 gobierna el conmutador RF (`SetDio2AsRfSwitchCtrl`) y DIO3 alimenta el TCXO (`SetDio3AsTcxoCtl`): ninguno va al ESP32.
 
 ### Optoacoplador VO617A
 
