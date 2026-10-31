@@ -1,7 +1,7 @@
 # Arquitectura Técnica — Proyecto DR-VF-01
 **Sistema Modular de Cerca Virtual para Ganado**  
-**Versión:** 1.0  
-**Fecha:** 18/10/2026  
+**Versión:** 1.1  
+**Fecha:** 31/10/2026  
 **Documento Principal:** [PROJECT_CONTEXT.md](./PROJECT_CONTEXT.md)
 
 ---
@@ -14,24 +14,29 @@ La batería es el nodo central: dos cargadores independientes la cargan y todo e
 
 ```text
 [Panel Solar 6V] ──► [CN3791 MPPT] ──┐
-                                      ├──► [Batería LiPo 3.7V] (tras la protección BQ2975)
+                                      ├──► [Batería LiPo 3.7V] (protección: POR DECIDIR)
 [USB-C VBUS 5V] ──► [TP4056] ────────┘            │
-                                                  ├─► [MAX17048 Fuel Gauge]
-                                                  ▼
-                                      [LDO TLV75733P, 1 A]
-                                                  │
+      ▲                                           ├─► [MAX17048 Fuel Gauge] (I2C 0x36)
+ [USBLC6-2SC6]                                    ▼
+ (D+, D-, VBUS)                       [LDO TLV75733P, 1 A]
+ CC1/CC2: 5.1 kΩ                                  │
                                                   ▼
                                         [Bus 3.3V de la PCB]
-                                                  ├─► ESP32-S3-WROOM-1U
+                                                  ├─► ESP32-S3-WROOM-1U-N16R8
                                                   ├─► GPS u-blox MAX-M10S
                                                   ├─► Módulo LoRa DX-LR30-900M22S
-                                                  └─► IMU LSM6DSOX
+                                                  └─► IMU (POR DECIDIR: LSM6DSOX o LSM6DS3TR-C)
 ```
 
 - **Dos cargadores:** el CN3791 regula la entrada a la tensión MPPT (6 V) y solo inicia carga si el pin MPPT supera 1.23 V, es decir, con más de unos 6.2 V en la entrada (sección 2.2). Un USB de 5 V nunca la inicia. El TP4056 acepta de 4.0 a 8.0 V y entrega hasta 1 A.
-- **TP4056:** carga lineal con terminación a C/10. Con RPROG de 2.4 kΩ limita a 500 mA y disipa unos 0.65 W con 5 V de entrada y la celda a 3.7 V; su regulación térmica protege el chip a 145 °C.
+- **TP4056:** carga lineal con terminación a C/10. Con RPROG de 2.4 kΩ limita a 500 mA y disipa unos 0.65 W con 5 V de entrada y la celda a 3.7 V; su regulación térmica protege el chip a 145 °C. Con 500 mA, la carga tarda no menos de 3 h para 1500 mAh (2.4 h para 1200 mAh) antes de la cola a tensión constante. No hay una línea de estado de carga confirmada que el MCU pueda leer: las salidas de estado del TP4056 no tienen GPIO asignado (GPIO42 ya es LORA_RXEN), **POR DECIDIR** (`hardware/pinout.md`).
 - **LDO TLV75733P:** la entrada nunca pasa de 4.2 V, así que a 300 mA disipa 0.27 W (ver `hardware/THERMAL.md`). Sin batería la placa no arranca desde el USB.
 - **Programación:** por el USB-C, con el USB nativo del ESP32-S3 (GPIO19 y GPIO20) y el botón BOOT a GND para el modo descarga (`hardware/pinout.md`). La placa debe tener la batería conectada.
+- **Protección de batería: POR DECIDIR.** El código BQ2975DRBR del BOM no existe; la pieza (y los MOSFET externos y la resistencia de sensado que necesite) no está definida (`hardware/BOM.md`, sección 1.5).
+- **MAX17048:** I2C, dirección 0x36, conectado a la batería (VDD de 2.5 a 4.5 V), no al bus de 3.3 V.
+- **USB-C:** el USBLC6-2SC6 protege D+, D- y VBUS; CC1/CC2 llevan 5.1 kΩ (valor "por definir" en el BOM). El MPN del conector y el tipo de sello del puerto son **POR DECIDIR** (`hardware/BOM.md`).
+- **Antenas:** LoRa de 915 MHz (monopolo de 8 cm, u.FL), FPC de 2.4 GHz (Würth 2015301200, vía u.FL; Wi-Fi/BLE del módulo) y parche GNSS pasivo. El MPN del parche GNSS y las posiciones de las antenas son **POR DECIDIR** (`hardware/BOM.md`, `mechanical/ANTENNA_PLACEMENT.md`).
+- **Actuadores:** el ESP32-S3 maneja el optoacoplador VO617A (GPIO1), el buzzer (GPIO2) y el LED RGB (GPIO38 a 40); su alimentación se define al dibujar el esquemático.
 
 ### 1.2 Prototipo con DevKitC-1
 
@@ -50,9 +55,11 @@ El prototipo aprovecha el regulador interno LDO de la placa DevKit:
                                              ▼
                                   [Bus 3.3V de la PCB]
                                              ├─► GPS u-blox MAX-M10S
-                                             ├─► LoRa Core1262
-                                             └─► IMU LSM6DSOX
+                                             ├─► Módulo LoRa DX-LR30-900M22S
+                                             └─► IMU (POR DECIDIR)
 ```
+
+El prototipo con DevKit es solo una vía de prueba: el LDO interno (AMS1117) aplica únicamente a esa placa y la PCB final usa el TLV75733P (sección 1.1).
 
 - **Línea No Regulada (3.6V - 4.2V):** Conecta la salida de la batería directamente al pin `VIN` del ESP32-S3 y al medidor MAX17048.
 - **Línea Regulada (3.3V Estrictos):** Suministrada por el pin `3V3` del ESP32-S3. Entrega hasta 500 mA, cubriendo la demanda máxima del sistema (~224 mA).
@@ -89,16 +96,19 @@ $$R_{CS} = \frac{0.12\text{ V}}{1.0\text{ A}} = 0.12\ \Omega\ (120\text{ m}\Omeg
 
 | Módulo | Estado Reposo | Estado Activo | Pico Máximo | Observaciones |
 | :--- | :--- | :--- | :--- | :--- |
-| **ESP32-S3** | 10 μA (Deep Sleep) | 70 mA (240MHz) | 240 mA (WiFi/BT) | Wi-Fi activo solo en modo de configuración (SoftAP); deshabilitado en operación normal |
-| **u-blox MAX-M10S** | 15 μA | 12 mA | 35 mA | Adquisición multiconstelación |
-| **Core1262 (SX1262)** | 0.6 μA | 5.3 mA (Rx) | 118 mA (Tx @ +22dBm) | Ráfagas de fracciones de segundo |
-| **LSM6DSOX** | 3 μA | 0.55 mA | 1 mA | Sensor de movimiento continuo |
-| **MAX17048** | 3 μA | 0.023 mA | 0.05 mA | Medición I2C |
-| **Total Sistema** | **< 50 μA** | **~88 mA** | **~224 mA** | **Dentro del margen de 500mA del LDO** |
+| **ESP32-S3** | 8 μA (Deep Sleep) | 70 mA (240MHz) | 240 mA (WiFi/BT) | Wi-Fi activo solo en modo de configuración (SoftAP); deshabilitado en operación normal. Reposo: datasheet del módulo WROOM-1, Tabla 6-7 |
+| **u-blox MAX-M10S** | 46 μA (standby por software) | 12 mA | 35 mA | Adquisición multiconstelación. Reposo con V_IO a 3.3 V (datasheet del MAX-M10S) |
+| **DX-LR30-900M22S (SX1262)** | 0.6 μA | 5.3 mA (Rx) | 118 mA (Tx @ +22dBm) | Ráfagas de fracciones de segundo. Valores del chip SX1262: el módulo no tiene tabla de corrientes |
+| **IMU (POR DECIDIR; cifras del LSM6DSOX)** | 9.5 μA | 0.55 mA | 1 mA | Sensor de movimiento continuo |
+| **MAX17048** | 3 μA (hibernación) | 0.023 mA | 0.05 mA | Medición I2C; conectado a la batería |
+| **CN3791** | 30 μA (sin entrada, desde la batería) | — | — | Solo carga desde el panel solar |
+| **TLV75733P (LDO)** | 25 μA (Iq) | — | — | Solo alimentado desde la batería |
+| **TP4056** | 2.5 μA (standby) | — | — | Solo carga por USB-C |
+| **Total Sistema** | **~124 μA (123.76 μA)** | **~88 mA** | **~224 mA** | **Reposo: calculado en `hardware/POWER_BUDGET.md`; cumple RNF-03 (< 150 μA) con 26 μA de margen. Faltan por sumar el USBLC6-2SC6, la protección de batería (POR DECIDIR) y los extras del módulo LoRa. Los picos caben en los 500 mA del LDO de la DevKit (prototipo) y en el 1 A del TLV75733P (PCB final)** |
 
 **Nota:** el margen de 500 mA es el del LDO de la DevKit (prototipo). El TLV75733P de la PCB final entrega 1 A.
 
-**Nota sobre escalabilidad a 4G (A7670SA):** Los módulos celulares generan picos de hasta 2.0 A. En implementación futura, se alimentarán directamente de la batería LiPo con capacitor de desacople dedicado de 470 μF.
+**Nota sobre escalabilidad celular (módem de Fase 2, POR DECIDIR: A7670SA o BG95-M3):** Los módulos celulares generan picos de hasta 2.0 A (cifra sin verificar; depende del módem que se elija). En implementación futura, se alimentarán directamente de la batería LiPo con capacitor de desacople dedicado de 470 μF.
 
 ## 4. Protecciones e Integridad de Señal
 
@@ -106,7 +116,7 @@ $$R_{CS} = \frac{0.12\text{ V}}{1.0\text{ A}} = 0.12\ \Omega\ (120\text{ m}\Omeg
 2. **Capacitor Tanque (Bulk):** Capacitor de 10 μF - 100 μF en bus de 3.3V para transitorios LoRa
 3. **Resistencias de Pull-Up I2C:** Dos resistencias de 4.7 kΩ en líneas SDA y SCL
 4. **Red RC de Reset:** 10 kΩ a 3.3V y 1 μF a GND en pin EN del ESP32-S3
-5. **Aislamiento Galvánico para Actuador:** Optoacoplador VO617A con resistencia de 330 Ω (limita corriente GPIO a ~6.6 mA) y pull-down de 10 kΩ
+5. **Aislamiento Galvánico para Actuador:** Optoacoplador VO617A con resistencia serie en la entrada (330 Ω provisional, limita la corriente del GPIO a ~6.6 mA; el valor final se calcula con el datasheet del VO617A, ver `hardware/pinout.md`) y pull-down de 100 kΩ en GPIO1 (lado de entrada, `hardware/pinout.md` y `hardware/BOM.md`)
 
 ## 5. Especificaciones de Hardware y BOM
 
@@ -115,6 +125,8 @@ Diseño de PCB receptora con conectores hembra (Female Headers paso 2.54mm) para
 - Cero fallas por falsos contactos mecánicos
 - Intercambio modular de componentes
 - Cumplimiento de estándares profesionales Altium
+
+**Alcance:** los conectores hembra aplican solo al prototipo del semestre. La PCB final lleva soldado el módulo ESP32-S3-WROOM-1U-N16R8 (`hardware/BOM.md`, sección 1.1) y cumple RNF-04 sin cables de puente.
 
 ### 5.2 Reglas de Diseño en Altium Designer
 - **Capas:** Top/Bottom, FR4, 1.6mm espesor
@@ -128,41 +140,46 @@ El único mapa de pines vigente es [hardware/pinout.md](../hardware/pinout.md). 
 
 | Función | Periférico | GPIO |
 | :--- | :--- | :--- |
-| Bus SPI | LoRa SX1262 | NSS 10, MOSI 11, SCK 12, MISO 13 |
-| Control LoRa | Módulo SX1262 | BUSY 14, DIO1 6 (despierta), NRESET 5, RXEN 42, TXEN 47 |
-| Bus I2C | LSM6DSOX, MAX17048 | SDA 8, SCL 9 (pull-up 4.7 kΩ) |
+| Bus SPI | Módulo LoRa DX-LR30-900M22S (SX1262) | NSS 10, MOSI 11, SCK 12, MISO 13 |
+| Control LoRa | Módulo DX-LR30-900M22S | BUSY 14, DIO1 6 (despierta), NRESET 5, RXEN 42, TXEN 47 |
+| Bus I2C | IMU (POR DECIDIR), MAX17048 (dirección 0x36) | SDA 8, SCL 9 (pull-up 4.7 kΩ) |
 | UART1 | GNSS MAX-M10S | TX 17 (hacia RXD), RX 18 (desde TXD) |
 | GNSS | MAX-M10S EXTINT (entrada del GNSS, opcional) | 21 |
-| IMU | LSM6DSOX INT1 | 4 (despierta de Deep Sleep) |
+| IMU | INT1 (LSM6DSOX o LSM6DS3TR-C, POR DECIDIR) | 4 (despierta de Deep Sleep) |
 | Actuador | Optoacoplador VO617A (`OPTO_CTRL`) | 1 |
 | Buzzer | PWM | 2 |
 | Botón de usuario | Entrada | 7 (despierta) |
 | LED RGB | R / G / B | 38 / 39 / 40 |
-| Estado de carga | CN3791 CHRG | 41 |
-| Módem Fase 2 | UART TX / RX, PWRKEY | 43 / 44, 48 |
+| Estado de carga solar | CN3791 CHRG | 41 |
+| Estado de carga USB | TP4056 (salidas de estado) | sin GPIO asignado (**POR DECIDIR**; GPIO42 ya es LORA_RXEN) |
+| Alerta del medidor | MAX17048 ALRT | sin GPIO asignado en `hardware/pinout.md` |
+| USB nativo / BOOT | D- / D+, BOOT | 19 / 20, 0 (a GND = modo descarga) |
+| Módem Fase 2 | UART TX / RX, PWRKEY | 43 / 44, 48 (módem **POR DECIDIR**: A7670SA o BG95-M3) |
 | Consola | UART0 TX / RX | 43 / 44 (puntos de prueba; en Fase 2 la consola pasa a USB CDC) |
 
 **Nota Técnica:** El GNSS usa UART1 (GPIO 17/18), no el bus I2C. GPIO 43/44 (UART0) quedan como puntos de prueba para consola. Las reglas del módulo (pines de strapping, USB nativo en GPIO 19/20, PSRAM octal) están en [hardware/pinout.md](../hardware/pinout.md).
 
-### 5.4 Bill of Materials (BOM) — Componentes Clave
+### 5.4 Bill of Materials (BOM) de prototipo — Componentes Clave
+
+Lista del prototipo con DevKit. La lista de la PCB final (TLV75733PDBVR, TP4056, USBLC6-2SC6, antenas, conectores) es `hardware/BOM.md`.
 
 | Cantidad | Componente | Descripción | Función |
 | :--- | :--- | :--- | :--- |
 | 1 | ESP32-S3-DevKitC-1-N16R8 | Placa DevKit Dual-Core 240MHz | Procesador Principal |
-| 1 | Waveshare Core1262-HF | Módulo LoRa SX1262 (915 MHz) | Transceptor RF |
+| 1 | DX-LR30-900M22S | Módulo LoRa SX1262 (915 MHz, SPI, 1.8 a 3.7 V) | Transceptor RF |
 | 1 | u-blox MAX-M10S | Módulo Breakout GNSS | Geolocalización |
-| 1 | ST LSM6DSOX | Breakout I2C/SPI IMU 6-DOF | Detección de Movimiento |
+| 1 | IMU 6-DOF (POR DECIDIR: ST LSM6DSOX o LSM6DS3TR-C) | Breakout I2C/SPI | Detección de Movimiento |
 | 1 | MAX17048 | Breakout I2C Fuel Gauge | Telemetría de Batería |
 | 1 | Módulo CN3791 (6V) | Cargador Solar MPPT Buck | Gestión Energética |
-| 1 | Batería LiPo 3.7V 1200mAh | Celda 1S con PCM | Fuente de Energía |
-| 1 | Panel Solar 6V 1.5W-3W | Monocristalino/Policristalino | Generación Fotovoltaica |
+| 1 | Batería LiPo 3.7V (capacidad POR DECIDIR: 1200 o 1500 mAh) | Celda 1S | Fuente de Energía |
+| 1 | Panel Solar 6V, al menos 1 W (MPN POR DECIDIR) | Monocristalino/Policristalino | Generación Fotovoltaica |
 | 1 | Optoacoplador VO617A/PC817 | DIP-4 Through-Hole | Aislamiento del Actuador |
 | 1 | LED 3mm Rojo | Through-Hole | Indicador visual de disparo |
 | 5 | Capacitores 100 nF | Cerámico SMD 0805 | Desacople de Alta Frecuencia |
 | 1 | Capacitor 100 μF/16V | Electrolítico/Tántalo | Capacitor Tanque 3.3V |
 | 2 | Resistencias 4.7 kΩ | SMD 0805 | Pull-Ups I2C |
 | 1 | Resistencia 330 Ω | Through-Hole/SMD 0805 | Limitadora Optoacoplador |
-| 1 | Resistencia 10 kΩ | Through-Hole/SMD 0805 | Pull-Down Salida Optoacoplador |
+| 1 | Resistencia 100 kΩ | Through-Hole/SMD 0805 | Pull-Down de GPIO1 (entrada del optoacoplador) |
 | N | Headers Hembra/Macho 2.54mm | Tiras de Pinos | Zócalos para Carrier Board |
 
 **Documentos Canónicos:** Para la lista completa de materiales y pinout detallado, ver:
@@ -171,7 +188,7 @@ El único mapa de pines vigente es [hardware/pinout.md](../hardware/pinout.md). 
 
 ## 6. Arquitectura de Firmware (STR / Zephyr)
 
-El firmware es un único código base sobre **Zephyr RTOS** para dos placas: la prueba de concepto en la **Nordic Thingy:91 X** (nRF9151, nRF Connect SDK, LTE-M/NB-IoT/GNSS) y el producto final en la **PCB con ESP32-S3-WROOM-1U-N16R8** (LoRa SX1262, GNSS externo MAX-M10S, IMU LSM6DSOX). Se comparten `geofence.c`, la FSM y el logging; cada placa aporta su overlay, su `prj.conf` y los adaptadores de GNSS, comunicaciones e IMU.
+El firmware es un único código base sobre **Zephyr RTOS** para dos placas: la prueba de concepto en la **Nordic Thingy:91 X** (nRF9151, nRF Connect SDK, LTE-M/NB-IoT/GNSS) y el producto final en la **PCB con ESP32-S3-WROOM-1U-N16R8** (módulo LoRa DX-LR30-900M22S con SX1262, GNSS externo MAX-M10S, IMU POR DECIDIR: LSM6DSOX o LSM6DS3TR-C). Se comparten `geofence.c`, la FSM y el logging; cada placa aporta su overlay, su `prj.conf` y los adaptadores de GNSS, comunicaciones e IMU.
 
 ### 6.1 Distribución de Tareas por Núcleo
 
@@ -190,13 +207,13 @@ El firmware es un único código base sobre **Zephyr RTOS** para dos placas: la 
 ```
 
 #### **Core 0 (PRO_CPU) — Mantenimiento, Energía y Comunicaciones:**
-1. **`Task_LoRaTX` (Prioridad 3):** Despierta al recibir mensajes en `Queue_Telemetry`, formatea paquetes y transmite vía SPI al SX1262
+1. **`Task_LoRaTX` (Prioridad 3):** Despierta al recibir mensajes en `Queue_Telemetry`, formatea paquetes y transmite vía SPI al módulo LoRa (SX1262)
 2. **`Task_PowerMgmt` (Prioridad 1):** Lee batería desde MAX17048 cada 60s, gestiona transición a Deep Sleep
 
 #### **Core 1 (APP_CPU) — Cálculo Determinista y Adquisición:**
 1. **`Task_Geofence` (Prioridad 4):** Ejecuta algoritmo Ray-Casting/Point-in-Polygon, activa `OPTO_CTRL` (GPIO 1) si animal fuera de zona
 2. **`Task_GPSRead` (Prioridad 2):** Decodifica tramas NMEA/UBX del u-blox MAX-M10S
-3. **`Task_IMU_Check` (Prioridad 1):** Configura umbrales de interrupción por movimiento en LSM6DSOX
+3. **`Task_IMU_Check` (Prioridad 1):** Configura umbrales de interrupción por movimiento en la IMU
 
 **Nota:** Los nombres `Task_*` y el reparto por núcleos (válido para el ESP32-S3) se conservan del diseño original. En Zephyr cada tarea es un hilo; la numeración de prioridades usada aquí (4 = más crítica) debe traducirse al esquema de Zephyr, donde un número menor indica mayor prioridad.
 
@@ -210,9 +227,9 @@ El polígono se almacena en Flash como arreglo de vértices (X_i, Y_i) represent
 ## 7. Hallazgos Técnicos y Puntos Abiertos
 
 1. **Regulador LDO:** El AMS1117 de la DevKitC-1 tiene dropout voltage de ~1V. Con batería a 3.6V, el voltaje regulado podría caer por debajo de 3.3V. Requiere verificación del esquemático.
-2. **Cálculo de Picos:** La suma de picos individuales (sin Wi-Fi, con el ESP32 a 70 mA) da ~224 mA, valor usado en la tabla. Con pico ESP32 de 240 mA da ~394 mA. Ambos valores caben en los 500 mA del LDO.
-3. **Referencia MPPT CN3791:** La referencia interna debe verificarse en datasheet (posiblemente 1.04V en lugar de 2.0V).
-4. **Consumo Deep Sleep:** El LDO y chip USB-UART de la DevKit probablemente superan el límite de 150 μA de RNF-03.
+2. **Cálculo de Picos:** La suma de picos individuales (sin Wi-Fi, con el ESP32 a 70 mA) da ~224 mA, valor usado en la tabla. Con pico ESP32 de 240 mA da ~394 mA. Ambos valores caben en los 500 mA del LDO de la DevKit y en el 1 A del TLV75733P de la PCB final.
+3. **Referencia MPPT CN3791:** Cerrado. La sección 2.2 la verificó en el datasheet: V_MPPT = 1.205 V (mínimo 1.18 V, máximo 1.23 V).
+4. **Consumo Deep Sleep:** El LDO y chip USB-UART de la DevKit probablemente superan el límite de 150 μA de RNF-03. En la PCB final el presupuesto calcula unos 124 μA (`hardware/POWER_BUDGET.md`), todavía sin sumar la protección de batería ni el USBLC6-2SC6.
 
 ---
 *Documento generado a partir de las secciones técnicas de PROJECT_CONTEXT.md*

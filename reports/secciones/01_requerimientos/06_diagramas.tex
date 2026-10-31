@@ -10,21 +10,21 @@ En la Figura \ref{fig:bloques_hw}, los bloques en línea continua representan el
     block2/.style={rectangle, draw=unalred, dashed, fill=phase2orange, thick, minimum width=2.6cm, minimum height=1.1cm, align=center, rounded corners}]
 
     % MCU CENTRAL
-    \node [mcu] (esp) {\textbf{NÚCLEO CENTRAL}\\[0.1cm]\textbf{ESP32-S3-N16R8}\\(Dual-Core 240 MHz)\\[0.1cm]\emph{3.3V Logic}};
+    \node [mcu] (esp) {\textbf{NÚCLEO CENTRAL}\\[0.1cm]\textbf{ESP32-S3-WROOM-1U-N16R8}\\(Dual-Core 240 MHz)\\[0.1cm]\emph{3.3V Logic}};
 
     % ENTRADAS
     \node [block1, left=of esp, yshift=1.2cm] (gps) {GPS MAX-M10S\\(UART1: GPIO 17/18)};
-    \node [block1, left=of esp, yshift=-1.2cm] (imu) {IMU LSM6DSOX\\(I$^2$C: GPIO 8/9)};
+    \node [block1, left=of esp, yshift=-1.2cm] (imu) {IMU: POR DECIDIR\\(LSM6DSOX / LSM6DS3TR-C)\\(I$^2$C: GPIO 8/9)};
     
     % ENERGIA
-    \node [block1, below=of esp, yshift=-0.2cm] (pwr) {MPPT CN3791 6V\\+ TP4056 (USB-C)\\+ LiPo 3.7V + MAX17048};
+    \node [block1, below=of esp, yshift=-0.2cm] (pwr) {MPPT CN3791 6V\\+ TP4056 (USB-C)\\+ LiPo 3.7V + MAX17048\\+ LDO TLV75733P 3.3V};
 
     % SALIDAS Y TELEMETRIA
-    \node [block1, right=of esp, yshift=1.4cm] (lora) {LoRa SX1262 (915 MHz)\\(SPI: GPIO 10/11/12/13)};
+    \node [block1, right=of esp, yshift=1.4cm] (lora) {LoRa DX-LR30-900M22S (915 MHz)\\(SPI: GPIO 10/11/12/13)};
     \node [block1, right=of esp, yshift=0.1cm] (opto) {VO617A Optoacoplador\\+ Buzzer / LED (GPIO 1/2)};
     
     % EXPANSION FASE 2
-    \node [block2, right=of esp, yshift=-1.3cm] (gsm) {Módem Quectel BG95-M3\\(UART: GPIO 43/44)\\[0.05cm]\footnotesize\textbf{[Fase 2 -- Tesis]}};
+    \node [block2, right=of esp, yshift=-1.6cm] (gsm) {Módem celular: POR DECIDIR\\(BG95-M3 / A7670SA)\\(UART0: GPIO 43/44)\\[0.05cm]\footnotesize\textbf{[Fase 2 -- Tesis]}};
 
     % CONEXIONES
     \draw[<->, thick] (gps) -- (esp);
@@ -49,16 +49,18 @@ En la Figura \ref{fig:bloques_hw}, los bloques en línea continua representan el
 \rowcolor{categorybg}
 \textbf{Módulo / Periférico} & \textbf{Protocolo} & \textbf{Pines ESP32-S3} & \textbf{Notas de Ruteo en PCB} \\ \hline
 GPS u-blox MAX-M10S & UART1 & GPIO 18 (RX1), GPIO 17 (TX1) & Intercambiar TX/RX en ruteo de pista. EXTINT en GPIO 21. \\ \hline
-IMU ST LSM6DSOX & I$^2$C & GPIO 8 (SDA), GPIO 9 (SCL) & Requiere resistencias pull-up de $4.7~\text{k}\Omega$ a 3.3V. INT1 en GPIO 4 (despierta de Deep Sleep). \\ \hline
-Medidor MAX17048 & I$^2$C & GPIO 8 (SDA), GPIO 9 (SCL) & Comparte bus I$^2$C con la IMU. \\ \hline
-LoRa SX1262 & SPI & GPIO 10 (NSS), 12 (SCK), 13 (MISO), 11 (MOSI) & Líneas DIO1 (GPIO 6), BUSY (GPIO 14), NRESET (GPIO 5), RXEN (GPIO 42) y TXEN (GPIO 47) mapeadas. \\ \hline
+IMU (\textbf{POR DECIDIR}) & I$^2$C & GPIO 8 (SDA), GPIO 9 (SCL) & LSM6DSOX o LSM6DS3TR-C. Requiere resistencias pull-up de $4.7~\text{k}\Omega$ a 3.3V. INT1 en GPIO 4 (despierta de Deep Sleep). \\ \hline
+Medidor MAX17048 & I$^2$C & GPIO 8 (SDA), GPIO 9 (SCL) & Comparte bus I$^2$C con la IMU. Dirección 0x36; se alimenta desde la batería. \\ \hline
+LoRa DX-LR30-900M22S & SPI & GPIO 10 (NSS), 12 (SCK), 13 (MISO), 11 (MOSI) & Líneas DIO1 (GPIO 6), BUSY (GPIO 14), NRESET (GPIO 5), RXEN (GPIO 42) y TXEN (GPIO 47) mapeadas. \\ \hline
 Optoacoplador / Buzzer & GPIO Digital & GPIO 1 (Disparo), GPIO 2 (PWM) & Separación estricta de plano de masa. \\ \hline
 \rowcolor{phase2orange}
-Quectel BG95-M3 [Fase 2] & UART & GPIO 44 (RX), GPIO 43 (TX), GPIO 48 (PWRKEY) & \textbf{Pines reservados en PCB para expansión de tesis.} \\ \hline
+Módem celular [Fase 2] & UART0 & GPIO 44 (RX), GPIO 43 (TX), GPIO 48 (PWRKEY) & \textbf{POR DECIDIR}: BG95-M3 o A7670SA. \textbf{Pines reservados en PCB para expansión de tesis.} \\ \hline
 \end{tabularx}
 \end{table}
 
 Este mapa aplica a la PCB final y a la ESP32-S3-DevKitC-1 (ambas usan los mismos GPIO); el mapa completo y vigente está en \texttt{hardware/pinout.md}. La prueba de concepto en la Nordic Thingy:91 X define sus pines en su propio \emph{overlay} de devicetree.
+
+Antenas (según \texttt{hardware/BOM.md}): LoRa 915 MHz, monopolo flexible de 8 cm con conector u.FL; Wi-Fi/BLE 2.4 GHz, antena FPC Würth 2015301200 vía u.FL del módulo; GNSS, antena pasiva L1 (MPN \textbf{POR DECIDIR}). La posición de las antenas también está \textbf{POR DECIDIR}.
 
 \subsection*{Árbol de Distribución de Potencia y Gestión Energética}
 
@@ -72,19 +74,19 @@ Este mapa aplica a la PCB final y a la ESP32-S3-DevKitC-1 (ambas usan los mismos
     pwr_fase2/.style={rectangle, draw=unalred, dashed, fill=phase2orange, thick, text width=2.6cm, align=center, minimum height=1.1cm, rounded corners}]
 
     % NODO CENTRAL DE BATERÍA Y ENTRADAS (FILA 1)
-    \node [pwr_bus] (bat) {Batería LiPo 3.7V\\(1200--1500 mAh)};
+    \node [pwr_bus, text width=3.4cm] (bat) {Batería LiPo 3.7V\\(1200--1500 mAh)\\+ MAX17048 (I$^2$C)\\+ protección: CI POR DECIDIR};
     \node [pwr_mgt, left=0.8cm of bat] (cn) {Cargador MPPT\\CN3791 (6V)};
     \node [pwr_in, left=0.8cm of cn] (in) {Panel solar\\6V};
     \node [pwr_mgt, above=0.8cm of bat] (tp) {Cargador USB\\TP4056};
-    \node [pwr_in, above=0.8cm of cn] (usb) {USB-C VBUS\\(5V)};
+    \node [pwr_in, left=0.8cm of tp] (usb) {USB-C VBUS (5V)\\+ ESD USBLC6-2SC6};
 
     % REGULADORES Y MÓDEM FASE 2 (FILA 2)
-    \node [pwr_mgt, below=1.5cm of bat, xshift=-2.6cm] (ldo) {Regulador LDO\\3.3V (1 A)};
-    \node [pwr_fase2, below=1.5cm of bat, xshift=2.6cm] (bg95) {Quectel BG95-M3\\(Picos 400--600 mA)\\[0.05cm]\footnotesize\textbf{[Fase 2 -- Tesis]}};
+    \node [pwr_mgt, below=1.5cm of bat, xshift=-2.6cm] (ldo) {LDO TLV75733P\\3.3V (1 A)};
+    \node [pwr_fase2, below=1.5cm of bat, xshift=2.6cm] (bg95) {Módem celular\\POR DECIDIR:\\BG95-M3 / A7670SA\\[0.05cm]\footnotesize\textbf{[Fase 2 -- Tesis]}};
 
     % CARGAS DE 3.3V ALINEADAS DEBAJO DEL LDO (FILA 3)
-    \node [pwr_load, below=1.4cm of ldo] (sens) {Sensores \& Radio\\(MAX-M10S, LSM6DSOX\\SX1262, MAX17048)};
-    \node [pwr_load, left=0.5cm of sens] (mcu) {ESP32-S3\\(Microcontrolador)};
+    \node [pwr_load, below=1.4cm of ldo] (sens) {Sensores \& Radio\\(MAX-M10S, IMU,\\DX-LR30-900M22S)};
+    \node [pwr_load, left=0.5cm of sens] (mcu) {ESP32-S3-WROOM-1U-N16R8\\(Microcontrolador)};
     \node [pwr_load, right=0.5cm of sens] (act) {Disuasión Aislada\\(Opto VO617A / Buzzer)};
 
     % CONEXIONES DE ENTRADA Y CARGA
@@ -112,3 +114,5 @@ Este mapa aplica a la PCB final y a la ESP32-S3-DevKitC-1 (ambas usan los mismos
 \caption{Árbol de distribución de potencia y gestión energética para el sistema DR-VF-01.}
 \label{fig:arbol_potencia}
 \end{figure}
+
+La batería es el nodo central. El CN3791 carga solo desde el panel solar (la carga inicia con VCC por encima de unos 6.17 V); el USB-C carga la batería a través del TP4056 (500 mA) y nunca alimenta el sistema. El LDO TLV75733P toma energía únicamente de la batería, y el MAX17048 se conecta directamente a ella. El circuito integrado de protección de batería está \textbf{POR DECIDIR}.

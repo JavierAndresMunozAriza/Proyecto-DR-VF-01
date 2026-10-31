@@ -2,7 +2,7 @@
 
 Este dossier presenta la arquitectura y especificación del firmware y software embebido del collar de geocercamiento DR-VF-01. Se detallan la secuencia de arranque, la máquina de estados finitos (FSM), las estrategias de mitigación de latencia en tiempo real y la definición del firmware mínimo viable (MVP).
 
-El firmware es un único código base sobre \textbf{Zephyr RTOS} para dos placas: la prueba de concepto en la \textbf{Nordic Thingy:91 X} (nRF9151, nRF Connect SDK, LTE-M/NB-IoT/GNSS) y el producto final en la \textbf{PCB con ESP32-S3-WROOM-1U-N16R8} (LoRa SX1262, GNSS externo MAX-M10S, IMU LSM6DSOX). Se comparten \texttt{geofence.c}, la FSM y el registro de eventos (\emph{logging}); cada placa aporta su \emph{overlay} de devicetree, su \texttt{prj.conf} y los adaptadores de GNSS, comunicaciones e IMU.
+El firmware es un único código base sobre \textbf{Zephyr RTOS} para dos placas: la prueba de concepto en la \textbf{Nordic Thingy:91 X} (nRF9151, nRF Connect SDK, LTE-M/NB-IoT/GNSS) y el producto final en la \textbf{PCB con ESP32-S3-WROOM-1U-N16R8} (módulo LoRa DX-LR30-900M22S con SX1262, GNSS externo MAX-M10S, medidor de batería MAX17048 e IMU \textbf{POR DECIDIR} entre LSM6DSOX y LSM6DS3TR-C). Se comparten \texttt{geofence.c}, la FSM y el registro de eventos (\emph{logging}); cada placa aporta su \emph{overlay} de devicetree, su \texttt{prj.conf} y los adaptadores de GNSS, comunicaciones e IMU.
 
 \section{Secuencia de Arranque (\textit{Power-on Sequence})}
 
@@ -11,7 +11,7 @@ El firmware es un único código base sobre \textbf{Zephyr RTOS} para dos placas
 \begin{enumerate}[leftmargin=*]
     \item \textbf{Power-On Reset (POR)}: Verificación de estabilización de riel de alimentación ($3.3\text{ V}$) y reinicio del SoC.
     \item \textbf{Inicialización de Periféricos}: Configuración de buses de comunicación ($\text{I}^2\text{C}$, SPI) y líneas GPIO de interrupción.
-    \item \textbf{Inicialización de Sensores}: Autochequeo (BIST) y configuración del transceptor LoRa SX1262, IMU LSM6DSOX y GNSS MAX-M10S.
+    \item \textbf{Inicialización de Sensores}: Autochequeo (BIST) y configuración del módulo LoRa DX-LR30-900M22S (SX1262, con sus líneas de control del conmutador de antena RXEN/TXEN según \texttt{hardware/pinout.md}), la IMU (LSM6DSOX o LSM6DS3TR-C, \textbf{POR DECIDIR}), el GNSS MAX-M10S y el medidor de batería MAX17048 ($\text{I}^2\text{C}$, dirección 0x36), con lectura inicial del estado de carga.
     \item \textbf{Carga de Parámetros de Geocerca}: Lectura del polígono activo y llaves criptográficas desde memoria Flash NVS.
     \item \textbf{Arranque del RTOS (Zephyr)}: Creación de tareas prioritarias y mecanismos de sincronización (\textit{semáforos y colas}).
 \end{enumerate}
@@ -107,7 +107,7 @@ El tiempo total de arranque desde el evento de energización hasta el ingreso al
 
 \begin{description}[leftmargin=*, style=nextline, font=\bfseries\ttfamily]
     \item[INIT] Secuencia de arranque, verificación de integridades en Flash/RAM (BIST) y preparación del Kernel RTOS.
-    \item[SLEEP] Modo de bajo consumo activo con dominios de energía secundarios deshabilitados ($I_q < 20\,\mu\text{A}$).
+    \item[SLEEP] Modo de bajo consumo activo con dominios de energía secundarios deshabilitados (unos $124\,\mu\text{A}$ calculados para el sistema completo, aún sin medir).
     \item[GEOFENCE\_CHECK] Ejecución en tiempo real del algoritmo Ray-Casting optimizado para evaluación del perímetro.
     \item[GNSS\_UPDATE] Ráfaga corta de adquisición GNSS en modo \textit{Hot Start} ante pérdida temporizada de precisión HDOP.
     \item[WARNING] Emisión de tono acústico progresivo ante aproximación al límite ($< 5\,\text{m}$).
@@ -183,11 +183,11 @@ int lsm6dsox_configure_wakeup(void) {
 \subsection{Módulos Core del MVP}
 
 \begin{enumerate}[leftmargin=*]
-    \item \textbf{Gestor de Movimiento}: Driver IMU LSM6DSOX con detección de umbral de aceleración.
+    \item \textbf{Gestor de Movimiento}: Driver de la IMU (LSM6DSOX o LSM6DS3TR-C, \textbf{POR DECIDIR}) con detección de umbral de aceleración.
     \item \textbf{Motor de Geocercamiento}: Algoritmo Ray-Casting optimizado con almacenamiento en RAM.
-    \item \textbf{Pila LoRaWAN / LoRa P2P}: Transmisión de eventos prioritarios mediante SX1262.
+    \item \textbf{Pila LoRaWAN / LoRa P2P}: Transmisión de eventos prioritarios mediante el módulo LoRa DX-LR30-900M22S (SX1262).
     \item \textbf{Interfaz de Configuración}: Punto de acceso SoftAP con servidor HTTP embebido.
-    \item \textbf{Administrador de Energía}: Gestión de modos \textit{Deep Sleep} e interrupciones del sistema.
+    \item \textbf{Administrador de Energía}: Gestión de modos \textit{Deep Sleep} e interrupciones del sistema, lectura del nivel de batería con el MAX17048 y del estado de carga del CN3791. La lectura del estado de carga por USB-C (TP4056) está \textbf{POR DECIDIR}: no hay un GPIO asignado para ella.
 \end{enumerate}
 
 \subsection{Definición de Hilos en RTOS}

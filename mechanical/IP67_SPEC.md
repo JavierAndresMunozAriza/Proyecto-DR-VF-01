@@ -50,7 +50,7 @@ Esta especificación detalla los requisitos de sellado IP67 para el collar de ge
 - No hay valores de sellado definidos para este elemento
 
 ### 6. Salida Acústica del Zumbador (pendiente)
-- **Zumbador piezoeléctrico**: PKMCS0909E000-R1 (BOM). Su requisito acústico es > 80 dBA a 1 m (SR-30 del informe)
+- **Zumbador piezoeléctrico**: PKMCS0909E4000-R1 (BOM). Su requisito acústico es > 80 dBA a 1 m (SR-30 del informe)
 - **Orificio, membrana o ventilación del zumbador**: pendiente. No hay valores de sellado definidos
 
 ### 7. Antenas y Cables Internos (pendiente)

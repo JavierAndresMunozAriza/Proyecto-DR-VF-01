@@ -8,18 +8,26 @@
 \rowcolor{categorybg}
 \textbf{ID} & \textbf{Descripción} & \textbf{Especificación / Valor} & \textbf{Método de Verificación} \\ \hline
 \multicolumn{4}{|l|}{\cellcolor{categorybgsub}\textbf{Entrada y Gestión de Energía}} \\ \hline
-SR-01 & Cosecha de energía solar & Panel monocristalino 6 V, 1.5-3.0 W & Prueba funcional con fuente DC / simulador \\ \hline
-SR-02 & Gestión de Carga MPPT & Módulo CN3791 (6V Buck MPPT) & Medición de curva CC/CV y punto MPPT \\ \hline
-SR-03 & Almacenamiento de energía & Batería LiPo 3.7 V / 1200-1500 mAh & Ensayo de descarga a tasa controlada \\ \hline
-SR-04 & Medición de batería & CI MAX17048 por bus I2C & Lectura del estado de carga (SoC \%) \\ \hline
+SR-01 & Cosecha de energía solar & Panel monocristalino 6 V, al menos 1 W (MPN \textbf{POR DECIDIR}) & Prueba funcional con fuente DC / simulador \\ \hline
+SR-02 & Gestión de Carga MPPT & Módulo CN3791 (6V Buck MPPT), alimentado solo desde el panel solar (la carga inicia con VCC por encima de unos 6.17 V) & Medición de curva CC/CV y punto MPPT \\ \hline
+SR-03 & Almacenamiento de energía & Batería LiPo 3.7 V / 1200-1500 mAh (capacidad \textbf{POR DECIDIR}) & Ensayo de descarga a tasa controlada \\ \hline
+SR-04 & Medición de batería & CI MAX17048 por bus I2C (dirección 0x36), conectado a la batería & Lectura del estado de carga (SoC \%) \\ \hline
+SR-05 & Carga por USB-C & Cargador lineal TP4056, 500 mA; el USB no alimenta el sistema & Medición de la corriente de carga con USB conectado \\ \hline
+SR-06 & Regulación de 3.3 V & LDO TLV75733PDBVR, 1 A, corriente quiescente 25 $\mu$A, alimentado solo desde la batería & Medición de la tensión de salida y de la corriente en reposo \\ \hline
+SR-07 & Protección de batería & Circuito integrado de protección \textbf{POR DECIDIR} (ver \texttt{hardware/BOM.md}) & Por definir al elegir el componente \\ \hline
+SR-08 & Protección ESD del USB-C & USBLC6-2SC6 en D+, D- y VBUS & Inspección del esquemático y prueba de enumeración USB \\ \hline
 \multicolumn{4}{|l|}{\cellcolor{categorybgsub}\textbf{Posicionamiento Satelital y Edge Computing}} \\ \hline
-SR-10 & Frecuencia GNSS & $>$ 1 Hz adaptativo (10 Hz en advertencia) & Inspección de tramas NMEA vía UART \\ \hline
+SR-10 & Frecuencia GNSS & $>$ 1 Hz adaptativo (10 Hz en advertencia, solo con GPS+Galileo; con la configuración por defecto del MAX-M10S el máximo es 3 Hz) & Inspección de tramas NMEA vía UART \\ \hline
 SR-11 & Precisión de ubicación & $\le 2.5$ m CEP en campo abierto & Comparación contra punto geodésico \\ \hline
 SR-12 & Tiempo de cálculo geocerca & Latencia $<$ 50 ms (Point-in-Polygon) & Profiling de código en ESP32-S3 \\ \hline
+SR-13 & Detección de movimiento y despertar & IMU con salida INT1 conectada a GPIO 4 (LSM6DSOX o LSM6DS3TR-C, \textbf{POR DECIDIR}) & Prueba de despertar de Deep Sleep por movimiento \\ \hline
+SR-14 & Antena GNSS & Antena pasiva L1 (1575.42 MHz); tipo y MPN \textbf{POR DECIDIR} (\texttt{hardware/BOM.md} recomienda un parche de 18x18x4 mm) & Inspección de tramas NMEA (relación C/N0 de los satélites) \\ \hline
 \multicolumn{4}{|l|}{\cellcolor{categorybgsub}\textbf{Telemetría y Comunicaciones}} \\ \hline
-SR-20 & Enlace radiofrecuencia LoRa & Módulo SX1262 (915 MHz, +22 dBm) & Medición de RSSI, SNR y alcance LoS \\ \hline
+SR-20 & Enlace radiofrecuencia LoRa & Módulo DX-LR30-900M22S (SX1262, SPI, 915 MHz, +22 dBm, alimentación de 1.8 a 3.7 V) & Medición de RSSI, SNR y alcance LoS \\ \hline
 SR-21 & Interfaz de configuración local & Servidor Web HTTP vía SoftAP Wi-Fi & Prueba de carga desde navegador móvil \\ \hline
-SR-22 & Módem Celular IoT [Fase 2] & Quectel BG95-M3 (LTE Cat-M1/NB-IoT) & Reservado para Fase 2 (Comandos AT) \\ \hline
+SR-22 & Módem Celular IoT [Fase 2] & \textbf{POR DECIDIR}: Quectel BG95-M3 (LTE Cat-M1/NB-IoT) o A7670SA; UART0 (GPIO 43/44) & Reservado para Fase 2 (Comandos AT) \\ \hline
+SR-23 & Antena LoRa & Monopolo flexible de 8 cm, 915 MHz, conector u.FL & Medición de RSSI y alcance LoS (como SR-20) \\ \hline
+SR-24 & Antena Wi-Fi/BLE (2.4 GHz) & Antena FPC Würth 2015301200 vía u.FL del módulo ESP32-S3 & Prueba de conexión Wi-Fi/BLE desde un teléfono \\ \hline
 \multicolumn{4}{|l|}{\cellcolor{categorybgsub}\textbf{Actuación y Seguridad}} \\ \hline
 SR-30 & Estímulo sonoro preventivo & Zumbador Piezoeléctrico ($>$ 80 dBA @ 1 m) & Medición con sonómetro calibrado \\ \hline
 SR-31 & Aislamiento galvánico & Optoacoplador VO617A ($\ge 3000~V_{RMS}$) & Inspección visual de separación de masa \\ \hline

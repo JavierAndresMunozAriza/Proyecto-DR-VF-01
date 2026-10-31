@@ -22,30 +22,45 @@ Esta documentación describe la secuencia de arranque del sistema siguiendo los 
    - SDA: GPIO8, SCL: GPIO9 (ver `hardware/pinout.md`)
    - Velocidad: 400kHz estándar
    - Timeout: 100ms
-   - **Verificación de bus**: Detección de dispositivos en el bus I2C
+   - **Verificación de bus**: Detección de dispositivos en el bus I2C (MAX17048 en la dirección 0x36 y la IMU)
 
 3. **SPI Bus Initialization**
-   - Para comunicación con SX1262 LoRa
+   - Para comunicación con el módulo LoRa DX-LR30-900M22S (SX1262 integrado)
    - SCK: GPIO12, MISO: GPIO13, MOSI: GPIO11, NSS: GPIO10 (ver `hardware/pinout.md`)
+   - Líneas de control del módulo: BUSY GPIO14, DIO1 GPIO6, NRESET GPIO5, RXEN GPIO42, TXEN GPIO47. DIO2 y DIO3 (alimentación del TCXO, si el módulo lo usa): **POR CONFIRMAR** con el vendedor (`hardware/pinout.md`)
+   - La antena debe estar conectada antes de energizar el módulo (exigencia de la ficha del vendedor)
    - **Prueba de conexión**: Verificación de comunicación SPI antes de uso
 
+4. **USB nativo y reloj**
+   - USB nativo del ESP32-S3: D- GPIO19, D+ GPIO20 (programación; BOOT, GPIO0, a GND = modo descarga, con la batería conectada)
+   - PSRAM octal (8 MB) integrada en el encapsulado del chip del módulo N16R8 (no es una memoria externa); GPIO35 a 37 quedan ocupados por ella (`hardware/pinout.md`)
+   - Cristal RTC de 32.768 kHz en GPIO15 y GPIO16 (ver `hardware/pinout.md`)
+
 ## 3. Inicialización de Sensores
-1. **LSM6DSOX IMU**
-   - Verificación de conexión (WHO_AM_I register)
-   - Configuración de interrupciones para wake-up
+1. **IMU** (POR DECIDIR: LSM6DSOX o LSM6DS3TR-C del docente)
+   - Verificación de conexión (WHO_AM_I register; el valor esperado depende de la pieza elegida)
+   - Configuración de interrupciones para wake-up (INT1 en GPIO4)
    - Modo low-power habilitado
    - **Prueba funcional**: Validación de lecturas de aceleración y giroscopio
 
 2. **u-blox MAX-M10S GNSS**
-   - Baudrate auto-detect: 9600bps
+   - Baudrate por defecto: 9600 bit/s (el datasheet del MAX-M10S admite de 9600 a 921600 bit/s y no documenta autodetección)
    - Configuración de mensajes UBX-RXM-PMREQ para power saving
    - **Verificación de posicionamiento**: Confirmación de recepción de satélites
 
-3. **SX1262 LoRa Transceiver**
+3. **Módulo LoRa DX-LR30-900M22S (SX1262)**
    - Frecuencia: 915MHz (banda ISM americana)
    - Potencia: +22dBm (máximo del transceptor SX1262)
    - SF: 12 (para rango extendido)
    - **Prueba de comunicación**: Envío de mensaje de prueba y confirmación de recepción
+
+4. **MAX17048 (medidor de batería)**
+   - Comprobación rápida de presencia en I2C (dirección 0x36) y lectura inicial del nivel de carga
+   - Está conectado a la batería, no al bus de 3.3 V (`docs/ARCHITECTURE.md`, sección 1.1)
+
+5. **Estado de carga**
+   - Solar: salida CHRG del CN3791 en GPIO41 (colector abierto, pull-up de 10 kΩ)
+   - USB-C (TP4056): sin GPIO asignado para sus salidas de estado, **POR DECIDIR** (`hardware/pinout.md`)
 
 ## 4. Carga de Parámetros de Configuración
 - Lectura de coordenadas geográficas desde Flash NVS
@@ -70,7 +85,8 @@ Esta documentación describe la secuencia de arranque del sistema siguiendo los 
 
 ## 7. Entrada en Modo Operativo
 - Transición a estado SLEEP después de 5 segundos de inactividad
-- Configuración de interrupciones GPIO para wake-up IMU
+- Configuración de las fuentes de wake-up de deep sleep: IMU_INT1 (GPIO4), LORA_DIO1 (GPIO6) y BUTTON (GPIO7)
+- Mantener `OPTO_CTRL` (GPIO1) en bajo durante deep sleep con retención de GPIO RTC (`rtc_gpio_hold_en`), además del pull-down externo
 - Sistema listo para operación en campo
 - **Confirmación de operación**: Indicador LED de sistema listo
 

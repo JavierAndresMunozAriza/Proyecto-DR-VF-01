@@ -9,16 +9,16 @@
 \rowcolor{categorybg}
 \textbf{Requerimiento / Función Clave} & \textbf{Prioridad} & \textbf{Fase de Ejecución} \\ \hline
 Geolocalización GPS u-blox MAX-M10S y algoritmo de geocerca en ESP32-S3 & Must & Fase 1 (Semestre Actual) \\ \hline
-Telemetría LoRa SX1262 (915 MHz) para transmisión de alertas y ubicación & Must & Fase 1 (Semestre Actual) \\ \hline
-Carga solar conmutada MPPT (CN3791 6V) y monitoreo I2C MAX17048 & Must & Fase 1 (Semestre Actual) \\ \hline
+Telemetría LoRa (módulo DX-LR30-900M22S, 915 MHz) para transmisión de alertas y ubicación & Must & Fase 1 (Semestre Actual) \\ \hline
+Carga solar conmutada MPPT (CN3791 6V), carga por USB-C (TP4056, 500 mA), protección de batería (circuito integrado POR DECIDIR) y monitoreo I2C MAX17048 & Must & Fase 1 (Semestre Actual) \\ \hline
 Aislamiento galvánico con optoacoplador VO617A y emulación disuasiva (LED/Buzzer) & Must & Fase 1 (Semestre Actual) \\ \hline
 Servidor Web interno en ESP32-S3 (LittleFS) para definición de polígonos & Must & Fase 1 (Semestre Actual) \\ \hline
 Diseño de PCB tipo Carrier Board con conectores para módulos de desarrollo & Must & Fase 1 (Semestre Actual) \\ \hline
-Detección de movimiento y modos de sueño (Deep Sleep) mediante IMU LSM6DSOX & Should & Fase 1 (Semestre Actual) \\ \hline
+Detección de movimiento y modos de sueño (Deep Sleep) mediante IMU (LSM6DSOX o LSM6DS3TR-C, POR DECIDIR) & Should & Fase 1 (Semestre Actual) \\ \hline
 Chasis de prototipo resistente a salpicaduras mediante impresión 3D & Should & Fase 1 (Semestre Actual) \\ \hline
-Clasificación de conducta del ganado (rumia/pastoreo) usando el MLC de la IMU & Could & Fase 1 / Fase 2 \\ \hline
+Clasificación de conducta del ganado (rumia/pastoreo) usando el MLC de la IMU (solo existe en el LSM6DSOX) & Could & Fase 1 / Fase 2 \\ \hline
 \rowcolor{phase2orange}
-W-01: Conectividad Celular de Respaldo NB-IoT/LTE-M (Módem Quectel BG95-M3) & Won't & Planificado para Fase 2 (Tesis) \\ \hline
+W-01: Conectividad Celular de Respaldo (módem POR DECIDIR: Quectel BG95-M3, NB-IoT/LTE-M, o A7670SA) & Won't & Planificado para Fase 2 (Tesis) \\ \hline
 \rowcolor{phase2orange}
 W-02: Etapa de Descarga de Alto Voltaje Real (2,5 kV / 0,2 J IEC 60335-2-76) & Won't & Planificado para Fase 2 (Tesis) \\ \hline
 \rowcolor{phase2orange}

@@ -7,15 +7,15 @@
 \hline
 \rowcolor{categorybg}
 \textbf{Caso} & \textbf{Descripción} & \textbf{Requerimientos derivados} & \textbf{Fase} \\ \hline
-1 & Monitoreo estándar dentro de zona segura: El animal se desplaza libremente en el polígono. & GNSS u-blox MAX-M10S en muestreo adaptativo, envío periódico por LoRa SX1262 (915 MHz). & Fase 1 \\ \hline
-2 & Aproximación a zona de advertencia ($3\text{ a }5~\text{m}$ del borde): IMU/GNSS detecta trayectoria. & Incremento dinámico del GNSS a 10 Hz y activación del zumbador piezoeléctrico preventivo. & Fase 1 \\ \hline
+1 & Monitoreo estándar dentro de zona segura: El animal se desplaza libremente en el polígono. & GNSS u-blox MAX-M10S en muestreo adaptativo, envío periódico por LoRa (módulo DX-LR30-900M22S, SX1262, 915 MHz). & Fase 1 \\ \hline
+2 & Aproximación a zona de advertencia ($3\text{ a }5~\text{m}$ del borde): IMU/GNSS detecta trayectoria. & Incremento dinámico del GNSS a 10 Hz (solo con GPS+Galileo; con la configuración por defecto del MAX-M10S el máximo es 3 Hz) y activación del zumbador piezoeléctrico preventivo. & Fase 1 \\ \hline
 3 & Traspaso del límite (Infracción de geocerca): El bovino ignora el sonido y cruza el perímetro. & Disparo de señal aislada vía optoacoplador VO617A (LED en Fase 1 / Pulso HV 0,2 J en Fase 2); envío de alerta. & Fase 1/2 \\ \hline
 4 & Configuración de potrero offline por el ganadero: Definición de nuevo lote en campo. & ESP32-S3 genera SoftAP Wi-Fi / BLE, sirve la web app desde LittleFS y guarda coordenadas en NVS. & Fase 1 \\ \hline
-5 & Operación en zona rural sin cobertura celular: Finca remota sin señal LTE/EGPRS. & Conmutación automática a telemetría LoRa Semtech SX1262 (+22 dBm) hacia Gateway local. & Fase 1 \\ \hline
+5 & Operación en zona rural sin cobertura celular: Finca remota sin señal LTE/EGPRS. & Conmutación automática a telemetría LoRa (módulo DX-LR30-900M22S, SX1262, +22 dBm) hacia Gateway local. & Fase 1 \\ \hline
 \rowcolor{rowalt}
 6 & Mantenimiento energético solar continuo: Exposición a radiación solar durante pastoreo. & Algoritmo MPPT (CN3791 6V) optimizando recarga de la batería LiPo de 3,7 V (1200--1500 mAh). & Fase 1 \\ \hline
-7 & Ahorro de energía por inactividad/rumia: El animal descansa en el potrero. & El MLC de la IMU LSM6DSOX clasifica la conducta; ESP32-S3 entra en Deep Sleep (7 $\mu$A). & Fase 1 \\ \hline
-8 & Carga previa / Diagnóstico por cable: Mantenimiento rápido en establo. & Puerto USB-C nativo del ESP32-S3 y calibración de estado de carga mediante el medidor MAX17048. & Fase 1 \\ \hline
+7 & Ahorro de energía por inactividad/rumia: El animal descansa en el potrero. & El MLC de la IMU LSM6DSOX clasifica la conducta (IMU \textbf{POR DECIDIR}; el LSM6DS3TR-C no tiene MLC); el ESP32-S3 entra en Deep Sleep (unos 8 $\mu$A el módulo; unos 124 $\mu$A todo el sistema, calculado en \texttt{hardware/POWER\_BUDGET.md}). & Fase 1 \\ \hline
+8 & Carga previa / Diagnóstico por cable: Mantenimiento rápido en establo. & Carga por USB-C mediante el cargador TP4056 (limitado a 500 mA; el USB no alimenta el sistema; no menos de 2,4 h con 1200 mAh ni de 3 h con 1500 mAh), programación y diagnóstico por el USB nativo del ESP32-S3 (GPIO 19/20) y calibración de estado de carga mediante el medidor MAX17048. & Fase 1 \\ \hline
 9 & Degradación de señal GNSS por follaje denso: Atenuación satelital en dosel forestal. & Operación multiconstelación (GPS, GLONASS, Galileo, BeiDou) con filtrado local. & Fase 1 \\ \hline
 10 & Alerta de carga crítica de batería: Disminución de capacidad tras días nublados. & Medidor MAX17048 por I2C detecta SoC $<$ 10\%, envía alerta LoRa y conmuta a modo supervivencia. & Fase 1 \\ \hline
 \end{tabularx}

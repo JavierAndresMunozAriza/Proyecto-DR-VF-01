@@ -33,16 +33,16 @@ Este documento consolida la evaluación técnica del equipo de diseño frente a 
 \textbf{Sugerencia evaluada:} Sustituir el ESP32 por un chip nRF52 para ganar alcance Bluetooth a través de la carcasa protectora.
 \begin{itemize}[leftmargin=*]
     \item \textbf{Postura del Equipo de Diseño:} \textbf{No se reemplazará el núcleo ESP32-S3.}
-    \item \textbf{Justificación Técnica:} El ESP32-S3 ya cuenta con el estándar Bluetooth Low Energy (BLE 5.0) integrado de fábrica, por lo que migrar a Nordic Semiconductor implicaría un retraso severo por el cambio de entorno de desarrollo y la pérdida de la interfaz Wi-Fi requerida para la Fase 1. 
-    \item \textbf{Solución adoptada (Alcance de RF):} Para evitar que la carcasa plástica atenúe la señal Bluetooth, no se utilizará la versión de antena en PCB. Se integrará el módulo \textbf{ESP32-S3-WROOM-1U}, el cual posee un conector U.FL. Esto permite enrutar un cable flexible hacia una antena plana adherida a la cara externa/interna de la carcasa, logrando conexiones estables a $>50$ metros de distancia con el usuario.
+    \item \textbf{Justificación Técnica:} El ESP32-S3 ya cuenta con el estándar Bluetooth Low Energy (BLE 5.0) integrado de fábrica, por lo que no se justifica sustituirlo en la PCB final solo para ganar alcance Bluetooth, y se perdería la interfaz Wi-Fi requerida para la Fase 1. La placa Nordic Thingy:91 X (nRF9151, nRF Connect SDK) se usa únicamente como prueba de concepto: ambas plataformas comparten un código base sobre Zephyr. 
+    \item \textbf{Solución adoptada (Alcance de RF):} Para evitar que la carcasa plástica atenúe la señal Bluetooth, no se utilizará la versión de antena en PCB. Se integrará el módulo \textbf{ESP32-S3-WROOM-1U}, el cual posee un conector U.FL. Esto permite enrutar un cable flexible hacia la antena FPC de 2.4 GHz (Würth 2015301200), cuya posición en la carcasa está \textbf{POR DECIDIR}, logrando conexiones estables a $>50$ metros de distancia con el usuario.
 \end{itemize}
 
 \section*{2. Eliminación o sustitución de la telemetría LoRa}
 \textbf{Sugerencia evaluada:} Eliminar el radio LoRa por su dependencia de Gateways o por considerarse obsoleto frente a redes celulares.
 \begin{itemize}[leftmargin=*]
-    \item \textbf{Postura del Equipo de Diseño:} \textbf{Se mantiene el transceptor LoRa SX1262 como red primaria.}
+    \item \textbf{Postura del Equipo de Diseño:} \textbf{Se mantiene LoRa (módulo DX-LR30-900M22S con SX1262) como red primaria.}
     \item \textbf{Justificación Técnica:} LoRa es el único protocolo que permite telemetría a kilómetros de distancia en zonas rurales sin cobertura de celular y sin pagar planes de datos mensuales. Su rol es estricto: transmitir la posición de la vaca y las alertas hacia la base de la finca. 
-    \item \textbf{Escalabilidad:} Si el dispositivo se despliega en latifundios extensos (ej. Llanos Orientales) donde un Gateway LoRa no es suficiente, la arquitectura Fase 2 contempla la adición de un módem celular IoT (Quectel BG95-M3). Sin embargo, para fincas estándar, LoRa es la solución más robusta y económica.
+    \item \textbf{Escalabilidad:} Si el dispositivo se despliega en latifundios extensos (ej. Llanos Orientales) donde un Gateway LoRa no es suficiente, la arquitectura Fase 2 contempla la adición de un módem celular IoT (\textbf{POR DECIDIR}: Quectel BG95-M3 o A7670SA). Sin embargo, para fincas estándar, LoRa es la solución más robusta y económica.
 \end{itemize}
 
 \section*{3. Sustitución del GNSS MAX-M10S por el empaque MIA-M10}

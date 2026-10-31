@@ -21,15 +21,15 @@ El DR-VF-01 es una solución de grado industrial para el geocercamiento y monito
 \subsubsection{Enlace de Comunicación LoRa Sub-GHz}
 
 \begin{itemize}[leftmargin=*]
-    \item \textbf{Transceptor RF}: Semtech SX1262 para red LoRaWAN o P2P.
-    \item \textbf{Alcance Operativo}: Hasta $15.0\,\text{km}$ en línea de vista (\textit{LoS}) en entornos rurales.
+    \item \textbf{Transceptor RF}: módulo LoRa DX-LR30-900M22S (SX1262 de Semtech integrado, interfaz SPI) para red LoRaWAN o P2P.
+    \item \textbf{Alcance Operativo}: Objetivo de hasta $15.0\,\text{km}$ en línea de vista (\textit{LoS}) en entornos rurales, sin medir.
     \item \textbf{Banda de Frecuencia y Potencia}: $915\,\text{MHz}$ (banda ISM) con potencia de salida programable hasta $+22\,\text{dBm}$.
 \end{itemize}
 
 \subsubsection{Detección Inteligente de Movimiento y Wake-Up}
 
 \begin{itemize}[leftmargin=*]
-    \item \textbf{Sensor Inercial}: IMU LSM6DSOX de 6 ejes con procesamiento integrado de eventos.
+    \item \textbf{Sensor Inercial}: IMU de 6 ejes con procesamiento integrado de eventos (modelo \textbf{POR DECIDIR}: LSM6DSOX o LSM6DS3TR-C).
     \item \textbf{Activación Selectiva}: Interrupción por hardware cuando el bovino supera el umbral inercial.
     \item \textbf{Umbral Configurable}: Ajustable en rango de $0.1\,g$ a $1.0\,g$.
 \end{itemize}
@@ -37,9 +37,9 @@ El DR-VF-01 es una solución de grado industrial para el geocercamiento y monito
 \subsubsection{Autonomía y Gestión Solar de Energía}
 
 \begin{itemize}[leftmargin=*]
-    \item \textbf{Autonomía Base}: Hasta $80\,\text{días}$ en batería LiPo ($1500\,\text{mAh}$) sin recarga solar.
-    \item \textbf{Consumo en Reposo}: $< 5.0\,\mu\text{A}$ en modo \textit{Deep Sleep}.
-    \item \textbf{Recarga Solar MPPT}: Cargador dedicado CN3791 acoplado a panel monocristalino de $2.0\,\text{W}$.
+    \item \textbf{Autonomía Base}: Unos $190\,\text{días}$ con batería LiPo de $1200\,\text{mAh}$ (teórico, con factor de degradación de 0.85) y unos $238\,\text{días}$ con $1500\,\text{mAh}$, sin recarga solar; la capacidad de la batería está \textbf{POR DECIDIR}.
+    \item \textbf{Consumo en Reposo}: Unos $124\,\mu\text{A}$ (calculado, aún sin medir) en modo \textit{Deep Sleep}, por debajo del límite de $150\,\mu\text{A}$ del requerimiento RNF-03.
+    \item \textbf{Recarga Solar MPPT}: Cargador dedicado CN3791 acoplado a un panel solar de $6\,\text{V}$ y al menos $1\,\text{W}$ (MPN \textbf{POR DECIDIR}). La carga por USB-C usa un cargador TP4056 independiente de $500\,\text{mA}$.
 \end{itemize}
 
 \subsection{Especificaciones Técnicas del Sistema}
@@ -57,13 +57,19 @@ El DR-VF-01 es una solución de grado industrial para el geocercamiento y monito
 Microcontrolador Core & ESP32-S3-WROOM-1U-N16R8 ($16\,\text{MB}$ Flash, $8\,\text{MB}$ PSRAM) \\
 \rowcolor{rowalt}
 Navegación GNSS & u-blox MAX-M10S (Multiconstelación 72 canales) \\
-Radiofrecuencia LoRa & Semtech SX1262 ($915\,\text{MHz}$, $+22\,\text{dBm}$) \\
+Radiofrecuencia LoRa & Módulo DX-LR30-900M22S con SX1262 ($915\,\text{MHz}$, $+22\,\text{dBm}$, SPI) \\
 \rowcolor{rowalt}
-Sensor de Movimiento & STMicroelectronics LSM6DSOX IMU 6 ejes \\
-Gestión Fotovoltaica & CN3791 MPPT Solar Charger ($6\,\text{V}$) \\
+Sensor de Movimiento & IMU 6 ejes de STMicroelectronics (\textbf{POR DECIDIR}: LSM6DSOX o LSM6DS3TR-C) \\
+Gestión Fotovoltaica & CN3791 MPPT Solar Charger ($6\,\text{V}$), solo desde el panel solar \\
 \rowcolor{rowalt}
-Batería de Respaldo & LiPo $3.7\,\text{V}$ / $1500\,\text{mAh}$ (Protección PCM integrada) \\
-Elemento Radiante & Antena FPC interna omnidireccional ($+2.5\,\text{dBi}$) \\
+Carga por USB-C & TP4056 ($500\,\text{mA}$); el USB nunca alimenta el sistema \\
+Regulación de $3.3\,\text{V}$ & LDO TLV75733PDBVR ($1\,\text{A}$, \textit{Iq} de $25\,\mu\text{A}$), alimentado solo desde la batería \\
+\rowcolor{rowalt}
+Medidor de Batería & MAX17048 ($\text{I}^2\text{C}$, dirección 0x36), conectado a la batería \\
+Protección USB & USBLC6-2SC6 en D+, D$-$ y VBUS \\
+\rowcolor{rowalt}
+Batería de Respaldo & LiPo $3.7\,\text{V}$, 1S (capacidad \textbf{POR DECIDIR}: $1200$ o $1500\,\text{mAh}$); protección de batería \textbf{POR DECIDIR} \\
+Elementos Radiantes & Antena LoRa de $8\,\text{cm}$ con u.FL ($915\,\text{MHz}$), antena FPC Würth 2015301200 ($2.4\,\text{GHz}$, Wi-Fi/BLE) y parche GNSS pasivo de $18\times18\times4\,\text{mm}$ (MPN pendiente); posiciones \textbf{POR DECIDIR} \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -78,18 +84,20 @@ Elemento Radiante & Antena FPC interna omnidireccional ($+2.5\,\text{dBi}$) \\
 \rowcolor{categorybg}
 \textbf{Parámetro Métrico} & \textbf{Valor / Rango Objetivo} \\
 \midrule
-Alcance de Enlace RF LoRa & Hasta $15.0\,\text{km}$ (Línea de Vista en Campo) \\
+Alcance de Enlace RF LoRa & Hasta $15.0\,\text{km}$ (objetivo, sin medir) \\
 \rowcolor{rowalt}
 Precisión Posicional GNSS & $< 3.0\,\text{m}$ RMS \\
 Tiempo de Respuesta Algoritmo PiP & $< 50\,\text{ms}$ \\
 \rowcolor{rowalt}
-Consumo de Corriente en \textit{Deep Sleep} & $< 5.0\,\mu\text{A}$ \\
+Consumo de Corriente en \textit{Deep Sleep} & $\approx 124\,\mu\text{A}$ (calculado) \\
 Rango de Temperatura Operativa & $-20\,^\circ\text{C}$ a $+65\,^\circ\text{C}$ \\
 \rowcolor{rowalt}
 Grado de Estanqueidad Estructural & IP67 (IEC 60529) \\
 \bottomrule
 \end{tabularx}
 \end{table}
+
+\noindent\emph{Nota:} el módulo ESP32-S3-WROOM-1U-N16R8 está especificado de $-40$ a $65\,^\circ\text{C}$ de temperatura ambiente, de modo que el límite superior de $+65\,^\circ\text{C}$ coincide con el máximo del módulo, sin margen adicional.
 
 \section{Manual de Operación e Instalación en Campo}
 
@@ -99,9 +107,9 @@ Grado de Estanqueidad Estructural & IP67 (IEC 60529) \\
 
 \begin{enumerate}[leftmargin=*]
     \item Retire el tapón protector del conector USB-C e inserte el cable de carga suministrado.
-    \item Conecte la fuente de alimentación externa ($5\,\text{V DC} / 1\,\text{A}$).
-    \item Monitoree el LED indicador de estado hasta que el LED verde pase de continuo a parpadeante, lo que indica carga completa (duración estimada de carga total: $2.0\,\text{horas}$).
-    \item Reinstale cuidadosamente el tapón de silicona asegurando el sellado IP67.
+    \item Conecte la fuente de alimentación externa de $5\,\text{V DC}$. El cargador TP4056 limita la corriente de carga a $500\,\text{mA}$, por lo que no se necesita una fuente de $1\,\text{A}$.
+    \item Espere a que termine la carga: con $500\,\text{mA}$ tarda no menos de $3\,\text{h}$ con una batería de $1500\,\text{mAh}$ ($2.4\,\text{h}$ con $1200\,\text{mAh}$), antes de la fase final de tensión constante. El indicador de fin de carga por USB-C está \textbf{POR DECIDIR}: no hay una línea de estado del TP4056 legible por el microcontrolador, así que este manual no promete un LED de carga por USB-C.
+    \item Reinstale cuidadosamente el tapón protector del conector USB-C (tipo de sello \textbf{POR DECIDIR}) asegurando el sellado IP67.
 \end{enumerate}
 
 \subsubsection{Fase 2: Fijación y Ergonomía sobre el Bovino}
@@ -127,7 +135,7 @@ Grado de Estanqueidad Estructural & IP67 (IEC 60529) \\
 \subsection{Codificación de Indicadores LED de Diagnóstico}
 
 \begin{description}[leftmargin=*, style=nextline, font=\bfseries\ttfamily]
-    \item[Verde Fijo] Proceso de carga de batería activo vía USB-C / Solar.
+    \item[Verde Fijo] Proceso de carga de batería activo desde el panel solar (estado CHRG del CN3791). La indicación de carga por USB-C está \textbf{POR DECIDIR}, porque no hay una línea de estado del TP4056 legible por el microcontrolador.
     \item[Verde Parpadeante] Batería completamente cargada ($V_{\text{bat}} \ge 4.18\,\text{V}$).
     \item[Azul Parpadeante] Modo de configuración SoftAP y servidor HTTP activo.
     \item[Rojo Fijo] Alerta de batería crítica ($V_{\text{bat}} \le 3.40\,\text{V}$).

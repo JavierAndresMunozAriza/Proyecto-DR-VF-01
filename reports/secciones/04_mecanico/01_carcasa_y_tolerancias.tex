@@ -1,6 +1,6 @@
 \section{Introducción al Dossier de Diseño Mecánico e Industrial}
 
-Este dossier presenta la especificación mecánica e industrial del collar de geocercamiento ganadero DR-VF-01. Se detallan las estrategias de estanqueidad bajo norma IP67/IP68, la asignación de tolerancias dimensionales y geométricas, la integración de las antenas FPC/GNSS y la disposición estructural del panel solar y la carcasa.
+Este dossier presenta la especificación mecánica e industrial del collar de geocercamiento ganadero DR-VF-01. Se detallan las estrategias de estanqueidad bajo norma IP67/IP68, la asignación de tolerancias dimensionales y geométricas, la integración de las tres antenas (LoRa, Wi-Fi/BLE y GNSS) y la disposición estructural del panel solar y la carcasa.
 
 \section{Especificaciones de Sellado y Estanqueidad IP67}
 
@@ -21,7 +21,7 @@ La carcasa está inyectada en policarbonato reforzado con $20\%$ de fibra de vid
 
 \subsubsection{Protección de Interfaz de Carga USB-C}
 
-El puerto de programación y servicio USB-C cuenta con un tapón elastomérico con memoria mecánica y un sello interno de membrana de silicona, previniendo la filtración de humedad aun con la tapa externa abierta.
+El puerto USB-C sirve para la programación por USB nativo y para la carga mediante el cargador TP4056, y debe sellarse para cumplir IP67. El tipo de sello (tapón ciego, tapa u otro) y el MPN del conector USB-C están \textbf{POR DECIDIR}; hasta entonces este dossier no fija la solución de sellado de este puerto.
 
 \subsection{Procedimientos de Verificación de Estanqueidad}
 
@@ -97,20 +97,21 @@ Rugosidad Superficial en Canal & $R_a \le 1.6\,\mu\text{m}$ & ISO 4287 \\
 \end{tabularx}
 \end{table}
 
-\section{Ubicación e Integración de Antenas FPC}
+\section{Ubicación e Integración de Antenas}
 
 \subsection{Especificaciones Electromecánicas}
 
+El BOM define tres antenas independientes, una por banda; ninguna cubre más de un servicio:
+
 \begin{itemize}[leftmargin=*]
-    \item \textbf{Tipo de Antena}: Monopolo flexible (FPC) omnidireccional con plano de masa extendido.
-    \item \textbf{Banda de Operación}: Sub-GHz LoRa ($915\,\text{MHz}$) y Wi-Fi/BLE SoftAP ($2.4\,\text{GHz}$).
-    \item \textbf{Impedancia Característica}: $50\,\Omega$ adaptada mediante microstrip de $50\,\Omega$ en el PCBA.
-    \item \textbf{Ganancia Pico}: $+2.5\,\text{dBi}$ en entorno despejado.
+    \item \textbf{LoRa (915 MHz)}: antena flexible de $8\,\text{cm}$ con conector u.FL (monopolo de cuarto de onda; el listado del proveedor indica $2\,\text{dBi}$ y no tiene MPN). Su rendimiento depende del plano de masa de la PCB y el alcance real debe probarse. La señal sale del pad ANT del módulo DX-LR30-900M22S por una línea de $50\,\Omega$ en la PCB hasta el conector u.FL.
+    \item \textbf{Wi-Fi/BLE (2.4 GHz)}: antena FPC Würth 2015301200 conectada por u.FL al módulo ESP32-S3-WROOM-1U-N16R8. Su ganancia no está verificada: no hay hoja de datos en el repositorio.
+    \item \textbf{GNSS (1575.42 MHz)}: parche cerámico pasivo de $18\times18\times4\,\text{mm}$, con MPN pendiente. El MAX-M10S integra LNA y filtro SAW; el plano de masa del parche se define en el diseño de la PCB.
 \end{itemize}
 
 \subsection{Criterios de Posicionamiento Radiativo}
 
-La antena FPC está ubicada en la cara superior de la carcasa plástica, garantizando los siguientes márgenes de aislamiento electromagnético:
+La posición de cada antena en la carcasa y en la PCB está \textbf{POR DECIDIR}. Los siguientes márgenes de aislamiento electromagnético son criterios de diseño propuestos, aún sin validar, para aplicar a cada antena una vez decididas sus posiciones, junto con un aislamiento suficiente entre las bandas de $915\,\text{MHz}$, $1575\,\text{MHz}$ y $2.4\,\text{GHz}$:
 
 \begin{itemize}[leftmargin=*]
     \item Separación superior a $10.0\,\text{mm}$ respecto a los bordes laterales del PCBA.
@@ -119,6 +120,8 @@ La antena FPC está ubicada en la cara superior de la carcasa plástica, garanti
 \end{itemize}
 
 \subsection{Fijación Mecánica}
+
+Aplica a la antena FPC de $2.4\,\text{GHz}$:
 
 \begin{itemize}[leftmargin=*]
     \item \textbf{Adhesivo Industrial}: Lámina acrílica transferible $3\text{M}\,467\text{MP}$ de alta adherencia.
@@ -132,9 +135,9 @@ La antena FPC está ubicada en la cara superior de la carcasa plástica, garanti
 
 \begin{itemize}[leftmargin=*]
     \item \textbf{Tecnología}: Células fotovoltaicas monocristalinas de alta eficiencia ($18\text{--}20\%$).
-    \item \textbf{Potencia Nominal}: $2.0\,\text{W}$ pico en radiación $1000\,\text{W/m}^2$.
-    \item \textbf{Tensión en Vacío ($V_{oc}$)}: $5.5\,\text{V}$.
-    \item \textbf{Corriente de Cortocircuito ($I_{sc}$)}: $400\,\text{mA}$.
+    \item \textbf{Tensión Nominal}: $6\,\text{V}$ y potencia de al menos $1\,\text{W}$. El MPN del panel está \textbf{POR DECIDIR}: el HTJ-2W-D del BOM no declara su tensión.
+    \item \textbf{Tensión en Vacío ($V_{oc}$)}: por definir según el panel elegido, claramente mayor que $6\,\text{V}$. El CN3791 con su divisor MPPT para $6\,\text{V}$ solo inicia la carga por encima de unos $6.17\,\text{V}$ en VCC, de modo que un panel de $5.5\,\text{V}$ en vacío nunca la iniciaría.
+    \item \textbf{Corriente de Cortocircuito ($I_{sc}$)}: por definir según el panel elegido.
 \end{itemize}
 
 \subsection{Encapsulado y Orientación}
@@ -154,11 +157,11 @@ El panel está integrado en la cara superior expuesta del collar. La superficie 
 \subsection{Tornillería y Torques de Ensamble}
 
 \begin{itemize}[leftmargin=*]
-    \item \textbf{Tornillos de Cierre}: Tornillos autorroscantes M2 con impronta Torx T6.
+    \item \textbf{Tornillos de Cierre}: Tornillos M2x6 de cabeza allen con inserto roscado M2 (referencias del BOM: PEM 50017102 y PEM-SL2-02).
     \item \textbf{Material de Fijación}: Acero inoxidable A2 (AISI 304) pasivado.
     \item \textbf{Torque de Apriete Controlado}: $0.6\text{--}0.8\,\text{N}\cdot\text{m}$ para evitar fisuras en torretas.
 \end{itemize}
 
 \section{Conclusiones}
 
-El diseño mecánico del collar DR-VF-01 satisface los requerimientos de operabilidad en campo abierto ganadero. El uso de la resina PC+GF20\% combinado con la junta tórica EPDM en compresión controlada asegura la estanqueidad IP67. Asimismo, la distribución en niveles de la antena FPC y el panel solar garantiza la transmisión RF sin apantallamiento y la recarga solar continua durante el ciclo de vida del dispositivo.
+El diseño mecánico del collar DR-VF-01 satisface los requerimientos de operabilidad en campo abierto ganadero. El uso de la resina PC+GF20\% combinado con la junta tórica EPDM en compresión controlada asegura la estanqueidad IP67. Asimismo, el diseño prevé tres antenas independientes (LoRa, Wi-Fi/BLE y GNSS) y el panel solar; sus posiciones en la carcasa están \textbf{POR DECIDIR}, y la transmisión RF sin apantallamiento y la recarga solar continua quedan por verificar.

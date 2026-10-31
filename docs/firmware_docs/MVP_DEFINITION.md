@@ -18,7 +18,7 @@ Crear una implementación mínima funcional que demuestre las capacidades críti
 ## Componentes del MVP
 
 ### 1. Sistema de Detección de Movimiento
-**Hardware**: LSM6DSOX IMU
+**Hardware**: IMU **POR DECIDIR** (LSM6DSOX o LSM6DS3TR-C del docente; el ejemplo siguiente supone el LSM6DSOX)
 **Funcionalidad**:
 - Detección de movimiento mediante interrupciones
 - Configuración de threshold ajustable (0.1g - 1.0g)
@@ -79,7 +79,7 @@ bool geofence_is_point_in_polygon_ray_casting(const geopoint_t* point, const geo
 
 **Funcionalidad**:
 - Transmisión de coordenadas cuando se detecta movimiento fuera de geocerca
-- Recepción de comandos de configuración
+- Recepción de comandos de configuración (el módulo DX-LR30-900M22S exige gobernar RXEN y TXEN, GPIO42 y GPIO47, al cambiar entre recibir y transmitir; `hardware/pinout.md`)
 - Envío de mensajes de estado del sistema
 
 **Implementación propuesta (el archivo aún no existe en el repositorio)**:
@@ -97,15 +97,17 @@ int lora_send_geofence_alert(geopoint_t* location) {
 
 ### 4. Gestión de Energía
 **Modos de Operación**:
-- Deep Sleep: < 5μA
+- Deep Sleep: unos 124 μA calculados (`hardware/POWER_BUDGET.md`); objetivo del sistema < 150 μA (RNF-03)
 - Active Mode: Variable según periféricos activos
-- Standby GNSS: 25μA
+- Standby GNSS: 46 μA (standby por software con V_IO a 3.3 V, datasheet del MAX-M10S)
 
 **Estrategia**:
 - ESP32 en Deep Sleep la mayor parte del tiempo
 - IMU en modo low-power monitor
 - GNSS activo solo durante verificaciones
 - LoRa en modo sleep entre transmisiones
+- MAX17048 (conectado a la batería): lectura del nivel de carga para la telemetría y para el guard de batería baja (umbral **POR DECIDIR**)
+- Estado de carga: CHRG del CN3791 en GPIO41; el TP4056 (USB-C) no tiene GPIO de estado asignado (**POR DECIDIR**)
 
 ### 5. Configuración Inicial
 **Método**: Wi-Fi SoftAP + Servidor Web
@@ -155,9 +157,9 @@ K_THREAD_DEFINE(lora_handler, STACK_SIZE, lora_thread,
 | Métrica | Objetivo | Método de Medición |
 |---------|----------|-------------------|
 | Tiempo de respuesta PIP | < 50ms | Osciloscopio |
-| Consumo en Sleep | < 5μA | Multímetro HP 34401A |
+| Consumo en Sleep | < 150 μA (RNF-03; presupuesto: unos 124 μA) | Multímetro HP 34401A |
 | Rango LoRa | > 5km | Pruebas en campo abierto |
-| Autonomía | > 60 días | Cálculo basado en perfil de uso |
+| Autonomía | > 60 días (mínimo del MVP; estimación teórica: unos 190 días con 1200 mAh, `hardware/POWER_BUDGET.md`) | Cálculo basado en perfil de uso |
 | Precisión GNSS | < 3m | Comparación con GPS comercial |
 
 ### Entregables del MVP

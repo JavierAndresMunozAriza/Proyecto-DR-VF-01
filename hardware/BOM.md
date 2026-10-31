@@ -51,7 +51,7 @@ Pendiente de confirmar con el vendedor: para qué sirve DIO2 y si el pin TX va u
 |-------|-------------|-----|------------|-----------|
 | 1 | IMU 6 ejes LSM6DSOX | LSM6DSOXTR | STMicroelectronics | Digi-Key |
 | 1 | Optoacoplador | VO617A-1-E | Vishay | Mouser |
-| 1 | Buzzer piezoeléctrico | PKMCS0909E000-R1 | Murata | Digi-Key |
+| 1 | Buzzer piezoeléctrico | PKMCS0909E4000-R1 (corregido el 2026-10-31: el código anterior PKMCS0909E000-R1 no aparece en distribuidores) | Murata | Digi-Key |
 | 1 | Medidor de batería (fuel gauge), I2C | MAX17048 | Analog Devices (Maxim) | Digi-Key |
 
 **POR DECIDIR (IMU):** el docente tiene físicamente el LSM6DS3TR-C, no el LSM6DSOX. Son de la misma familia de ST pero no idénticos. Zephyr no los lista por nombre (hay drivers `st,lsm6dso` y `st,lsm6dsl`); hay que probar cuál funciona con cada chip. Para el prototipo sirve el del docente si se prueba el wake-up por movimiento.

@@ -43,9 +43,11 @@ Siguiendo los principios de Elecia White:
   - GNSS en standby
   - **Principio de Elecia White**: "Minimize active time" - Reducción de consumo mediante sueño profundo
 - **Eventos de Wake-up**:
-  - Movimiento significativo detectado por IMU
-  - Timer periódico (cada 60 minutos)
-  - Interrupción externa (botón de test)
+  - Movimiento significativo detectado por IMU (IMU_INT1, GPIO4)
+  - Timer periódico (cada 60 minutos; el intervalo difiere entre documentos y es **POR DECIDIR**, ver `hardware/POWER_BUDGET.md`)
+  - Interrupción externa (botón de test, BUTTON, GPIO7)
+  - Interrupción del módulo LoRa (LORA_DIO1, GPIO6)
+  - USB-C conectado y estado de carga: sin línea asignada para el estado del TP4056, **POR DECIDIR** (`hardware/pinout.md`)
 - **Transiciones**:
   - → GEOFENCE_CHECK (por IMU wake-up)
   - → GNSS_UPDATE (por timer)
@@ -95,7 +97,7 @@ Siguiendo los principios de Elecia White:
 
 ### 6. GNSS_UPDATE (Actualización Periódica)
 - **Descripción**: Actualización de posición programada
-- **Frecuencia**: Cada 60 minutos
+- **Frecuencia**: Cada 60 minutos (**POR DECIDIR**: `hardware/POWER_BUDGET.md` supone 4 veces por día)
 - **Acciones**:
   - Obtener posición precisa
   - Enviar telemetría de salud del sistema
@@ -116,6 +118,11 @@ Siguiendo los principios de Elecia White:
   - → INIT (reinicio completo si persiste)
   - → SLEEP (recuperación exitosa)
   - **Safety mechanism**: Contador de intentos para evitar loops infinitos
+
+### Batería y carga (transversal a los estados)
+- **Guard de batería baja:** `Task_PowerMgmt` lee el MAX17048 cada 60 s (`docs/ARCHITECTURE.md`, sección 6.1). El umbral y el comportamiento de cada estado con batería baja son **POR DECIDIR**; el manual de usuario asocia el LED rojo fijo con batería baja.
+- **Carga solar:** estado en CHRG del CN3791 (GPIO41). **Carga USB-C:** TP4056 sin línea de estado asignada (**POR DECIDIR**). El USB-C no alimenta al sistema y no cambia el estado de la FSM por sí mismo.
+- **Programación por USB-C:** USB nativo (GPIO19/20) con BOOT (GPIO0) a GND y la batería conectada; es un modo de arranque, no un estado de la FSM (`hardware/pinout.md`).
 
 ## Diagrama de Transición de Estados
 
@@ -147,7 +154,7 @@ stateDiagram-v2
 - **WCET PIP Algorithm**: < 50ms (ver `docs/firmware_docs/REAL_TIME_RISKS.md`)
 - **GNSS Fix Timeout**: 30 segundos máximo
 - **LoRa Transmission**: < 2 segundos (SF12, 125kHz)
-- **Deep Sleep Current**: < 5μA
+- **Deep Sleep Current**: unos 124 μA calculados en `hardware/POWER_BUDGET.md`; requisito RNF-03: < 150 μA
 
 ### Estrategia de Manejo de Tiempos
 Siguiendo los principios de Elecia White:

@@ -55,7 +55,7 @@ bool pip_optimized(const point_t* p, const polygon_t* poly) {
 ```
 
 #### B. Uso de Memoria PSRAM
-- Precarga del polígono en PSRAM externa (8MB)
+- Precarga del polígono en la PSRAM integrada en el encapsulado del chip (8 MB, octal; módulo N16R8, no es una memoria externa)
 - Acceso dual-core simultáneo para paralelismo
 - Reducción de latencia de acceso a datos (~10ns vs 150ns)
 
@@ -72,7 +72,9 @@ bool pip_optimized(const point_t* p, const polygon_t* poly) {
 2. Subdivisión en cuadrantes para procesamiento paralelo
 3. Cache de resultados parciales en SRAM interna
 
-## 2. Interrupción GPIO Wakeup desde IMU LSM6DSOX
+## 2. Interrupción GPIO Wakeup desde la IMU (LSM6DSOX en el ejemplo)
+
+> **POR DECIDIR (IMU):** el BOM lista el LSM6DSOX y el docente tiene el LSM6DS3TR-C. Los ejemplos y notas de registros de esta sección suponen el LSM6DSOX.
 
 ### Desafío
 Detectar movimiento significativo mientras el sistema está en Deep Sleep requiere configuración precisa del acelerómetro.
@@ -129,9 +131,9 @@ Según Elecia White, "design for failure":
 ### Estrategias de Recuperación Proactiva
 
 #### A. Monitoreo de Salud del Sistema
-- Mediciones continuas de voltaje de batería
+- Mediciones continuas de voltaje de batería (MAX17048)
 - Verificación periódica de sensores
-- Detección de condiciones térmicas extremas
+- Detección de condiciones térmicas extremas (el BOM no incluye un sensor de temperatura; **POR DECIDIR**)
 - **Principio de Elecia White**: "Monitor everything important"
 
 #### B. Reinicios Controlados
@@ -208,7 +210,7 @@ void geofence_thread(void) {
 - Verificar precisión contra implementación de referencia
 
 ### B. Simulación de Condiciones Extremas
-- Temperatura: -20°C a 65°C
+- Temperatura: -20°C a 65°C (el módulo ESP32-S3-WROOM-1U-N16R8 admite -40 a 65 °C de ambiente: en 65 °C no queda margen; con ECC de PSRAM llega a 85 °C y se pierde 1/16 de la PSRAM, datasheet del módulo)
 - Vibración: Simulación de movimiento animal
 - Interferencia: Señales LoRa concurrentes
 
@@ -216,7 +218,7 @@ void geofence_thread(void) {
 | Métrica | Objetivo | Resultado | Estado |
 |---------|----------|------|--------|
 | Tiempo PIP | < 50ms | No medido | Pendiente |
-| Consumo Sleep | < 5μA | No medido | Pendiente |
+| Consumo Sleep | < 150 μA (RNF-03; presupuesto: unos 124 μA) | No medido | Pendiente |
 | Tiempo Wakeup | < 300ms | No medido (estimación de diseño: ~211ms, ver «Timing de Wakeup») | Pendiente |
 | Precisión GNSS | < 3m | No medido | Pendiente |
 
