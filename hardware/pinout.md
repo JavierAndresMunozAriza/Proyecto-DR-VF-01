@@ -24,12 +24,12 @@
 | 1 | 39 | OPTO_CTRL | VO617A (entrada) | RTC. Resistencia serie y pull-down 100 kΩ para que arranque apagado |
 | 2 | 38 | BUZZER_PWM | Buzzer | RTC. PWM, vía transistor si el buzzer lo requiere |
 | 3 | 15 | (reservado) | — | Strapping JTAG. No conectar |
-| 4 | 4 | IMU_INT1 | LSM6DSOX INT1 | **RTC, despierta de deep sleep** |
+| 4 | 4 | IMU_INT1 | LSM6DS3TR-C INT1 | **RTC, despierta de deep sleep** |
 | 5 | 5 | LORA_RESET | SX1262 NRESET | RTC |
 | 6 | 6 | LORA_DIO1 | SX1262 DIO1 | **RTC, interrupción / despertar** |
 | 7 | 7 | BUTTON | Botón de usuario | **RTC, despierta**. Pull-up 10 kΩ + RC antirrebote |
-| 8 | 12 | I2C_SDA | LSM6DSOX, MAX17048 | Pull-up 4.7 kΩ |
-| 9 | 17 | I2C_SCL | LSM6DSOX, MAX17048 | Pull-up 4.7 kΩ |
+| 8 | 12 | I2C_SDA | LSM6DS3TR-C, MAX17048 | Pull-up 4.7 kΩ |
+| 9 | 17 | I2C_SCL | LSM6DS3TR-C, MAX17048 | Pull-up 4.7 kΩ |
 | 10 | 18 | LORA_NSS | SX1262 NSS | FSPI CS0. Alto al inicio |
 | 11 | 19 | LORA_MOSI | SX1262 MOSI | FSPI D |
 | 12 | 20 | LORA_SCK | SX1262 SCK | FSPI CLK |
@@ -72,11 +72,11 @@ Los números de pin físico de los CI van solo donde se verificaron en la hoja d
 | VCC | 8 | 3V3, 1.76 a 3.6 V |
 | RESET_N | 9 | sin conectar o a un GPIO libre (tiene pull-up interno de 10 kΩ) |
 
-### IMU LSM6DSOX
+### IMU LSM6DS3TR-C
 
 SDA y SCL a GPIO8 y GPIO9. INT1 a GPIO4. Para I2C: CS a VDDIO, SDO/SA0 define la dirección (0x6A o 0x6B). Salida INT configurable como push-pull u open-drain: si se deja push-pull no se necesita pull-up externo en GPIO4.
 
-Las asignaciones de SDA, SCL e INT1 valen para el LSM6DSOX y para el LSM6DS3TR-C del docente una vez verificadas en el datasheet de cada uno; la elección de IMU es **POR DECIDIR** (`BOM.md`).
+Pines según la Tabla 2 del datasheet del LSM6DS3TR-C: INT1 en el pin 4, SDA en el 14, SCL en el 13, CS (pin 12) a VDDIO para elegir I2C y SDO/SA0 (pin 1) para la dirección. SDx y SCx (pines 2 y 3) van a VDDIO o a GND, y los pines 10 y 11 quedan sin conectar. Los pines 1 a 9 y 12 a 14 coinciden con los del LSM6DSOX.
 
 ### Módulo LoRa DX-LR30-900M22S (SX1262, SPI; pines tomados del folleto del vendedor, `hardware/datasheets/lr30-900m22s_vendor_brochure.pdf`)
 
@@ -111,13 +111,13 @@ GPIO1 → resistencia serie → LED de entrada. Calcular `R = (3.3 V − V_F) / 
 
 ### Medidor de batería MAX17048 (datasheet verificado)
 
-SDA y SCL en el mismo bus I2C que el IMU (GPIO8 y GPIO9). Dirección de 7 bits 0x36 (0110110), sin conflicto con el LSM6DSOX (0x6A o 0x6B). VDD a la batería (2.5 a 4.5 V), no a 3V3. ALRT (drenador abierto): sin GPIO asignado; **POR DECIDIR** si se usa.
+SDA y SCL en el mismo bus I2C que el IMU (GPIO8 y GPIO9). Dirección de 7 bits 0x36 (0110110), sin conflicto con el LSM6DS3TR-C (0x6A o 0x6B). VDD a la batería (2.5 a 4.5 V), no a 3V3. ALRT (drenador abierto): sin GPIO asignado; **POR DECIDIR** si se usa.
 
 ### Cargador USB-C TP4056 (pines verificados)
 
 | TP4056 | Pin | Conexión |
 |--------|-----|----------|
-| TEMP | 1 | NTC del paquete de batería; a GND si no se usa |
+| TEMP | 1 | A GND (decidido el 2026-11-03: sin corte por frío) |
 | PROG | 2 | RPROG de 2.4 kΩ a GND (500 mA) |
 | GND | 3 | GND |
 | VCC | 4 | VBUS del USB-C, después de la protección ESD (4.0 a 8.0 V) |

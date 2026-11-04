@@ -125,7 +125,7 @@ Este documento presenta el análisis térmico detallado de todos los componentes
 - **Vías térmicas**: Conectando planos internos para transferencia
 - **Separación de componentes**: Entre alta y baja temperatura
 - **Piezas sin análisis térmico (por definir)**: MOSFET externos y resistencia de sensado de la protección de batería, y la etapa de potencia del CN3791 (inductor, MOSFET de paso, resistencia de sensado, diodos D1 y D2)
-- **Materiales PCB**: FR4 estándar (baja conductividad térmica propia; la disipación depende de los planos de cobre y las vías)
+- **Materiales PCB**: FR4 de 0.8 mm (decidido el 2026-11-03); baja conductividad térmica propia, la disipación depende de los planos de cobre y las vías, y una placa más delgada reparte peor el calor del pad térmico del TP4056
 
 ## Verificación en Condiciones Extremas
 
@@ -153,7 +153,7 @@ Este documento presenta el análisis térmico detallado de todos los componentes
 - **Componentes SMD**: Mejor transferencia térmica que through-hole
 
 ### 3. Protección Térmica
-- **Monitoreo de temperatura**: sensor por definir (el CN3791 no tiene pin de temperatura; el TP4056 tiene pin TEMP para el NTC de la batería; el TMP102 del docente es una opción)
+- **Monitoreo de temperatura**: sin corte de carga por frío (decidido el 2026-11-03: uso solo en zonas sin heladas). El pin TEMP del TP4056 va a GND y el CN3791 no tiene pin de temperatura.
 - **Reducción de carga dinámica**: En condiciones extremas
 - **Shutdown térmico**: A 100°C para protección de componentes
 

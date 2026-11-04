@@ -53,12 +53,15 @@ El sistema opera en diferentes estados de potencia según el modelo de máquinas
 - Aceleración de TTFF mediante datos asistidos
 - Sampling adaptativo basado en movimiento
 
-### 3. Sensor de Movimiento (LSM6DSOX)
-**Detección Inteligente de Eventos** (datasheet LSM6DSOX DS12814 Rev 4, tabla de características eléctricas):
+### 3. Sensor de Movimiento (LSM6DS3TR-C)
+**Detección Inteligente de Eventos** (datasheet LSM6DS3TR-C DocID030071 Rev 3, tabla 4 de características eléctricas, p.24; los valores típicos no están garantizados):
 - **Voltaje de operación**: 3.3V nominal (VDD de 1.71 a 3.6V)
 - **Corriente en Power-down**: 3μA
-- **Corriente en Low-Power Mode (acelerómetro)**: 4.5μA a 1.6Hz y 9.5μA a 50Hz
-- **Corriente en alto rendimiento (acelerómetro y giroscopio)**: 0.55mA
+- **Corriente del acelerómetro en baja potencia**: 9μA típicos a 12.5Hz
+- **Corriente del acelerómetro en alto rendimiento**: 150μA típicos
+- **Corriente de acelerómetro y giroscopio en alto rendimiento**: 0.90mA típicos
+- **Valor presupuestado en sleep: 9.5μA**, por encima de los 9μA típicos porque esos valores no están garantizados.
+- **Valor presupuestado en actividad: 0.55mA**, cota para el acelerómetro solo (150μA típicos). Si el firmware activa también el giroscopio (0.90mA), hay que recalcular este presupuesto.
 
 **Wake-up Strategy:**
 - Threshold configurable para detección de movimiento significativo
@@ -119,7 +122,7 @@ El sistema opera en diferentes estados de potencia según el modelo de máquinas
 |------------|--------|-----------|------------|--------------|
 | ESP32-S3 | Deep Sleep | 8μA | 98.5% | 7.88μA |
 | MAX-M10S | Standby por software | 46.12μA | 98.5% | 45.43μA |
-| LSM6DSOX | Low-Power | 9.5μA | 98.5% | 9.36μA |
+| LSM6DS3TR-C | Low-Power | 9.5μA | 98.5% | 9.36μA |
 | SX1262 | Sleep | 0.6μA | 98.5% | 0.59μA |
 | CN3791 | Sleep (sin entrada) | 30μA | 100% | 30μA |
 | TLV75733P | Iq | 25μA | 100% | 25μA |
@@ -136,7 +139,7 @@ El total cumple RNF-03 (< 150μA) con 26μA de margen. El margen es corto: falta
 |------------|--------|-----------|----------|--------------|
 | ESP32-S3 | Active | 80mA | 2s | 160mAs |
 | MAX-M10S | Acquisition/Tracking | 13.8mA | 20s | 276mAs |
-| LSM6DSOX | Alto rendimiento | 550μA | 22s | 12.1mAs |
+| LSM6DS3TR-C | Alto rendimiento (solo acelerómetro) | 550μA | 22s | 12.1mAs |
 | SX1262 | Sleep | 0.6μA | 22s | 13.2μAs |
 | CN3791 | Sleep (sin entrada) | 30μA | 22s | 0.66mAs |
 | TLV75733P | Iq | 25μA | 22s | 0.55mAs |
@@ -151,7 +154,7 @@ El total cumple RNF-03 (< 150μA) con 26μA de margen. El margen es corto: falta
 |------------|--------|-----------|----------|--------------|
 | ESP32-S3 | Active | 80mA | 1s | 80mAs |
 | MAX-M10S | Standby | 46.12μA | 1s | 46.12μAs |
-| LSM6DSOX | Low-Power | 9.5μA | 1s | 9.5μAs |
+| LSM6DS3TR-C | Low-Power | 9.5μA | 1s | 9.5μAs |
 | SX1262 | TX | 120mA | 0.5s | 60mAs |
 | CN3791 | Sleep (sin entrada) | 30μA | 1s | 30μAs |
 | TLV75733P | Iq | 25μA | 1s | 25μAs |
@@ -166,7 +169,7 @@ El total cumple RNF-03 (< 150μA) con 26μA de margen. El margen es corto: falta
 |------------|--------|-----------|----------|--------------|
 | ESP32-S3 | Active | 80mA | 5s | 400mAs |
 | MAX-M10S | Standby | 46.12μA | 5s | 230.6μAs |
-| LSM6DSOX | Low-Power | 9.5μA | 5s | 47.5μAs |
+| LSM6DS3TR-C | Low-Power | 9.5μA | 5s | 47.5μAs |
 | SX1262 | Sleep | 0.6μA | 5s | 3μAs |
 | VO617A | On | 50mA | 5s | 250mAs |
 | CN3791 | Sleep (sin entrada) | 30μA | 5s | 150μAs |

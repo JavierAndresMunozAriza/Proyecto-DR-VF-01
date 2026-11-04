@@ -57,6 +57,25 @@ Esta carpeta contiene **solo** hojas de datos (PDF) y este índice. Los PDF no s
 |-----------|-----|--------|
 | TI TPS7A05 (TPS7A0533) | https://www.ti.com/lit/ds/symlink/tps7a05.pdf | Entrega 200 mA como máximo y las cargas suman 224 a 394 mA. Sustituido por el TLV75733P en el BOM v1.4 |
 | "Manual de usuario" del vendedor del USBLC6-2SC6 | (guardado a mano, borrado el 2026-10-31) | Texto genérico de advertencias sin ningún parámetro: no es una hoja de datos |
+| TI TMP102 (SBOS397I) | https://www.ti.com/lit/ds/symlink/tmp102.pdf | Sin uso desde el 2026-11-03 (no hay corte de carga por frío). Verificado: 1.4 a 3.6 V, 3.2 µA a 1 conversión/s, ±2 °C máx. de -25 a +85 °C |
+| Schottky SS34-TD y PSBD1DF40V1H, TVS SMF5.0CA, ferrita HCB1608KF-600T20 | copias de LCSC (ver `COMPRAS.md` 1.2) | No aprobados: fuga inversa de hasta 0.5 mA a 25 °C (SS34-TD), sin fuga garantizada a 4.2 V (PSBD1DF40V1H), 400 µA máx. a 5 V (SMF5.0CA) y la ferrita no figura en el catálogo de TAI-TECH |
+| Kingbright L-154A4SURK/G5T y Lite-On LTST-C193KGKT | - | Reemplazados por el LED RGB del docente (RS-3535MWAM) en el BOM v1.7; el primero no tiene datasheet con ese código |
+| Amphenol GSB1C41110SSHR (USB-C) | - | Reemplazado por el USB-C del docente (Shou Han TYPE-C-3.1-16PIN) en el BOM v1.6 |
+
+## Consultadas el 2026-11-03 para las piezas del docente (sin PDF local)
+
+Hojas leídas para decidir las piezas de `COMPRAS.md` sección 1. Casi todas son copias del fabricante alojadas en LCSC, no el PDF de su sitio. No se guardan en la carpeta (regla 2).
+
+| Documento | URL | Qué se verificó |
+|-----------|-----|-----------------|
+| ST USBLC6-2SC6, DocID 11265 Rev 5 | https://datasheet.lcsc.com/datasheet/pdf/0d3a2ab954b34651a0695e7ccf534db0.pdf?productCode=C7519 | Pinout, VRM 5.25 V, fuga 10 nA típ., 2.5 pF por línea, USB 2.0, ESD nivel 4 |
+| Shou Han TYPE-C-3.1-16PIN, hoja de aprobación | https://datasheet.lcsc.com/datasheet/pdf/814f88adcfee2586090bc34a87baf384.pdf?productCode=C7507405 | Pines, 5 V 3 A, -25 a +85 °C, layout recomendado para PCB de 0.80 mm (p.1) |
+| NationStar RS-3535MWAM, spec B2 | https://datasheet.lcsc.com/datasheet/pdf/d9082a4b82c7f5ea37c6a6c96c161c93.pdf?productCode=C842778 | 6 pines independientes, VF por color, IF máx., -30 a +85 °C |
+| ALLPOWER AP2301 V1.1 (solo imagen) | https://datasheet.lcsc.com/datasheet/pdf/dd1608bd7b26b77fc73459527d68887c.pdf?productCode=C385296 | Vds -20 V, Vgs ±12 V, Vth, Rds(on) |
+| SHOU HAN CY54 | https://datasheet.lcsc.com/datasheet/pdf/99d253dde1146f9c226f443c84c5691c.pdf?productCode=C2879694 | Inductancia, DCR y corriente de los CY54 (p.3) |
+| Samsung CL10A105KB8NNNC y CL21A106KAYNNNE; CCTC TCC0603X5R106K100CT | https://product.samsungsem.com/mlcc/CL21A106KAYNNN.do ; https://datasheet.lcsc.com/datasheet/pdf/71a9f8eccc4da164324d4a716182c5e3.pdf?productCode=C380314 | X5R, tensión nominal y rango de -55 a +85 °C |
+| Walsin 0603F104Z500CT | https://datasheet.lcsc.com/datasheet/pdf/c647af9500c0421cb071e40d1cbbf836.pdf?productCode=C83060 | Y5V: -40 % a 45 °C y -77 % a 85 °C (p.1). No se usa |
+| Resistencia de PROG del TP4056 | `tp4056_datasheet.pdf` (local) | I = 1200 V / RPROG (p.2); TEMP a GND desactiva el corte por temperatura (p.2). El PDF no trae dibujo de empaque ESOP-8: falta bajarlo del fabricante |
 
 ## Pendientes de descargar a mano
 
@@ -65,17 +84,14 @@ Se necesitan para cerrar los puntos POR DECIDIR de `BOM.md`. Las descargas autom
 | Documento | Para qué | Fabricante | Estado |
 |-----------|----------|------------|--------|
 | DX-LR30-900M22S (variante SMD "LR30", no la "SP") | Pines, alimentación y potencia del módulo LoRa | DX-SMART | No se encontró un datasheet oficial. Solo hay el folleto de la sección 2 y una página de manual en https://manuals.plus/ae/1005009103292012 (responde 403 a la descarga automática). Pedirlo al vendedor |
-| USBLC6-2 (USBLC6-2SC6) | Pines y capacitancia de la protección ESD de D+/D- y VBUS | STMicroelectronics | st.com no respondió desde esta red. Probar https://www.st.com/resource/en/datasheet/usblc6-2.pdf desde el navegador. Las copias de LCSC devuelven HTML |
+| USBLC6-2 (USBLC6-2SC6), revisión vigente | Confirmar que la Rev 7 no cambia el pinout ni la capacitancia que se usaron de la Rev 5 | STMicroelectronics | st.com no respondió desde esta red. Bajar https://www.st.com/resource/en/datasheet/usblc6-2.pdf desde el navegador. La decisión del 2026-11-03 usó la Rev 5 (copia de LCSC, sección "Consultadas")
 | BQ2975 | MOSFET externos y resistencia de sensado de la protección de batería | Texas Instruments | **El código `BQ2975DRBR` de `BOM.md` no existe en las fuentes consultadas.** `ti.com/lit/ds/symlink/bq2975.pdf` devuelve 404 y dos búsquedas no lo encontraron. El documento de la familia BQ2970 a BQ2973 (SLUSBU9I) no lo menciona. Hay que identificar la pieza correcta (protector de 1 celda con MOSFET externos) antes de descargar |
 | PKMCS0909E4000-R1 (zumbador) | Tensión, frecuencia y consumo | Murata | El BOM decía `PKMCS0909E000-R1`, que no aparece en distribuidores; el código que sí aparece en Digi-Key y LCSC es `PKMCS0909E4000-R1` (9 x 9 mm, 1.5 V nominal, 4 kHz). Descargar su PDF desde murata.com en el navegador. Un listado de Digi-Key anota una fecha de última compra (31-mar-2027): comprobar disponibilidad |
-| L-154A4SURK/G5T (LED) | Corriente y tensión directa | Kingbright | No se encontró ningún datasheet con ese código. Solo aparece L-154A4SURKQBDZGC, un LED RGB distinto |
-| LTST-C193KGKT (LED) | Corriente y tensión directa | Lite-On | Los distribuidores lo listan como LTST-C193KGKT-5A; confirmar el sufijo. No se alcanzó un PDF directo de Lite-On |
 | PTS645SL50SMTR92 (pulsador) | Fuerza, vida útil y huella | C&K (ahora Littelfuse) | https://www.ckswitches.com/media/1471/pts645.pdf responde 403 a la descarga automática |
 | 2015301200 (antena) | Ganancia, adaptación y huella | Würth Elektronik | https://www.we-online.com/components/products/datasheet/2015301200.pdf responde 403 a la descarga automática |
 | 6521011000 (conector SMA) | Huella y datos del conector | Würth Elektronik | https://www.we-online.com/components/products/datasheet/6521011000.pdf responde 403 a la descarga automática |
 | U.FL-R-SMT-1 (conector U.FL) | Huella y altura acoplada | Hirose | Solo se alcanzó un escaneo sin texto extraíble (media.digikey.com, EDC3-302540-10.tif.pdf) y se descartó. Bajar el PDF desde hirose.com en el navegador |
 | B4B-SH-SM4-TB (conector JST) | Huella del conector de 4 pines | JST | El código no aparece en el PDF de la serie SH ni en los listados consultados. Existe B4B-PH-SM4-TB(LF)(SN) de la serie PH (2.0 mm, en `jst_b2b-ph-k-s.pdf`, p. 4). Confirmar serie y código antes de comprar |
-| GSB1C41110SSHR (USB-C) | Huella, corriente y pines del receptáculo | Amphenol | https://cdn.amphenol-cs.com/media/wysiwyg/files/drawing/gsb1c41x10sshr-ax1.pdf (URL de un listado de terceros, sin verificar) responde 403 a la descarga automática |
 
 ## Cómo usarlas con el asistente
 

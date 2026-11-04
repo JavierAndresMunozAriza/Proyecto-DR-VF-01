@@ -8,7 +8,7 @@ Este documento detalla la ubicación, diseño y consideraciones técnicas de las
 |--------|-------|-----|-----------------|
 | LoRa | 915 MHz | Enlace LoRa del módulo DX-LR30-900M22S | Flexible de 8 cm con conector u.FL, sin MPN (listado "IPEX 1.13 868/915 MHz 2 dBi 8 cm") |
 | Wi-Fi/BLE | 2.4 GHz | Wi-Fi y BLE del módulo ESP32-S3-WROOM-1U-N16R8 | FPC Würth Elektronik 2015301200, vía u.FL |
-| GNSS | 1575.42 MHz (L1) | Receptor MAX-M10S (solo L1) | Parche cerámico pasivo de 18x18x4 mm, MPN POR DECIDIR |
+| GNSS | 1575.42 MHz (L1) | Receptor MAX-M10S (solo L1) | Parche cerámico pasivo de 18x18x4 mm con cable y conector u.FL, MPN POR DECIDIR |
 
 La antena FPC de 2.4 GHz solo sirve al Wi-Fi y al BLE del módulo; no es la antena de LoRa ni la de GNSS. El BOM también lista, solo para pruebas de banco, un conector SMA hembra (Würth 6521011000) y un kit de antena corta SMA de 3 dBi con pigtail u.FL a SMA de 15 cm.
 
@@ -63,8 +63,9 @@ Las posiciones de las tres antenas están **POR DECIDIR**. Las distancias de las
 - **Montaje**: la antena debe estar conectada antes de energizar el módulo LoRa (material del vendedor)
 - **Validación**: probar el alcance real; el alcance no está medido
 
-### 5. Antena GNSS (parche pasivo 18x18x4 mm)
+### 5. Antena GNSS (parche pasivo 18x18x4 mm con cable u.FL)
 - **Elección**: el MAX-M10S ya integra LNA y filtro SAW, por eso el BOM recomienda un parche pasivo; una antena activa solo se justifica con cable largo (BOM, sección 1.2)
+- **Montaje (decidido el 2026-11-04)**: el parche va con cable y conector u.FL; la posición en la carcasa sigue POR DECIDIR
 - **Plano de masa y zona libre**: POR DECIDIR (definir en el layout; sus dimensiones no tienen fuente hasta elegir el MPN)
 - **Posición y orientación en la carcasa**: POR DECIDIR
 
