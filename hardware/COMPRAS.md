@@ -10,6 +10,47 @@
 
 **Regla de verificación:** una URL o una captura prueba qué dice el vendedor, no que la pieza sea original ni que cumpla lo que anuncia. Las descripciones de AliExpress marcadas "Resumen de IA" las genera la plataforma y no se usan como especificación. Lo que no se pueda comprobar con una hoja de datos queda como "no verificado".
 
+## Lista final de compra (lo que no tiene el docente)
+
+Es el resumen de lo que toca comprar. Los detalles de cada pieza están en las fichas A (AliExpress, sección 2) y O (otras fuentes, sección 3). Las URL se llenan a medida que las guardas. Los componentes mecánicos (carcasa, correa, tornillos, juntas) están en `BOM.md` sección 2.
+
+### PCB final
+
+| Código | Pieza | Cant. | Dónde | URL | Estado |
+|--------|-------|-------|-------|-----|--------|
+| O2 | Módulo ESP32-S3-WROOM-1U-N16R8 | 1 | Digi-Key / Mouser | pendiente | pendiente |
+| O11 | Módulo GNSS MAX-M10S-00B | 1 | Avnet / Digi-Key | pendiente | aceptado, falta fuente |
+| O3 | Parche GNSS pasivo 18x18x4 mm con cable y u.FL | 1 | Digi-Key / Mouser, o AliExpress | pendiente | pendiente (falta el MPN) |
+| A1 | Módulo LoRa DX-LR30-900M22S, variante LR30 900M22S | 2 (collar y receptor; la oferta limita 1 por comprador) | AliExpress | pendiente | aceptado |
+| A2 | Antena LoRa de 8 cm con u.FL | 1 (el lote es de 10) | AliExpress | https://es.aliexpress.com/item/1005010805433737.html | aceptado |
+| O9 | Antena FPC 2.4 GHz Würth 2015301200 | 1 | Mouser | pendiente | pendiente |
+| O4 | Conector u.FL SMD | 2 (LoRa y GNSS) | Digi-Key | pendiente | pendiente |
+| A5 | MAX17048G+T10 | 1 (el lote es de 2) | AliExpress | pendiente | aceptado |
+| O1 | Regulador TLV75733PDBVR | 1 | Digi-Key / Mouser | pendiente | aceptado |
+| O23 | CN3791 (chip, SSOP de 10 pines) | 1 | AliExpress | pendiente | pendiente |
+| O8 | Cristal 32.768 kHz ECS-.327-12.5 | 1 | Digi-Key | pendiente | pendiente (MPN completo) |
+| O13 | Optoacoplador VO617A-1-E | 1 | Mouser | pendiente | pendiente |
+| O14 | Zumbador PKMCS0909E4000-R1 | 1 | Digi-Key | pendiente | pendiente (aviso de última compra) |
+| O16 | Protección de batería 1S con MOSFET externos | 1 | Digi-Key | pendiente | por identificar la pieza |
+| O18 | Pulsador 6x6 mm PTS645SL50SMTR92 LFS | 1 | Digi-Key | pendiente | pendiente |
+| O17 | Conector de 4 pines | por definir | Mouser | pendiente | falta asignarle un uso, o quitarlo del BOM |
+| O6 | Batería 1S Li-ion o LiPo | 1 | tienda local | no aplica | pendiente |
+| O7 | Panel solar de 6 V, 1 W o más | 1 | por definir | no aplica | pendiente |
+| O19 | Kit de resistencias 0603 1 % (E24) | 1 kit | AliExpress | pendiente | aceptado |
+| O21 | Condensadores 0603 X7R y C0G | 1 lote | AliExpress | pendiente | aceptado |
+| O22 | Resistencia de sensado del CN3791 | 1 | Mouser / Digi-Key, o AliExpress | pendiente | pendiente (falta fijar la corriente de carga) |
+| O20 | Diodo Schottky de baja fuga (D2 del CN3791; D1 es opcional) | 1 a 2 | Digi-Key | pendiente | pendiente (falta el MPN) |
+
+### Prototipo y banco de pruebas
+
+| Código | Pieza | Cant. | Dónde | URL | Estado |
+|--------|-------|-------|-------|-----|--------|
+| A7 | Placa cargadora CN3791 de 6 V | 1 | AliExpress | pendiente | aceptado |
+| A8 | Placa MAX-M10S con antena u.FL | 1 | AliExpress | pendiente | aceptado (comprobar la variante que trae antena) |
+| A3 | Kit de antena SMA de 3 dBi con pigtail u.FL a SMA | 1 (trae 2 antenas) | AliExpress | pendiente | aceptado |
+| A4 | Antena de 915 MHz 5 dBi con SMA y cable de 10 cm | 1 | AliExpress | pendiente | propuesto: falta decidir si se compra |
+| O10 | Conector SMA hembra Würth 6521011000 | 1 | Mouser | pendiente | pendiente |
+
 ## 1. Del docente (sin compra)
 
 **Fuente (confirmada por el autor el 2026-11-03):** el docente tiene físicamente todo lo que aparece en su biblioteca de Altium (`shared_lib.IntLib`, 61 componentes con MPN y código LCSC) y lo que publicó en el classroom (mensaje del 16 de octubre). Falta confirmar cantidades.
@@ -35,15 +76,7 @@
 | D9 | Resistencias 0603 | 330 Ω, 1 kΩ, 4.7 kΩ y 10 kΩ | Biblioteca | Series de LED y optoacoplador, pull-ups de I2C, BOOT y CHRG | Aprobado | Son los valores que piden `pinout.md` y `ARCHITECTURE.md` |
 | D10 | Condensadores 0603 y 0805 | 1 µF 50 V X5R 0603 (CL10A105KB8NNNC); 10 µF 25 V X5R 0805 (CL21A106KAYNNNE); 10 µF 10 V X5R 0603 (TCC0603X5R106K100CT); 22 µF 16 V 0805 (HGC0805R5226M160NSLJ, Chinocera); 33 pF NP0 50 V 0603 (CC0603JRNPO9BN330, YAGEO) | Biblioteca | RC de EN (1 µF); entrada de alimentación y desacople de 3.3 V (10 µF); 22 µF en el pin 3V3 del módulo (figura 9-1 del datasheet del WROOM-1); 2 x 33 pF en serie por pata en las cargas del cristal de 32.768 kHz | Aprobado con condición | X5R de -55 a +85 °C (Samsung y CCTC); NP0 de ±30 ppm/°C y -55 a +125 °C (YAGEO). El de 10 V solo va en el riel de 3.3 V. **Condición:** el 22 µF de Chinocera es X5R solo por su código (R5); falta leer su hoja antes de darlo por aprobado |
 
-### 1.2 Evaluadas y descartadas (se compra otra pieza)
-
-| Código | Pieza del docente | Motivo | Qué se compra |
-|--------|-------------------|--------|---------------|
-| D11 | Condensador de 100 nF Walsin 0603F104Z500CT | Es Y5V: pierde 40 % de capacidad a 45 °C y 77 % a 85 °C (hoja de Walsin, p.1). No sirve para el desacople del ESP32-S3 | 100 nF X7R (O21) |
-| D12 | Schottky SS34-TD (3 A) | Fuga inversa de hasta 0.5 mA a 25 °C y 40 V; el presupuesto de sleep entero es de 124 µA | Schottky de baja fuga (O20) |
-| D13 | Schottky PSBD1DF40V1H (1 A) | La tabla solo da fuga a 40 V. La curva típica marca unos 1.5 µA a 25 °C y unos 80 µA a 75 °C a una décima de la tensión nominal, y el margen de sleep es de 26 µA. Sin un valor garantizado a 4.2 V no se acepta | Schottky de baja fuga (O20) |
-
-### 1.3 Plan B: valores que se arman con piezas del docente
+### 1.2 Plan B: valores que se arman con piezas del docente
 
 Si el pedido de kits de AliExpress (O19 y O21) no llega, estos valores se arman con series y paralelos. Las resistencias del docente son de 5 % en 0R, 100R, 330R, 1k, 3k3 y 10k (descripción de la biblioteca). Las demás se suponen de 1 % por el sufijo F de su código de fabricante, que no se verificó en un datasheet.
 
@@ -61,7 +94,7 @@ Si el pedido de kits de AliExpress (O19 y O21) no llega, estos valores se arman 
 Armar todo así suma unas 25 piezas por soldar. **No se puede armar con piezas del docente:** la resistencia de sensado del CN3791 (la menor del docente es de 84.5 Ω y daría 1.4 mA), el 100 nF X7R y el Schottky de baja fuga. Esas tres se compran en cualquier caso (O20, O21 y O22).
 
 
-### 1.4 Lo que el docente no tiene (símbolo y huella por crear o descargar en Altium)
+### 1.3 Lo que el docente no tiene (símbolo y huella por crear o descargar en Altium)
 
 ESP32-S3-WROOM-1U-N16R8 (la biblioteca solo trae el ESP32-C3-WROOM-02-N4), MAX-M10S, MAX17048, módulo LoRa, CN3791, VO617A, zumbador, cristal de 32.768 kHz, conector u.FL, JST SH, TLV75733P y la huella ESOP-8 del TP4056. Las piezas se resuelven en las secciones 2 y 3.
 
@@ -78,10 +111,6 @@ Resumen de lo que se compra (detalle en las fichas):
 | A5 | MAX17048G+T10 (2 uds) | $6.729 | aceptado |
 | A7 | Placa cargadora CN3791 6 V | $3.526 | aceptado |
 | A8 | Placa MAX-M10S con antena u.FL | $21.389 | aceptado |
-| R1 | Antena GNSS activa L1+L5 A-SKY | $25.404 | rechazado |
-| R2 | Antena corta GIZONT "10 dBi" | $38.690 | rechazado |
-| R3 | Antena GNSS activa 18x18 mm | $9.432 | rechazado |
-| R4 | Reguladores TPS7A05xx/TPS7A20xx (5 uds) | $6.418 | rechazado |
 
 ### A1. Módulo LoRa SX1262, LR30-900M22S (aceptado)
 - **Título del listado:** "SX1262 LoRa módulo desarrollador SET DX-LR30 430 ~ 470MHz 868 ~ 915Mhz 22dBm 8km rango 5V UART GPIO ISM banda LoRa módulo RF".
@@ -153,22 +182,6 @@ Resumen de lo que se compra (detalle en las fichas):
 - **Al recibir:** leer `UBX-MON-VER` en u-center y comparar con el datasheet del MAX-M10S.
 - **URL:** (pendiente)
 
-### R1. Antena GNSS activa L1+L5 A-SKY (rechazada)
-- **Título:** "Antena Activa de Cerámica GNSS GPS de Doble Frecuencia L1 y L5, de Alta Precisión, Ultrapequeña, para UAV e IoT". Vendedor: Tienda oficial GNSS A-S... 4.5★, 8 valoraciones, 161 vendidos. $25.403,85 ($19.298,37 por unidad desde 10). Variante AK521.
-- **Motivo:** el MAX-M10S solo recibe L1 (datasheet). La antena es activa (20 dB de LNA, 15 a 25 mA), ocupa 25 mm y el módulo ya trae LNA y filtro SAW.
-
-### R2. Antena corta GIZONT "10 dBi" (rechazada)
-- **Título:** "Antena GIZONT LoRa 868MHz 863-870MHz 906MHz 915MHz, Antena Corta con Conector U.FL a SMA para Placa Lora ESP32Lora32u4II". Vendedor: High Quality Antenna St... 3.7★, 3 valoraciones, 24 vendidos. $38.690. Variante GT-588 915MHz.
-- **Motivo:** 10 dBi no es creíble en una antena de 5 cm, y tiene pocas reseñas.
-
-### R3. Antena GNSS activa de 18x18 mm (rechazada)
-- **Título:** "Antena GPS activa 1575,42 MHz 18x18mm antena GNSS de cerámica de alta ganancia para rastreador de mascotas DIY posicionamiento preciso GPS activo". Vendedor: Tienda oficial BDLXGNSS. 5.0★, 20 valoraciones, 244 vendidos. $9.432 (tachado $16.916,36).
-- **Motivo:** sin datasheet ni número de parte. El módulo ya trae LNA, así que se prefiere un parche pasivo.
-
-### R4. Reguladores TPS7A05xx/TPS7A20xx de Digalai (rechazado)
-- **Título:** "Original TPS7A05285PDBVR TPS7A05xx/20xxPDBVR TPS7A2015PDBVR regulador LDO de ruido ultrabajo 1,2-6V 0.5A circuito integrado SOT-23-". Vendedor: Digalai Store, 4.9★, más de 2.000 vendidos. $6.418 por 5 uds (tachado $12.887,38). Variantes: TPS7A2055, TPS7A2032, TPS7A0533, TPS7A0530, TPS7A05285 y TPS7A2015; la preseleccionada es TPS7A2055PDBVR, no la TPS7A0533. URL: no registrada.
-- **Motivo:** el TPS7A05 entrega 200 mA como máximo (datasheet de TI, https://www.ti.com/lit/ds/symlink/tps7a05.pdf) y las cargas del repo suman 224 a 394 mA; el BOM v1.4 ya lo sustituyó por el TLV75733PDBVR de 1 A (O1). El "0.5 A" del título y del resumen de IA de la página no coincide con el datasheet del TPS7A05. Además es un "Original" sin trazabilidad, y para un regulador de potencia conviene Digi-Key o Mouser.
-
 ## 3. Otras fuentes (Digi-Key, Mouser, tiendas locales)
 
 Para cada pieza: qué buscar exactamente y qué comprobar.
@@ -181,7 +194,7 @@ Para cada pieza: qué buscar exactamente y qué comprobar.
 | O4 | Conector u.FL SMD (2 en la PCB: LoRa y GNSS) | p. ej. Hirose U.FL-R-SMT-1 | Digi-Key | Huella y 50 ohm | pendiente |
 | O6 | Batería 1S Li-ion/LiPo | 18650 protegida de marca, o LiPo 603450 de unos 1200 mAh con protección | tienda local | Polaridad del JST, protección, capacidad real | pendiente |
 | O7 | Panel solar de 6 V, al menos 1 W | por definir | por definir | Voltaje en circuito abierto compatible con el CN3791 de 6 V | pendiente |
-| O8 | Cristal 32.768 kHz, CL 12.5 pF | serie ECS-.327 | Digi-Key | MPN completo y cargas de 15 a 19 pF por pata (CL = C/2 + parásita; con 22 pF la carga queda en 14 a 16 pF, alta). Ver `BOM.md` 1.8 y la sección 1.3 | pendiente |
+| O8 | Cristal 32.768 kHz, CL 12.5 pF | serie ECS-.327 | Digi-Key | MPN completo y cargas de 15 a 19 pF por pata (CL = C/2 + parásita; con 22 pF la carga queda en 14 a 16 pF, alta). Ver `BOM.md` 1.8 y la sección 1.2 | pendiente |
 | O9 | Antena FPC 2.4 GHz (Wi-Fi/BLE del módulo) | **2015301200** | Mouser | Ganancia y huella; datasheet de Würth pendiente (la descarga automática responde 403) | pendiente |
 | O10 | Conector SMA hembra (solo banco) | **6521011000** | Mouser | Huella; datasheet de Würth pendiente | pendiente |
 | O11 | Módulo GNSS MAX-M10S | **MAX-M10S-00B** (MAX-M10S-00B-01 es la versión de producción; LGA de 18 pads, 10.1 x 9.7 x 2.5 mm) | Avnet / Digi-Key | Módulo **confirmado como suficiente solo** (datasheet R08, 2026-01-30, en producción masiva): trae TCXO, LNA, filtro SAW y bloqueo DC en RF_IN, así que no necesita cristal ni etapa RF externa. Falta: línea de 50 Ω hasta la antena y V_BCKP alimentado para arranques en caliente. A8 es una placa de desarrollo, no el componente del BOM final | aceptado, falta fuente |
@@ -191,9 +204,10 @@ Para cada pieza: qué buscar exactamente y qué comprobar.
 | O17 | Conector de 4 pines | el B4B-SH-SM4-TB del BOM no aparece en distribuidores; existe B4B-PH-SM4-TB(LF)(SN) | Mouser | Los conectores de 2 pines son del docente (D8). Este de 4 pines no tiene uso documentado: asignarlo al dibujar el esquemático, o quitarlo del BOM | pendiente |
 | O18 | Pulsador 6x6 mm | PTS645SL50SMTR92 LFS | Digi-Key | Huella; datasheet de C&K pendiente | pendiente |
 | O19 | Kit de resistencias 0603 1 % (E24) | Buscar "0603 1% resistor kit" de 0 Ω a 10 MΩ (unas 100 a 660 piezas). Valores que se usan: 2.4 kΩ (RPROG, RNF-05), 5.1 kΩ x2 (CC1 y CC2), 100 kΩ, 390 kΩ + 10 kΩ (R3 del divisor MPPT: 400 kΩ, V_MPPT de 6.025 V) y 22 o 33 Ω x2 (series de USB) | AliExpress (con tu pedido; ver 3.1) | El listado debe decir 1 %. Al recibir, medir dos o tres valores con el multímetro. Los valores finales del CN3791 salen al dibujarlo (`ARCHITECTURE.md` 2.2) | aceptado (2026-11-03) |
-| O20 | Diodos Schottky de baja fuga (D1 y D2 del CN3791) | 40 V o más, 1 A o más, con fuga inversa **garantizada** a unos 4.2 V y a 65 °C | Digi-Key | De noche D1 y D2 quedan en inversa a unos 4.2 V (datasheet CN3791, p.9) y esa fuga sale de la batería: el presupuesto de sleep es de 124 µA. Elegir el MPN con ese dato en su datasheet | pendiente |
-| O21 | Condensadores 0603 X7R y C0G | 100 nF X7R, 50 V (p. ej. YAGEO CC0603KRX7R9BB104, de la misma familia que el 1 nF CC0603KRX7R9BB102 de la biblioteca), 220 nF X7R (COM del CN3791) y, si no se usan los 33 pF del docente en serie, 15 o 18 pF C0G | AliExpress (con tu pedido; ver 3.1) | El listado debe nombrar el MPN y decir X7R o C0G. El multímetro mide la capacidad pero no el dieléctrico: un lote dudoso se prueba con un solo condensador antes de usarlo en la PCB. Reemplaza al 100 nF Y5V del docente (D11) | aceptado (2026-11-03) |
+| O20 | Diodos Schottky de baja fuga (D1 y D2 del CN3791) | 40 V o más, 1 A o más, con fuga inversa **garantizada** a unos 4.2 V y a 65 °C | Digi-Key | De noche D1 y D2 quedan en inversa a unos 4.2 V (datasheet CN3791, p.9) y esa fuga sale de la batería: el presupuesto de sleep es de 124 µA. Elegir el MPN con ese dato en su datasheet. Los Schottky del docente no sirven: el SS34-TD tiene fuga inversa de hasta 0.5 mA a 25 °C y 40 V, y del PSBD1DF40V1H la tabla solo da fuga a 40 V (la curva típica marca unos 1.5 µA a 25 °C y unos 80 µA a 75 °C, con 26 µA de margen de sleep) | pendiente |
+| O21 | Condensadores 0603 X7R y C0G | 100 nF X7R, 50 V (p. ej. YAGEO CC0603KRX7R9BB104, de la misma familia que el 1 nF CC0603KRX7R9BB102 de la biblioteca), 220 nF X7R (COM del CN3791) y, si no se usan los 33 pF del docente en serie, 15 o 18 pF C0G | AliExpress (con tu pedido; ver 3.1) | El listado debe nombrar el MPN y decir X7R o C0G. El multímetro mide la capacidad pero no el dieléctrico: un lote dudoso se prueba con un solo condensador antes de usarlo en la PCB. El 100 nF del docente es Y5V (pierde 40 % de capacidad a 45 °C y 77 % a 85 °C, hoja de Walsin p.1) y no sirve | aceptado (2026-11-03) |
 | O22 | Resistencia de sensado del CN3791 | 1 % con RCS = 0.12 V / I. Un panel de 1 W entrega unos 0.17 A, así que la corriente de carga sale de unos 0.2 a 0.5 A y RCS de 0.24 a 0.6 Ω. Potencia P = 0.12 V x I: 0805 hasta 0.5 A y 1206 desde 0.5 A | Mouser o Digi-Key si el envío a Colombia que se ve al pagar es menor a unos USD 20; si no, AliExpress con el MPN nombrado | Falta fijar la corriente de carga (depende del panel, O7) y con ella el valor | pendiente |
+| O23 | CN3791 (chip del cargador solar) | Consonance CN3791, SSOP de 10 pines (`hardware/datasheets/cn3791_datasheet.pdf`) | AliExpress | Que el listado traiga el CN3791 de 10 pines SSOP; los componentes externos se definen al dibujar el CN3791 (`BOM.md` 1.5) | pendiente |
 
 ### 3.1 Dónde comprar los pasivos (consultado el 2026-11-03; precios solo orientativos)
 
@@ -217,3 +231,12 @@ Impuestos (DIAN): sin arancel hasta USD 200 FOB. Desde China se paga IVA de 19 %
 - **O14, zumbador:** disponibilidad (aviso de última compra).
 - **O19, kit de resistencias:** medir dos o tres valores con el multímetro y confirmar que sean de 1 %.
 - **O21, condensadores:** medir la capacidad de unos cuantos; el dieléctrico (X7R o C0G) no se puede medir, así que un lote dudoso se prueba antes de usarlo en la PCB.
+
+## 5. Descartados (no comprar)
+
+| Pieza | Motivo |
+|-------|--------|
+| Antena GNSS activa L1+L5 A-SKY AK521 (R1, $25.404) | El MAX-M10S solo recibe L1; la antena es activa (15 a 25 mA) y el módulo ya trae LNA y filtro SAW |
+| Antena corta GIZONT "10 dBi" (R2, $38.690) | 10 dBi no es creíble en una antena de 5 cm y el listado tiene 3 reseñas |
+| Antena GPS activa de 18x18 mm (R3, $9.432) | Sin datasheet ni número de parte; el módulo ya trae LNA |
+| Reguladores TPS7A05xx/TPS7A20xx de Digalai (R4, $6.418) | El TPS7A05 entrega 200 mA como máximo y las cargas suman 224 a 394 mA; lo reemplaza el TLV75733P (O1) |

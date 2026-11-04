@@ -116,7 +116,7 @@ Decidido el 2026-11-03: el LED RGB del docente reemplaza al Kingbright L-154A4SU
 | 1 | Resistor de sensado del CN3791, 1 %, RCS = 0.12 V / corriente de carga | por definir (`COMPRAS.md` O22) | por definir | Mouser o Digi-Key, o AliExpress |
 | 1 | Diodo Schottky de baja fuga (D2 del CN3791; D1 es opcional) | por definir (`COMPRAS.md` O20) | por definir | Digi-Key |
 
-**Cubierto por el docente** (`hardware/COMPRAS.md` D9 y D10): resistencias 0603 de 330 Ω, 1 kΩ, 4.7 kΩ y 10 kΩ, y condensadores de 1 µF, 10 µF (25 V y 10 V), 22 µF de 16 V y 33 pF NP0. El 100 nF de la biblioteca es Y5V y no sirve (D11). El resto se compra (`COMPRAS.md` O19 a O22): kit de resistencias 0603 1 %, lote de condensadores X7R, resistencia de sensado y Schottky de baja fuga. Si el pedido de AliExpress falla, `COMPRAS.md` 1.3 arma los valores con piezas del docente.
+**Cubierto por el docente** (`hardware/COMPRAS.md` D9 y D10): resistencias 0603 de 330 Ω, 1 kΩ, 4.7 kΩ y 10 kΩ, y condensadores de 1 µF, 10 µF (25 V y 10 V), 22 µF de 16 V y 33 pF NP0. El 100 nF de la biblioteca es Y5V y no sirve (ver `COMPRAS.md` O21). El resto se compra (`COMPRAS.md` O19 a O22): kit de resistencias 0603 1 %, lote de condensadores X7R, resistencia de sensado y Schottky de baja fuga. Si el pedido de AliExpress falla, `COMPRAS.md` 1.2 arma los valores con piezas del docente.
 
 **Corrección:** la fila antes decía "Cristal 40 MHz" con el código ECS-.327-12-5PXDN-TR. El prefijo ECS-.327 corresponde a un cristal de 32.768 kHz y el módulo ya incluye su cristal de 40 MHz (datasheet v1.8, sección de características). El MPN completo **POR DECIDIR**: el texto anterior estaba corrupto.
 
