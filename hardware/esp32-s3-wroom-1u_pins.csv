@@ -5,7 +5,7 @@ Designator,Name,GPIO,Electrical Type,Net,Connection,Source
 4,IO4,4,I/O,IMU_INT1,"INT1 del LSM6DS3TR-C (pin 4). RTC, despierta de deep sleep",pinout.md
 5,IO5,5,I/O,LORA_RESET,RESET del módulo LoRa (pin 15),pinout.md
 6,IO6,6,I/O,LORA_DIO1,"DIO1 del módulo LoRa (pin 13). RTC, despierta",pinout.md
-7,IO7,7,I/O,BUTTON,"Botón de usuario a GND; 10 kΩ a 3V3 y RC antirrebote. RTC, despierta",pinout.md
+7,IO7,7,I/O,BUTTON,"Botón de usuario a GND; 10 kΩ a 3V3, 1 kΩ en serie y 100 nF a GND. RTC, despierta",pinout.md
 8,IO15,15,I/O,XTAL_32K_P,Cristal de 32.768 kHz y su carga,Tabla 3-1
 9,IO16,16,I/O,XTAL_32K_N,Cristal de 32.768 kHz y su carga,Tabla 3-1
 10,IO17,17,I/O,GNSS_TX,RXD del MAX-M10S (pin 3). UART1 TX,pinout.md
@@ -29,14 +29,14 @@ Designator,Name,GPIO,Electrical Type,Net,Connection,Source
 28,IO35,35,I/O,,Sin conectar: PSRAM octal del N16R8,"Tabla 3-1, nota b"
 29,IO36,36,I/O,,Sin conectar: PSRAM octal del N16R8,"Tabla 3-1, nota b"
 30,IO37,37,I/O,,Sin conectar: PSRAM octal del N16R8,"Tabla 3-1, nota b"
-31,IO38,38,I/O,LED_R,"LED RGB, rojo, con resistencia serie",pinout.md
-32,IO39,39,I/O,LED_G,"LED RGB, verde, con resistencia serie",pinout.md
-33,IO40,40,I/O,LED_B,"LED RGB, azul, con resistencia serie",pinout.md
+31,IO38,38,I/O,LED_R,"Cátodo del LED rojo por 750 Ω; activo en bajo",pinout.md
+32,IO39,39,I/O,LED_G,"Cátodo del LED verde por 470 Ω; activo en bajo",pinout.md
+33,IO40,40,I/O,LED_B,"Cátodo del LED azul por 330 Ω; activo en bajo",pinout.md
 34,IO41,41,I/O,CHRG_STAT,CHRG del CN3791 (pin 3); pull-up de 10 kΩ a 3V3,pinout.md
 35,IO42,42,I/O,LORA_RXEN,Pin RX (6) del conmutador del módulo LoRa. POR DECIDIR,pinout.md
 36,RXD0,44,I/O,UART0_RX,Punto de prueba (consola),Tabla 3-1
 37,TXD0,43,I/O,UART0_TX,499 Ω en serie y punto de prueba (consola),"Tabla 3-1, figura 9-1"
-38,IO2,2,I/O,BUZZER_PWM,"Zumbador, por transistor si lo requiere",pinout.md
-39,IO1,1,I/O,OPTO_CTRL,Entrada del VO617A con resistencia serie; pull-down de 100 kΩ,pinout.md
+38,IO2,2,I/O,BUZZER_PWM,"Zumbador con 100 Ω en serie (PWM de 4 kHz)",pinout.md
+39,IO1,1,I/O,OPTO_CTRL,Ánodo del VO617A (pin 1) por 330 Ω; pull-down de 100 kΩ,pinout.md
 40,GND,,Power,GND,Plano de masa,Tabla 3-1
 41,EPAD,,Power,GND,Soldado a GND con vías al plano,"Tabla 3-1, capítulo 9"

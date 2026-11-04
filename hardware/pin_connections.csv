@@ -1,0 +1,153 @@
+Component,Pin,Name,Connection,Source
+ESP32-S3-WROOM-1U-N16R8,1,GND,GND: Plano de masa,Tabla 3-1
+ESP32-S3-WROOM-1U-N16R8,2,3V3,3V3: Salida del TLV75733P; 22 µF y 0.1 µF X7R pegados al pin,"Tabla 6-2, figura 9-1"
+ESP32-S3-WROOM-1U-N16R8,3,EN,EN: 10 kΩ a 3V3 y 1 µF a GND; punto de prueba. Nunca flotante,"Tabla 3-1, capítulo 9"
+ESP32-S3-WROOM-1U-N16R8,4,IO4,"IMU_INT1: INT1 del LSM6DS3TR-C (pin 4). RTC, despierta de deep sleep",pinout.md
+ESP32-S3-WROOM-1U-N16R8,5,IO5,LORA_RESET: RESET del módulo LoRa (pin 15),pinout.md
+ESP32-S3-WROOM-1U-N16R8,6,IO6,"LORA_DIO1: DIO1 del módulo LoRa (pin 13). RTC, despierta",pinout.md
+ESP32-S3-WROOM-1U-N16R8,7,IO7,"BUTTON: Botón de usuario a GND; 10 kΩ a 3V3, 1 kΩ en serie y 100 nF a GND. RTC, despierta",pinout.md
+ESP32-S3-WROOM-1U-N16R8,8,IO15,XTAL_32K_P: Cristal de 32.768 kHz y su carga,Tabla 3-1
+ESP32-S3-WROOM-1U-N16R8,9,IO16,XTAL_32K_N: Cristal de 32.768 kHz y su carga,Tabla 3-1
+ESP32-S3-WROOM-1U-N16R8,10,IO17,GNSS_TX: RXD del MAX-M10S (pin 3). UART1 TX,pinout.md
+ESP32-S3-WROOM-1U-N16R8,11,IO18,GNSS_RX: TXD del MAX-M10S (pin 2). UART1 RX,pinout.md
+ESP32-S3-WROOM-1U-N16R8,12,IO8,I2C_SDA: SDA del LSM6DS3TR-C (pin 14) y del MAX17048; pull-up de 4.7 kΩ,pinout.md
+ESP32-S3-WROOM-1U-N16R8,13,IO19,USB_D-: D- del USB-C a través del USBLC6; huella de 22 o 33 Ω en serie,"Tabla 3-1, guía p.21"
+ESP32-S3-WROOM-1U-N16R8,14,IO20,USB_D+: D+ del USB-C a través del USBLC6; huella de 22 o 33 Ω en serie,"Tabla 3-1, guía p.21"
+ESP32-S3-WROOM-1U-N16R8,15,IO3,Sin conectar (strapping de JTAG; se ignora con los eFuse de fábrica),"Tabla 4-1, tabla 4-5"
+ESP32-S3-WROOM-1U-N16R8,16,IO46,Sin conectar (strapping; pull-down interno),"Tabla 4-1, tabla 4-3"
+ESP32-S3-WROOM-1U-N16R8,17,IO9,I2C_SCL: SCL del LSM6DS3TR-C (pin 13) y del MAX17048; pull-up de 4.7 kΩ,pinout.md
+ESP32-S3-WROOM-1U-N16R8,18,IO10,LORA_NSS: NSS del módulo LoRa (pin 19). FSPICS0,pinout.md
+ESP32-S3-WROOM-1U-N16R8,19,IO11,LORA_MOSI: MOSI del módulo LoRa (pin 17). FSPID,pinout.md
+ESP32-S3-WROOM-1U-N16R8,20,IO12,LORA_SCK: SCK del módulo LoRa (pin 18). FSPICLK,pinout.md
+ESP32-S3-WROOM-1U-N16R8,21,IO13,LORA_MISO: MISO del módulo LoRa (pin 16). FSPIQ,pinout.md
+ESP32-S3-WROOM-1U-N16R8,22,IO14,LORA_BUSY: BUSY del módulo LoRa (pin 14),pinout.md
+ESP32-S3-WROOM-1U-N16R8,23,IO21,GNSS_EXTINT: EXTINT del MAX-M10S (pin 5); opcional,pinout.md
+ESP32-S3-WROOM-1U-N16R8,24,IO47,LORA_TXEN: Pin TX (7) del conmutador del módulo LoRa. POR DECIDIR,pinout.md
+ESP32-S3-WROOM-1U-N16R8,25,IO48,RESERVA_F2: Reserva de la Fase 2 (PWRKEY del módem),pinout.md
+ESP32-S3-WROOM-1U-N16R8,26,IO45,Sin conectar (strapping de VDD_SPI; pull-down interno),"Tabla 4-1, tabla 4-4"
+ESP32-S3-WROOM-1U-N16R8,27,IO0,BOOT: 10 kΩ a 3V3; pad o botón a GND para el modo descarga,"Tabla 4-1, tabla 4-3"
+ESP32-S3-WROOM-1U-N16R8,28,IO35,Sin conectar: PSRAM octal del N16R8,"Tabla 3-1, nota b"
+ESP32-S3-WROOM-1U-N16R8,29,IO36,Sin conectar: PSRAM octal del N16R8,"Tabla 3-1, nota b"
+ESP32-S3-WROOM-1U-N16R8,30,IO37,Sin conectar: PSRAM octal del N16R8,"Tabla 3-1, nota b"
+ESP32-S3-WROOM-1U-N16R8,31,IO38,LED_R: Cátodo del LED rojo por 750 Ω; activo en bajo,pinout.md
+ESP32-S3-WROOM-1U-N16R8,32,IO39,LED_G: Cátodo del LED verde por 470 Ω; activo en bajo,pinout.md
+ESP32-S3-WROOM-1U-N16R8,33,IO40,LED_B: Cátodo del LED azul por 330 Ω; activo en bajo,pinout.md
+ESP32-S3-WROOM-1U-N16R8,34,IO41,CHRG_STAT: CHRG del CN3791 (pin 3); pull-up de 10 kΩ a 3V3,pinout.md
+ESP32-S3-WROOM-1U-N16R8,35,IO42,LORA_RXEN: Pin RX (6) del conmutador del módulo LoRa. POR DECIDIR,pinout.md
+ESP32-S3-WROOM-1U-N16R8,36,RXD0,UART0_RX: Punto de prueba (consola),Tabla 3-1
+ESP32-S3-WROOM-1U-N16R8,37,TXD0,UART0_TX: 499 Ω en serie y punto de prueba (consola),"Tabla 3-1, figura 9-1"
+ESP32-S3-WROOM-1U-N16R8,38,IO2,BUZZER_PWM: Zumbador con 100 Ω en serie (PWM de 4 kHz),pinout.md
+ESP32-S3-WROOM-1U-N16R8,39,IO1,OPTO_CTRL: Ánodo del VO617A (pin 1) por 330 Ω; pull-down de 100 kΩ,pinout.md
+ESP32-S3-WROOM-1U-N16R8,40,GND,GND: Plano de masa,Tabla 3-1
+ESP32-S3-WROOM-1U-N16R8,41,EPAD,GND: Soldado a GND con vías al plano,"Tabla 3-1, capítulo 9"
+GNSS u-blox MAX-M10S,"1, 10, 12",GND,GND,DS p9
+GNSS u-blox MAX-M10S,2,TXD,GPIO18 (UART1 RX del ESP32),DS p9
+GNSS u-blox MAX-M10S,3,RXD,GPIO17 (UART1 TX del ESP32); tiene pull-up interno,DS p9-10
+GNSS u-blox MAX-M10S,4,TIMEPULSE,Sin conectar: nada puede bajarlo al arrancar o el módulo entra en safeboot,"IM p29, p90"
+GNSS u-blox MAX-M10S,5,EXTINT,GPIO21 (opcional); pull-up interno,"IM p29, p47"
+GNSS u-blox MAX-M10S,6,V_BCKP,Sin conectar: no hay respaldo independiente,IM p73-74
+GNSS u-blox MAX-M10S,7,V_IO,"3V3, unido a VCC (figura 23 del manual)",IM p73-74
+GNSS u-blox MAX-M10S,8,VCC,3V3,IM p73-74
+GNSS u-blox MAX-M10S,9,RESET_N,Sin conectar (pull-up interno de 10 kΩ). Sin condensador a GND,"DS p9, p12; IM p28"
+GNSS u-blox MAX-M10S,11,RF_IN,"Línea de 50 Ω (coplanar con masa en la capa 2, corta y cercada con vías) hasta el u.FL del parche; el bloqueo DC es interno","DS p12; IM p77, p81"
+GNSS u-blox MAX-M10S,13,LNA_EN,Sin conectar (antena pasiva); no sirve para otra función,"IM p7, p94"
+GNSS u-blox MAX-M10S,14,VCC_RF,Sin conectar,IM p8
+GNSS u-blox MAX-M10S,15,VIO_SEL,"Sin conectar, que selecciona V_IO de 3.3 V",DS p9; IM p73
+GNSS u-blox MAX-M10S,"16, 17","SDA, SCL",Sin conectar (pull-ups internos; se usa UART),DS p9-10
+GNSS u-blox MAX-M10S,18,SAFEBOOT_N,"Sin conectar, con un pad de prueba para recuperar el firmware",DS p9; IM p28
+IMU LSM6DS3TR-C,1,SDO/SA0,"GND: dirección 0x6A. No tiene pull-up interno, no puede quedar flotante","p20, p39, p47"
+IMU LSM6DS3TR-C,"2, 3","SDx, SCx","GND (modo 1, figura 15)","p20, p45"
+IMU LSM6DS3TR-C,4,INT1,GPIO4. Push-pull y activo en alto por defecto: sin resistencia,"p20, p63"
+IMU LSM6DS3TR-C,5,VDDIO,3V3 con 100 nF a GND pegado al pin,"p20, p45"
+IMU LSM6DS3TR-C,"6, 7",GND,GND,p20
+IMU LSM6DS3TR-C,8,VDD,3V3 con 100 nF a GND pegado al pin,p45
+IMU LSM6DS3TR-C,9,INT2,Sin conectar,p47
+IMU LSM6DS3TR-C,"10, 11",NC,"Sin conectar, pero soldados (en el LSM6DSOX son auxiliares; la huella sirve para los dos)",p20
+IMU LSM6DS3TR-C,12,CS,VDDIO (selecciona I2C),"p38, p47"
+IMU LSM6DS3TR-C,13,SCL,GPIO9,p20
+IMU LSM6DS3TR-C,14,SDA,GPIO8,p20
+Módulo LoRa DX-LR30-900M22S,"1-4, 10-12, 20, 22",GND,GND,folleto p11
+Módulo LoRa DX-LR30-900M22S,5,DIO3,"Sin conectar. Si el módulo trae TCXO, DIO3 lo alimenta (`SetDIO3AsTCXOCtrl`); se confirma en el arranque leyendo GetDeviceErrors (XOSC_START_ERR)",folleto p11; SX1262 p81-82
+Módulo LoRa DX-LR30-900M22S,6,RX (conmutador de antena),GPIO42 (LORA_RXEN) a través de un 0 Ω,folleto p11
+Módulo LoRa DX-LR30-900M22S,7,TX (conmutador de antena),GPIO47 (LORA_TXEN) a través de un 0 Ω,folleto p11
+Módulo LoRa DX-LR30-900M22S,8,DIO2,"Sin conectar, con un 0 Ω **sin montar** hacia el pad 7","folleto p11; SX1262 p54, p81"
+Módulo LoRa DX-LR30-900M22S,9,VCC,3V3 con 10 µF y 100 nF pegados al pad (recomendación propia: el SX1262 pide 118 mA en TX a +22 dBm),SX1262 p17
+Módulo LoRa DX-LR30-900M22S,13,DIO1,"GPIO6 (interrupción, despierta de deep sleep)",folleto p11
+Módulo LoRa DX-LR30-900M22S,14,BUSY,"GPIO14, sin pull-down: en sleep el chip lo mantiene en alto con 20 kΩ y un pull-down gastaría unos 165 µA",SX1262 p52
+Módulo LoRa DX-LR30-900M22S,15,RESET,GPIO5. Pull-up interno de unos 50 kΩ: no forzarlo a bajo en deep sleep (gastaría unos 66 µA),"SX1262 p50, p54"
+Módulo LoRa DX-LR30-900M22S,16,MISO,GPIO13,folleto p11
+Módulo LoRa DX-LR30-900M22S,17,MOSI,GPIO11,folleto p11
+Módulo LoRa DX-LR30-900M22S,18,SCK,GPIO12,folleto p11
+Módulo LoRa DX-LR30-900M22S,19,NSS,GPIO10. Mantenerlo en alto en deep sleep (retención de GPIO): un flanco de bajada despierta la radio,SX1262 p51
+Módulo LoRa DX-LR30-900M22S,21,ANT,Línea de 50 Ω hasta el conector u.FL de la PCB,"folleto p9, p11"
+Regulador TLV75733PDBVR,1,IN,Nodo de batería (VBAT) con 10 µF X5R 25 V a GND (pide 1 µF o más),"p4, p15"
+Regulador TLV75733PDBVR,2,GND,GND,p3
+Regulador TLV75733PDBVR,3,EN,Unido a IN (sin apagado),p12
+Regulador TLV75733PDBVR,4,NC,Sin conectar (no tiene conexión interna),p3
+Regulador TLV75733PDBVR,5,OUT,Riel de 3V3 con 1 µF o más a GND,"p4, p15"
+Medidor de batería MAX17048,1,CTG,GND,p6
+Medidor de batería MAX17048,2,CELL,Positivo de la batería,"p6, p15"
+Medidor de batería MAX17048,3,VDD,Positivo de la batería con 0.1 µF a GND,p15
+Medidor de batería MAX17048,4,GND,GND (negativo de la batería),p6
+Medidor de batería MAX17048,5,ALRT,Sin conectar (no queda GPIO libre; el datasheet lo permite),p15
+Medidor de batería MAX17048,6,QSTRT,GND,p6
+Medidor de batería MAX17048,7,SCL,GPIO9,p6
+Medidor de batería MAX17048,8,SDA,GPIO8,p6
+Medidor de batería MAX17048,EP,Pad expuesto,GND,p6
+Cargador USB-C TP4056,1,TEMP,"GND (sin corte por temperatura, decisión del 2026-11-03)",p2
+Cargador USB-C TP4056,2,PROG,"2.4 kΩ a GND (500 mA, RNF-05)",p2
+Cargador USB-C TP4056,3,GND,GND,p2
+Cargador USB-C TP4056,4,VCC,"VBUS del USB-C después del USBLC6, con 10 µF a GND",p3
+Cargador USB-C TP4056,5,BAT,Nodo de batería con 10 µF a GND,p3
+Cargador USB-C TP4056,6,STDBY,Sin conectar (drenador abierto; no queda GPIO libre),p3
+Cargador USB-C TP4056,7,CHRG,"Sin conectar (drenador abierto). Opción: LED rojo 0805 del docente con 1 kΩ a VCC, que solo enciende con USB",p3
+Cargador USB-C TP4056,8,CE,VCC (como en el circuito típico),p3
+Cargador USB-C TP4056,Pad,Térmico,"GND, con cobre y vías para disipar",p1
+Cargador solar CN3791 y su etapa de potencia,1,VG,100 nF X7R a VCC (C2),"p2, p3"
+Cargador solar CN3791 y su etapa de potencia,2,GND,"GND, con cobre amplio (es el disipador)","p3, p10"
+Cargador solar CN3791 y su etapa de potencia,3,CHRG,GPIO41 (CHRG_STAT) con 10 kΩ a 3V3; drenador abierto hasta 30 V,p3-4
+Cargador solar CN3791 y su etapa de potencia,4,DONE,GND (salida de estado que no se usa),p7
+Cargador solar CN3791 y su etapa de potencia,5,COM,120 Ω en serie con 220 nF X7R a GND (R2 y C4); su masa vuelve al pin GND,"p2, p10"
+Cargador solar CN3791 y su etapa de potencia,6,MPPT,Divisor: R3 de VCC a MPPT = 390 kΩ + 10 kΩ; R4 de MPPT a GND = 100 kΩ. V_MPPT = 1.205 x (1 + 400/100) = 6.025 V,p6
+Cargador solar CN3791 y su etapa de potencia,7,BAT,"Lado de la batería de RCS, con conexión Kelvin",p10
+Cargador solar CN3791 y su etapa de potencia,8,CSP,"Lado del inductor de RCS, con conexión Kelvin",p10
+Cargador solar CN3791 y su etapa de potencia,9,VCC,"Positivo del panel, con C1",p2
+Cargador solar CN3791 y su etapa de potencia,10,DRV,Gate de M1,p2
+Optoacoplador VO617A,1,Ánodo,"GPIO1 (OPTO_CTRL) a través de 330 Ω; pull-down de 100 kΩ de GPIO1 a GND, antes de la resistencia",p1
+Optoacoplador VO617A,2,Cátodo,GND,p1
+Optoacoplador VO617A,3,Emisor,GND,p1
+Optoacoplador VO617A,4,Colector,Cátodo de un LED rojo 0805 del docente; ánodo del LED a 3V3 a través de 1 kΩ,p1
+Zumbador Murata PKMCS0909E4000-R1,1,,GPIO2 (BUZZER_PWM) a través de 100 Ω,hoja de Murata p1-3
+Zumbador Murata PKMCS0909E4000-R1,2,,GND,hoja de Murata p1
+LED RGB NationStar RS-3535MWAM,4,R+,3V3,p6
+LED RGB NationStar RS-3535MWAM,3,R-,GPIO38 (LED_R) a través de 750 Ω,p6
+LED RGB NationStar RS-3535MWAM,5,G+,3V3,p6
+LED RGB NationStar RS-3535MWAM,2,G-,GPIO39 (LED_G) a través de 470 Ω,p6
+LED RGB NationStar RS-3535MWAM,6,B+,3V3,p6
+LED RGB NationStar RS-3535MWAM,1,B-,GPIO40 (LED_B) a través de 330 Ω,p6
+Botón de usuario C&K PTS645SL50SMTR92 LFS,Uno de los cuatro,,GND,regla de cableado
+Botón de usuario C&K PTS645SL50SMTR92 LFS,El terminal diagonal opuesto,,Nodo N: 10 kΩ a 3V3; N a GPIO7 a través de 1 kΩ; 100 nF X7R de GPIO7 a GND,cálculo propio
+Botón de usuario C&K PTS645SL50SMTR92 LFS,Los otros dos,,"Soldados, sin conexión eléctrica",-
+Cristal de 32.768 kHz ECS-.327-12.5,1,,GPIO15 (pin 8 del módulo) y su carga a GND,p1
+Cristal de 32.768 kHz ECS-.327-12.5,4,,GPIO16 (pin 9 del módulo) y su carga a GND,p1
+Cristal de 32.768 kHz ECS-.327-12.5,"2, 3",,"Soldados, sin conexión",p1 (la figura dibuja el cristal entre los pads 1 y 4; sin texto que lo confirme)
+USB-C TYPE-C-3.1-16PIN,"A4, B9, A9, B4",VBUS,Pin 5 del USBLC6 y pin 4 (VCC) del TP4056; nunca al LDO,hoja de Shou Han p1
+USB-C TYPE-C-3.1-16PIN,"A1, B12, A12, B1",GND,GND,hoja de Shou Han p1
+USB-C TYPE-C-3.1-16PIN,"A6, B6",D+,Unidos junto al conector (cada tramo de unión de menos de 3.5 mm) y al pin 1 del USBLC6,ST AN4871 p7
+USB-C TYPE-C-3.1-16PIN,"A7, B7",D-,Unidos igual y al pin 3 del USBLC6,ST AN4871 p7
+USB-C TYPE-C-3.1-16PIN,A5,CC1,"5.1 kΩ a GND, propia",ST AN4871
+USB-C TYPE-C-3.1-16PIN,B5,CC2,"5.1 kΩ a GND, propia (no compartir una resistencia entre CC1 y CC2)",ST AN4871
+USB-C TYPE-C-3.1-16PIN,"A8, B8","SBU1, SBU2",Sin conectar,práctica habitual (sin guía oficial)
+USB-C TYPE-C-3.1-16PIN,Carcasa (4 patas),GND,Directa a GND; huella opcional de 1 MΩ en paralelo con 4.7 nF,práctica habitual (sin guía oficial)
+USBLC6-2SC6,1 (I/O1),,D+ desde el conector,"ST p1, p5"
+USBLC6-2SC6,6 (I/O1),,D+ hacia el módulo: 22 Ω en serie y pin 14 (GPIO20),"ST p5, p8; Espressif p21"
+USBLC6-2SC6,3 (I/O2),,D- desde el conector,"ST p1, p5"
+USBLC6-2SC6,4 (I/O2),,D- hacia el módulo: 22 Ω en serie y pin 13 (GPIO19),"ST p5, p8; Espressif p21"
+USBLC6-2SC6,5 (VBUS),,"VBUS, sin tramo muerto",ST p5
+USBLC6-2SC6,2 (GND),,GND con pistas cortas al plano,ST p5
+Conector de batería JST S2B-PH-K-S,1,,Negativo (GND),elección de diseño
+Conector del panel JST S2B-PH-K-S,1,,Negativo (GND),elección de diseño
+Conector de batería JST S2B-PH-K-S,2,,"Positivo (VBAT: protección, TP4056 BAT, CN3791 BAT por RCS, MAX17048 y TLV75733P IN)",elección de diseño
+Conector del panel JST S2B-PH-K-S,2,,Positivo (VCC del CN3791),elección de diseño
+Conectores u.FL,Central (señal),,Línea de 50 Ω desde el pad ANT del LoRa o desde RF_IN del MAX-M10S,catálogo de Hirose p2-3
+Conectores u.FL,Dos laterales,,"GND, con vías al plano",catálogo de Hirose p3
