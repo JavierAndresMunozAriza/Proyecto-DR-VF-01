@@ -38,7 +38,7 @@ Esta documentación describe la secuencia de arranque del sistema siguiendo los 
 
 ## 3. Inicialización de Sensores
 1. **IMU** (LSM6DS3TR-C del docente)
-   - Verificación de conexión (WHO_AM_I register; el valor esperado depende de la pieza elegida)
+   - Verificación de conexión (WHO_AM_I, registro 0x0F; el LSM6DS3TR-C debe leer 0x6A, datasheet p.60)
    - Configuración de interrupciones para wake-up (INT1 en GPIO4)
    - Modo low-power habilitado
    - **Prueba funcional**: Validación de lecturas de aceleración y giroscopio

@@ -55,7 +55,7 @@ Las posiciones de las tres antenas están **POR DECIDIR**. Las distancias de las
 - **Fijación**: Adhesivo acrílico de doble cara (3M 467MP) para el FPC
 - **Protección**: Cubierta de poliimida adicional (propuesta anterior, sin fuente)
 - **Sellado**: Compatible con requerimientos IP67 (objetivo de diseño); el paso de los cables u.FL por la carcasa está pendiente (ver `mechanical/IP67_SPEC.md`)
-- **Durabilidad**: rango de temperatura del producto -20°C a +65°C; la resistencia de la antena y del adhesivo a ciclos térmicos está pendiente de verificar
+- **Durabilidad**: rango de temperatura del producto 0°C a +65°C; la resistencia de la antena y del adhesivo a ciclos térmicos está pendiente de verificar
 
 ### 4. Antena LoRa 915 MHz (8 cm, u.FL)
 - **Tipo**: monopolo de cuarto de onda. Su rendimiento depende del plano de masa de la PCB (BOM, sección 1.3)
@@ -102,7 +102,7 @@ Objetivos para la antena Wi-Fi/BLE de 2.4 GHz, sin fuente en el repositorio y pe
 
 ### 3. Efectos Ambientales
 - **Humedad**: Variación <5% en parámetros hasta 95% HR
-- **Temperatura**: Estabilidad ±2% entre -20°C y +65°C
+- **Temperatura**: Estabilidad ±2% entre 0°C y +65°C
 - **Flexión**: Resistencia a 10,000 ciclos de flexión ±10°
 
 ## Integración con PCB Principal

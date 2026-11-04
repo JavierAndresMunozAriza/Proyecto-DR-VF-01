@@ -95,6 +95,7 @@ Implementando el principio de Elecia White de "test everything":
 ```c
 // Propuesta (el archivo aún no existe): firmware/src/drivers/imu_lsm6ds3trc.c
 // Direcciones de registro (datasheet LSM6DS3TR-C, DocID030071 Rev 3)
+#define IMU_WHO_AM_I     0x0F  // p.60
 #define IMU_CTRL1_XL     0x10  // p.61
 #define IMU_CTRL6_C      0x15  // p.66
 #define IMU_TAP_CFG      0x58  // p.88
@@ -103,25 +104,37 @@ Implementando el principio de Elecia White de "test everything":
 #define IMU_MD1_CFG      0x5E  // p.92
 
 int imu_configure_wakeup(void) {
+    uint8_t id;
+    int err;
+
+    // WHO_AM_I debe leer 0x6A; si no, el IMU no responde o la dirección SA0 es otra
+    err = imu_read_reg(IMU_WHO_AM_I, &id);
+    if (err) {
+        return err;
+    }
+    if (id != 0x6A) {
+        return -ENODEV;
+    }
+
     // Acelerómetro a 12.5 Hz y ±2 g (ODR_XL = 0001, FS_XL = 00)
-    imu_write_reg(IMU_CTRL1_XL, 0x10);
+    err = imu_write_reg(IMU_CTRL1_XL, 0x10);
 
     // XL_HM_MODE = 1: desactiva el alto rendimiento y deja el modo de baja potencia
-    imu_write_reg(IMU_CTRL6_C, 0x10);
+    err |= imu_write_reg(IMU_CTRL6_C, 0x10);
 
     // Umbral de 0.5 g: 1 LSB = FS_XL / 2^6 = 31.25 mg a ±2 g, así que 16 LSB
-    imu_write_reg(IMU_WAKE_UP_THS, 0x10);
+    err |= imu_write_reg(IMU_WAKE_UP_THS, 0x10);
 
     // Sin duración mínima (WAKE_DUR = 00): basta la primera muestra sobre el umbral
-    imu_write_reg(IMU_WAKE_UP_DUR, 0x00);
+    err |= imu_write_reg(IMU_WAKE_UP_DUR, 0x00);
 
     // INTERRUPTS_ENABLE = 1 (bit 7): habilita las interrupciones básicas, incluido el wake-up
-    imu_write_reg(IMU_TAP_CFG, 0x80);
+    err |= imu_write_reg(IMU_TAP_CFG, 0x80);
 
     // INT1_WU = 1 (bit 5): enruta el evento de wake-up al pin INT1
-    imu_write_reg(IMU_MD1_CFG, 0x20);
+    err |= imu_write_reg(IMU_MD1_CFG, 0x20);
 
-    return 0;
+    return err ? -EIO : 0;
 }
 ```
 
@@ -224,7 +237,7 @@ void geofence_thread(void) {
 - Verificar precisión contra implementación de referencia
 
 ### B. Simulación de Condiciones Extremas
-- Temperatura: -20°C a 65°C (el módulo ESP32-S3-WROOM-1U-N16R8 admite -40 a 65 °C de ambiente: en 65 °C no queda margen; con ECC de PSRAM llega a 85 °C y se pierde 1/16 de la PSRAM, datasheet del módulo)
+- Temperatura: 0°C a 65°C (rango decidido el 2026-11-04; el módulo ESP32-S3-WROOM-1U-N16R8 admite -40 a 65 °C de ambiente: en 65 °C no queda margen; con ECC de PSRAM llega a 85 °C y se pierde 1/16 de la PSRAM, datasheet del módulo)
 - Vibración: Simulación de movimiento animal
 - Interferencia: Señales LoRa concurrentes
 

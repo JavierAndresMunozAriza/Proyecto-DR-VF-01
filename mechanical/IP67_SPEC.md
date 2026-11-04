@@ -72,7 +72,7 @@ Esta especificación detalla los requisitos de sellado IP67 para el collar de ge
 - **Criterio de aceptación**: Sin ingreso de agua detectable
 
 ### 3. Prueba de Ciclos Térmicos
-- **Rango de temperatura**: -20°C a +65°C
+- **Rango de temperatura**: 0°C a +65°C
 - **Número de ciclos**: 100 ciclos completos
 - **Duración por ciclo**: 6 horas (3h calentamiento, 3h enfriamiento)
 - **Criterio de aceptación**: Mantenimiento de sellado IP67 post-prueba
@@ -136,7 +136,7 @@ Esta especificación detalla los requisitos de sellado IP67 para el collar de ge
 ## Consideraciones Ambientales
 
 ### 1. Temperatura Extrema
-- **Operación continua**: -20°C a +65°C (el módulo ESP32-S3-WROOM-1U-N16R8 está especificado de -40°C a 65°C ambiente; no se declara operación por encima de 65°C)
+- **Operación continua**: 0°C a +65°C (el módulo ESP32-S3-WROOM-1U-N16R8 está especificado de -40°C a 65°C ambiente; no se declara operación por encima de 65°C)
 - **Almacenamiento**: -40°C a +85°C
 - **Choque térmico**: Capaz de soportar diferencia de 100°C
 

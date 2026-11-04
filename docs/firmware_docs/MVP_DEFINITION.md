@@ -29,19 +29,31 @@ Crear una implementación mínima funcional que demuestre las capacidades críti
 // firmware/src/drivers/imu_lsm6ds3trc.c
 // Direcciones de registro: ver docs/firmware_docs/REAL_TIME_RISKS.md, sección 2
 int imu_init_movement_detection(float threshold_g) {
-    // 1 LSB del umbral = 2 g / 64 = 31.25 mg a ±2 g; 6 bits, máximo 63 LSB
-    if (threshold_g <= 0.0f || threshold_g > 1.96f) {
+    uint8_t id;
+    int err;
+
+    // 1 LSB del umbral = 2 g / 64 = 31.25 mg a ±2 g; el registro tiene 6 bits (1 a 63 LSB)
+    if (threshold_g < 0.03125f || threshold_g > 1.96f) {
         return -EINVAL;
     }
 
-    imu_write_reg(IMU_CTRL1_XL, 0x10);      // 12.5 Hz, ±2 g
-    imu_write_reg(IMU_CTRL6_C, 0x10);       // XL_HM_MODE = 1: baja potencia (9 µA)
-    imu_write_reg(IMU_WAKE_UP_THS, (uint8_t)(threshold_g * 32));
-    imu_write_reg(IMU_WAKE_UP_DUR, 0x00);   // sin duración mínima
-    imu_write_reg(IMU_TAP_CFG, 0x80);       // INTERRUPTS_ENABLE
-    imu_write_reg(IMU_MD1_CFG, 0x20);       // INT1_WU: wake-up a INT1
+    // WHO_AM_I debe leer 0x6A
+    err = imu_read_reg(IMU_WHO_AM_I, &id);
+    if (err) {
+        return err;
+    }
+    if (id != 0x6A) {
+        return -ENODEV;
+    }
 
-    return 0;
+    err = imu_write_reg(IMU_CTRL1_XL, 0x10);       // 12.5 Hz, ±2 g
+    err |= imu_write_reg(IMU_CTRL6_C, 0x10);       // XL_HM_MODE = 1: baja potencia (9 µA)
+    err |= imu_write_reg(IMU_WAKE_UP_THS, (uint8_t)(threshold_g * 32));
+    err |= imu_write_reg(IMU_WAKE_UP_DUR, 0x00);   // sin duración mínima
+    err |= imu_write_reg(IMU_TAP_CFG, 0x80);       // INTERRUPTS_ENABLE
+    err |= imu_write_reg(IMU_MD1_CFG, 0x20);       // INT1_WU: wake-up a INT1
+
+    return err ? -EIO : 0;
 }
 ```
 

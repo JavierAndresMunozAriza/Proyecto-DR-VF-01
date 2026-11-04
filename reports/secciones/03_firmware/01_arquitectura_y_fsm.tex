@@ -160,6 +160,7 @@ Para evitar cuellos de botella por latencia de acceso a Flash, la estructura de 
 
 \begin{verbatim}
 // Direcciones de registro (datasheet LSM6DS3TR-C, DocID030071 Rev 3)
+#define IMU_WHO_AM_I     0x0F  // p.60
 #define IMU_CTRL1_XL     0x10  // p.61
 #define IMU_CTRL6_C      0x15  // p.66
 #define IMU_TAP_CFG      0x58  // p.88
@@ -168,25 +169,37 @@ Para evitar cuellos de botella por latencia de acceso a Flash, la estructura de 
 #define IMU_MD1_CFG      0x5E  // p.92
 
 int imu_configure_wakeup(void) {
+    uint8_t id;
+    int err;
+
+    // WHO_AM_I debe leer 0x6A
+    err = imu_read_reg(IMU_WHO_AM_I, &id);
+    if (err) {
+        return err;
+    }
+    if (id != 0x6A) {
+        return -ENODEV;
+    }
+
     // Acelerometro a 12.5 Hz y +-2 g
-    imu_write_reg(IMU_CTRL1_XL, 0x10);
+    err = imu_write_reg(IMU_CTRL1_XL, 0x10);
 
     // XL_HM_MODE = 1: modo de baja potencia
-    imu_write_reg(IMU_CTRL6_C, 0x10);
+    err |= imu_write_reg(IMU_CTRL6_C, 0x10);
 
     // Umbral de 0.5 g: 1 LSB = FS_XL / 2^6 = 31.25 mg, 16 LSB
-    imu_write_reg(IMU_WAKE_UP_THS, 0x10);
+    err |= imu_write_reg(IMU_WAKE_UP_THS, 0x10);
 
     // Sin duracion minima: basta la primera muestra sobre el umbral
-    imu_write_reg(IMU_WAKE_UP_DUR, 0x00);
+    err |= imu_write_reg(IMU_WAKE_UP_DUR, 0x00);
 
     // INTERRUPTS_ENABLE = 1 (bit 7)
-    imu_write_reg(IMU_TAP_CFG, 0x80);
+    err |= imu_write_reg(IMU_TAP_CFG, 0x80);
 
     // INT1_WU = 1 (bit 5): enruta el wake-up al pin INT1
-    imu_write_reg(IMU_MD1_CFG, 0x20);
+    err |= imu_write_reg(IMU_MD1_CFG, 0x20);
 
-    return 0;
+    return err ? -EIO : 0;
 }
 \end{verbatim}
 

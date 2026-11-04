@@ -216,7 +216,7 @@ El total cumple RNF-03 (< 150μA) con 26μA de margen. El margen es corto: falta
 ## Consideraciones Ambientales
 
 ### 1. Efecto de la Temperatura
-- **A -20°C**: Reducción de capacidad del 30%
+- **A -20°C** (fuera del rango de operación de 0 a +65°C, solo referencia): Reducción de capacidad del 30%
 - **A +45°C**: Reducción de capacidad del 15%
 - **A +65°C**: Reducción de capacidad del 25%
 

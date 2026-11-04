@@ -10,7 +10,7 @@ Este BOM cubre **solo la PCB final** (ESP32-S3-WROOM-1U-N16R8). La Nordic Thingy
 
 1. Componentes con historial comprobado y disponibilidad a largo plazo.
 2. Reemplazables en campo.
-3. Rango de temperatura de -20 °C a +65 °C para todos los componentes. El módulo ESP32-S3-WROOM-1U-N16R8 admite -40 a 65 °C de ambiente (con ECC de la PSRAM activado, 85 °C y 1/16 menos de PSRAM utilizable; datasheet WROOM-1 v1.8): el límite de 65 °C no deja margen.
+3. Rango de temperatura de -20 °C a +65 °C para todos los componentes, como margen: el rango de operación del producto es de 0 a +65 °C (`docs/REQUIREMENTS.md`, RNF-09). El módulo ESP32-S3-WROOM-1U-N16R8 admite -40 a 65 °C de ambiente (con ECC de la PSRAM activado, 85 °C y 1/16 menos de PSRAM utilizable; datasheet WROOM-1 v1.8): el límite de 65 °C no deja margen.
 4. Al menos dos fuentes de suministro para los componentes críticos.
 
 ## 1. Componentes electrónicos
@@ -108,7 +108,7 @@ Decidido el 2026-11-03: el LED RGB del docente reemplaza al Kingbright L-154A4SU
 | 1 o 2 (**POR DECIDIR**) | Capacitor de tantalio 100 µF (bulk de 3.3 V para los transitorios del LoRa) | TAJA107K016RNJ | AVX | Digi-Key |
 | 4 | Resistor 10 kΩ (pull-ups de EN, BOOT, botón y CHRG; 5 % del docente) | FRC0603J103TS | FOJAN | Docente (biblioteca) |
 | 2 | Resistor 100 kΩ 1 % (pull-down del optoacoplador y R4 del divisor MPPT) | por definir (serie RC0603FR-07) | Yageo | AliExpress (kit, `COMPRAS.md` O19); plan B: 49.9k + 49.9k del docente |
-| 2 | Resistor 390 kΩ y 10 kΩ en serie (R3 del divisor MPPT del CN3791: 400 kΩ, V_MPPT de 6.036 V; el valor final depende del panel, `COMPRAS.md` O7) | RC0603FR-07390KL y FRC0603J103TS | Yageo y FOJAN | Docente (biblioteca) |
+| 2 | Resistor 390 kΩ y 10 kΩ en serie (R3 del divisor MPPT del CN3791: 400 kΩ, V_MPPT de 6.025 V; el valor final depende del panel, `COMPRAS.md` O7) | RC0603FR-07390KL y FRC0603J103TS | Yageo y FOJAN | Docente (biblioteca) |
 | 1 | Resistor 2.4 kΩ 1 % (RPROG del TP4056, 500 mA) | por definir (serie RC0603FR-07) | Yageo | AliExpress (kit, `COMPRAS.md` O19); plan B: 4.7k ‖ (4.7k + 191R) del docente |
 | 2 | Resistor 5.1 kΩ 1 % (CC1 y CC2 del USB-C como dispositivo) | por definir (serie RC0603FR-07) | Yageo | AliExpress (kit, `COMPRAS.md` O19); plan B: un 4.7 kΩ de 1 % del docente por línea (-7.8 %, dentro de Rd de ±20 %, Microchip AN1914 tabla 1) |
 | 1 | Resistor 120 Ω y condensador 220 nF X7R en serie (red del pin COM del CN3791, datasheet p.3 y p.7) | FRC0603F1200TS y 220 nF X7R | FOJAN | Docente (120 Ω); 220 nF en `COMPRAS.md` O21 |
@@ -213,7 +213,7 @@ Según el autor (confirmado el 2026-11-03), el docente tiene físicamente todo l
 | Otros | LED RGB 3535, LED 0805, cargador Li-ion genérico `IC_BAT_CHG_4.2V_1A`, convertidores buck/boost genéricos |
 | LDO `LDO_3V3_1A_FIXED` | Por su descripción (1 A, 60 dB a 120 Hz) parece de la familia LM1117/AMS1117: dropout de 1 V o más y corriente quiescente de mA. No sirve con la LiPo (necesitaría unos 4.4 V de entrada) ni con el presupuesto de sleep. Su MPN es AMS1117-3.3 (UMW, LCSC C347222): no se usa |
 
-No cubre y hay que crear o descargar: huella del ESP32-S3-WROOM-1U (la biblioteca solo trae el ESP32-C3-WROOM-02-N4, otro módulo; el datasheet indica que la 1U no lleva zona de exclusión de antena), MAX-M10S, LSM6DSOX, MAX17048, el módulo LoRa, CN3791, VO617A, buzzer, cristal de 32.768 kHz, conector u.FL y JST SH.
+No cubre y hay que crear o descargar: huella del ESP32-S3-WROOM-1U (la biblioteca solo trae el ESP32-C3-WROOM-02-N4, otro módulo; el datasheet indica que la 1U no lleva zona de exclusión de antena), MAX-M10S, LSM6DS3TR-C, MAX17048, el módulo LoRa, CN3791, VO617A, buzzer, cristal de 32.768 kHz, conector u.FL y JST SH.
 
 ## Historial de revisiones
 

@@ -54,7 +54,7 @@ El DR-VF-01 es un sistema avanzado de geocercamiento para ganado que combina tec
 | Precisión GNSS | < 3m RMS (objetivo; sin medir) |
 | Tiempo de Respuesta PIP | < 50ms (objetivo RF-02; pendiente de medir en la placa) |
 | Consumo en Sleep | Unos 124μA (calculado; sin medir) |
-| Temperatura de Operación | -20°C a +65°C (límite superior fijado por el módulo ESP32-S3-WROOM-1U-N16R8). Uso previsto solo en zonas sin heladas (por debajo de unos 2.300 m): la carga de la batería no tiene corte por frío y no debe hacerse bajo 0 °C |
+| Temperatura de Operación | 0°C a +65°C (límite superior fijado por el módulo ESP32-S3-WROOM-1U-N16R8). Uso previsto solo en zonas sin heladas (por debajo de unos 2.300 m): la carga de la batería no tiene corte por frío, por eso el rango empieza en 0 °C |
 | Grado de Protección | IP67 (objetivo de diseño; pendiente de ensayo) |
 
 ### Dimensiones y Peso
@@ -118,7 +118,7 @@ El DR-VF-01 es un sistema avanzado de geocercamiento para ganado que combina tec
 ## Especificaciones Ambientales
 
 ### Condiciones de Operación
-- **Temperatura**: -20°C a +65°C ambiente (el módulo ESP32-S3-WROOM-1U-N16R8 está especificado de -40°C a 65°C ambiente; no se declara operación por encima de 65°C)
+- **Temperatura**: 0°C a +65°C ambiente (el módulo ESP32-S3-WROOM-1U-N16R8 está especificado de -40°C a 65°C ambiente; no se declara operación por encima de 65°C)
 - **Humedad**: 5% a 95% sin condensación
 - **Altitud**: Hasta 5000m sobre el nivel del mar
 
