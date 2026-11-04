@@ -179,7 +179,7 @@ Implementamos una estrategia de protección en múltiples capas:
 
 ### 1. Pruebas Térmicas Planificadas
 - **Cámara térmica FLIR ONE**: Mediciones en condiciones reales
-- **Cámara de temperatura controlada**: De 0°C a +65°C
+- **Cámara de temperatura controlada**: De -20°C a +65°C (rango de prueba, con margen bajo el rango de operación de 0 a +65°C)
 - **Perfil de estrés térmico**: Ciclos acelerados de envejecimiento
 
 ### 2. Resultados (pendientes de medición)

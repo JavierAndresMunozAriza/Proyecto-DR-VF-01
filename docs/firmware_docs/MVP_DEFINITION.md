@@ -30,7 +30,7 @@ Crear una implementación mínima funcional que demuestre las capacidades críti
 // Direcciones de registro: ver docs/firmware_docs/REAL_TIME_RISKS.md, sección 2
 int imu_init_movement_detection(float threshold_g) {
     // 1 LSB del umbral = 2 g / 64 = 31.25 mg a ±2 g; el registro tiene 6 bits (1 a 63 LSB)
-    if (threshold_g < 0.03125f || threshold_g > 1.96f) {
+    if (!(threshold_g >= 0.03125f && threshold_g <= 1.96f)) {  // también rechaza NaN
         return -EINVAL;
     }
     const uint8_t ths = (uint8_t)(threshold_g * 32.0f + 0.5f);  // redondea al LSB más cercano

@@ -72,7 +72,7 @@ Esta especificación detalla los requisitos de sellado IP67 para el collar de ge
 - **Criterio de aceptación**: Sin ingreso de agua detectable
 
 ### 3. Prueba de Ciclos Térmicos
-- **Rango de temperatura**: 0°C a +65°C
+- **Rango de temperatura**: -20°C a +65°C (rango de prueba, con margen bajo el rango de operación de 0 a +65°C)
 - **Número de ciclos**: 100 ciclos completos
 - **Duración por ciclo**: 6 horas (3h calentamiento, 3h enfriamiento)
 - **Criterio de aceptación**: Mantenimiento de sellado IP67 post-prueba
