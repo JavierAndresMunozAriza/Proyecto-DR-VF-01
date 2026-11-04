@@ -169,6 +169,17 @@ Para evitar cuellos de botella por latencia de acceso a Flash, la estructura de 
 #define IMU_MD1_CFG      0x5E  // p.92
 
 int imu_configure_wakeup(void) {
+    static const struct {
+        uint8_t reg;
+        uint8_t val;
+    } cfg[] = {
+        { IMU_CTRL1_XL,    0x10 },  // 12.5 Hz y +-2 g
+        { IMU_CTRL6_C,     0x10 },  // XL_HM_MODE = 1: baja potencia
+        { IMU_WAKE_UP_THS, 0x10 },  // 0.5 g: 1 LSB = FS_XL / 2^6 = 31.25 mg
+        { IMU_WAKE_UP_DUR, 0x00 },  // sin duracion minima
+        { IMU_TAP_CFG,     0x80 },  // INTERRUPTS_ENABLE (bit 7)
+        { IMU_MD1_CFG,     0x20 },  // INT1_WU (bit 5): wake-up al pin INT1
+    };
     uint8_t id;
     int err;
 
@@ -181,25 +192,17 @@ int imu_configure_wakeup(void) {
         return -ENODEV;
     }
 
-    // Acelerometro a 12.5 Hz y +-2 g
-    err = imu_write_reg(IMU_CTRL1_XL, 0x10);
+    for (size_t i = 0; i < ARRAY_SIZE(cfg); i++) {
+        err = imu_write_reg(cfg[i].reg, cfg[i].val);
+        if (err) {
+            // Deja las interrupciones apagadas
+            imu_write_reg(IMU_MD1_CFG, 0x00);
+            imu_write_reg(IMU_TAP_CFG, 0x00);
+            return err;
+        }
+    }
 
-    // XL_HM_MODE = 1: modo de baja potencia
-    err |= imu_write_reg(IMU_CTRL6_C, 0x10);
-
-    // Umbral de 0.5 g: 1 LSB = FS_XL / 2^6 = 31.25 mg, 16 LSB
-    err |= imu_write_reg(IMU_WAKE_UP_THS, 0x10);
-
-    // Sin duracion minima: basta la primera muestra sobre el umbral
-    err |= imu_write_reg(IMU_WAKE_UP_DUR, 0x00);
-
-    // INTERRUPTS_ENABLE = 1 (bit 7)
-    err |= imu_write_reg(IMU_TAP_CFG, 0x80);
-
-    // INT1_WU = 1 (bit 5): enruta el wake-up al pin INT1
-    err |= imu_write_reg(IMU_MD1_CFG, 0x20);
-
-    return err ? -EIO : 0;
+    return 0;
 }
 \end{verbatim}
 

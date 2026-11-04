@@ -104,6 +104,17 @@ Implementando el principio de Elecia White de "test everything":
 #define IMU_MD1_CFG      0x5E  // p.92
 
 int imu_configure_wakeup(void) {
+    static const struct {
+        uint8_t reg;
+        uint8_t val;
+    } cfg[] = {
+        { IMU_CTRL1_XL,    0x10 },  // 12.5 Hz y ±2 g (ODR_XL = 0001, FS_XL = 00)
+        { IMU_CTRL6_C,     0x10 },  // XL_HM_MODE = 1: baja potencia (9 µA)
+        { IMU_WAKE_UP_THS, 0x10 },  // 0.5 g: 1 LSB = FS_XL / 2^6 = 31.25 mg, 16 LSB
+        { IMU_WAKE_UP_DUR, 0x00 },  // sin duración mínima: basta la primera muestra
+        { IMU_TAP_CFG,     0x80 },  // INTERRUPTS_ENABLE (bit 7), antes de enrutar
+        { IMU_MD1_CFG,     0x20 },  // INT1_WU (bit 5): wake-up al pin INT1
+    };
     uint8_t id;
     int err;
 
@@ -116,25 +127,17 @@ int imu_configure_wakeup(void) {
         return -ENODEV;
     }
 
-    // Acelerómetro a 12.5 Hz y ±2 g (ODR_XL = 0001, FS_XL = 00)
-    err = imu_write_reg(IMU_CTRL1_XL, 0x10);
+    for (size_t i = 0; i < ARRAY_SIZE(cfg); i++) {
+        err = imu_write_reg(cfg[i].reg, cfg[i].val);
+        if (err) {
+            // Deja las interrupciones apagadas para no quedar armado a medias
+            imu_write_reg(IMU_MD1_CFG, 0x00);
+            imu_write_reg(IMU_TAP_CFG, 0x00);
+            return err;
+        }
+    }
 
-    // XL_HM_MODE = 1: desactiva el alto rendimiento y deja el modo de baja potencia
-    err |= imu_write_reg(IMU_CTRL6_C, 0x10);
-
-    // Umbral de 0.5 g: 1 LSB = FS_XL / 2^6 = 31.25 mg a ±2 g, así que 16 LSB
-    err |= imu_write_reg(IMU_WAKE_UP_THS, 0x10);
-
-    // Sin duración mínima (WAKE_DUR = 00): basta la primera muestra sobre el umbral
-    err |= imu_write_reg(IMU_WAKE_UP_DUR, 0x00);
-
-    // INTERRUPTS_ENABLE = 1 (bit 7): habilita las interrupciones básicas, incluido el wake-up
-    err |= imu_write_reg(IMU_TAP_CFG, 0x80);
-
-    // INT1_WU = 1 (bit 5): enruta el evento de wake-up al pin INT1
-    err |= imu_write_reg(IMU_MD1_CFG, 0x20);
-
-    return err ? -EIO : 0;
+    return 0;
 }
 ```
 

@@ -29,15 +29,27 @@ Crear una implementación mínima funcional que demuestre las capacidades críti
 // firmware/src/drivers/imu_lsm6ds3trc.c
 // Direcciones de registro: ver docs/firmware_docs/REAL_TIME_RISKS.md, sección 2
 int imu_init_movement_detection(float threshold_g) {
-    uint8_t id;
-    int err;
-
     // 1 LSB del umbral = 2 g / 64 = 31.25 mg a ±2 g; el registro tiene 6 bits (1 a 63 LSB)
     if (threshold_g < 0.03125f || threshold_g > 1.96f) {
         return -EINVAL;
     }
+    const uint8_t ths = (uint8_t)(threshold_g * 32.0f + 0.5f);  // redondea al LSB más cercano
 
-    // WHO_AM_I debe leer 0x6A
+    const struct {
+        uint8_t reg;
+        uint8_t val;
+    } cfg[] = {
+        { IMU_CTRL1_XL,    0x10 },  // 12.5 Hz, ±2 g
+        { IMU_CTRL6_C,     0x10 },  // XL_HM_MODE = 1: baja potencia (9 µA)
+        { IMU_WAKE_UP_THS, ths  },  // umbral de movimiento
+        { IMU_WAKE_UP_DUR, 0x00 },  // sin duración mínima
+        { IMU_TAP_CFG,     0x80 },  // INTERRUPTS_ENABLE, antes de enrutar
+        { IMU_MD1_CFG,     0x20 },  // INT1_WU: wake-up a INT1
+    };
+    uint8_t id;
+    int err;
+
+    // WHO_AM_I debe leer 0x6A; si no, el IMU no responde o la dirección SA0 es otra
     err = imu_read_reg(IMU_WHO_AM_I, &id);
     if (err) {
         return err;
@@ -46,14 +58,17 @@ int imu_init_movement_detection(float threshold_g) {
         return -ENODEV;
     }
 
-    err = imu_write_reg(IMU_CTRL1_XL, 0x10);       // 12.5 Hz, ±2 g
-    err |= imu_write_reg(IMU_CTRL6_C, 0x10);       // XL_HM_MODE = 1: baja potencia (9 µA)
-    err |= imu_write_reg(IMU_WAKE_UP_THS, (uint8_t)(threshold_g * 32));
-    err |= imu_write_reg(IMU_WAKE_UP_DUR, 0x00);   // sin duración mínima
-    err |= imu_write_reg(IMU_TAP_CFG, 0x80);       // INTERRUPTS_ENABLE
-    err |= imu_write_reg(IMU_MD1_CFG, 0x20);       // INT1_WU: wake-up a INT1
+    for (size_t i = 0; i < ARRAY_SIZE(cfg); i++) {
+        err = imu_write_reg(cfg[i].reg, cfg[i].val);
+        if (err) {
+            // Deja las interrupciones apagadas para no quedar armado a medias
+            imu_write_reg(IMU_MD1_CFG, 0x00);
+            imu_write_reg(IMU_TAP_CFG, 0x00);
+            return err;
+        }
+    }
 
-    return err ? -EIO : 0;
+    return 0;
 }
 ```
 

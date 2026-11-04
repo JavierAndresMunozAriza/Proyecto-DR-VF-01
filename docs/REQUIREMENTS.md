@@ -29,7 +29,7 @@
 | **RNF-06** | Protección de la batería | Por definir (fila añadida el 31/10/2026, sin métrica aprobada) | Por definir | Por definir | **Pendiente:** pieza **POR DECIDIR** (el código BQ2975DRBR del BOM no existe) |
 | **RNF-07** | Protección ESD en el puerto USB-C | Por definir (fila añadida el 31/10/2026, sin métrica aprobada) | Por definir | Por definir | USBLC6-2SC6 en D+/D-/VBUS (`hardware/BOM.md`). Fuga y niveles ESD **pendientes de verificar**: falta el datasheet de ST en el repositorio |
 | **RNF-08** | Protección IP67 de la carcasa | IP67 (objetivo de diseño; el PRD lo ubica en Fase 2) | Por definir | Por definir | **Pendiente:** sello del USB-C (MPN y tipo **POR DECIDIR**), `mechanical/IP67_SPEC.md` |
-| **RNF-09** | Rango de temperatura de operación | 0 a +65 °C (decidido el 2026-11-04). Los componentes del BOM se eligen para -20 a +65 °C como margen y el módulo N16R8 admite -40 a 65 °C de ambiente | Por definir | Por definir | **Pendiente:** análisis en `hardware/THERMAL.md`. Alcance decidido el 2026-11-03: uso solo en zonas sin heladas (por debajo de unos 2.300 m). La carga de la batería no tiene corte por frío, por eso el rango empieza en 0 °C |
+| **RNF-09** | Rango de temperatura de operación | 0 a +65 °C (decidido el 2026-11-04), límite ambiente del módulo dentro de la carcasa; NF-05 usa 0 a 50 °C para la temperatura del aire en campo. Los componentes del BOM se eligen para -20 a +65 °C como margen y el módulo N16R8 admite -40 a 65 °C de ambiente | Por definir | Por definir | **Pendiente:** análisis en `hardware/THERMAL.md`. Alcance decidido el 2026-11-03: uso solo en zonas sin heladas (por debajo de unos 2.300 m). La carga de la batería no tiene corte por frío, por eso el rango empieza en 0 °C |
 
 ## 3. Estado de Implementación
 

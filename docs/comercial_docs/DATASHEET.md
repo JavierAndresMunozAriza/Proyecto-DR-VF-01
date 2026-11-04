@@ -120,7 +120,7 @@ El DR-VF-01 es un sistema avanzado de geocercamiento para ganado que combina tec
 ### Condiciones de Operación
 - **Temperatura**: 0°C a +65°C ambiente (el módulo ESP32-S3-WROOM-1U-N16R8 está especificado de -40°C a 65°C ambiente; no se declara operación por encima de 65°C)
 - **Humedad**: 5% a 95% sin condensación
-- **Altitud**: Hasta 5000m sobre el nivel del mar
+- **Altitud**: hasta unos 2.300m sobre el nivel del mar (uso previsto solo en zonas sin heladas)
 
 ### Resistencia Ambiental
 - **Grado de Protección**: IP67 (protección contra polvo y agua sumergido temporalmente; objetivo de diseño, pendiente de ensayo)
