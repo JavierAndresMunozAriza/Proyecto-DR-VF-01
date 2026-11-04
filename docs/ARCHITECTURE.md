@@ -73,7 +73,7 @@ Para un rizado de corriente del 30% (ΔI_L = 0.3 A), voltaje de entrada V_IN = 6
 
 $$L = \frac{V_{BAT} \cdot (V_{IN} - V_{BAT})}{V_{IN} \cdot f_{sw} \cdot \Delta I_L} = \frac{4.2 \cdot (6.0 - 4.2)}{6.0 \cdot 300,000 \cdot 0.3} = \frac{7.56}{540,000} = 14\ \mu\text{H}$$
 
-**Selección Comercial:** Inductor de potencia SMD de **10 μH a 22 μH** (estándar en el módulo CN3791).
+**Selección (corregida el 2026-11-04):** el datasheet del CN3791 exige además L > 5 · (V_CC − V_BAT) μH (p.8). Con el panel en circuito abierto (unos 8 V) y la batería a 3.0 V eso da más de 25 μH, así que 10 μH no sirve y 22 μH queda al límite. Se usa **47 μH** (CY54-47UH del docente, 0.71 A).
 
 ### 2.2 Divisor Tensión MPPT (Fijación a 6V)
 El pin `MPPT` se regula a 1.205 V (mínimo 1.18 V, máximo 1.23 V; datasheet CN3791 Rev 1.0, `hardware/datasheets/cn3791_datasheet.pdf`). El divisor R₃/R₄ fija la tensión a la que trabaja el panel:

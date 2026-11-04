@@ -26,7 +26,7 @@ Esta especificación detalla los requisitos de sellado IP67 para el collar de ge
 
 ### 2. Conector USB-C (carga y programación)
 - **Función**: carga por USB-C (TP4056, 500mA) y programación por USB nativo
-- **Tipo de conector**: USB Type-C receptáculo; el MPN está POR DECIDIR (BOM, sección 1.6) y su grado de protección no está verificado
+- **Tipo de conector**: USB Type-C receptáculo Shou Han TYPE-C-3.1-16PIN (decidido el 2026-11-03, BOM sección 1.6); no tiene grado de protección IP, así que lo sella la carcasa
 - **Mecanismo de sellado**: POR DECIDIR. El BOM lista 2 tapas ciegas USB-C con MPN POR DECIDIR; el informe describe un tapón elastomérico o de silicona; la versión anterior de esta especificación describía una tapa pivotante. Sellado pendiente
 - **Resistencia a la corrosión**: pendiente (depende del conector elegido)
 - **Protección contra polvo**: pendiente (depende del conector elegido)
@@ -42,7 +42,7 @@ Esta especificación detalla los requisitos de sellado IP67 para el collar de ge
 - **Sellado**: Encapsulado en resina epoxi transparente
 - **Protección UV**: Recubrimiento resistente a rayos UV
 - **Visibilidad**: Angular de 120° horizontal, 60° vertical
-- **LED indicadores simples**: el BOM lista 3 LED LTST-C193KGKT; su ubicación y si van sellados está POR DECIDIR
+- **LED indicadores**: el LED RGB RS-3535MWAM y un LED rojo 0805 en la salida del optoacoplador (los LTST se quitaron el 2026-11-03); su ubicación y si van bajo una ventana sellada está POR DECIDIR
 
 ### 5. Panel Solar y su Cable (pendiente)
 - **Panel solar**: 6V, al menos 1W, MPN POR DECIDIR (BOM, sección 2.3). Método de fijación y sellado del perímetro: pendiente

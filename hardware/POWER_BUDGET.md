@@ -87,6 +87,7 @@ El sistema opera en diferentes estados de potencia según el modelo de máquinas
 - **Voltaje de operación**: 3.3V nominal
 - **Corriente en Off**: 1μA, no verificado
 - **Corriente en On**: 50mA máxima, no verificado
+- **Corriente real con el circuito de `pinout.md` (2026-11-04)**: unos 6.7mA en la entrada (330Ω, VF de 1.1V a 5mA, figura 5 del datasheet) más 0.9mA del LED de salida. Los 50mA son el máximo absoluto del colector y quedan en la tabla de alertas como cota conservadora.
 
 ### 6. Cargador Solar (CN3791)
 **Gestión Energética Inteligente** (datasheet CN3791 Rev 1.0):
@@ -255,7 +256,8 @@ Consumos que todavía no están en las tablas, porque no hay datasheet verificad
 - **USBLC6-2SC6**: corriente de fuga de la protección ESD (datasheet de ST pendiente de bajar).
 - **Protección de batería**: el código `BQ2975DRBR` del BOM no existe; sin pieza definida no hay corriente quiescente.
 - **Módulo DX-LR30-900M22S completo**: no tiene datasheet con corrientes; se usan las del SX1262.
-- **Diodo D2 del CN3791**: la fuga de la pieza que se elija se suma a los 30μA.
+- **Diodos D1 y D2 del CN3791** (decidido el 2026-11-04: D1 se monta): con D1 la batería ya no alimenta el divisor MPPT ni el panel de noche, y el consumo del CN3791 baja a unos 9μA más la fuga de D1 y D2 (datasheet p.9). Se mantienen los 30μA como cota hasta elegir los diodos (O20).
+- **MAX17048**: los 3μA de hibernación exigen VRESET.Dis = 1 por firmware; con el valor por defecto son 4μA (datasheet p.2, p.11 y p.13).
 - **Zumbador y LEDs**: sin consumo en sleep si sus transistores o resistencias no dejan fuga; falta confirmarlo en el esquemático.
 - **ESP32-S3 en Active (80mA) y RX del SX1262 (5mA)**: valores heredados sin fuente.
 - **TP4056 sin USB**: el datasheet solo tabula el standby con entrada presente.
