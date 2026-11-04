@@ -18,11 +18,11 @@ El sistema basa su funcionamiento en la integración de tecnologías de ultra ba
 
 ### 1.3 Plan de Escalabilidad y Hoja de Ruta
 * **Fase 1 (MVP de Escritorio - Semestre Actual):** Integración en protoboard del ESP32-S3, GPS MAX-M10S y módulo LoRa DX-LR30-900M22S (SX1262). Verificación del algoritmo *Point-in-Polygon* y transmisión punto a punto.
-* **Fase 2 (Autonomía y Monitoreo de Estado):** Incorporación del gestor solar CN3791, el cargador USB-C TP4056, el indicador de batería MAX17048 y una IMU (POR DECIDIR: LSM6DSOX o LSM6DS3TR-C del docente) para despertar por movimiento (*Wake-on-Motion*).
+* **Fase 2 (Autonomía y Monitoreo de Estado):** Incorporación del gestor solar CN3791, el cargador USB-C TP4056, el indicador de batería MAX17048 y una IMU (LSM6DS3TR-C del docente) para despertar por movimiento (*Wake-on-Motion*).
 * **Fase 3 (Integración de Hardware - Entregable Final de Semestre):** Diseño e impresión de PCB tipo *Carrier Board* en Altium Designer. Ensamble modular sin cables sueltos y prueba de concepto del actuador aislado (Optoacoplador + LED).
 * **Fase 4 (Escalabilidad para Tesis):**
   * Integración de un módulo celular para zonas con cobertura híbrida (**POR DECIDIR:** A7670SA o Quectel BG95-M3).
-  * Implementación de modelos TinyML en la IMU para clasificación del comportamiento animal (pastoreo, descanso, huida).
+  * Implementación de modelos TinyML en la IMU para clasificación del comportamiento animal (pastoreo, descanso, huida). Con el LSM6DS3TR-C no hay MLC: exigiría el LSM6DSOX o correr el modelo en el ESP32-S3.
   * Generador de pulsos de alto voltaje real con aislamiento de grado industrial y encapsulado con certificación IP67.
 
 ---
@@ -55,12 +55,12 @@ Sistema en dos niveles: línea no regulada (3.6-4.2V, la batería) y línea regu
 
 ### 3.2 Componentes Críticos
 * **Procesamiento:** ESP32-S3 Dual-Core 240MHz (PCB final)
-* **Objetivos de hardware:** un solo código base Zephyr para dos placas. Prueba de concepto en la Nordic Thingy:91 X (nRF9151, nRF Connect SDK, LTE-M/NB-IoT/GNSS); producto final en la PCB con ESP32-S3-WROOM-1U-N16R8 (módulo LoRa DX-LR30-900M22S con SX1262, GNSS externo MAX-M10S, IMU POR DECIDIR: LSM6DSOX o LSM6DS3TR-C). Se comparten `geofence.c`, la FSM y el logging; cada placa aporta su overlay, su `prj.conf` y los adaptadores de GNSS, comunicaciones e IMU.
+* **Objetivos de hardware:** un solo código base Zephyr para dos placas. Prueba de concepto en la Nordic Thingy:91 X (nRF9151, nRF Connect SDK, LTE-M/NB-IoT/GNSS); producto final en la PCB con ESP32-S3-WROOM-1U-N16R8 (módulo LoRa DX-LR30-900M22S con SX1262, GNSS externo MAX-M10S, IMU LSM6DS3TR-C). Se comparten `geofence.c`, la FSM y el logging; cada placa aporta su overlay, su `prj.conf` y los adaptadores de GNSS, comunicaciones e IMU.
 * **Comunicación:** módulo LoRa DX-LR30-900M22S (SX1262 integrado, 915 MHz, SPI)
 * **Geolocalización:** u-blox MAX-M10S GNSS
 * **Energía:** CN3791 MPPT (solo panel solar), TP4056 (carga por USB-C, 500 mA), TLV75733P (LDO de 1 A, solo desde la batería), MAX17048 Fuel Gauge (I2C 0x36, sobre la batería). Protección de batería: **POR DECIDIR** (el código BQ2975DRBR del BOM no existe)
-* **Protección USB y antenas:** USBLC6-2SC6 en D+/D-/VBUS. Antenas de LoRa (u.FL, 8 cm), FPC de 2.4 GHz (Würth 2015301200) y parche GNSS pasivo (MPN y posiciones **POR DECIDIR**); ver [hardware/BOM.md](../hardware/BOM.md)
-* **Detección:** IMU 6-DOF (**POR DECIDIR:** LSM6DSOX o LSM6DS3TR-C del docente)
+* **Protección USB y antenas:** USBLC6-2SC6 en D+/D-/VBUS. Antenas de LoRa (u.FL, 8 cm), FPC de 2.4 GHz (Würth 2015301200) y parche GNSS pasivo con cable u.FL (MPN y posiciones **POR DECIDIR**); ver [hardware/BOM.md](../hardware/BOM.md)
+* **Detección:** IMU 6-DOF (LSM6DS3TR-C del docente)
 
 ### 3.3 Consumo Eléctrico
 * **Reposo:** unos 124 μA en Deep Sleep (calculado en `hardware/POWER_BUDGET.md`; requisito RNF-03: < 150 μA)
@@ -95,7 +95,7 @@ En la PCB final la batería es el nodo central: el CN3791 la carga desde el pane
                                   [Bus 3.3V de la PCB]
                                              ├─► GPS u-blox MAX-M10S
                                              ├─► Módulo LoRa DX-LR30-900M22S
-                                             └─► IMU (POR DECIDIR)
+                                             └─► IMU (LSM6DS3TR-C)
 ```
 
 * **Línea No Regulada ($3.6\text{V} - 4.2\text{V}$):** Conecta la salida de la batería directamente al pin `VIN` del ESP32-S3 y al medidor MAX17048.
@@ -130,7 +130,7 @@ $$R_{CS} = \frac{0.12\text{ V}}{1.0\text{ A}} = 0.12\ \Omega\ (120\text{ m}\Omeg
 | **ESP32-S3** | $8\ \mu\text{A}$ (*Deep Sleep*) | $70\text{ mA}$ (240MHz) | $240\text{ mA}$ (WiFi/BT) | Wi-Fi activo solo en modo de configuración (SoftAP); deshabilitado en operación normal. Reposo: datasheet del módulo WROOM-1, Tabla 6-7 |
 | **u-blox MAX-M10S** | $46\ \mu\text{A}$ (standby por software) | $12\text{ mA}$ | $35\text{ mA}$ | Adquisición multiconstelación. Reposo con V_IO a $3.3\text{ V}$ (datasheet del MAX-M10S) |
 | **DX-LR30-900M22S (SX1262)** | $0.6\ \mu\text{A}$ | $5.3\text{ mA}$ (Rx) | $118\text{ mA}$ (Tx @ +22dBm) | Ráfagas de raras fracciones de segundo. Valores del chip SX1262: el módulo no tiene tabla de corrientes |
-| **IMU (POR DECIDIR; cifras del LSM6DSOX)** | $9.5\ \mu\text{A}$ | $0.55\text{ mA}$ | $1\text{ mA}$ | Sensor de movimiento continuo |
+| **IMU (LSM6DS3TR-C; valores presupuestados en `hardware/POWER_BUDGET.md`)** | $9.5\ \mu\text{A}$ | $0.55\text{ mA}$ | $1\text{ mA}$ | Sensor de movimiento continuo |
 | **MAX17048** | $3\ \mu\text{A}$ (hibernación) | $0.023\text{ mA}$ | $0.05\text{ mA}$ | Medición I2C; conectado a la batería |
 | **CN3791** | $30\ \mu\text{A}$ (sin entrada, desde la batería) | — | — | Solo carga desde el panel solar |
 | **TLV75733P (LDO)** | $25\ \mu\text{A}$ (Iq) | — | — | Solo alimentado desde la batería |
@@ -159,7 +159,7 @@ Para la entrega de final de semestre no se soldarán CI microscópicos directos,
 **Alcance:** los conectores hembra aplican solo al prototipo del semestre. La PCB final lleva soldado el módulo ESP32-S3-WROOM-1U-N16R8 (`hardware/BOM.md`, sección 1.1) y cumple RNF-04 sin cables de puente.
 
 ### 4.2 Reglas de Diseño en Altium Designer
-* **Capa Top / Bottom:** PCB de 2 capas (FR4, $1.6\text{mm}$ espesor).
+* **Capa Top / Bottom:** PCB de 2 capas (FR4, $0.8\text{mm}$ espesor, decidido el 2026-11-03 por el layout recomendado del conector USB-C).
 * **Plano de Masa:** Vertido de cobre para `GND` en ambas capas (*GND Copper Pour*).
 * **Ancho de Pistas de Alimentación (`VIN`, `3V3`, `BAT`):** $0.6\text{ mm}$ (24 mils) para soportar picos de corriente sin caída de tensión.
 * **Ancho de Pistas de Señal (SPI, I2C, UART):** $0.25\text{ mm}$ (10 mils).
@@ -171,9 +171,9 @@ El único mapa de pines vigente es [hardware/pinout.md](../hardware/pinout.md). 
 | Función | Periférico | GPIO |
 | :--- | :--- | :--- |
 | Bus SPI | Módulo LoRa DX-LR30-900M22S (SX1262) | NSS 10, MOSI 11, SCK 12, MISO 13 (BUSY 14, DIO1 6, NRESET 5, RXEN 42, TXEN 47) |
-| Bus I2C | IMU (POR DECIDIR), MAX17048 (0x36) | SDA 8, SCL 9 (pull-up 4.7 kΩ) |
+| Bus I2C | IMU (LSM6DS3TR-C), MAX17048 (0x36) | SDA 8, SCL 9 (pull-up 4.7 kΩ) |
 | UART1 | GNSS MAX-M10S | TX 17, RX 18 |
-| IMU | INT1 (wake-up; LSM6DSOX o LSM6DS3TR-C, POR DECIDIR) | 4 |
+| IMU | INT1 (wake-up; LSM6DS3TR-C) | 4 |
 | Actuador | Optoacoplador VO617A (`OPTO_CTRL`) | 1 |
 | Módem Fase 2 (**POR DECIDIR:** A7670SA o BG95-M3) | UART TX / RX, PWRKEY | 43 / 44, 48 |
 
@@ -186,7 +186,7 @@ Lista del prototipo con DevKit. La lista canónica de la PCB final (TLV75733PDBV
 | 1 | ESP32-S3-DevKitC-1-N16R8 | Placa DevKit Dual-Core 240MHz | Procesador Principal |
 | 1 | DX-LR30-900M22S | Módulo LoRa SX1262 (915 MHz, SPI, 1.8 a 3.7 V) | Transceptor RF |
 | 1 | u-blox MAX-M10S | Módulo Breakout GNSS con Antena | Geolocalización |
-| 1 | IMU 6-DOF (POR DECIDIR: ST LSM6DSOX o LSM6DS3TR-C) | Breakout I2C/SPI | Detección de Movimiento |
+| 1 | IMU 6-DOF (ST LSM6DS3TR-C) | Breakout I2C/SPI | Detección de Movimiento |
 | 1 | MAX17048 | Breakout I2C Fuel Gauge | Telemetría de Batería |
 | 1 | Módulo CN3791 (Versión 6V) | Cargador Solar MPPT Buck | Gestión Energética |
 | 1 | Batería LiPo 3.7V (capacidad POR DECIDIR: 1200 o 1500 mAh) | Celda 1S con JST-PH 2.0mm | Fuente de Energía |
@@ -229,7 +229,7 @@ El firmware se diseñará bajo un enfoque de **Sistema en Tiempo Real (STR)** so
 #### **Core 1 (APP_CPU) — Cálculo Determinista y Adquisición:**
 1. **`Task_Geofence` (Prioridad Máxima - 4):** Ejecuta el algoritmo *Ray-Casting / Point-in-Polygon* al recibir nuevas coordenadas. Si el animal está fuera de la zona, activa inmediatamente `OPTO_CTRL` (GPIO 1, Optoacoplador) sin esperar ciclo de transmisión.
 2. **`Task_GPSRead` (Prioridad Media - 2):** Decodifica tramas NMEA/UBX del u-blox MAX-M10S y actualiza la estructura de posición global.
-3. **`Task_IMU_Check` (Prioridad Baja - 1):** Configura los umbrales de interrupción por movimiento en la IMU (POR DECIDIR: LSM6DSOX o LSM6DS3TR-C).
+3. **`Task_IMU_Check` (Prioridad Baja - 1):** Configura los umbrales de interrupción por movimiento en la IMU (LSM6DS3TR-C).
 
 **Nota:** Los nombres `Task_*` se conservan del diseño original; en Zephyr cada tarea es un hilo. La numeración de prioridades usada aquí (4 = más crítica) debe traducirse al esquema de Zephyr, donde un número menor indica mayor prioridad.
 
@@ -244,7 +244,7 @@ El polígono de la cerca virtual se almacena en la memoria Flash como un arreglo
 ## 4. Avances Completados y Próximos Pasos
 
 ### 4.1 Hitos Alcanzados (Aprobados)
-- [x] Selección y validación del hardware base (ESP32-S3, módulo LoRa DX-LR30-900M22S, MAX-M10S, CN3791; la IMU queda POR DECIDIR)
+- [x] Selección y validación del hardware base (ESP32-S3, módulo LoRa DX-LR30-900M22S, MAX-M10S, CN3791; IMU LSM6DS3TR-C)
 - [x] Modelado teórico del sistema de alimentación fotovoltaica y cálculo de componentes Buck para el CN3791 (L=14 μH, R_CS=0.12 Ω, Divisor 6V)
 - [x] Definición del esquema de distribución de voltajes y protecciones (Capacitores de desacople, pull-ups I2C, optoaislamiento)
 - [x] Formulación de la arquitectura de la PCB tipo *Carrier Board* para la entrega final de semestre

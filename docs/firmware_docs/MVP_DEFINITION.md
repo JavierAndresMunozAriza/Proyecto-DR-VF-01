@@ -18,7 +18,7 @@ Crear una implementación mínima funcional que demuestre las capacidades críti
 ## Componentes del MVP
 
 ### 1. Sistema de Detección de Movimiento
-**Hardware**: IMU **POR DECIDIR** (LSM6DSOX o LSM6DS3TR-C del docente; el ejemplo siguiente supone el LSM6DSOX)
+**Hardware**: IMU LSM6DS3TR-C del docente
 **Funcionalidad**:
 - Detección de movimiento mediante interrupciones
 - Configuración de threshold ajustable (0.1g - 1.0g)
@@ -26,20 +26,26 @@ Crear una implementación mínima funcional que demuestre las capacidades críti
 
 **Implementación propuesta (el archivo aún no existe en el repositorio)**:
 ```c
-// firmware/src/drivers/imu_lsm6dsox.c
+// firmware/src/drivers/imu_lsm6ds3trc.c
+// Direcciones de registro: ver docs/firmware_docs/REAL_TIME_RISKS.md, sección 2
 int imu_init_movement_detection(float threshold_g) {
-    // Configurar acelerómetro para detección de movimiento
-    lsm6dsox_write_reg(LSM6DSO_WAKE_UP_THS, (uint8_t)(threshold_g * 64));
-    lsm6dsox_write_reg(LSM6DSO_WAKE_UP_DUR, 0x10);  // 16 muestras consecutivas
-    
-    // Habilitar interrupción en INT1
-    lsm6dsox_write_reg(LSM6DSO_INT1_CTRL, 0x20);
-    
+    // 1 LSB del umbral = 2 g / 64 = 31.25 mg a ±2 g; 6 bits, máximo 63 LSB
+    if (threshold_g <= 0.0f || threshold_g > 1.96f) {
+        return -EINVAL;
+    }
+
+    imu_write_reg(IMU_CTRL1_XL, 0x10);      // 12.5 Hz, ±2 g
+    imu_write_reg(IMU_CTRL6_C, 0x10);       // XL_HM_MODE = 1: baja potencia (9 µA)
+    imu_write_reg(IMU_WAKE_UP_THS, (uint8_t)(threshold_g * 32));
+    imu_write_reg(IMU_WAKE_UP_DUR, 0x00);   // sin duración mínima
+    imu_write_reg(IMU_TAP_CFG, 0x80);       // INTERRUPTS_ENABLE
+    imu_write_reg(IMU_MD1_CFG, 0x20);       // INT1_WU: wake-up a INT1
+
     return 0;
 }
 ```
 
-> **Nota:** los valores de registro son ilustrativos y no están verificados: según la cabecera de registros de ST, `INT1_CTRL` = `0x20` activa `int1_fifo_full`; el wake-up se enruta a INT1 con `MD1_CFG`.
+> **Nota:** los valores salen del datasheet del LSM6DS3TR-C (DocID030071 Rev 3): `WAKE_UP_THS` (p.90) con 1 LSB = FS_XL/2^6, `TAP_CFG` (p.88) y `MD1_CFG` (p.92) para habilitar y enrutar el wake-up a INT1.
 
 ### 2. Algoritmo de Geocerca (Point-in-Polygon)
 **Requisitos**:

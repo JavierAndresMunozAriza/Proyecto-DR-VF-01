@@ -106,7 +106,7 @@ El BOM define tres antenas independientes, una por banda; ninguna cubre más de 
 \begin{itemize}[leftmargin=*]
     \item \textbf{LoRa (915 MHz)}: antena flexible de $8\,\text{cm}$ con conector u.FL (monopolo de cuarto de onda; el listado del proveedor indica $2\,\text{dBi}$ y no tiene MPN). Su rendimiento depende del plano de masa de la PCB y el alcance real debe probarse. La señal sale del pad ANT del módulo DX-LR30-900M22S por una línea de $50\,\Omega$ en la PCB hasta el conector u.FL.
     \item \textbf{Wi-Fi/BLE (2.4 GHz)}: antena FPC Würth 2015301200 conectada por u.FL al módulo ESP32-S3-WROOM-1U-N16R8. Su ganancia no está verificada: no hay hoja de datos en el repositorio.
-    \item \textbf{GNSS (1575.42 MHz)}: parche cerámico pasivo de $18\times18\times4\,\text{mm}$, con MPN pendiente. El MAX-M10S integra LNA y filtro SAW; el plano de masa del parche se define en el diseño de la PCB.
+    \item \textbf{GNSS (1575.42 MHz)}: parche cerámico pasivo de $18\times18\times4\,\text{mm}$ con cable y conector u.FL, con MPN pendiente. El MAX-M10S integra LNA y filtro SAW; el plano de masa del parche se define en el diseño de la PCB.
 \end{itemize}
 
 \subsection{Criterios de Posicionamiento Radiativo}

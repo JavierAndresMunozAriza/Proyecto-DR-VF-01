@@ -11,7 +11,7 @@ La arquitectura del sistema se basa en el microcontrolador ESP32-S3-WROOM-1U-N16
 \begin{itemize}[leftmargin=*]
     \item \textbf{Microcontrolador Principal}: ESP32-S3-WROOM-1U-N16R8 (16 MB Flash, 8 MB PSRAM, conector U.FL).
     \item \textbf{Sistema de Posicionamiento}: u-blox MAX-M10S GNSS multiconstelación.
-    \item \textbf{Sensor de Inercia y Movimiento}: IMU de 6 ejes con bajo consumo; el modelo está \textbf{POR DECIDIR} (LSM6DSOX del BOM o LSM6DS3TR-C, que es la pieza que tiene el docente).
+    \item \textbf{Sensor de Inercia y Movimiento}: IMU de 6 ejes con bajo consumo; el modelo es el LSM6DS3TR-C, que tiene el docente (decidido el 2026-11-03).
     \item \textbf{Transceptor de Radiofrecuencia}: módulo LoRa DX-LR30-900M22S (SX1262 integrado, interfaz SPI, 915 MHz, alimentación de 1.8 a 3.7 V).
     \item \textbf{Gestión de Energía y Carga}: la batería es el nodo central. El cargador solar MPPT CN3791 (6 V) carga la batería únicamente desde el panel solar; la carga por USB-C pasa por el cargador lineal TP4056 (500 mA) y el USB nunca alimenta el sistema. Un LDO de 1 A con \textit{Iq} de 25~$\mu$A, TLV75733P (3.3 V), se alimenta solo de la batería. El medidor de batería MAX17048 ($\text{I}^2\text{C}$, dirección 0x36) se conecta a la batería y el USBLC6-2SC6 protege D+, D$-$ y VBUS. El circuito integrado de protección de la batería está \textbf{POR DECIDIR}: el código BQ2975DRBR del BOM no existe y la pieza debe identificarse.
     \item \textbf{Antenas} (posiciones en la carcasa \textbf{POR DECIDIR}): antena LoRa flexible de 8~cm con conector u.FL (915 MHz), antena FPC Würth 2015301200 de 2.4 GHz para el Wi-Fi/BLE del ESP32-S3 y antena GNSS pasiva de parche de 18$\times$18$\times$4~mm (MPN \textbf{POR DECIDIR}).
@@ -45,7 +45,7 @@ El presupuesto de potencia se calculó considerando el perfil de ciclo de trabaj
 ESP32-S3 & Deep Sleep & 8.0 $\mu$A & 7.88 $\mu$A \\
 \rowcolor{rowalt}
 u-blox MAX-M10S & Standby (software) & 46.12 $\mu$A & 45.43 $\mu$A \\
-LSM6DSOX IMU & Low-Power & 9.5 $\mu$A & 9.36 $\mu$A \\
+LSM6DS3TR-C IMU & Low-Power & 9.5 $\mu$A & 9.36 $\mu$A \\
 \rowcolor{rowalt}
 SX1262 LoRa & Sleep & 0.6 $\mu$A & 0.59 $\mu$A \\
 CN3791 MPPT & Sleep (sin entrada) & 30.0 $\mu$A & 30.00 $\mu$A \\
@@ -121,13 +121,13 @@ El módulo ESP32-S3-WROOM-1U-N16R8 está especificado de $-40$ a $65\,^\circ\tex
 1 & Módulo ESP32-S3 (16 MB Flash quad, 8 MB PSRAM octal, conector U.FL) & ESP32-S3-WROOM-1U-N16R8 & Espressif & Digi-Key \\
 \rowcolor{rowalt}
 1 & Módulo GNSS Multiconstelación & MAX-M10S-00B & u-blox & Avnet \\
-1 & Antena GNSS pasiva de parche, 1575.42 MHz, 18$\times$18$\times$4~mm & \textbf{POR DECIDIR} (MPN pendiente) & --- & --- \\
+1 & Antena GNSS pasiva de parche con cable y u.FL, 1575.42 MHz, 18$\times$18$\times$4~mm & \textbf{POR DECIDIR} (MPN pendiente) & --- & --- \\
 \rowcolor{rowalt}
-1 & Sensor de Inercia IMU 6 ejes (\textbf{POR DECIDIR}: LSM6DSOX o LSM6DS3TR-C del docente) & LSM6DSOXTR (referencia actual del BOM) & STMicroelectronics & Digi-Key \\
+1 & Sensor de Inercia IMU 6 ejes & LSM6DS3TR-C & STMicroelectronics & Docente \\
 1 & Módulo LoRa 915 MHz con SX1262, interfaz SPI, 20$\times$14$\times$2.3~mm & DX-LR30-900M22S (variante SMD, no la variante SP) & DX-SMART & AliExpress \\
 \rowcolor{rowalt}
 1 & Antena LoRa 915 MHz flexible de 8~cm con conector u.FL & sin MPN (listado del proveedor) & genérico & AliExpress \\
-1 & Conector u.FL SMD para la antena LoRa & U.FL-R-SMT-1 (por verificar) & Hirose & Digi-Key \\
+2 & Conector u.FL SMD para las antenas LoRa y GNSS & U.FL-R-SMT-1 (por verificar) & Hirose & Digi-Key \\
 \rowcolor{rowalt}
 1 & Antena FPC 2.4 GHz (Wi-Fi/BLE del módulo, vía U.FL) & 2015301200 & Würth Elektronik & Mouser \\
 1 & Conector SMA hembra (solo pruebas de banco) & 6521011000 & Würth Elektronik & Mouser \\
@@ -145,9 +145,9 @@ El módulo ESP32-S3-WROOM-1U-N16R8 está especificado de $-40$ a $65\,^\circ\tex
 1 & Batería LiPo 3.7 V, 1S (capacidad \textbf{POR DECIDIR}: 1200 o 1500~mAh) & PL063-1500 (referencia actual del BOM) & PowerStream & Digi-Key \\
 \rowcolor{rowalt}
 1 & Panel solar de 6 V nominal, al menos 1~W & \textbf{POR DECIDIR}: el HTJ-2W-D del BOM no declara su tensión & --- & --- \\
-1 & Conector USB-C hembra (programación por USB nativo y entrada del TP4056) & \textbf{POR DECIDIR}: el código 1240-6813-1-ND no se pudo verificar & Amphenol & Digi-Key \\
+1 & Conector USB-C hembra de 16 pines (programación por USB nativo y entrada del TP4056) & TYPE-C-3.1-16PIN & Shou Han & Docente \\
 \rowcolor{rowalt}
-1 & Protección ESD USB 2.0 de 2 líneas, SOT23-6 (D+/D$-$ y VBUS) & USBLC6-2SC6 & STMicroelectronics & Digi-Key \\
+1 & Protección ESD USB 2.0 de 2 líneas, SOT23-6 (D+/D$-$ y VBUS) & USBLC6-2SC6 & STMicroelectronics & Docente \\
 \bottomrule
 \end{tabularx}
 \end{table}

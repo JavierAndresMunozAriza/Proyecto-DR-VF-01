@@ -151,7 +151,7 @@ Para restaurar la configuración de fábrica:
 
 ### Resistencia Ambiental
 - Grado de protección: IP67 (objetivo de diseño; pendiente de ensayo)
-- Temperatura de operación: -20°C a +65°C (no se declara operación por encima de 65°C)
+- Temperatura de operación: -20°C a +65°C (no se declara operación por encima de 65°C). Uso previsto solo en zonas sin heladas (por debajo de unos 2.300 m): no cargue la batería bajo 0 °C
 - Resistencia UV: Clasificación industrial
 
 ## Garantía y Soporte

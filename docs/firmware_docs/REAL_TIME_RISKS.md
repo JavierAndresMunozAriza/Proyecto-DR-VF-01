@@ -72,9 +72,9 @@ bool pip_optimized(const point_t* p, const polygon_t* poly) {
 2. Subdivisión en cuadrantes para procesamiento paralelo
 3. Cache de resultados parciales en SRAM interna
 
-## 2. Interrupción GPIO Wakeup desde la IMU (LSM6DSOX en el ejemplo)
+## 2. Interrupción GPIO Wakeup desde la IMU (LSM6DS3TR-C)
 
-> **POR DECIDIR (IMU):** el BOM lista el LSM6DSOX y el docente tiene el LSM6DS3TR-C. Los ejemplos y notas de registros de esta sección suponen el LSM6DSOX.
+> IMU: LSM6DS3TR-C del docente (decidido el 2026-11-03). Los registros y valores de esta sección salen de su datasheet (DocID030071 Rev 3, `hardware/datasheets/lsm6ds3tr-c_datasheet.pdf`).
 
 ### Desafío
 Detectar movimiento significativo mientras el sistema está en Deep Sleep requiere configuración precisa del acelerómetro.
@@ -93,31 +93,45 @@ Implementando el principio de Elecia White de "test everything":
 
 ### Solución Técnica
 ```c
-// Propuesta (el archivo aún no existe): firmware/src/drivers/imu_lsm6dsox.c
-int lsm6dsox_configure_wakeup(void) {
-    // Configurar threshold de movimiento (0.5g)
-    lsm6dso_write_reg(LSM6DSO_WAKE_UP_THS, 0x20);  // 32 LSB = 0.5g
-    
-    // Configurar duración (16 muestras consecutivas)
-    lsm6dso_write_reg(LSM6DSO_WAKE_UP_DUR, 0x10);
-    
-    // Habilitar interrupt en INT1 pin
-    lsm6dso_write_reg(LSM6DSO_INT1_CTRL, 0x20);    // WAKEUP_SRC
-    
-    // Modo low-power a 26Hz
-    lsm6dso_write_reg(LSM6DSO_CTRL1_XL, 0x10);     // 26Hz, 2g range
-    
+// Propuesta (el archivo aún no existe): firmware/src/drivers/imu_lsm6ds3trc.c
+// Direcciones de registro (datasheet LSM6DS3TR-C, DocID030071 Rev 3)
+#define IMU_CTRL1_XL     0x10  // p.61
+#define IMU_CTRL6_C      0x15  // p.66
+#define IMU_TAP_CFG      0x58  // p.88
+#define IMU_WAKE_UP_THS  0x5B  // p.90
+#define IMU_WAKE_UP_DUR  0x5C  // p.90
+#define IMU_MD1_CFG      0x5E  // p.92
+
+int imu_configure_wakeup(void) {
+    // Acelerómetro a 12.5 Hz y ±2 g (ODR_XL = 0001, FS_XL = 00)
+    imu_write_reg(IMU_CTRL1_XL, 0x10);
+
+    // XL_HM_MODE = 1: desactiva el alto rendimiento y deja el modo de baja potencia
+    imu_write_reg(IMU_CTRL6_C, 0x10);
+
+    // Umbral de 0.5 g: 1 LSB = FS_XL / 2^6 = 31.25 mg a ±2 g, así que 16 LSB
+    imu_write_reg(IMU_WAKE_UP_THS, 0x10);
+
+    // Sin duración mínima (WAKE_DUR = 00): basta la primera muestra sobre el umbral
+    imu_write_reg(IMU_WAKE_UP_DUR, 0x00);
+
+    // INTERRUPTS_ENABLE = 1 (bit 7): habilita las interrupciones básicas, incluido el wake-up
+    imu_write_reg(IMU_TAP_CFG, 0x80);
+
+    // INT1_WU = 1 (bit 5): enruta el evento de wake-up al pin INT1
+    imu_write_reg(IMU_MD1_CFG, 0x20);
+
     return 0;
 }
 ```
 
-> **Nota:** los valores de registro de este ejemplo no están verificados contra la hoja de datos del LSM6DSOX. Según la cabecera de registros de ST (`lsm6dsox_reg.h`), el bit 5 de `INT1_CTRL` es `int1_fifo_full` (el wake-up se enruta a INT1 con `MD1_CFG`), el bit 4 de `WAKE_UP_DUR` es `wake_ths_w` (la duración es `wake_dur`, bits 5-6) y `CTRL1_XL` = `0x10` corresponde a 12.5 Hz, no a 26 Hz.
+> **Nota:** los valores salen del datasheet del LSM6DS3TR-C. Si `XL_HM_MODE` queda en 0 (valor por defecto), el acelerómetro trabaja en alto rendimiento y consume 150 µA en lugar de los 9 µA a 12.5 Hz en baja potencia (tabla 4, p.24). La duración `WAKE_DUR` es de 2 bits (hasta 3 muestras) y cada muestra suma 80 ms de latencia a 12.5 Hz.
 
 ### Timing de Wakeup
-1. IMU detecta movimiento: < 10ms
+1. IMU detecta movimiento: hasta 80ms (un periodo de muestreo a 12.5 Hz, con `WAKE_DUR` = 0; cálculo propio a partir del datasheet, que no da una latencia)
 2. Generación de interrupt: < 1ms
 3. ESP32 sale de Deep Sleep: ~200ms
-4. Tiempo total hasta PIP: ~211ms (aceptable)
+4. Tiempo total hasta PIP: ~281ms (dentro de los 300ms, con poco margen; no medido)
 
 ## 3. Manejo de Errores en Tiempo Real
 
@@ -219,7 +233,7 @@ void geofence_thread(void) {
 |---------|----------|------|--------|
 | Tiempo PIP | < 50ms | No medido | Pendiente |
 | Consumo Sleep | < 150 μA (RNF-03; presupuesto: unos 124 μA) | No medido | Pendiente |
-| Tiempo Wakeup | < 300ms | No medido (estimación de diseño: ~211ms, ver «Timing de Wakeup») | Pendiente |
+| Tiempo Wakeup | < 300ms | No medido (estimación de diseño: ~281ms, ver «Timing de Wakeup») | Pendiente |
 | Precisión GNSS | < 3m | No medido | Pendiente |
 
 ## Conclusiones

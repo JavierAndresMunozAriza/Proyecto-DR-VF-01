@@ -17,7 +17,7 @@ El DR-VF-01 es un sistema avanzado de geocercamiento para ganado que combina tec
 - **Protocolo Propietario**: Optimizado para bajo consumo y alta fiabilidad
 
 ### Detección Inteligente de Movimiento
-- **Sensor IMU Integrado**: IMU de 6 ejes para detección de movimiento (LSM6DSOX en el BOM; la elección entre LSM6DSOX y LSM6DS3TR-C está POR DECIDIR)
+- **Sensor IMU Integrado**: IMU de 6 ejes para detección de movimiento (LSM6DS3TR-C)
 - **Wake-up Selectivo**: Solo activo cuando el animal se mueve significativamente
 - **Umbral Ajustable**: Configurable entre 0.1g y 1.0g
 
@@ -36,7 +36,7 @@ El DR-VF-01 es un sistema avanzado de geocercamiento para ganado que combina tec
 | Microcontrolador | ESP32-S3-WROOM-1U-N16R8 (16MB Flash, 8MB PSRAM) |
 | GNSS | u-blox MAX-M10S (solo L1) |
 | Radio LoRa | Módulo DX-LR30-900M22S (SX1262 integrado, SPI, 915MHz) |
-| IMU | POR DECIDIR (LSM6DSOX o LSM6DS3TR-C) |
+| IMU | LSM6DS3TR-C |
 | Regulador | LDO TLV75733PDBVR (3.3V, 1A) |
 | Cargador Solar | CN3791 MPPT, solo para el panel solar |
 | Cargador USB-C | TP4056, 500mA |
@@ -45,7 +45,7 @@ El DR-VF-01 es un sistema avanzado de geocercamiento para ganado que combina tec
 | Protección de batería | POR DECIDIR |
 | Batería | LiPo 3.7V, 1200mAh o 1500mAh (POR DECIDIR) |
 | Panel solar | 6V, al menos 1W (MPN POR DECIDIR) |
-| Antenas | LoRa: flexible de 8cm con conector u.FL. Wi-Fi/BLE: FPC de 2.4GHz (Würth 2015301200). GNSS: parche pasivo de 18x18x4mm (MPN POR DECIDIR). Ganancias sin verificar |
+| Antenas | LoRa: flexible de 8cm con conector u.FL. Wi-Fi/BLE: FPC de 2.4GHz (Würth 2015301200). GNSS: parche pasivo de 18x18x4mm con cable y conector u.FL (MPN POR DECIDIR). Ganancias sin verificar |
 
 ### Desempeño
 | Parámetro | Valor |
@@ -54,7 +54,7 @@ El DR-VF-01 es un sistema avanzado de geocercamiento para ganado que combina tec
 | Precisión GNSS | < 3m RMS (objetivo; sin medir) |
 | Tiempo de Respuesta PIP | < 50ms (objetivo RF-02; pendiente de medir en la placa) |
 | Consumo en Sleep | Unos 124μA (calculado; sin medir) |
-| Temperatura de Operación | -20°C a +65°C (límite superior fijado por el módulo ESP32-S3-WROOM-1U-N16R8) |
+| Temperatura de Operación | -20°C a +65°C (límite superior fijado por el módulo ESP32-S3-WROOM-1U-N16R8). Uso previsto solo en zonas sin heladas (por debajo de unos 2.300 m): la carga de la batería no tiene corte por frío y no debe hacerse bajo 0 °C |
 | Grado de Protección | IP67 (objetivo de diseño; pendiente de ensayo) |
 
 ### Dimensiones y Peso

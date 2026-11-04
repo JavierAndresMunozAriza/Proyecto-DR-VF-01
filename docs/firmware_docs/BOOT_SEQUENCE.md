@@ -37,7 +37,7 @@ Esta documentación describe la secuencia de arranque del sistema siguiendo los 
    - Cristal RTC de 32.768 kHz en GPIO15 y GPIO16 (ver `hardware/pinout.md`)
 
 ## 3. Inicialización de Sensores
-1. **IMU** (POR DECIDIR: LSM6DSOX o LSM6DS3TR-C del docente)
+1. **IMU** (LSM6DS3TR-C del docente)
    - Verificación de conexión (WHO_AM_I register; el valor esperado depende de la pieza elegida)
    - Configuración de interrupciones para wake-up (INT1 en GPIO4)
    - Modo low-power habilitado

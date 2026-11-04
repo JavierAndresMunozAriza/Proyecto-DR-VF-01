@@ -2,7 +2,7 @@
 
 Este dossier presenta la arquitectura y especificación del firmware y software embebido del collar de geocercamiento DR-VF-01. Se detallan la secuencia de arranque, la máquina de estados finitos (FSM), las estrategias de mitigación de latencia en tiempo real y la definición del firmware mínimo viable (MVP).
 
-El firmware es un único código base sobre \textbf{Zephyr RTOS} para dos placas: la prueba de concepto en la \textbf{Nordic Thingy:91 X} (nRF9151, nRF Connect SDK, LTE-M/NB-IoT/GNSS) y el producto final en la \textbf{PCB con ESP32-S3-WROOM-1U-N16R8} (módulo LoRa DX-LR30-900M22S con SX1262, GNSS externo MAX-M10S, medidor de batería MAX17048 e IMU \textbf{POR DECIDIR} entre LSM6DSOX y LSM6DS3TR-C). Se comparten \texttt{geofence.c}, la FSM y el registro de eventos (\emph{logging}); cada placa aporta su \emph{overlay} de devicetree, su \texttt{prj.conf} y los adaptadores de GNSS, comunicaciones e IMU.
+El firmware es un único código base sobre \textbf{Zephyr RTOS} para dos placas: la prueba de concepto en la \textbf{Nordic Thingy:91 X} (nRF9151, nRF Connect SDK, LTE-M/NB-IoT/GNSS) y el producto final en la \textbf{PCB con ESP32-S3-WROOM-1U-N16R8} (módulo LoRa DX-LR30-900M22S con SX1262, GNSS externo MAX-M10S, medidor de batería MAX17048 e IMU LSM6DS3TR-C). Se comparten \texttt{geofence.c}, la FSM y el registro de eventos (\emph{logging}); cada placa aporta su \emph{overlay} de devicetree, su \texttt{prj.conf} y los adaptadores de GNSS, comunicaciones e IMU.
 
 \section{Secuencia de Arranque (\textit{Power-on Sequence})}
 
@@ -11,7 +11,7 @@ El firmware es un único código base sobre \textbf{Zephyr RTOS} para dos placas
 \begin{enumerate}[leftmargin=*]
     \item \textbf{Power-On Reset (POR)}: Verificación de estabilización de riel de alimentación ($3.3\text{ V}$) y reinicio del SoC.
     \item \textbf{Inicialización de Periféricos}: Configuración de buses de comunicación ($\text{I}^2\text{C}$, SPI) y líneas GPIO de interrupción.
-    \item \textbf{Inicialización de Sensores}: Autochequeo (BIST) y configuración del módulo LoRa DX-LR30-900M22S (SX1262, con sus líneas de control del conmutador de antena RXEN/TXEN según \texttt{hardware/pinout.md}), la IMU (LSM6DSOX o LSM6DS3TR-C, \textbf{POR DECIDIR}), el GNSS MAX-M10S y el medidor de batería MAX17048 ($\text{I}^2\text{C}$, dirección 0x36), con lectura inicial del estado de carga.
+    \item \textbf{Inicialización de Sensores}: Autochequeo (BIST) y configuración del módulo LoRa DX-LR30-900M22S (SX1262, con sus líneas de control del conmutador de antena RXEN/TXEN según \texttt{hardware/pinout.md}), la IMU (LSM6DS3TR-C), el GNSS MAX-M10S y el medidor de batería MAX17048 ($\text{I}^2\text{C}$, dirección 0x36), con lectura inicial del estado de carga.
     \item \textbf{Carga de Parámetros de Geocerca}: Lectura del polígono activo y llaves criptográficas desde memoria Flash NVS.
     \item \textbf{Arranque del RTOS (Zephyr)}: Creación de tareas prioritarias y mecanismos de sincronización (\textit{semáforos y colas}).
 \end{enumerate}
@@ -156,34 +156,48 @@ Para evitar cuellos de botella por latencia de acceso a Flash, la estructura de 
 
 \subsection{Interrupción de Despertar (\textit{GPIO Wakeup}) desde IMU}
 
-\subsubsection{Configuración del Registro del LSM6DSOX}
+\subsubsection{Configuración del Registro del LSM6DS3TR-C}
 
 \begin{verbatim}
-int lsm6dsox_configure_wakeup(void) {
-    // Configurar umbral de detección de movimiento (0.5g)
-    lsm6dso_write_reg(LSM6DSO_WAKE_UP_THS, 0x20);
-    
-    // Configurar duración mínima (16 muestras consecutivas)
-    lsm6dso_write_reg(LSM6DSO_WAKE_UP_DUR, 0x10);
-    
-    // Habilitar la ruta de interrupción en el pin INT1
-    lsm6dso_write_reg(LSM6DSO_INT1_CTRL, 0x20);
-    
-    // Ajustar tasa ODR en modo bajo consumo (26 Hz)
-    lsm6dso_write_reg(LSM6DSO_CTRL1_XL, 0x10);
-    
+// Direcciones de registro (datasheet LSM6DS3TR-C, DocID030071 Rev 3)
+#define IMU_CTRL1_XL     0x10  // p.61
+#define IMU_CTRL6_C      0x15  // p.66
+#define IMU_TAP_CFG      0x58  // p.88
+#define IMU_WAKE_UP_THS  0x5B  // p.90
+#define IMU_WAKE_UP_DUR  0x5C  // p.90
+#define IMU_MD1_CFG      0x5E  // p.92
+
+int imu_configure_wakeup(void) {
+    // Acelerometro a 12.5 Hz y +-2 g
+    imu_write_reg(IMU_CTRL1_XL, 0x10);
+
+    // XL_HM_MODE = 1: modo de baja potencia
+    imu_write_reg(IMU_CTRL6_C, 0x10);
+
+    // Umbral de 0.5 g: 1 LSB = FS_XL / 2^6 = 31.25 mg, 16 LSB
+    imu_write_reg(IMU_WAKE_UP_THS, 0x10);
+
+    // Sin duracion minima: basta la primera muestra sobre el umbral
+    imu_write_reg(IMU_WAKE_UP_DUR, 0x00);
+
+    // INTERRUPTS_ENABLE = 1 (bit 7)
+    imu_write_reg(IMU_TAP_CFG, 0x80);
+
+    // INT1_WU = 1 (bit 5): enruta el wake-up al pin INT1
+    imu_write_reg(IMU_MD1_CFG, 0x20);
+
     return 0;
 }
 \end{verbatim}
 
-\noindent\emph{Nota:} los valores de registro de este ejemplo no están verificados contra la hoja de datos del LSM6DSOX. Según la cabecera de registros de ST, el bit 5 de \texttt{INT1\_CTRL} es \texttt{int1\_fifo\_full} (el \emph{wake-up} se enruta a INT1 con \texttt{MD1\_CFG}) y \texttt{CTRL1\_XL} = \texttt{0x10} corresponde a 12.5 Hz, no a 26 Hz.
+\noindent\emph{Nota:} los valores salen del datasheet del LSM6DS3TR-C. Si \texttt{XL\_HM\_MODE} queda en 0 (valor por defecto), el acelerómetro trabaja en alto rendimiento y consume 150~$\mu$A en lugar de los 9~$\mu$A a 12.5~Hz en baja potencia. La duración \texttt{WAKE\_DUR} es de 2 bits (hasta 3 muestras) y cada muestra suma 80~ms de latencia a 12.5~Hz.
 
 \section{Firmware Mínimo Viable (MVP)}
 
 \subsection{Módulos Core del MVP}
 
 \begin{enumerate}[leftmargin=*]
-    \item \textbf{Gestor de Movimiento}: Driver de la IMU (LSM6DSOX o LSM6DS3TR-C, \textbf{POR DECIDIR}) con detección de umbral de aceleración.
+    \item \textbf{Gestor de Movimiento}: Driver de la IMU (LSM6DS3TR-C) con detección de umbral de aceleración.
     \item \textbf{Motor de Geocercamiento}: Algoritmo Ray-Casting optimizado con almacenamiento en RAM.
     \item \textbf{Pila LoRaWAN / LoRa P2P}: Transmisión de eventos prioritarios mediante el módulo LoRa DX-LR30-900M22S (SX1262).
     \item \textbf{Interfaz de Configuración}: Punto de acceso SoftAP con servidor HTTP embebido.

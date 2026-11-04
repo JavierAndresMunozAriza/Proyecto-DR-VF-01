@@ -29,7 +29,7 @@ El DR-VF-01 es una solución de grado industrial para el geocercamiento y monito
 \subsubsection{Detección Inteligente de Movimiento y Wake-Up}
 
 \begin{itemize}[leftmargin=*]
-    \item \textbf{Sensor Inercial}: IMU de 6 ejes con procesamiento integrado de eventos (modelo \textbf{POR DECIDIR}: LSM6DSOX o LSM6DS3TR-C).
+    \item \textbf{Sensor Inercial}: IMU de 6 ejes con detección de movimiento por interrupción (LSM6DS3TR-C).
     \item \textbf{Activación Selectiva}: Interrupción por hardware cuando el bovino supera el umbral inercial.
     \item \textbf{Umbral Configurable}: Ajustable en rango de $0.1\,g$ a $1.0\,g$.
 \end{itemize}
@@ -59,7 +59,7 @@ Microcontrolador Core & ESP32-S3-WROOM-1U-N16R8 ($16\,\text{MB}$ Flash, $8\,\tex
 Navegación GNSS & u-blox MAX-M10S (Multiconstelación 72 canales) \\
 Radiofrecuencia LoRa & Módulo DX-LR30-900M22S con SX1262 ($915\,\text{MHz}$, $+22\,\text{dBm}$, SPI) \\
 \rowcolor{rowalt}
-Sensor de Movimiento & IMU 6 ejes de STMicroelectronics (\textbf{POR DECIDIR}: LSM6DSOX o LSM6DS3TR-C) \\
+Sensor de Movimiento & IMU 6 ejes de STMicroelectronics (LSM6DS3TR-C) \\
 Gestión Fotovoltaica & CN3791 MPPT Solar Charger ($6\,\text{V}$), solo desde el panel solar \\
 \rowcolor{rowalt}
 Carga por USB-C & TP4056 ($500\,\text{mA}$); el USB nunca alimenta el sistema \\
@@ -90,7 +90,7 @@ Precisión Posicional GNSS & $< 3.0\,\text{m}$ RMS \\
 Tiempo de Respuesta Algoritmo PiP & $< 50\,\text{ms}$ \\
 \rowcolor{rowalt}
 Consumo de Corriente en \textit{Deep Sleep} & $\approx 124\,\mu\text{A}$ (calculado) \\
-Rango de Temperatura Operativa & $-20\,^\circ\text{C}$ a $+65\,^\circ\text{C}$ \\
+Rango de Temperatura Operativa & $-20\,^\circ\text{C}$ a $+65\,^\circ\text{C}$ (uso previsto solo en zonas sin heladas; la carga no se hace bajo $0\,^\circ\text{C}$) \\
 \rowcolor{rowalt}
 Grado de Estanqueidad Estructural & IP67 (IEC 60529) \\
 \bottomrule

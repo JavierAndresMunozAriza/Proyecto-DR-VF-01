@@ -15,7 +15,7 @@
 | **RF-03** | Acción disuasiva simulada con optoacoplador | Activación de LED indicador al cruzar geocerca | Fase 3 | Verificación visual y medición de corriente | `OPTO_CTRL` (GPIO 1, ver [hardware/pinout.md](../hardware/pinout.md)) + Optoacoplador VO617A; buzzer PKMCS0909E4000-R1 (`BUZZER_PWM`, GPIO2) y LED RGB L-154A4SURK/G5T (GPIO38 a 40) |
 | **RF-04** | Telemetría LoRa en banda 915 MHz | Envío de paquetes formateados (Lat, Lon, Battery %, Satellites, Fence Status) | Fase 1 | Captura de paquetes con receptor LoRa | `Task_LoRaTX` (Core 0), módulo LoRa DX-LR30-900M22S (SPI GPIO10 a 13; BUSY 14, DIO1 6, NRESET 5, RXEN 42, TXEN 47), antena LoRa de 8 cm y conector u.FL |
 | **RF-05** | Monitoreo de porcentaje de batería | Lectura vía bus I2C con actualización constante | Fase 2 | Comparación con multímetro de precisión | `Task_PowerMgmt` (Core 0), MAX17048 Fuel Gauge (I2C GPIO8/9, dirección 0x36, sobre la batería). Estado de carga: CN3791 CHRG (GPIO41); la salida de estado del TP4056 no tiene GPIO asignado (**POR DECIDIR**) |
-| **RF-06** | Despertar desde Deep Sleep por movimiento (*wake-on-motion*) | Por definir (fila añadida el 31/10/2026, sin métrica aprobada) | Fase 2 | Por definir | **Pendiente:** IMU `IMU_INT1` (GPIO4, despierta de Deep Sleep). IMU **POR DECIDIR** (LSM6DSOX o LSM6DS3TR-C del docente) |
+| **RF-06** | Despertar desde Deep Sleep por movimiento (*wake-on-motion*) | Por definir (fila añadida el 31/10/2026, sin métrica aprobada) | Fase 2 | Por definir | **Pendiente:** IMU `IMU_INT1` (GPIO4, despierta de Deep Sleep). IMU LSM6DS3TR-C del docente |
 
 ## 2. Requerimientos No Funcionales (RNF) y Sistema en Tiempo Real
 
@@ -29,7 +29,7 @@
 | **RNF-06** | Protección de la batería | Por definir (fila añadida el 31/10/2026, sin métrica aprobada) | Por definir | Por definir | **Pendiente:** pieza **POR DECIDIR** (el código BQ2975DRBR del BOM no existe) |
 | **RNF-07** | Protección ESD en el puerto USB-C | Por definir (fila añadida el 31/10/2026, sin métrica aprobada) | Por definir | Por definir | USBLC6-2SC6 en D+/D-/VBUS (`hardware/BOM.md`). Fuga y niveles ESD **pendientes de verificar**: falta el datasheet de ST en el repositorio |
 | **RNF-08** | Protección IP67 de la carcasa | IP67 (objetivo de diseño; el PRD lo ubica en Fase 2) | Por definir | Por definir | **Pendiente:** sello del USB-C (MPN y tipo **POR DECIDIR**), `mechanical/IP67_SPEC.md` |
-| **RNF-09** | Rango de temperatura de operación | Por definir: el BOM usa -20 a +65 °C y el PRD (NF-05) -10 a 50 °C; el módulo N16R8 admite -40 a 65 °C de ambiente | Por definir | Por definir | **Pendiente:** análisis en `hardware/THERMAL.md` |
+| **RNF-09** | Rango de temperatura de operación | Por definir: el BOM usa -20 a +65 °C y el PRD (NF-05) -10 a 50 °C; el módulo N16R8 admite -40 a 65 °C de ambiente | Por definir | Por definir | **Pendiente:** análisis en `hardware/THERMAL.md`. Alcance decidido el 2026-11-03: uso solo en zonas sin heladas (por debajo de unos 2.300 m); la carga de la batería no tiene corte por frío y no debe hacerse bajo 0 °C |
 
 ## 3. Estado de Implementación
 

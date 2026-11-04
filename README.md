@@ -61,9 +61,9 @@ stateDiagram-v2
 | Parameter | Specification | Engineering Note |
 | :--- | :--- | :--- |
 | **Proof-of-Concept Target** | Nordic Thingy:91 X (PCA20065) | nRF9151 (LTE-M/NB-IoT/GNSS) + nRF5340 (BLE), built with nRF Connect SDK |
-| **Final Product Target** | ESP32-S3-WROOM-1U-N16R8 (custom PCB) | LoRa module DX-LR30-900M22S (SX1262 inside, SPI), external GNSS MAX-M10S, IMU POR DECIDIR (LSM6DSOX or LSM6DS3TR-C). Pin map: `hardware/pinout.md`; parts list: `hardware/BOM.md` |
+| **Final Product Target** | ESP32-S3-WROOM-1U-N16R8 (custom PCB) | LoRa module DX-LR30-900M22S (SX1262 inside, SPI), external GNSS MAX-M10S, IMU LSM6DS3TR-C. Pin map: `hardware/pinout.md`; parts list: `hardware/BOM.md` |
 | **Power Path (final PCB)** | Battery-centred: CN3791 charges it from the 6 V solar panel only, TP4056 charges it from USB-C (500 mA); LDO TLV75733PDBVR (1 A, Iq 25 µA) feeds 3.3 V from the battery only | USB never powers the system. MAX17048 fuel gauge (I2C 0x36) on the battery rail; USBLC6-2SC6 ESD protection on the USB-C. Battery protection IC: POR DECIDIR (the BOM code BQ2975DRBR does not exist). Details: `docs/ARCHITECTURE.md` |
-| **Antennas (final PCB)** | LoRa 915 MHz 8 cm u.FL monopole; 2.4 GHz FPC (Würth 2015301200, via u.FL) for the module's Wi-Fi/BLE; GNSS passive patch | GNSS patch MPN and antenna positions: POR DECIDIR (`hardware/BOM.md`, `mechanical/ANTENNA_PLACEMENT.md`) |
+| **Antennas (final PCB)** | LoRa 915 MHz 8 cm u.FL monopole; 2.4 GHz FPC (Würth 2015301200, via u.FL) for the module's Wi-Fi/BLE; GNSS passive patch (cable with u.FL) | GNSS patch MPN and antenna positions: POR DECIDIR (`hardware/BOM.md`, `mechanical/ANTENNA_PLACEMENT.md`) |
 | **Operating System** | Zephyr RTOS (both boards) | Native DeviceTree & Kconfig driver architecture |
 | **Shared / Per-Board Code** | Shared: `geofence.c`, FSM, logging | Per board: overlay, `prj.conf`, GNSS / comms / IMU adapters |
 | **Geofencing Kernel** | Polygon ray casting in `double` (`geofence.c`) | Allocates the vertex array dynamically (`malloc` / `realloc`). A fixed-point, allocation-free kernel is planned, not implemented |

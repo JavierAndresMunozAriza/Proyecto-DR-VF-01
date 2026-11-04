@@ -11,7 +11,7 @@ Para conciliar la entrega académica del semestre actual con la hoja de ruta del
 \subsection*{Aspectos Críticos de Diseño}
 \begin{itemize}[leftmargin=*]
     \item \textbf{Autonomía y Balance Energético MPPT:} Recarga fotovoltaica conmutada mediante el chip CN3791 regulado a $6~\text{V}$ y batería LiPo de $3,7~\text{V}$ ($1200\text{--}1500~\text{mAh}$ en Fase 1; ampliable a $3200~\text{mAh}$ en Fase 2).
-    \item \textbf{Procesamiento en el Borde e IA (Edge AI):} Ejecución local en el módulo ESP32-S3-WROOM-1U-N16R8 del algoritmo geométrico \emph{Point-in-Polygon} (a $10~\text{Hz}$) y clasificación de la conducta del animal mediante el núcleo de Machine Learning (MLC) de la IMU ST LSM6DSOX (IMU \textbf{POR DECIDIR}: el LSM6DS3TR-C del docente no incluye MLC).
+    \item \textbf{Procesamiento en el Borde e IA (Edge AI):} Ejecución local en el módulo ESP32-S3-WROOM-1U-N16R8 del algoritmo geométrico \emph{Point-in-Polygon} (a $10~\text{Hz}$). La clasificación de la conducta del animal con el MLC queda para la Fase 4 y exigiría el LSM6DSOX.
     \item \textbf{Seguridad y Aislamiento Galvánico:} Aislamiento de alto voltaje ($>3000~\text{V}_{\text{RMS}}$) entre la lógica de control ($3,3~\text{V}$) y el circuito disuasivo mediante el optoacoplador VO617A.
     \item \textbf{Costo Target de Grado Comercial:} Optimización de la lista de materiales (\emph{Target BOM}) por debajo de $\$50.00~\text{USD}$ ($\sim\$200.000~\text{COP}$) por unidad.
 \end{itemize}
@@ -32,5 +32,5 @@ La arquitectura funcional del collar se organiza en los siguientes bloques princ
         \item \textbf{Emulación de Seguridad \emph{[Fase 1]}:} Optoacoplador VO617A con indicación por LED y Zumbador Piezoeléctrico.
         \item \textbf{Circuito Elevador de HV Real ($2,5~\text{kV} / 0,2~\text{J}$) \emph{[Fase 2]}:} Descarga controlada bajo norma IEC 60335-2-76.
     \end{itemize}
-    \item \textbf{Subsistema Inercial e Inteligencia de Borde (IMU + MLC)} \emph{[Fase 1]}: ST LSM6DSOX (IMU \textbf{POR DECIDIR} frente al LSM6DS3TR-C del docente; el MLC solo existe en el LSM6DSOX) para detección de movimiento (\emph{Wake-on-Motion}) y monitoreo de patrones de conducta.
+    \item \textbf{Subsistema Inercial (IMU)} \emph{[Fase 1]}: ST LSM6DS3TR-C del docente para detección de movimiento (\emph{Wake-on-Motion}).
 \end{enumerate}

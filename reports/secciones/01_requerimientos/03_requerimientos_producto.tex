@@ -18,7 +18,7 @@ F-08 & Gestión de energía con lectura de batería relativa (0-100\%) mediante 
 F-09 & El sistema debe regular la lógica de 3,3 V con un LDO TLV75733PDBVR (1 A, corriente quiescente de 25 $\mu$A) alimentado solo desde la batería. & Funcional \\ \hline
 F-10 & El sistema debe proteger la batería LiPo con un circuito integrado de protección (\textbf{POR DECIDIR}; la celda elegida puede traer protección propia). & Funcional \\ \hline
 F-11 & El puerto USB-C debe contar con protección contra descargas electrostáticas en D+, D- y VBUS mediante USBLC6-2SC6. & Funcional \\ \hline
-F-12 & El microcontrolador debe permanecer en Deep Sleep y despertar por la interrupción INT1 de la IMU (GPIO 4) ante movimiento significativo (IMU \textbf{POR DECIDIR}: LSM6DSOX o LSM6DS3TR-C). & Funcional \\ \hline
+F-12 & El microcontrolador debe permanecer en Deep Sleep y despertar por la interrupción INT1 de la IMU (GPIO 4) ante movimiento significativo (IMU LSM6DS3TR-C). & Funcional \\ \hline
 NF-01 & Autonomía mínima de 7 a 10 días continuos en ausencia total de radiación solar (estimación teórica: unos 190 días con 1200 mAh, calculada en \texttt{hardware/POWER\_BUDGET.md}). & No funcional \\ \hline
 NF-02 & Aislamiento galvánico con tensión de ruptura $\ge 3000~V_{RMS}$ entre control y etapa disuasiva. & No funcional \\ \hline
 NF-03 & Encapsulado mecánico para prototipo con protección contra salpicaduras (IP67 en Fase 2). & No funcional \\ \hline
