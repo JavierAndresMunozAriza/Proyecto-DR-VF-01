@@ -14,7 +14,7 @@ La batería es el nodo central: dos cargadores independientes la cargan y todo e
 
 ```text
 [Panel Solar 6V] ──► [CN3791 MPPT] ──┐
-                                      ├──► [Batería LiPo 3.7V] (protección: POR DECIDIR)
+                                      ├──► [Batería 1S 3.7V] (protección integrada)
 [USB-C VBUS 5V] ──► [TP4056] ────────┘            │
       ▲                                           ├─► [MAX17048 Fuel Gauge] (I2C 0x36)
  [USBLC6-2SC6]                                    ▼
@@ -30,9 +30,10 @@ La batería es el nodo central: dos cargadores independientes la cargan y todo e
 
 - **Dos cargadores:** el CN3791 regula la entrada a la tensión MPPT (6 V) y solo inicia carga si el pin MPPT supera 1.23 V, es decir, con más de unos 6.2 V en la entrada (sección 2.2). Un USB de 5 V nunca la inicia. El TP4056 acepta de 4.0 a 8.0 V y entrega hasta 1 A.
 - **TP4056:** carga lineal con terminación a C/10. Con RPROG de 2.4 kΩ limita a 500 mA y disipa unos 0.65 W con 5 V de entrada y la celda a 3.7 V; su regulación térmica protege el chip a 145 °C. Con 500 mA, la carga tarda no menos de 3 h para 1500 mAh (2.4 h para 1200 mAh) antes de la cola a tensión constante. No hay una línea de estado de carga confirmada que el MCU pueda leer: las salidas de estado del TP4056 no tienen GPIO asignado (GPIO42 ya es LORA_RXEN), **POR DECIDIR** (`hardware/pinout.md`).
-- **LDO TLV75733P:** la entrada nunca pasa de 4.2 V, así que a 300 mA disipa 0.27 W (ver `hardware/THERMAL.md`). Sin batería la placa no arranca desde el USB.
+- **LDO TLV75733P:** la entrada nunca pasa de 4.2 V, así que a 300 mA disipa 0.27 W (ver `hardware/THERMAL.md`). Sin batería la placa no arranca desde el USB. Se descartó el DS8570F8 del classroom: consume 0.6 mA con EN activo y sin carga (`hardware/datasheets/ds8570f8_datasheet.pdf`, p. 5), 24 veces los 25 µA del TLV75733P, y pide VDD de 3 V como mínimo aparte de VIN.
 - **Programación:** por el USB-C, con el USB nativo del ESP32-S3 (GPIO19 y GPIO20) y el botón BOOT a GND para el modo descarga (`hardware/pinout.md`). La placa debe tener la batería conectada.
-- **Protección de batería: POR DECIDIR.** El código BQ2975DRBR del BOM no existe; la pieza (y los MOSFET externos y la resistencia de sensado que necesite) no está definida (`hardware/BOM.md`, sección 1.5).
+- **Protección de batería (decidido el 2026-11-05):** la batería lleva protección integrada y la PCB no tiene IC protector (`hardware/BOM.md`, sección 1.5).
+- **Schottky D1 y D2 del CN3791:** con D1 montado el CN3791 baja a unos 9 µA, y la fuga de los dos diodos debe quedar por debajo de unos 47 µA en total para cumplir RNF-03. El PSBD1DF40V1H del docente no lo cumple (unos 40 µA por diodo a 65 °C, estimado de su curva); se compran dos con fuga garantizada (`hardware/COMPRAS.md`, O20).
 - **MAX17048:** I2C, dirección 0x36, conectado a la batería (VDD de 2.5 a 4.5 V), no al bus de 3.3 V.
 - **USB-C:** el USBLC6-2SC6 protege D+, D- y VBUS; CC1/CC2 llevan 5.1 kΩ (valor "por definir" en el BOM). El MPN del conector y el tipo de sello del puerto son **POR DECIDIR** (`hardware/BOM.md`).
 - **Antenas:** LoRa de 915 MHz (monopolo de 8 cm, u.FL), FPC de 2.4 GHz (Würth 2015301200, vía u.FL; Wi-Fi/BLE del módulo) y parche GNSS pasivo con cable y u.FL (decidido el 2026-11-04). El MPN del parche GNSS y las posiciones de las antenas son **POR DECIDIR** (`hardware/BOM.md`, `mechanical/ANTENNA_PLACEMENT.md`).
@@ -104,7 +105,7 @@ $$R_{CS} = \frac{0.12\text{ V}}{1.0\text{ A}} = 0.12\ \Omega\ (120\text{ m}\Omeg
 | **CN3791** | 30 μA (sin entrada, desde la batería) | — | — | Solo carga desde el panel solar |
 | **TLV75733P (LDO)** | 25 μA (Iq) | — | — | Solo alimentado desde la batería |
 | **TP4056** | 2.5 μA (standby) | — | — | Solo carga por USB-C |
-| **Total Sistema** | **~124 μA (123.76 μA)** | **~88 mA** | **~224 mA** | **Reposo: calculado en `hardware/POWER_BUDGET.md`; cumple RNF-03 (< 150 μA) con 26 μA de margen. Faltan por sumar el USBLC6-2SC6, la protección de batería (POR DECIDIR) y los extras del módulo LoRa. Los picos caben en los 500 mA del LDO de la DevKit (prototipo) y en el 1 A del TLV75733P (PCB final)** |
+| **Total Sistema** | **~124 μA (123.76 μA)** | **~88 mA** | **~224 mA** | **Reposo: calculado en `hardware/POWER_BUDGET.md`; cumple RNF-03 (< 150 μA) con 26 μA de margen. Faltan por sumar el USBLC6-2SC6, la fuga de D1 y D2 del CN3791 (menos de unos 47 µA en total, ver arriba) y los extras del módulo LoRa. Los picos caben en los 500 mA del LDO de la DevKit (prototipo) y en el 1 A del TLV75733P (PCB final)** |
 
 **Nota:** el margen de 500 mA es el del LDO de la DevKit (prototipo). El TLV75733P de la PCB final entrega 1 A.
 

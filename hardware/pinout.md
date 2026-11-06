@@ -139,11 +139,11 @@ Lista única para todo el mapa de conexiones (actualizada el 2026-11-05). Ningun
 - **Línea de 50 Ω:** calcular el ancho con el apilado real del fabricante para la PCB de 0.8 mm.
 
 **Por revisar antes de comprar o crear (auditoría del stock del docente, 2026-11-05; ver `hardware/AUDITORIA_STOCK_DOCENTE.md`)**
-- **Schottky D1 y D2 del CN3791 (O20):** leer la fuga a 4.2 V del PSBD1DF40V1H del docente (LCSC C110730) antes de comprar.
+- **Schottky D1 y D2 del CN3791 (O20):** el PSBD1DF40V1H del docente no sirve (unos 40 µA por diodo a 65 °C y 4 V, estimado de la Fig. 2 de su datasheet); comprar 2 con fuga garantizada (`COMPRAS.md` O20).
 - **Bulk de 3.3 V (O25):** el MPN TAJA107K016RNJ parece no existir; valorar el electrolítico de 100 µF del docente.
 - **Diodo ESD de la alimentación:** evaluar el LESD5Z3.3T1G del docente.
-- **Regulador:** bajar el datasheet del DS8570F8 del classroom (LCSC C5884245) y comparar su corriente en reposo con el presupuesto de sueño.
-- **Huella del TP4056:** comparar la `SOIC_8_3.9mm_EP` del docente con el dibujo del ESOP-8.
+- **Regulador:** se queda el TLV75733P; el DS8570F8 del classroom consume 0.6 mA en reposo (`datasheets/ds8570f8_datasheet.pdf`, p. 5).
+- **Huella del TP4056:** sirve la `SOIC_8_3.9mm_EP` del docente. Falta enlazarla en la biblioteca y agregar el pin 9 (EP) a GND; su máscara y pasta ya están en Rule Expansion (`PLAN_MANANA.md`, paso 19).
 - **Datasheets** de las piezas del docente que usamos: bajarlos a `hardware/datasheets/` (lista en la sección 8 de la auditoría).
 - **Contradicciones** entre `BOM.md` y `COMPRAS.md` (sección 4 de la auditoría): corregirlas al cerrar las decisiones.
 
