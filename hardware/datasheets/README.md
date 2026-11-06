@@ -49,7 +49,8 @@ Esta carpeta contiene **solo** hojas de datos (PDF) y este índice. Los PDF no s
 | Archivo | Documento | URL | Qué se verificó |
 |---------|-----------|-----|-----------------|
 | `jst_b2b-ph-k-s.pdf` | JST serie PH (incluye B2B-PH-K-S en p. 3 y B4B-PH-SM4-TB en p. 4) | https://www.jst-mfg.com/product/pdf/eng/ePH.pdf | Corriente nominal 2 A y tensión nominal 100 V (p. 1) |
-| `ecs_ecs-.327-12.5.pdf` | ECS ECX-306X, cristal SMD de 32.768 kHz (guía de numeración ECS-.327-12.5-17X-TR) | https://ecsxtal.com/store/pdf/ECX-306X.pdf | Frecuencia 32.768 kHz y capacitancia de carga 12.5 pF (p. 1) |
+| `ecs_ecs-.327-12.5-34b-tr.pdf` | ECS ECX-31B, cristal SMD de 32.768 kHz de 3.2 x 1.5 x 0.9 mm (ECS-.327-12.5-34B-TR) | Descargado con el navegador desde la página de SnapMagic del ECS-.327-12.5-34B-TR (botón "See Datasheet PDF"); sitio del fabricante: https://ecsxtal.com | ESR de 70 kΩ máx., ±20 ppm a 25 °C, CL 12.5 pF, coeficiente de temperatura -0.034 ppm/°C², pads 1 y 2 sin polaridad y huella sugerida (p. 1) |
+| `bzcn_tsc015.pdf` | BZCN serie TSC015, interruptor táctil SMD de 4.5 x 4.5 mm (el TSC015A05026A del docente, LCSC C2888509) | Descargado con el navegador desde la página de LCSC de la pieza (botón del datasheet) | 50 mA a 12 V DC, resistencia de contacto ≤ 100 mΩ, vida ≥ 100 000 ciclos, código de altura (5.0 mm) y de fuerza (260 gf), diagrama de circuito y huella recomendada (p. 1) |
 
 ## Descartadas (sin PDF local)
 
@@ -87,11 +88,8 @@ Se necesitan para cerrar los puntos POR DECIDIR de `BOM.md`. Las descargas autom
 | USBLC6-2 (USBLC6-2SC6), revisión vigente | Confirmar que la Rev 7 no cambia el pinout ni la capacitancia que se usaron de la Rev 5 | STMicroelectronics | st.com no respondió desde esta red. Bajar https://www.st.com/resource/en/datasheet/usblc6-2.pdf desde el navegador. La decisión del 2026-11-03 usó la Rev 5 (copia de LCSC, sección "Consultadas")
 | BQ2975 | MOSFET externos y resistencia de sensado de la protección de batería | Texas Instruments | **El código `BQ2975DRBR` de `BOM.md` no existe en las fuentes consultadas.** `ti.com/lit/ds/symlink/bq2975.pdf` devuelve 404 y dos búsquedas no lo encontraron. El documento de la familia BQ2970 a BQ2973 (SLUSBU9I) no lo menciona. Hay que identificar la pieza correcta (protector de 1 celda con MOSFET externos) antes de descargar |
 | PKMCS0909E4000-R1 (zumbador) | Tensión, frecuencia y consumo | Murata | El BOM decía `PKMCS0909E000-R1`, que no aparece en distribuidores; el código que sí aparece en Digi-Key y LCSC es `PKMCS0909E4000-R1` (9 x 9 mm, 1.5 V nominal, 4 kHz). Descargar su PDF desde murata.com en el navegador. Un listado de Digi-Key anota una fecha de última compra (31-mar-2027): comprobar disponibilidad |
-| PTS645SL50SMTR92 (pulsador) | Fuerza, vida útil y huella | C&K (ahora Littelfuse) | https://www.ckswitches.com/media/1471/pts645.pdf responde 403 a la descarga automática |
 | 2015301200 (antena) | Ganancia, adaptación y huella | Würth Elektronik | https://www.we-online.com/components/products/datasheet/2015301200.pdf responde 403 a la descarga automática |
-| 6521011000 (conector SMA) | Huella y datos del conector | Würth Elektronik | https://www.we-online.com/components/products/datasheet/6521011000.pdf responde 403 a la descarga automática |
 | U.FL-R-SMT-1 (conector U.FL) | Huella y altura acoplada | Hirose | Solo se alcanzó un escaneo sin texto extraíble (media.digikey.com, EDC3-302540-10.tif.pdf) y se descartó. Bajar el PDF desde hirose.com en el navegador |
-| B4B-SH-SM4-TB (conector JST) | Huella del conector de 4 pines | JST | El código no aparece en el PDF de la serie SH ni en los listados consultados. Existe B4B-PH-SM4-TB(LF)(SN) de la serie PH (2.0 mm, en `jst_b2b-ph-k-s.pdf`, p. 4). Confirmar serie y código antes de comprar |
 
 ## Cómo usarlas con el asistente
 

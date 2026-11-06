@@ -117,14 +117,14 @@
 
 ### Pendientes del esquemático (sin decidir)
 
-Lista única para todo el mapa de conexiones (actualizada el 2026-11-04). Ninguno lo decidió el asistente.
+Lista única para todo el mapa de conexiones (actualizada el 2026-11-05). Ninguno lo decidió el asistente.
 
 **Decisiones del autor**
 1. **Zumbador:** el PKMCS0909E4000-R1 da unos 52 dB a 1 m y `mechanical/IP67_SPEC.md` pide más de 80 dBA. Cambiar el zumbador o el requisito (`COMPRAS.md` O14).
 2. **Electrolítico de entrada del CN3791 (C1):** el de 100 µF 35 V del docente es de agujero pasante (6.3 x 12 mm). Sirve si cabe en la altura de la carcasa; si no, uno SMD por comprar.
 3. **Bulk de 3.3 V:** el tantalio de 100 µF (1 o 2) más los cerámicos no pueden pasar de 200 µF a la salida del TLV75733P; hoy suman unos 32.5 µF.
-4. **Protección de batería:** se recomienda una batería con protección integrada (PCM) en lugar de un IC en la PCB (`COMPRAS.md` O6 y O16).
-5. **Panel solar (O7):** fija los valores finales de R3 y R4 del MPPT y de RCS (O22).
+4. **Protección de batería (decidido el 2026-11-05):** la batería lleva protección integrada (PCM) y no hay IC protector en la PCB. Batería provisional: cualquier 1S de 3.7 V con PCM y conector JST PH de 2 pines; la definitiva (una LiPo mejor) se consigue después por el costo de envío (`COMPRAS.md` O6).
+5. **Panel solar (O7):** de 6 V y de 1 W a 1.5 W (decidido el 2026-11-05). Falta elegir el modelo; fija los valores finales de R3 y R4 del MPPT y de RCS (O22). Con 1 W la corriente es de 0.17 A y con 1.5 W de 0.25 A, así que un RCS de unos 0.47 Ω cubre todo el rango.
 6. **LED de carga del TP4056:** opcional en CHRG, solo con USB.
 7. **Supervisor de tensión en EN:** la guía de Espressif lo sugiere con alimentación solar de subida lenta.
 8. **Salida del optoacoplador en la Fase 4:** hoy alimenta un LED desde el mismo 3V3; en la Fase 4 va a un conector aislado.
@@ -133,10 +133,19 @@ Lista única para todo el mapa de conexiones (actualizada el 2026-11-04). Ningun
 **Confirmaciones antes de dibujar o al recibir las piezas**
 - **Módulo LoRa:** si RX y TX son entradas del conmutador, si TX va unido a DIO2 por dentro, si trae cristal o TCXO, y cómo se elige entre el pad ANT y el IPEX. Preguntar al vendedor; la PCB ya admite los dos casos con los 0 Ω.
 - **Polaridad de los JST:** medir los cables de la batería y del panel comprados y marcar "+" en la serigrafía.
-- **Cristal ECS:** que los pads 2 y 3 no estén conectados (continuidad o dibujo completo de ECS).
-- **Pulsador C&K:** el emparejamiento de terminales (el datasheet no se pudo descargar); el cableado en diagonal funciona en cualquier caso.
-- **Condensadores del docente:** leer la hoja del 22 µF de Chinocera y confirmar que los 470 nF son X7R.
+- **Cristal ECS:** su ESR de 70 kΩ máximo es igual al límite del ESP32-S3 (sin margen). Comprobar en el banco que el oscilador del RTC arranca.
+- **Pulsador del docente (TSC015):** el datasheet no declara rango de temperatura (el BOM pide -20 a +65 °C); confirmarlo con el fabricante o probarlo en el banco.
+- **Condensadores del docente:** leer la hoja del 22 µF de Chinocera (la descripción de la biblioteca dice X5R ±20 %). Los 470 nF son X7R ±10 % según la biblioteca.
 - **Línea de 50 Ω:** calcular el ancho con el apilado real del fabricante para la PCB de 0.8 mm.
+
+**Por revisar antes de comprar o crear (auditoría del stock del docente, 2026-11-05; ver `hardware/AUDITORIA_STOCK_DOCENTE.md`)**
+- **Schottky D1 y D2 del CN3791 (O20):** leer la fuga a 4.2 V del PSBD1DF40V1H del docente (LCSC C110730) antes de comprar.
+- **Bulk de 3.3 V (O25):** el MPN TAJA107K016RNJ parece no existir; valorar el electrolítico de 100 µF del docente.
+- **Diodo ESD de la alimentación:** evaluar el LESD5Z3.3T1G del docente.
+- **Regulador:** bajar el datasheet del DS8570F8 del classroom (LCSC C5884245) y comparar su corriente en reposo con el presupuesto de sueño.
+- **Huella del TP4056:** comparar la `SOIC_8_3.9mm_EP` del docente con el dibujo del ESOP-8.
+- **Datasheets** de las piezas del docente que usamos: bajarlos a `hardware/datasheets/` (lista en la sección 8 de la auditoría).
+- **Contradicciones** entre `BOM.md` y `COMPRAS.md` (sección 4 de la auditoría): corregirlas al cerrar las decisiones.
 
 ## Conexiones de periféricos
 
@@ -277,7 +286,7 @@ SSOP de 10 pines con paso de 1.00 mm y sin pad expuesto (p11); no usar una huell
 | 2 | GND | GND, con cobre amplio (es el disipador) | p3, p10 |
 | 3 | CHRG | GPIO41 (CHRG_STAT) con 10 kΩ a 3V3; drenador abierto hasta 30 V | p3-4 |
 | 4 | DONE | GND (salida de estado que no se usa) | p7 |
-| 5 | COM | 120 Ω en serie con 220 nF X7R a GND (R2 y C4); su masa vuelve al pin GND | p2, p10 |
+| 5 | COM | 120 Ω en serie con 235 nF X7R (dos 470 nF X7R del docente en serie) a GND (R2 y C4); su masa vuelve al pin GND | p2, p10 |
 | 6 | MPPT | Divisor: R3 de VCC a MPPT = 390 kΩ + 10 kΩ; R4 de MPPT a GND = 100 kΩ. V_MPPT = 1.205 x (1 + 400/100) = 6.025 V | p6 |
 | 7 | BAT | Lado de la batería de RCS, con conexión Kelvin | p10 |
 | 8 | CSP | Lado del inductor de RCS, con conexión Kelvin | p10 |
@@ -296,7 +305,7 @@ SSOP de 10 pines con paso de 1.00 mm y sin pad expuesto (p11); no usar una huell
 | C1 | Electrolítico más 10 µF X5R 25 V más 470 nF | El datasheet pide los tres en paralelo. El electrolítico de 100 µF 35 V del docente es de agujero pasante (6.3 x 12 mm): sirve si cabe en altura; si no, uno SMD por comprar (**POR DECIDIR**) | p8 |
 | C2 | 100 nF X7R de VG a VCC | | p2 |
 | C3 | Dos 10 µF X5R 25 V en BAT | El datasheet pide electrolítico más cerámico; solo cerámico es válido con más capacidad, porque la batería siempre está conectada | p8 |
-| R2 y C4 | 120 Ω y 220 nF X7R | Red de compensación de COM | p2 |
+| R2 y C4 | 120 Ω y 235 nF X7R (dos 470 nF en serie; el datasheet pide 220 nF) | Red de compensación de COM | p2 |
 | R3 y R4 | 390 kΩ + 10 kΩ y 100 kΩ | MPPT de 6.025 V; la carga arranca con más de 6.15 V en la entrada. El valor final depende de la tensión de máxima potencia del panel (O7) | p5, p6 |
 
 **Layout (p9-10):** lazo de diodos, MOSFET, inductor y C1 lo más corto posible, con el positivo de C1 junto al source de M1; masas de C3 y D2 al cobre de masa de C1 antes de ir a la masa del sistema; masa analógica y de potencia separadas hasta un punto; RCS junto a la salida del inductor, con CSP y BAT como par apretado (Kelvin). No conectar la batería con el cargador funcionando (p7-8).
@@ -344,29 +353,28 @@ Dos terminales SMD sin polaridad marcada (piezo).
 - **Condición de la sección 1 de `COMPRAS.md` (D7) resuelta:** la VF de verde y azul a la corriente elegida queda por debajo de 3.0 V, así que el ánodo va a 3V3 y no hace falta VBAT. Con un coeficiente típico de InGaN, a 0 °C quedan 1.6 a 1.8 mA (estimación: el datasheet no da el coeficiente).
 - El firmware enciende cada color con el GPIO en bajo.
 
-### Botón de usuario C&K PTS645SL50SMTR92 LFS
+### Botón de usuario BZCN TSC015A05026A (del docente, 4.5 x 4.5 mm)
 
 | Terminal | Conexión | Fuente |
 |----------|----------|--------|
-| Uno de los cuatro | GND | regla de cableado |
-| El terminal diagonal opuesto | Nodo N: 10 kΩ a 3V3; N a GPIO7 a través de 1 kΩ; 100 nF X7R de GPIO7 a GND | cálculo propio |
-| Los otros dos | Soldados, sin conexión eléctrica | - |
+| 1 (los dos pads con el nombre 1) | GND | regla de cableado; datasheet de BZCN p1 (circuito: terminales 1 y 2 unidos) |
+| 2 (los dos pads con el nombre 2) | Nodo N: 10 kΩ a 3V3; N a GPIO7 a través de 1 kΩ; 100 nF X7R de GPIO7 a GND | cálculo propio; datasheet de BZCN p1 (terminales 3 y 4 unidos) |
 
-- El emparejamiento interno de los terminales no está verificado: el datasheet de C&K no se pudo descargar (403). Los terminales diagonales siempre quedan a uno y otro lado del contacto, sea cual sea el emparejamiento.
+- El símbolo del docente tiene 2 pines y la huella 4 pads: los dos pads llamados 1 son los terminales 1 y 2 del datasheet (siempre unidos) y los dos llamados 2 son los terminales 3 y 4 (siempre unidos). Al pulsar se conecta una pareja con la otra.
+- Corriente nominal de 50 mA a 12 V DC (datasheet de BZCN p1); esta línea maneja unos 0.33 mA a 3.3 V. Fuerza de 260 gf ±50. El datasheet no declara rango de temperatura.
 - Antirrebote: al soltar, τ = 11 kΩ x 100 nF = 1.1 ms y llega a VIH en 1.5 ms; al pulsar, τ = 100 µs. Agregar unos 20 ms de antirrebote por firmware. Sin consumo en sleep con el botón suelto.
 - EN y GPIO0 llevan además pads de prueba para reset y modo descarga (ver la sección del módulo).
 
-### Cristal de 32.768 kHz ECS-.327-12.5 (ECX-306X)
+### Cristal de 32.768 kHz ECS-.327-12.5-34B-TR (ECX-31B)
 
 | Pad | Conexión | Fuente |
 |-----|----------|--------|
-| 1 | GPIO15 (pin 8 del módulo) y su carga a GND | p1 |
-| 4 | GPIO16 (pin 9 del módulo) y su carga a GND | p1 |
-| 2, 3 | Soldados, sin conexión | p1 (la figura dibuja el cristal entre los pads 1 y 4; sin texto que lo confirme) |
+| 1 | GPIO15 (pin 8 del módulo) y su carga a GND | p1 (PAD CONNECTIONS: In/Out) |
+| 2 | GPIO16 (pin 9 del módulo) y su carga a GND | p1 (PAD CONNECTIONS: Out/In) |
 
 - Carga de cada pata: dos 33 pF NP0 del docente en serie (16.5 pF). CL = 16.5 / 2 + 3 a 5 pF parásitos = 11.3 a 13.3 pF, frente a 12.5 pF.
-- Sin resistencia de polarización (guía de Espressif p14). ESR de 50 kΩ como máximo, dentro de los 70 kΩ que admite el ESP32-S3.
-- Confirmar con continuidad o con el dibujo completo de ECS que los pads 2 y 3 no están conectados.
+- Sin resistencia de polarización (guía de Espressif p14). ESR de 70 kΩ como máximo (datasheet de ECS p1), igual al límite de 70 kΩ del ESP32-S3 (guía de Espressif p11): cumple, sin margen.
+- El cristal no tiene polaridad: los dos pads son intercambiables. La huella sugerida es de dos pads de 1.1 x 1.9 mm separados 1.4 mm (p1). La potencia de excitación máxima es de 1.0 µW (no comparada con la del ESP32-S3).
 
 ### USB-C (Shou Han TYPE-C-3.1-16PIN) y protección ESD (USBLC6-2SC6)
 
@@ -448,4 +456,8 @@ Pieza por identificar: el `BQ2975DRBR` del BOM no existe (O16). Recomendación: 
 | 2.2 | 2026-10-31 | Secciones de MAX17048, TP4056, CN3791, USB-C y protección de batería; corregido el candidato de GPIO del TP4056 (GPIO42 es LORA_RXEN); nota de IMU; folleto del módulo LoRa movido a `hardware/datasheets/` |
 | 2.3 | 2026-11-04 | Sección de conexiones del módulo por pin físico (alimentación, EN, strapping, USB, UART0, cristal y pines sin conectar), verificada contra la tabla 3-1; CSV para crear el símbolo de Altium |
 | 2.4 | 2026-11-04 | Conexiones pin por pin de todos los componentes aceptados, verificadas con sus datasheets: MAX-M10S, LSM6DS3TR-C, LoRa (folleto), TLV75733P, MAX17048, TP4056, CN3791 con su etapa de potencia (inductor de 47 µH, D1 montado), VO617A, zumbador, LED RGB activo en bajo, botón, cristal, USB-C con USBLC6, JST y u.FL. CSV conjunto en `hardware/pin_connections.csv`. Lista única de pendientes |
+| 2.5 | 2026-11-05 | Cristal: ECS-.327-12.5-34B-TR (ECX-31B de 2 pads) en lugar del ECX-306X de 4 pads; el datasheet que había en el repo era de otro encapsulado. CSV actualizado |
+| 2.6 | 2026-11-05 | Pulsador: BZCN TSC015A05026A del docente (4.5 x 4.5 mm; terminales 1-2 y 3-4 unidos) en lugar del C&K PTS645; CSV actualizado |
+| 2.7 | 2026-11-05 | Red COM del CN3791 con dos 470 nF X7R del docente en serie (235 nF) en lugar de un 220 nF comprado; CSV actualizado |
+| 2.8 | 2026-11-05 | Lista de pendientes actualizada: batería provisional con protección integrada (sin IC protector), panel de 6 V de 1 a 1.5 W y lista de lo que se revisa antes de comprar |
 | 2.0 | 2026-10-30 | Rehecho contra el datasheet v1.8 del módulo. GPIO05 ya no se repite. Sin GPIO22-34. USB D+/D- corregidos. GNSS con TX/RX cruzados |

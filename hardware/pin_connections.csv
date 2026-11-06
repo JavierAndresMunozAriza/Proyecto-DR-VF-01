@@ -107,7 +107,7 @@ Cargador solar CN3791 y su etapa de potencia,1,VG,100 nF X7R a VCC (C2),"p2, p3"
 Cargador solar CN3791 y su etapa de potencia,2,GND,"GND, con cobre amplio (es el disipador)","p3, p10"
 Cargador solar CN3791 y su etapa de potencia,3,CHRG,GPIO41 (CHRG_STAT) con 10 kΩ a 3V3; drenador abierto hasta 30 V,p3-4
 Cargador solar CN3791 y su etapa de potencia,4,DONE,GND (salida de estado que no se usa),p7
-Cargador solar CN3791 y su etapa de potencia,5,COM,120 Ω en serie con 220 nF X7R a GND (R2 y C4); su masa vuelve al pin GND,"p2, p10"
+Cargador solar CN3791 y su etapa de potencia,5,COM,120 Ω en serie con 235 nF X7R (dos 470 nF en serie) a GND (R2 y C4); su masa vuelve al pin GND,"p2, p10"
 Cargador solar CN3791 y su etapa de potencia,6,MPPT,Divisor: R3 de VCC a MPPT = 390 kΩ + 10 kΩ; R4 de MPPT a GND = 100 kΩ. V_MPPT = 1.205 x (1 + 400/100) = 6.025 V,p6
 Cargador solar CN3791 y su etapa de potencia,7,BAT,"Lado de la batería de RCS, con conexión Kelvin",p10
 Cargador solar CN3791 y su etapa de potencia,8,CSP,"Lado del inductor de RCS, con conexión Kelvin",p10
@@ -125,12 +125,10 @@ LED RGB NationStar RS-3535MWAM,5,G+,3V3,p6
 LED RGB NationStar RS-3535MWAM,2,G-,GPIO39 (LED_G) a través de 470 Ω,p6
 LED RGB NationStar RS-3535MWAM,6,B+,3V3,p6
 LED RGB NationStar RS-3535MWAM,1,B-,GPIO40 (LED_B) a través de 330 Ω,p6
-Botón de usuario C&K PTS645SL50SMTR92 LFS,Uno de los cuatro,,GND,regla de cableado
-Botón de usuario C&K PTS645SL50SMTR92 LFS,El terminal diagonal opuesto,,Nodo N: 10 kΩ a 3V3; N a GPIO7 a través de 1 kΩ; 100 nF X7R de GPIO7 a GND,cálculo propio
-Botón de usuario C&K PTS645SL50SMTR92 LFS,Los otros dos,,"Soldados, sin conexión eléctrica",-
-Cristal de 32.768 kHz ECS-.327-12.5,1,,GPIO15 (pin 8 del módulo) y su carga a GND,p1
-Cristal de 32.768 kHz ECS-.327-12.5,4,,GPIO16 (pin 9 del módulo) y su carga a GND,p1
-Cristal de 32.768 kHz ECS-.327-12.5,"2, 3",,"Soldados, sin conexión",p1 (la figura dibuja el cristal entre los pads 1 y 4; sin texto que lo confirme)
+Botón de usuario BZCN TSC015A05026A,1 (los dos pads 1),,GND,regla de cableado; datasheet de BZCN p1 (terminales 1 y 2 unidos)
+Botón de usuario BZCN TSC015A05026A,2 (los dos pads 2),,Nodo N: 10 kΩ a 3V3; N a GPIO7 a través de 1 kΩ; 100 nF X7R de GPIO7 a GND,cálculo propio; datasheet de BZCN p1 (terminales 3 y 4 unidos)
+Cristal de 32.768 kHz ECS-.327-12.5-34B-TR,1,,GPIO15 (pin 8 del módulo) y su carga a GND,p1 (ECX-31B: In/Out)
+Cristal de 32.768 kHz ECS-.327-12.5-34B-TR,2,,GPIO16 (pin 9 del módulo) y su carga a GND,p1 (ECX-31B: Out/In)
 USB-C TYPE-C-3.1-16PIN,"A4, B9, A9, B4",VBUS,Pin 5 del USBLC6 y pin 4 (VCC) del TP4056; nunca al LDO,hoja de Shou Han p1
 USB-C TYPE-C-3.1-16PIN,"A1, B12, A12, B1",GND,GND,hoja de Shou Han p1
 USB-C TYPE-C-3.1-16PIN,"A6, B6",D+,Unidos junto al conector (cada tramo de unión de menos de 3.5 mm) y al pin 1 del USBLC6,ST AN4871 p7

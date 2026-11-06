@@ -10,8 +10,7 @@ Este documento detalla la ubicación, diseño y consideraciones técnicas de las
 | Wi-Fi/BLE | 2.4 GHz | Wi-Fi y BLE del módulo ESP32-S3-WROOM-1U-N16R8 | FPC Würth Elektronik 2015301200, vía u.FL |
 | GNSS | 1575.42 MHz (L1) | Receptor MAX-M10S (solo L1) | Parche cerámico pasivo de 18x18x4 mm con cable y conector u.FL, MPN POR DECIDIR |
 
-La antena FPC de 2.4 GHz solo sirve al Wi-Fi y al BLE del módulo; no es la antena de LoRa ni la de GNSS. El BOM también lista, solo para pruebas de banco, un conector SMA hembra (Würth 6521011000) y un kit de antena corta SMA de 3 dBi con pigtail u.FL a SMA de 15 cm.
-
+La antena FPC de 2.4 GHz solo sirve al Wi-Fi y al BLE del módulo; no es la antena de LoRa ni la de GNSS.
 **Estado:** las posiciones y el montaje de las tres antenas están **POR DECIDIR**. Lo marcado "pendiente" no tiene fuente en el repositorio (no hay hoja de datos del Würth 2015301200 ni del parche GNSS) y no es una especificación. La fila de antena GNSS ANNMS-420.A que aún aparece en la tabla del BOM no es una decisión (ver `hardware/BOM.md`, sección 1.2).
 
 ## Especificaciones de las Antenas
@@ -75,11 +74,7 @@ Las posiciones de las tres antenas están **POR DECIDIR**. Las distancias de las
 - **Módulo ESP32-S3-WROOM-1U**: el FPC de 2.4 GHz se conecta al conector U.FL del módulo
 - **Pistas SPI**: lejos de la antena del módulo (`hardware/pinout.md`)
 
-### 7. Kit de Banco SMA
-- Conector SMA hembra (Würth 6521011000) y kit de antena corta SMA de 3 dBi con pigtail u.FL a SMA de 15 cm (los 3 dBi del listado no se pueden verificar)
-- Solo para pruebas de banco; no forma parte del producto
-
-### 8. Aislamiento entre Antenas
+### 7. Aislamiento entre Antenas
 - Separación entre las antenas de 915 MHz, 1575 MHz y 2.4 GHz: POR DECIDIR (sin fuente; pendiente de simulación o medición)
 
 ## Diseño Electromagnético
