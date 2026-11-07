@@ -9,6 +9,19 @@ Orden recomendado. **Quién:** *Tú* = navegador, compras o Altium; *Yo* = Claud
 - **Ojo:** el USB-C **no alimenta** al regulador de 3.3 V. Sin batería conectada, la placa no arranca desde el USB (`docs/ARCHITECTURE.md`). Para programar hace falta la **batería conectada**.
 - **Batería provisional:** cualquier 1S Li-ion o LiPo de 4.2 V cargada, **con protección integrada**, de al menos **500 mAh** (el TP4056 carga a 500 mA, y una celda más chica se cargaría a más de 1C), y con conector **JST PH de 2 pines**. La definitiva se consigue después.
 
+## Estado al 2026-11-07
+
+| Bloque | Estado |
+|--------|--------|
+| 1. Descargas | Hecho |
+| 2. Datasheets del docente | Hecho (filas 6 a 15). La fila 16 es opcional y no se bajó |
+| 3. Revisión con lo descargado | Hecho (pasos 17 a 21) |
+| 4. Elegir | Pasos 22, 23 y 25 hechos con piezas de prueba; el 24 (zumbador) y el 26 (bulk de 3.3 V) siguen abiertos. Ver "Resultados del bloque 4" al final |
+| 5. Compras | **Cambio del 2026-11-07:** todo se compra por AliExpress, no por Digi-Key ni Mouser. El pedido es un solo cuadro al inicio de `COMPRAS.md`: 9 piezas con enlace, 11 sin enlace y el bulk de 3.3 V por decidir |
+| 6. Librerías | Faltan el CN3791, el módulo LoRa y el zumbador; lo demás ya está en la biblioteca propia `DR-VF-01` |
+| 7. Limpieza de documentos | Pasos 38 y 39 hechos el 2026-11-07; el 40 (borrar el datasheet viejo del cristal) es tuyo |
+| 8. Antes del layout | Pendiente |
+
 ## Bloque 1. Descargas en el navegador (tú) — prioridad alta
 
 | # | Qué bajar | Enlace o dónde buscar | Para qué lo necesito |
@@ -103,3 +116,17 @@ Abre cada enlace y baja el PDF del datasheet. Las piezas de las filas 6 a 11 son
 | 18 | **Se queda el TLV75733P. El DS8570F8 no sirve.** Iq de 0.6 mA típica (1.2 mA máx.) contra 25 µA del TLV: solo ese regulador pasaría de 150 µA. Además es ajustable, necesita VDD de 3 V como mínimo aparte de VIN y la batería llega a unos 3 V | `ds8570f8_datasheet.pdf` p. 5; `tlv757p_datasheet.pdf` p. 1 |
 | 19 | **La huella `SOIC_8_3.9mm_EP` del docente sirve para el TP4056.** Paso 1.27 mm; centros de pads a ±2.725 con largo de 1.45 mm: llegan a ±3.45, es decir, 0.35 mm más allá de la punta máxima de la pata (E1 máx. 6.2, ±3.1); pad central de 2.71 x 3.4 mm contra 2.31 a 2.51 x 3.20 a 3.40 del pad térmico. Falta en Altium: cambiar la huella del TP4056 de `SOIC_8_3.9mm` a la `_EP`, y conectar el pad 9 a GND. La máscara y la pasta de esa huella ya están en "Rule Expansion" (verificado en el panel de propiedades de Altium 26.11 sobre el pad 8, que además muestra rotación de 90°): no hay que cambiarlas. La herramienta `altium_lib_check.py` las etiquetaba "none" y esa etiqueta era errónea para el valor 0. El fabricante dice "底部带有散热片需接地" (el pad de abajo se conecta a tierra), así que no es opcional | `tp4056_yongyutai_datasheet.pdf` p. 2 y 9; `altium_lib_check.py` sobre `shared_lib.PcbLib` |
 | 20 | **La huella del U.FL coincide con el dibujo de Hirose.** Pads de masa de 1.05 x 2.2 mm con 4.0 mm entre bordes exteriores y 1.9 mm entre los interiores; pad de señal de 1.0 x 1.05 mm con su borde superior 1.0 mm bajo el eje. Diferencia: la pasta. Hirose pide aberturas de 0.9 x 2.0 mm (masa) y 0.8 mm de ancho (señal) con plantilla de 0.10 mm; con pasta en Rule y expansión 0 salen del tamaño del pad (28 % más de pasta en la masa). Recomendado: expansión de pasta de -0.075 mm en los tres pads | `ufl-r-smt-1_drawing.pdf`; `hardware/libraries/ufl/README.md` |
+| 21 | **Las piezas del docente cumplen, con 2 datos que faltan (2026-11-07).** USB-C: 5 V 3 A, -25 a +85 °C y layout para PCB de 0.80 mm. USBLC6-2SC6 (Rev 5): VRM 5.25 V y fuga de 150 nA máx. AP2301: Vds -20 V, Vth -0.5 a -1.0 V, 57 mΩ típ. a -4.5 V. CY54-47UH: 710 mA y 355 mΩ contra unos 0.25 A del panel. LED rojo: VF de 1.8 a 2.2 V y 20 mA máx. TVS LESD5Z3.3T1G: VRWM 3.3 V, IR de 1 µA máx. a 25 °C (cuenta en el presupuesto de sueño y no hay valor en caliente). RGB: IF máx. de 25, 25 y 20 mA; ojo, su VF máx. de verde y azul es 3.4 V a 8 y 5 mA, por encima de 3V3, y el diseño depende de la curva típica a 2 mA. **Faltan:** (a) el electrolítico HRK es la hoja genérica de la serie (-40 a +105 °C) sin vida útil del 100 µF 35 V; (b) los Chinocera no traen curva de capacidad contra tensión continua (22 µF X5R). La Rev 7 del USBLC6 sigue pendiente | `type-c-3.1-16pin_specification.pdf`, `usblc6-2sc6_datasheet.pdf`, `ap2301_datasheet.pdf`, `cy54-47uh_datasheet.pdf`, `xl-2012surc_datasheet.pdf`, `lesd5z3.3t1g_datasheet.pdf`, `rs-3535mwam_specification.pdf`, `hrk-cd110_series_specification.pdf`, `chinocera-hgc_mlcc_specification.pdf` |
+
+## Resultados del bloque 4 (2026-11-07)
+
+Las piezas elegidas son para la prueba de la primera placa (la PCB llega a inicios de diciembre). Las definitivas se eligen después. Los enlaces, variantes y precios están en `COMPRAS.md`.
+
+| # | Resultado |
+|---|-----------|
+| 22 | **Panel de prueba:** SunMoonMall, variante `6V 220mA 120x90Cable` (6 V, 220 mA, 1.32 W, con cable; O7). No declara la tensión de circuito abierto: medirla al sol al recibirlo (el CN3791 necesita más de unos 6.2 V). **Definitivo:** POR DECIDIR, candidato Voltaic P124 (6 V, 1.22 W, tensión de máxima potencia de 6.07 V, cubierta ETFE; falta su datasheet) |
+| 23 | **Parche GNSS de prueba:** HXANT `HX-TWGPS-184-CV0`, 2 unidades (18 x 18 mm, cerámica de 4 mm, 6.5 mm de alto en total, pasivo, cable RF1.13 con IPEX1; O3). Sin datasheet propio: la hoja del vendedor es del modelo de 15 mm. Prueba: cobre de unos 50 x 50 mm debajo y C/N0 al aire libre. **Definitivo:** POR DECIDIR, candidato C&T RF `CTRF-ANTENNA-GPS-1575-181804-IPEX` |
+| 24 | **Zumbador:** se mantiene el requisito de más de 80 dBA a 1 m si se consigue uno que lo cumpla. Falta buscarlo; el Murata PKMCS0909E4000-R1 queda como respaldo |
+| 25 | **Batería de prueba:** LiPo 603450 de 1200 mAh con protección (PCM) y JST PH 2.0, de Nasal Store (O6). La protección la declara la imagen del vendedor, sin verificar. Medir la polaridad antes de enchufarla. **Definitiva:** POR DECIDIR (1200 o 1500 mAh) |
+| 26 | Abierto: el código TAJA107K016RNJ parece no existir; la alternativa es el electrolítico de 100 µF 35 V del docente. El diodo ESD de la alimentación es el LESD5Z3.3T1G del docente (revisado en el paso 21) |
+

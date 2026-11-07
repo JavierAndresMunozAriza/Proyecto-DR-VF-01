@@ -36,7 +36,7 @@ La batería es el nodo central: dos cargadores independientes la cargan y todo e
 - **Schottky D1 y D2 del CN3791:** con D1 montado el CN3791 baja a unos 9 µA, y la fuga de los dos diodos debe quedar por debajo de unos 47 µA en total para cumplir RNF-03. Se usan los PSBD1DF40V1H del docente: a 65 °C no lo cumplen (unos 40 µA por diodo, estimado de su curva), pero la noche en Colombia no pasa de 25 °C de ambiente y a 40 a 45 °C internos suman unos 11 a 16 µA (`hardware/COMPRAS.md`, O20). Son valores típicos; se mide la corriente de sueño de la primera placa.
 - **MAX17048:** I2C, dirección 0x36, conectado a la batería (VDD de 2.5 a 4.5 V), no al bus de 3.3 V.
 - **USB-C:** el USBLC6-2SC6 protege D+, D- y VBUS; CC1/CC2 llevan 5.1 kΩ (valor "por definir" en el BOM). El MPN del conector y el tipo de sello del puerto son **POR DECIDIR** (`hardware/BOM.md`).
-- **Antenas:** LoRa de 915 MHz (monopolo de 8 cm, u.FL), FPC de 2.4 GHz (Würth 2015301200, vía u.FL; Wi-Fi/BLE del módulo) y parche GNSS pasivo con cable y u.FL (decidido el 2026-11-04). El MPN del parche GNSS y las posiciones de las antenas son **POR DECIDIR** (`hardware/BOM.md`, `mechanical/ANTENNA_PLACEMENT.md`).
+- **Antenas:** LoRa de 915 MHz (monopolo de 8 cm, u.FL), FPC de 2.4 GHz (Würth 2015301200, vía u.FL; Wi-Fi/BLE del módulo) y parche GNSS pasivo con cable y u.FL (decidido el 2026-11-04). Parche de la prueba de la primera placa: HXANT `HX-TWGPS-184-CV0` (18x18 mm, cerámica de 4 mm); el parche definitivo y las posiciones de las antenas son **POR DECIDIR** (`hardware/BOM.md`, `mechanical/ANTENNA_PLACEMENT.md`).
 - **Actuadores:** el ESP32-S3 maneja el optoacoplador VO617A (GPIO1), el buzzer (GPIO2) y el LED RGB (GPIO38 a 40); su alimentación se define al dibujar el esquemático.
 
 ### 1.2 Prototipo con DevKitC-1
@@ -84,7 +84,7 @@ $$V_{MPPT} = 1.205 \cdot \left(1 + \frac{R_3}{R_4}\right)$$
 Con V_MPPT = 6.0 V:
 $$6.0 = 1.205 \cdot \left(1 + \frac{R_3}{R_4}\right) \implies \frac{R_3}{R_4} = 3.98$$
 
-**Selección Comercial:** R₃ = 402 kΩ, R₄ = 100 kΩ (1% precisión), que da V_MPPT = 1.205 · 5.02 = 6.05 V. El valor de 6 V es provisional hasta elegir el panel (su tensión de máxima potencia).
+**Selección Comercial:** R₃ = 402 kΩ, R₄ = 100 kΩ (1% precisión), que da V_MPPT = 1.205 · 5.02 = 6.05 V. El valor de 6 V se mantiene con el panel de prueba (6 V nominal) y se revisa al elegir el panel definitivo: el candidato Voltaic P124 declara una tensión de máxima potencia de 6.07 V (ficha de tienda, sin datasheet).
 
 **Nota Técnica:** el ciclo de carga solo inicia cuando el pin MPPT supera 1.23 V, es decir, con más de 1.23 · 5.02 = 6.17 V en la entrada. Por eso un USB de 5 V no puede usar este cargador y la carga por USB va por el TP4056 (sección 1.1).
 
@@ -172,8 +172,8 @@ Lista del prototipo con DevKit. La lista de la PCB final (TLV75733PDBVR, TP4056,
 | 1 | IMU 6-DOF (ST LSM6DS3TR-C) | Breakout I2C/SPI | Detección de Movimiento |
 | 1 | MAX17048 | Breakout I2C Fuel Gauge | Telemetría de Batería |
 | 1 | Módulo CN3791 (6V) | Cargador Solar MPPT Buck | Gestión Energética |
-| 1 | Batería LiPo 3.7V (capacidad POR DECIDIR: 1200 o 1500 mAh) | Celda 1S | Fuente de Energía |
-| 1 | Panel Solar 6V, al menos 1 W (MPN POR DECIDIR) | Monocristalino/Policristalino | Generación Fotovoltaica |
+| 1 | Batería LiPo 3.7V con protección integrada (prueba: 603450 de 1200 mAh; definitiva POR DECIDIR: 1200 o 1500 mAh) | Celda 1S con JST PH 2.0 | Fuente de Energía |
+| 1 | Panel Solar 6V, de 1 a 1.5 W (prueba: 6 V, 220 mA, 120 x 90 mm; definitivo POR DECIDIR, candidato Voltaic P124) | Monocristalino/Policristalino | Generación Fotovoltaica |
 | 1 | Optoacoplador VO617A/PC817 | DIP-4 Through-Hole | Aislamiento del Actuador |
 | 1 | LED 3mm Rojo | Through-Hole | Indicador visual de disparo |
 | 5 | Capacitores 100 nF | Cerámico SMD 0805 | Desacople de Alta Frecuencia |

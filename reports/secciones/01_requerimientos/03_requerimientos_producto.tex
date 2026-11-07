@@ -16,7 +16,7 @@ F-06 & Configuración de geocerca mediante servidor web interno accesible por Wi
 F-07 & Carga solar conmutada MPPT mediante controlador CN3791 (6V) alimentado solo desde el panel solar, y carga por USB-C mediante el cargador lineal TP4056 (500 mA); el USB no alimenta el sistema. & Funcional \\ \hline
 F-08 & Gestión de energía con lectura de batería relativa (0-100\%) mediante medidor I2C MAX17048. & Funcional \\ \hline
 F-09 & El sistema debe regular la lógica de 3,3 V con un LDO TLV75733PDBVR (1 A, corriente quiescente de 25 $\mu$A) alimentado solo desde la batería. & Funcional \\ \hline
-F-10 & El sistema debe proteger la batería LiPo con un circuito integrado de protección (\textbf{POR DECIDIR}; la celda elegida puede traer protección propia). & Funcional \\ \hline
+F-10 & El sistema debe proteger la batería LiPo contra sobrecarga, sobredescarga y cortocircuito. La protección la trae la celda (PCM integrado) y la PCB no lleva circuito integrado protector. & Funcional \\ \hline
 F-11 & El puerto USB-C debe contar con protección contra descargas electrostáticas en D+, D- y VBUS mediante USBLC6-2SC6. & Funcional \\ \hline
 F-12 & El microcontrolador debe permanecer en Deep Sleep y despertar por la interrupción INT1 de la IMU (GPIO 4) ante movimiento significativo (IMU LSM6DS3TR-C). & Funcional \\ \hline
 NF-01 & Autonomía mínima de 7 a 10 días continuos en ausencia total de radiación solar (estimación teórica: unos 190 días con 1200 mAh, calculada en \texttt{hardware/POWER\_BUDGET.md}). & No funcional \\ \hline

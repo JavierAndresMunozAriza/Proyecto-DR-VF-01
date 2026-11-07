@@ -23,7 +23,7 @@ Nota de transcripción: en la captura, la línea del IMU y la del sensor de temp
 
 | Pieza del classroom | ¿Está en `shared_lib.IntLib`? | ¿La usa el diseño hoy? | Qué corresponde |
 |---------------------|-------------------------------|------------------------|-----------------|
-| TP4056 (ESOP-8) | **Sí**: `IC_BAT_CHG_4.2V_1A`, YONGYUTAI, LCSC C20199357, huella `SOIC_8_3.9mm` sin pad térmico. El mensaje dice que no aparece; la biblioteca la trae | Sí (carga por USB-C) | No comprar. No bajar una librería nueva: revisar si la huella `SOIC_8_3.9mm_EP` que ya trae la biblioteca sirve para el ESOP-8 |
+| TP4056 (ESOP-8) | **Sí**: `IC_BAT_CHG_4.2V_1A`, YONGYUTAI, LCSC C20199357, huella `SOIC_8_3.9mm` sin pad térmico. El mensaje dice que no aparece; la biblioteca la trae | Sí (carga por USB-C) | No comprar. No bajar una librería nueva: revisar si la huella `SOIC_8_3.9mm_EP` que ya trae la biblioteca sirve para el ESOP-8. **Revisado el 2026-11-06:** sirve, con el pad 9 a GND (`PLAN_MANANA.md`, paso 19) |
 | LSM6DS3TR-C | No | Sí (IMU, RF-06) | No comprar. Su librería se bajó (Ultra Librarian de ST) y está verificada |
 | DS8570F8 (3 A, caída ultrabaja) | No | No. El diseño compra el TLV75733PDBVR | Posible reemplazo del LDO. **Sin decidir**: falta su datasheet (DSTECH, LCSC C5884245) para ver la corriente quiescente y la alimentación auxiliar que exige |
 | TMP102AIDRLR (temperatura, I2C) | No | No | Disponible gratis. Oportunidad de diseño, no requisito (ver auditoría, sección 5) |

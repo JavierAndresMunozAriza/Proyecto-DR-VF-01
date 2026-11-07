@@ -106,7 +106,7 @@ El BOM define tres antenas independientes, una por banda; ninguna cubre más de 
 \begin{itemize}[leftmargin=*]
     \item \textbf{LoRa (915 MHz)}: antena flexible de $8\,\text{cm}$ con conector u.FL (monopolo de cuarto de onda; el listado del proveedor indica $2\,\text{dBi}$ y no tiene MPN). Su rendimiento depende del plano de masa de la PCB y el alcance real debe probarse. La señal sale del pad ANT del módulo DX-LR30-900M22S por una línea de $50\,\Omega$ en la PCB hasta el conector u.FL.
     \item \textbf{Wi-Fi/BLE (2.4 GHz)}: antena FPC Würth 2015301200 conectada por u.FL al módulo ESP32-S3-WROOM-1U-N16R8. Su ganancia no está verificada: no hay hoja de datos en el repositorio.
-    \item \textbf{GNSS (1575.42 MHz)}: parche cerámico pasivo de $18\times18\times4\,\text{mm}$ con cable y conector u.FL, con MPN pendiente. El MAX-M10S integra LNA y filtro SAW; el plano de masa del parche se define en el diseño de la PCB.
+    \item \textbf{GNSS (1575.42 MHz)}: parche cerámico pasivo de $18\times18\times4\,\text{mm}$ con cable y conector u.FL. Para la prueba se usa el HXANT HX-TWGPS-184-CV0 (cerámica de $4\,\text{mm}$ y $6.5\,\text{mm}$ de alto en total); el definitivo está \textbf{POR DECIDIR}. El MAX-M10S integra LNA y filtro SAW; el plano de masa del parche se define en el diseño de la PCB.
 \end{itemize}
 
 \subsection{Criterios de Posicionamiento Radiativo}
@@ -135,7 +135,7 @@ Aplica a la antena FPC de $2.4\,\text{GHz}$:
 
 \begin{itemize}[leftmargin=*]
     \item \textbf{Tecnología}: Células fotovoltaicas monocristalinas de alta eficiencia ($18\text{--}20\%$).
-    \item \textbf{Tensión Nominal}: $6\,\text{V}$ y potencia de al menos $1\,\text{W}$. El MPN del panel está \textbf{POR DECIDIR}: el HTJ-2W-D del BOM no declara su tensión.
+    \item \textbf{Tensión Nominal}: $6\,\text{V}$ y potencia de $1$ a $1.5\,\text{W}$. Para la prueba de la primera placa se usa un panel de resina epoxi de $6\,\text{V}$ y $220\,\text{mA}$ ($120\times90\,\text{mm}$, con cable); el definitivo está \textbf{POR DECIDIR} (candidato: Voltaic P124, con cubierta ETFE).
     \item \textbf{Tensión en Vacío ($V_{oc}$)}: por definir según el panel elegido, claramente mayor que $6\,\text{V}$. El CN3791 con su divisor MPPT para $6\,\text{V}$ solo inicia la carga por encima de unos $6.17\,\text{V}$ en VCC, de modo que un panel de $5.5\,\text{V}$ en vacío nunca la iniciaría.
     \item \textbf{Corriente de Cortocircuito ($I_{sc}$)}: por definir según el panel elegido.
 \end{itemize}

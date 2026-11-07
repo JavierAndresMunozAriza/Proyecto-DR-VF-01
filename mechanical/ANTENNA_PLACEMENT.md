@@ -8,10 +8,10 @@ Este documento detalla la ubicación, diseño y consideraciones técnicas de las
 |--------|-------|-----|-----------------|
 | LoRa | 915 MHz | Enlace LoRa del módulo DX-LR30-900M22S | Flexible de 8 cm con conector u.FL, sin MPN (listado "IPEX 1.13 868/915 MHz 2 dBi 8 cm") |
 | Wi-Fi/BLE | 2.4 GHz | Wi-Fi y BLE del módulo ESP32-S3-WROOM-1U-N16R8 | FPC Würth Elektronik 2015301200, vía u.FL |
-| GNSS | 1575.42 MHz (L1) | Receptor MAX-M10S (solo L1) | Parche cerámico pasivo de 18x18x4 mm con cable y conector u.FL, MPN POR DECIDIR |
+| GNSS | 1575.42 MHz (L1) | Receptor MAX-M10S (solo L1) | Parche cerámico pasivo de 18x18 mm con cable y conector u.FL. Prueba: HXANT `HX-TWGPS-184-CV0` (cerámica de 4 mm, 6.5 mm de alto en total); el definitivo está POR DECIDIR |
 
 La antena FPC de 2.4 GHz solo sirve al Wi-Fi y al BLE del módulo; no es la antena de LoRa ni la de GNSS.
-**Estado:** las posiciones y el montaje de las tres antenas están **POR DECIDIR**. Lo marcado "pendiente" no tiene fuente en el repositorio (no hay hoja de datos del Würth 2015301200 ni del parche GNSS) y no es una especificación. La fila de antena GNSS ANNMS-420.A que aún aparece en la tabla del BOM no es una decisión (ver `hardware/BOM.md`, sección 1.2).
+**Estado:** las posiciones y el montaje de las tres antenas están **POR DECIDIR**. Lo marcado "pendiente" no tiene fuente en el repositorio (no hay hoja de datos del Würth 2015301200, y del parche GNSS de prueba solo hay los dibujos del vendedor y la hoja de su modelo hermano de 15 mm) y no es una especificación. El ANNMS-420.A ya no está en el BOM: no se pudo verificar.
 
 ## Especificaciones de las Antenas
 
@@ -19,9 +19,9 @@ La antena FPC de 2.4 GHz solo sirve al Wi-Fi y al BLE del módulo; no es la ante
 | Característica | LoRa 915 MHz | Wi-Fi/BLE 2.4 GHz | GNSS L1 |
 |----------------|--------------|-------------------|---------|
 | Tipo | Monopolo de cuarto de onda, flexible de 8 cm | FPC (flexible PCB) | Parche cerámico pasivo |
-| Conexión | Conector u.FL SMD en la PCB (p. ej. Hirose U.FL-R-SMT-1, a verificar) | Conector U.FL del módulo ESP32-S3-WROOM-1U | POR DECIDIR |
-| Ganancia | 2 dBi según el listado, sin verificar | Pendiente (sin hoja de datos) | Pendiente (MPN POR DECIDIR) |
-| Impedancia | 50 Ω (entrada RF del módulo LoRa según el vendedor) | Pendiente (sin hoja de datos) | Pendiente (MPN POR DECIDIR) |
+| Conexión | Conector u.FL SMD en la PCB (Hirose U.FL-R-SMT-1(10), huella verificada el 2026-11-06) | Conector U.FL del módulo ESP32-S3-WROOM-1U | Cable RF1.13 con IPEX1 al U.FL-R-SMT-1(10) de la PCB |
+| Ganancia | 2 dBi según el listado, sin verificar | Pendiente (sin hoja de datos) | Parche de prueba: el anuncio dice 3.5 dBi, poco creíble en 18 mm; sin hoja de datos propia |
+| Impedancia | 50 Ω (entrada RF del módulo LoRa según el vendedor) | Pendiente (sin hoja de datos) | 50 Ω según el anuncio del parche de prueba |
 | Patrón y polarización | Pendiente | Pendiente | Pendiente |
 
 ### 2. Dimensiones Físicas
@@ -32,7 +32,7 @@ La antena FPC de 2.4 GHz solo sirve al Wi-Fi y al BLE del módulo; no es la ante
 ### 3. Materiales
 - **Antena FPC**: conductor, cubierta y adhesivo pendientes de la hoja de datos de Würth. Los valores del texto anterior (cobre electrolítico 18μm, poliimida 12.5μm, acrílico termoplástico) no tienen fuente y quedan sin verificar
 - **Fijación de la antena FPC**: adhesivo acrílico de doble cara 3M 467MP (BOM, sección 2.2)
-- **Parche GNSS y antena LoRa**: pendientes (MPN POR DECIDIR y sin MPN)
+- **Parche GNSS y antena LoRa**: piezas de prueba elegidas en AliExpress (parche `HX-TWGPS-184-CV0`, `hardware/COMPRAS.md` O3; antena LoRa de 8 cm, A2). Sus posiciones siguen pendientes
 
 ## Ubicación en la Carcasa
 
@@ -65,7 +65,7 @@ Las posiciones de las tres antenas están **POR DECIDIR**. Las distancias de las
 ### 5. Antena GNSS (parche pasivo 18x18x4 mm con cable u.FL)
 - **Elección**: el MAX-M10S ya integra LNA y filtro SAW, por eso el BOM recomienda un parche pasivo; una antena activa solo se justifica con cable largo (BOM, sección 1.2)
 - **Montaje (decidido el 2026-11-04)**: el parche va con cable y conector u.FL; la posición en la carcasa sigue POR DECIDIR
-- **Plano de masa y zona libre**: POR DECIDIR (definir en el layout; sus dimensiones no tienen fuente hasta elegir el MPN)
+- **Plano de masa y zona libre**: POR DECIDIR. Para la prueba se pega debajo del parche un cuadrado de cobre o aluminio de unos 50 x 50 mm; el definitivo se fija al elegir el parche final. La hoja del vendedor (modelo de 15 mm) advierte que la antena es sensible a la estructura que la rodea
 - **Posición y orientación en la carcasa**: POR DECIDIR
 
 ### 6. Línea de 50 Ω y Conectores u.FL
@@ -186,7 +186,7 @@ Aplica a la antena FPC Wi-Fi/BLE. El montaje de las antenas LoRa y GNSS está PO
 
 ### 2. Datos de Materiales
 - Hoja de datos de la antena Würth 2015301200 (pendiente; no está en el repositorio)
-- Hoja de datos del parche GNSS (MPN POR DECIDIR)
+- Hoja de datos del parche GNSS: del parche de prueba solo hay los dibujos del anuncio y la hoja de su modelo hermano de 15 mm (`HX-TWGPS-152-CV0`, no se guarda porque es de otro modelo); el definitivo está POR DECIDIR
 - Especificaciones del adhesivo 3M 467MP
 - Certificados de conformidad de materiales
 

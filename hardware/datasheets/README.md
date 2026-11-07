@@ -58,6 +58,15 @@ Esta carpeta contiene **solo** hojas de datos (PDF) y este índice. Los PDF no s
 | `ufl-r-smt-1_drawing.pdf` | Hirose U.FL-R-SMT-1(01), dibujo 2D (EDC3-302540-01, código CL331-0472-2-01) | Descargado con el navegador desde la página del producto en hirose.com (Documents, Drawing 2D, English) | Huella recomendada con cotas de 4, 2.2, 1.9, 1.05 y 1 mm (±0.05) y zona de corte prohibida, máscara de pasta de 0.10 mm y perfil de reflujo de 260 °C pico, hasta 2 ciclos |
 | `ufl-r-smt-1_specification.pdf` | Hirose U.FL-R-SMT-1(01), hoja de especificaciones (ELC4-302540-01) | Descargado con el navegador desde hirose.com (Documents, Specification Sheet, English) | 50 Ω de 0 a 8 GHz; VSWR ≤ 1.3 hasta 6 GHz y ≤ 1.4 de 6 a 8 GHz; -40 a +105 °C |
 | `ufl_series_catalog.pdf` | Hirose serie U.FL, catálogo (34 páginas, sep-2024) | Descargado con el navegador desde hirose.com (Documents, Series Catalogs, English) | Altura acoplada de 1.9 a 2.4 mm; sirve de consulta de la serie y de los cables y conectores de acople |
+| `type-c-3.1-16pin_specification.pdf` | Shou Han TYPE-C-3.1-16PIN, hoja de aprobación con dibujo (6 páginas) | Descargado con el navegador desde LCSC C7507405 | 5 V 3 A, -25 a +85 °C, asignación de los 16 pines y layout recomendado para PCB de **0.80 mm** (p. 1) |
+| `usblc6-2sc6_datasheet.pdf` | ST USBLC6-2, DocID 11265 **Rev 5** (oct-2011) | Copia de LCSC C7519; la revisión vigente (Rev 7) sigue pendiente, ver el final | VRM 5.25 V y fuga de 10 nA típ. y 150 nA máx. (tabla 2, p. 2); capacitancia máx. de 3.5 pF (p. 1) |
+| `ap2301_datasheet.pdf` | ALLPOWER AP2301 V1.1, MOSFET P de 20 V (solo imagen, sin texto) | Descargado con el navegador desde LCSC C385296 | Vds -20 V, Vgs ±12 V, Id -3 A (p. 1); Vth de -0.5 a -1.0 V y Rds(on) de 57 mΩ típ. y 75 mΩ máx. a -4.5 V (p. 2). El resumen de la p. 1 da 74 mΩ típ. a -4.5 V, pero la tabla de la p. 2 lo da a -2.5 V: vale la tabla |
+| `cy54-47uh_datasheet.pdf` | Shou Han CY54, inductores de potencia (hoja de aprobación; el 47 µH es el CY54-470K) | Descargado con el navegador desde LCSC C2929434 | CY54-470K: 47 µH, DCR de 355 mΩ e IDC de 710 mA (p. 3); -55 a +125 °C |
+| `rs-3535mwam_specification.pdf` | NationStar RS-3535MWAM, LED RGB 3535 de 6 pines (spec B2, 14 páginas) | Descargado con el navegador desde LCSC C842778 | IF máx. de 25, 25 y 20 mA (R, G, B), -30 a +85 °C y VF por color (p. 3) |
+| `hrk-cd110_series_specification.pdf` | HRK serie CD110, electrolítico de aluminio con terminales (8 páginas). **Es la hoja genérica de la serie con una muestra de 33 µF 400 V, no la del 100 µF 35 V** | Descargado con el navegador desde LCSC C2960381 | Serie de 6.3 a 500 VDC y -40 a +105 °C (p. 1); no trae la vida útil ni la ESR del 100 µF 35 V de 6.3 x 12 mm |
+| `xl-2012surc_datasheet.pdf` | XINGLIGHT XL-2012SURC, LED rojo 0805 (14 páginas) | Descargado con el navegador desde LCSC C965812 | VF de 1.8 a 2.2 V a 20 mA, IF máx. de 20 mA y -40 a +85 °C (p. 3) |
+| `lesd5z3.3t1g_datasheet.pdf` | LRC LESD5Z2.5T1G, serie de TVS para ESD (incluye el LESD5Z3.3T1G; 6 páginas) | Descargado con el navegador desde LCSC C136161 | LESD5Z3.3T1G: VRWM 3.3 V, IR máx. de 1 µA, VBR mín. de 5.0 V y 105 pF típ. (p. 2); -40 a +125 °C (p. 1) |
+| `chinocera-hgc_mlcc_specification.pdf` | Chinocera serie HGC, condensadores cerámicos multicapa, hoja de aprobación (22 páginas). Cubre el `HGC0805R5226M160NSLJ` (22 µF) y el `HGC0603R7474K500NTHJ` (470 nF) | Descargado con el navegador desde LCSC C33546008 (el C33546006 trae el mismo PDF) | R5 = X5R (-55 a +85 °C, ±15 %) y R7 = X7R (-55 a +125 °C, ±15 %) (p. 3). No trae curva de pérdida de capacidad con tensión continua |
 
 ## Descartadas (sin PDF local)
 
@@ -76,11 +85,6 @@ Hojas leídas para decidir las piezas de `COMPRAS.md` sección 1. Casi todas son
 
 | Documento | URL | Qué se verificó |
 |-----------|-----|-----------------|
-| ST USBLC6-2SC6, DocID 11265 Rev 5 | https://datasheet.lcsc.com/datasheet/pdf/0d3a2ab954b34651a0695e7ccf534db0.pdf?productCode=C7519 | Pinout, VRM 5.25 V, fuga 10 nA típ., 2.5 pF por línea, USB 2.0, ESD nivel 4 |
-| Shou Han TYPE-C-3.1-16PIN, hoja de aprobación | https://datasheet.lcsc.com/datasheet/pdf/814f88adcfee2586090bc34a87baf384.pdf?productCode=C7507405 | Pines, 5 V 3 A, -25 a +85 °C, layout recomendado para PCB de 0.80 mm (p.1) |
-| NationStar RS-3535MWAM, spec B2 | https://datasheet.lcsc.com/datasheet/pdf/d9082a4b82c7f5ea37c6a6c96c161c93.pdf?productCode=C842778 | 6 pines independientes, VF por color, IF máx., -30 a +85 °C |
-| ALLPOWER AP2301 V1.1 (solo imagen) | https://datasheet.lcsc.com/datasheet/pdf/dd1608bd7b26b77fc73459527d68887c.pdf?productCode=C385296 | Vds -20 V, Vgs ±12 V, Vth, Rds(on) |
-| SHOU HAN CY54 | https://datasheet.lcsc.com/datasheet/pdf/99d253dde1146f9c226f443c84c5691c.pdf?productCode=C2879694 | Inductancia, DCR y corriente de los CY54 (p.3) |
 | Samsung CL10A105KB8NNNC y CL21A106KAYNNNE; CCTC TCC0603X5R106K100CT | https://product.samsungsem.com/mlcc/CL21A106KAYNNN.do ; https://datasheet.lcsc.com/datasheet/pdf/71a9f8eccc4da164324d4a716182c5e3.pdf?productCode=C380314 | X5R, tensión nominal y rango de -55 a +85 °C |
 | Walsin 0603F104Z500CT | https://datasheet.lcsc.com/datasheet/pdf/c647af9500c0421cb071e40d1cbbf836.pdf?productCode=C83060 | Y5V: -40 % a 45 °C y -77 % a 85 °C (p.1). No se usa |
 | Resistencia de PROG del TP4056 | `tp4056_datasheet.pdf` (local) | I = 1200 V / RPROG (p.2); TEMP a GND desactiva el corte por temperatura (p.2). El PDF no trae dibujo de empaque ESOP-8; el del fabricante YONGYUTAI está en `tp4056_yongyutai_datasheet.pdf` (p. 9) |

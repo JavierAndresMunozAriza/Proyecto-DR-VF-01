@@ -235,8 +235,8 @@ El total cumple RNF-03 (< 150μA) con 26μA de margen. El margen es corto: falta
 
 ## Carga Solar
 
-### 1. Panel Solar de 6V (modelo pendiente)
-- **Tensión nominal**: 6V con una potencia de al menos 1W (BOM sección 2.3). El MPN está por decidir
+### 1. Panel Solar de 6V
+- **Tensión nominal**: 6V, de 1 a 1.5 W (BOM sección 2.3). Panel de prueba elegido el 2026-11-07: 6 V y 220 mA (1.32 W), con cable; el definitivo está por decidir (candidato: Voltaic P124)
 - **Condición con el CN3791**: el divisor de 6V solo permite iniciar la carga con más de unos 6.2V en la entrada. El panel debe tener una tensión de circuito abierto claramente mayor y su punto de máxima potencia cerca de 6V
 - **Eficiencia del cargador**: 88%, no verificado
 

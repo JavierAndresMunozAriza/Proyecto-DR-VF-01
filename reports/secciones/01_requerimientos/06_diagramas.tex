@@ -60,7 +60,7 @@ Módem celular [Fase 2] & UART0 & GPIO 44 (RX), GPIO 43 (TX), GPIO 48 (PWRKEY) &
 
 Este mapa aplica a la PCB final y a la ESP32-S3-DevKitC-1 (ambas usan los mismos GPIO); el mapa completo y vigente está en \texttt{hardware/pinout.md}. La prueba de concepto en la Nordic Thingy:91 X define sus pines en su propio \emph{overlay} de devicetree.
 
-Antenas (según \texttt{hardware/BOM.md}): LoRa 915 MHz, monopolo flexible de 8 cm con conector u.FL; Wi-Fi/BLE 2.4 GHz, antena FPC Würth 2015301200 vía u.FL del módulo; GNSS, antena pasiva L1 (MPN \textbf{POR DECIDIR}). La posición de las antenas también está \textbf{POR DECIDIR}.
+Antenas (según \texttt{hardware/BOM.md}): LoRa 915 MHz, monopolo flexible de 8 cm con conector u.FL; Wi-Fi/BLE 2.4 GHz, antena FPC Würth 2015301200 vía u.FL del módulo; GNSS, antena pasiva L1 de parche con cable (prueba: HX-TWGPS-184-CV0; la definitiva está \textbf{POR DECIDIR}). La posición de las antenas también está \textbf{POR DECIDIR}.
 
 \subsection*{Árbol de Distribución de Potencia y Gestión Energética}
 
@@ -74,7 +74,7 @@ Antenas (según \texttt{hardware/BOM.md}): LoRa 915 MHz, monopolo flexible de 8 
     pwr_fase2/.style={rectangle, draw=unalred, dashed, fill=phase2orange, thick, text width=2.6cm, align=center, minimum height=1.1cm, rounded corners}]
 
     % NODO CENTRAL DE BATERÍA Y ENTRADAS (FILA 1)
-    \node [pwr_bus, text width=3.4cm] (bat) {Batería LiPo 3.7V\\(1200--1500 mAh)\\+ MAX17048 (I$^2$C)\\+ protección: CI POR DECIDIR};
+    \node [pwr_bus, text width=3.4cm] (bat) {Batería LiPo 3.7V\\(1200--1500 mAh)\\+ MAX17048 (I$^2$C)\\+ protección: PCM en la celda};
     \node [pwr_mgt, left=0.8cm of bat] (cn) {Cargador MPPT\\CN3791 (6V)};
     \node [pwr_in, left=0.8cm of cn] (in) {Panel solar\\6V};
     \node [pwr_mgt, above=0.8cm of bat] (tp) {Cargador USB\\TP4056};

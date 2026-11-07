@@ -82,6 +82,8 @@ El docente tiene físicamente todo lo que hay en su biblioteca `shared_lib.IntLi
 
 ## 4. Contradicciones y datos obsoletos (no cambian una compra, sí la guía del esquemático)
 
+**Estado al 2026-11-07:** todas las filas de esta tabla están corregidas en `BOM.md` v1.16 y en `COMPRAS.md`. Los números de línea son de la versión del 2026-11-05.
+
 | Tema | Dónde | Qué dice | Qué debería decir / contra qué choca |
 |------|-------|----------|---------------------------------------|
 | Optoacoplador | `BOM.md:51` | `VO617A-1-E` | No está en la tabla de pedidos (datasheet p.2). `COMPRAS.md:32` usa `VO617A-1X017T` |
@@ -134,16 +136,18 @@ El docente tiene físicamente todo lo que hay en su biblioteca `shared_lib.IntLi
 
 Las piezas del docente que el diseño usa y cuyo datasheet **no está** en la carpeta (el README dice que algunas se consultaron en línea): USB-C Shou Han TYPE-C-3.1-16PIN, USBLC6-2SC6, AP2301, CY54-47UH, RS-3535MWAM, XL-2012SURC, el electrolítico HRK de 100 µF, los condensadores (Samsung, CCTC, Chinocera, YAGEO) y las resistencias (FOJAN, Yageo). Además faltan los datasheets de las piezas compradas: zumbador Murata, conector Hirose, antena de Würth, y los de lo que está por elegir (Schottky, protector de batería, parche GNSS, resistencia de sensado). Los PDF no se suben a git (`.gitignore`, regla `*.pdf`), así que solo existen en este equipo.
 
+**Actualizado el 2026-11-07:** ya están en la carpeta los datasheets del USB-C, el USBLC6-2SC6 (Rev 5), el AP2301, el CY54, el RS-3535MWAM, el XL-2012SURC, el electrolítico HRK (hoja de la serie CD110), el LESD5Z3.3T1G y los Chinocera (ver `hardware/datasheets/README.md`). Siguen faltando los de Samsung, CCTC, YAGEO y las resistencias (opcionales) y la Rev 7 del USBLC6.
+
 ## 9. Decisiones que necesito del autor (con mi recomendación)
 
 | # | Decisión | Recomendación |
 |---|----------|---------------|
 | 1 | Pulsador: ¿el del docente (TSC015, 4.5 x 4.5 mm) o el PTS645 de 6x6? | **DECIDIDO (2026-11-05): el del docente.** Documentos actualizados y `libraries/pts645/` borrada |
-| 2 | Schottky O20 | No comprar hasta leer la fuga del PSBD1DF40V1H a 4.2 V (LCSC C110730) |
+| 2 | Schottky O20 | **DECIDIDO (2026-11-06):** se usan los PSBD1DF40V1H del docente y no se compra el O20 (`PLAN_MANANA.md`, paso 17) |
 | 3 | 220 nF (O21) | **DECIDIDO (2026-11-05):** se quita el lote y se usan 2 x 470 nF X7R del docente en serie (235 nF). Documentos actualizados (BOM v1.12, COMPRAS, pinout v2.7, CSV). Falta confirmar que el docente tenga al menos 3 de 470 nF |
-| 4 | Tantalio O25 | Verificar el MPN. Valorar primero el electrolítico del docente como bulk |
+| 4 | Tantalio O25 | Verificar el MPN. Valorar primero el electrolítico del docente como bulk. **Sigue abierto** (paso 26 del plan): el código TAJA107K016RNJ parece no existir |
 | 5 | JST SH de 4 pines (O17) | **DECIDIDO (2026-11-05):** se quita del BOM y de las compras (sin uso). Si más adelante hace falta uno de 4 pines, empezar por la cabecera del docente |
-| 6 | Diodo ESD de la alimentación y MOSFET del protector | Evaluar primero el LESD5Z3.3T1G y el DN2302S del docente |
-| 7 | Regulador | Bajar el datasheet del DS8570F8 y compararlo con el TLV75733 |
-| 8 | Huella del TP4056 | Conseguir el dibujo del paquete y comparar con `SOIC_8_3.9mm_EP` |
-| 9 | Limpieza de la sección 4 | Corregir BOM y COMPRAS después de las decisiones anteriores |
+| 6 | Diodo ESD de la alimentación y MOSFET del protector | **Revisado el 2026-11-07:** el LESD5Z3.3T1G cumple (VRWM 3.3 V, fuga máxima de 1 µA a 25 °C). El DN2302S ya no hace falta: el protector se retiró el 2026-11-05 |
+| 7 | Regulador | **DECIDIDO (2026-11-06):** se queda el TLV75733P; el DS8570F8 consume 0.6 mA (`PLAN_MANANA.md`, paso 18) |
+| 8 | Huella del TP4056 | **DECIDIDO (2026-11-06):** sirve la `SOIC_8_3.9mm_EP` con el pad 9 a GND, y ya está en la biblioteca (`PLAN_MANANA.md`, paso 19) |
+| 9 | Limpieza de la sección 4 | **HECHO (2026-11-07)** |

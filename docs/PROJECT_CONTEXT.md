@@ -58,8 +58,8 @@ Sistema en dos niveles: línea no regulada (3.6-4.2V, la batería) y línea regu
 * **Objetivos de hardware:** un solo código base Zephyr para dos placas. Prueba de concepto en la Nordic Thingy:91 X (nRF9151, nRF Connect SDK, LTE-M/NB-IoT/GNSS); producto final en la PCB con ESP32-S3-WROOM-1U-N16R8 (módulo LoRa DX-LR30-900M22S con SX1262, GNSS externo MAX-M10S, IMU LSM6DS3TR-C). Se comparten `geofence.c`, la FSM y el logging; cada placa aporta su overlay, su `prj.conf` y los adaptadores de GNSS, comunicaciones e IMU.
 * **Comunicación:** módulo LoRa DX-LR30-900M22S (SX1262 integrado, 915 MHz, SPI)
 * **Geolocalización:** u-blox MAX-M10S GNSS
-* **Energía:** CN3791 MPPT (solo panel solar), TP4056 (carga por USB-C, 500 mA), TLV75733P (LDO de 1 A, solo desde la batería), MAX17048 Fuel Gauge (I2C 0x36, sobre la batería). Protección de batería: **POR DECIDIR** (el código BQ2975DRBR del BOM no existe)
-* **Protección USB y antenas:** USBLC6-2SC6 en D+/D-/VBUS. Antenas de LoRa (u.FL, 8 cm), FPC de 2.4 GHz (Würth 2015301200) y parche GNSS pasivo con cable u.FL (MPN y posiciones **POR DECIDIR**); ver [hardware/BOM.md](../hardware/BOM.md)
+* **Energía:** CN3791 MPPT (solo panel solar), TP4056 (carga por USB-C, 500 mA), TLV75733P (LDO de 1 A, solo desde la batería), MAX17048 Fuel Gauge (I2C 0x36, sobre la batería). Protección de batería: integrada en la celda (PCM), sin IC protector en la PCB (decidido el 2026-11-05)
+* **Protección USB y antenas:** USBLC6-2SC6 en D+/D-/VBUS. Antenas de LoRa (u.FL, 8 cm), FPC de 2.4 GHz (Würth 2015301200) y parche GNSS pasivo con cable u.FL (prueba: HXANT `HX-TWGPS-184-CV0`; parche definitivo y posiciones **POR DECIDIR**); ver [hardware/BOM.md](../hardware/BOM.md)
 * **Detección:** IMU 6-DOF (LSM6DS3TR-C del docente)
 
 ### 3.3 Consumo Eléctrico
@@ -189,8 +189,8 @@ Lista del prototipo con DevKit. La lista canónica de la PCB final (TLV75733PDBV
 | 1 | IMU 6-DOF (ST LSM6DS3TR-C) | Breakout I2C/SPI | Detección de Movimiento |
 | 1 | MAX17048 | Breakout I2C Fuel Gauge | Telemetría de Batería |
 | 1 | Módulo CN3791 (Versión 6V) | Cargador Solar MPPT Buck | Gestión Energética |
-| 1 | Batería LiPo 3.7V (capacidad POR DECIDIR: 1200 o 1500 mAh) | Celda 1S con JST-PH 2.0mm | Fuente de Energía |
-| 1 | Panel Solar 6V, al menos 1 W (MPN POR DECIDIR) | Monocristalino / Policristalino | Generación Fotovoltaica |
+| 1 | Batería LiPo 3.7V con protección integrada (prueba: 603450 de 1200 mAh; definitiva POR DECIDIR: 1200 o 1500 mAh) | Celda 1S con JST-PH 2.0mm | Fuente de Energía |
+| 1 | Panel Solar 6V, de 1 a 1.5 W (prueba: 6 V, 220 mA, 120 x 90 mm; definitivo POR DECIDIR, candidato Voltaic P124) | Monocristalino / Policristalino | Generación Fotovoltaica |
 | 1 | Optoacoplador VO617A / PC817 | DIP-4 Through-Hole | Aislamiento del Actuador |
 | 1 | LED 3mm Rojo | Through-Hole | Indicador visual de disparo |
 | 5 | Capacitores $100\text{ nF}$ | Cerámico SMD 0805 | Desacople de Alta Frecuencia |

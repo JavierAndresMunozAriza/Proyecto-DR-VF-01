@@ -45,12 +45,12 @@ Esta especificación detalla los requisitos de sellado IP67 para el collar de ge
 - **LED indicadores**: el LED RGB RS-3535MWAM y un LED rojo 0805 en la salida del optoacoplador (los LTST se quitaron el 2026-11-03); su ubicación y si van bajo una ventana sellada está POR DECIDIR
 
 ### 5. Panel Solar y su Cable (pendiente)
-- **Panel solar**: 6V, al menos 1W, MPN POR DECIDIR (BOM, sección 2.3). Método de fijación y sellado del perímetro: pendiente
+- **Panel solar**: 6 V, de 1 a 1.5 W (BOM, sección 2.3). Para la prueba de la primera placa se usa un panel de resina epoxi PET de 6 V y 220 mA, de 120 x 90 mm y con cable, que no garantiza IP67. El definitivo está POR DECIDIR (candidato: Voltaic P124, con cubierta ETFE). Método de fijación y sellado del perímetro: pendiente
 - **Cable del panel (JST PH de 2 pines)**: paso del cable por la carcasa y sellado: pendiente
 - No hay valores de sellado definidos para este elemento
 
 ### 6. Salida Acústica del Zumbador (pendiente)
-- **Zumbador piezoeléctrico**: PKMCS0909E4000-R1 (BOM). Su requisito acústico es > 80 dBA a 1 m (SR-30 del informe)
+- **Zumbador piezoeléctrico**: requisito acústico de más de 80 dBA a 1 m (SR-30 del informe). Se mantiene si se consigue un zumbador que lo cumpla (decidido el 2026-11-07). El PKMCS0909E4000-R1 del BOM da unos 52 dB a 1 m y queda como respaldo
 - **Orificio, membrana o ventilación del zumbador**: pendiente. No hay valores de sellado definidos
 
 ### 7. Antenas y Cables Internos (pendiente)

@@ -39,7 +39,7 @@ El DR-VF-01 es una solución de grado industrial para el geocercamiento y monito
 \begin{itemize}[leftmargin=*]
     \item \textbf{Autonomía Base}: Unos $190\,\text{días}$ con batería LiPo de $1200\,\text{mAh}$ (teórico, con factor de degradación de 0.85) y unos $238\,\text{días}$ con $1500\,\text{mAh}$, sin recarga solar; la capacidad de la batería está \textbf{POR DECIDIR}.
     \item \textbf{Consumo en Reposo}: Unos $124\,\mu\text{A}$ (calculado, aún sin medir) en modo \textit{Deep Sleep}, por debajo del límite de $150\,\mu\text{A}$ del requerimiento RNF-03.
-    \item \textbf{Recarga Solar MPPT}: Cargador dedicado CN3791 acoplado a un panel solar de $6\,\text{V}$ y al menos $1\,\text{W}$ (MPN \textbf{POR DECIDIR}). La carga por USB-C usa un cargador TP4056 independiente de $500\,\text{mA}$.
+    \item \textbf{Recarga Solar MPPT}: Cargador dedicado CN3791 acoplado a un panel solar de $6\,\text{V}$ y de $1$ a $1.5\,\text{W}$ (panel de prueba de $220\,\text{mA}$; definitivo \textbf{POR DECIDIR}). La carga por USB-C usa un cargador TP4056 independiente de $500\,\text{mA}$.
 \end{itemize}
 
 \subsection{Especificaciones Técnicas del Sistema}
@@ -68,7 +68,7 @@ Regulación de $3.3\,\text{V}$ & LDO TLV75733PDBVR ($1\,\text{A}$, \textit{Iq} d
 Medidor de Batería & MAX17048 ($\text{I}^2\text{C}$, dirección 0x36), conectado a la batería \\
 Protección USB & USBLC6-2SC6 en D+, D$-$ y VBUS \\
 \rowcolor{rowalt}
-Batería de Respaldo & LiPo $3.7\,\text{V}$, 1S (capacidad \textbf{POR DECIDIR}: $1200$ o $1500\,\text{mAh}$); protección de batería \textbf{POR DECIDIR} \\
+Batería de Respaldo & LiPo $3.7\,\text{V}$, 1S (prueba: $1200\,\text{mAh}$; capacidad definitiva \textbf{POR DECIDIR}: $1200$ o $1500\,\text{mAh}$); protección integrada en la celda (PCM) \\
 Elementos Radiantes & Antena LoRa de $8\,\text{cm}$ con u.FL ($915\,\text{MHz}$), antena FPC Würth 2015301200 ($2.4\,\text{GHz}$, Wi-Fi/BLE) y parche GNSS pasivo de $18\times18\times4\,\text{mm}$ (MPN pendiente); posiciones \textbf{POR DECIDIR} \\
 \bottomrule
 \end{tabularx}

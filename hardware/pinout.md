@@ -1,6 +1,6 @@
 # Asignación de Pines del Collar DR-VF-01
 
-**Estado:** PROPUESTA v2.4 (2026-11-04), pendiente de revisión del autor. Es el **único mapa de pines** del proyecto: la PCB y la ESP32-S3-DevKitC-1 (N16R8) usan los mismos GPIO para que el firmware sea idéntico en ambas. Cualquier otro mapa en `docs/` o `reports/` debe remitir a este archivo.
+**Estado:** PROPUESTA v2.9 (2026-11-07), pendiente de revisión del autor. Es el **único mapa de pines** del proyecto: la PCB y la ESP32-S3-DevKitC-1 (N16R8) usan los mismos GPIO para que el firmware sea idéntico en ambas. Cualquier otro mapa en `docs/` o `reports/` debe remitir a este archivo.
 
 **Fuente verificada:** *ESP32-S3-WROOM-1 & WROOM-1U Datasheet v1.8*, Tabla 3-1 (pines del módulo) y Tabla 4-1 (strapping). Las hojas de datos se descargan según `hardware/datasheets/README.md`.
 
@@ -120,11 +120,11 @@
 Lista única para todo el mapa de conexiones (actualizada el 2026-11-05). Ninguno lo decidió el asistente.
 
 **Decisiones del autor**
-1. **Zumbador:** el PKMCS0909E4000-R1 da unos 52 dB a 1 m y `mechanical/IP67_SPEC.md` pide más de 80 dBA. Cambiar el zumbador o el requisito (`COMPRAS.md` O14).
+1. **Zumbador:** el PKMCS0909E4000-R1 da unos 52 dB a 1 m y `mechanical/IP67_SPEC.md` pide más de 80 dBA. **Decidido el 2026-11-07:** se mantiene el requisito si se consigue un zumbador que lo cumpla; se busca otro y el Murata queda como respaldo (`COMPRAS.md` O14).
 2. **Electrolítico de entrada del CN3791 (C1):** el de 100 µF 35 V del docente es de agujero pasante (6.3 x 12 mm). Sirve si cabe en la altura de la carcasa; si no, uno SMD por comprar.
 3. **Bulk de 3.3 V:** el tantalio de 100 µF (1 o 2) más los cerámicos no pueden pasar de 200 µF a la salida del TLV75733P; hoy suman unos 32.5 µF.
 4. **Protección de batería (decidido el 2026-11-05):** la batería lleva protección integrada (PCM) y no hay IC protector en la PCB. Batería provisional: cualquier 1S de 3.7 V con PCM y conector JST PH de 2 pines; la definitiva (una LiPo mejor) se consigue después por el costo de envío (`COMPRAS.md` O6).
-5. **Panel solar (O7):** de 6 V y de 1 W a 1.5 W (decidido el 2026-11-05). Falta elegir el modelo; fija los valores finales de R3 y R4 del MPPT y de RCS (O22). Con 1 W la corriente es de 0.17 A y con 1.5 W de 0.25 A, así que un RCS de unos 0.47 Ω cubre todo el rango.
+5. **Panel solar (O7):** de 6 V y de 1 W a 1.5 W (decidido el 2026-11-05). Panel de prueba elegido el 2026-11-07: 6 V y 220 mA (1.32 W), 120 x 90 mm, con cable (`COMPRAS.md` O7). El definitivo está **POR DECIDIR** y fija los valores finales de R3 y R4 del MPPT y de RCS (O22). Con 1 W la corriente es de 0.17 A y con 1.5 W de 0.25 A, así que un RCS de unos 0.47 Ω cubre todo el rango.
 6. **LED de carga del TP4056:** opcional en CHRG, solo con USB.
 7. **Supervisor de tensión en EN:** la guía de Espressif lo sugiere con alimentación solar de subida lenta.
 8. **Salida del optoacoplador en la Fase 4:** hoy alimenta un LED desde el mismo 3V3; en la Fase 4 va a un conector aislado.
@@ -238,7 +238,7 @@ SOT-23-5 (DBV), sin pad térmico.
 | 4 | NC | Sin conectar (no tiene conexión interna) | p3 |
 | 5 | OUT | Riel de 3V3 con 1 µF o más a GND | p4, p15 |
 
-La salida admite de 1 a 200 µF en total (p4). Suma actual en el riel de 3.3 V: 22 µF y 0.1 µF del ESP32, 10 µF y 100 nF del LoRa, dos 100 nF del IMU y 100 nF del GNSS, unos 32.5 µF; el bulk de 100 µF de tantalio sigue **POR DECIDIR** y el total no debe pasar de 200 µF. Caída máxima de 425 mV a 1 A (p6). Con el regulador apagado o bajo UVLO, la salida se descarga con unos 120 Ω (p12).
+La salida admite de 1 a 200 µF en total (p4). Suma actual en el riel de 3.3 V: 22 µF y 0.1 µF del ESP32, 10 µF y 100 nF del LoRa, dos 100 nF del IMU y 100 nF del GNSS, unos 32.5 µF; el bulk de 100 µF sigue **POR DECIDIR** (tantalio TAJA107K016RNJ, cuyo código parece no existir, o el electrolítico de 100 µF del docente; paso 26 del plan) y el total no debe pasar de 200 µF. Caída máxima de 425 mV a 1 A (p6). Con el regulador apagado o bajo UVLO, la salida se descarga con unos 120 Ω (p12).
 
 ### Medidor de batería MAX17048 (datasheet verificado el 2026-11-04)
 
@@ -265,7 +265,7 @@ ESOP-8 con pad térmico.
 | Pin | Nombre | Conexión | Fuente |
 |-----|--------|----------|--------|
 | 1 | TEMP | GND (sin corte por temperatura, decisión del 2026-11-03) | p2 |
-| 2 | PROG | 2.4 kΩ a GND (500 mA, RNF-05) | p2 |
+| 2 | PROG | 2.4 kΩ a GND (500 mA, RNF-05): 3 kΩ en paralelo con 12 kΩ del kit O19, que no trae 2.4 kΩ | p2 |
 | 3 | GND | GND | p2 |
 | 4 | VCC | VBUS del USB-C después del USBLC6, con 10 µF a GND | p3 |
 | 5 | BAT | Nodo de batería con 10 µF a GND | p3 |
@@ -302,7 +302,7 @@ SSOP de 10 pines con paso de 1.00 mm y sin pad expuesto (p11); no usar una huell
 | D2 | Schottky PSBD1DF40V1H del docente (O20) | Diodo de rueda libre; de noche queda en inversa a VBAT | p9 |
 | L | **47 µH**, CY54-47UH del docente (0.71 A, 355 mΩ) | La regla L > 5 x (VCC - VBAT) µH pide más de 25 µH con 8 V de panel en circuito abierto y 3.0 V de batería; el de 22 µH quedaba al límite. Rizado de unos 0.10 A a 6 V y 3.7 V (cálculo propio); sirve hasta unos 0.6 A de carga | p8 |
 | RCS | 0.12 V / I de carga (O22); con un panel de 1 W, unos 0.25 A, sale de unos 0.47 Ω en 0805 | ICH = 120 mV / RCS, ±8 % | p4, p6 |
-| C1 | Electrolítico más 10 µF X5R 25 V más 470 nF | El datasheet pide los tres en paralelo. El electrolítico de 100 µF 35 V del docente es de agujero pasante (6.3 x 12 mm): sirve si cabe en altura; si no, uno SMD por comprar (**POR DECIDIR**) | p8 |
+| C1 | Electrolítico más 10 µF X5R 25 V más 470 nF | El datasheet pide los tres en paralelo. El electrolítico de 100 µF 35 V del docente es de agujero pasante (6.3 x 12 mm): se usa ese (decidido el 2026-11-05: la carcasa es grande y los 12 mm de alto no son problema; `COMPRAS.md` D12). Su serie CD110 trabaja de -40 a +105 °C (hoja de HRK); la vida útil del 100 µF no está en la hoja | p8 |
 | C2 | 100 nF X7R de VG a VCC | | p2 |
 | C3 | Dos 10 µF X5R 25 V en BAT | El datasheet pide electrolítico más cerámico; solo cerámico es válido con más capacidad, porque la batería siempre está conectada | p8 |
 | R2 y C4 | 120 Ω y 235 nF X7R (dos 470 nF en serie; el datasheet pide 220 nF) | Red de compensación de COM | p2 |
@@ -334,7 +334,7 @@ Dos terminales SMD sin polaridad marcada (piezo).
 | 2 | GND | hoja de Murata p1 |
 
 - Excitación externa con onda cuadrada de 4 kHz. Una salida de 0 a 3.3 V equivale a ±1.65 V, algo más que los ±1.5 V con los que Murata mide 72 dB típicos a 10 cm (p2). Con 100 Ω el pico de corriente es de 33 mA, por debajo de los 40 mA del GPIO, y la media es de unos 0.12 mA (cálculo propio con unos 9 nF, valor de un distribuidor sin verificar).
-- **Requisito incumplido:** `mechanical/IP67_SPEC.md` pide más de 80 dBA a 1 m. Con 72 dB a 10 cm este zumbador da unos 52 dB a 1 m, y unos 70 dB incluso a su máximo de ±12.5 V. **POR DECIDIR:** cambiar el zumbador o el requisito.
+- **Requisito incumplido:** `mechanical/IP67_SPEC.md` pide más de 80 dBA a 1 m. Con 72 dB a 10 cm este zumbador da unos 52 dB a 1 m, y unos 70 dB incluso a su máximo de ±12.5 V. **Decidido el 2026-11-07:** se mantiene el requisito si se consigue un zumbador que lo cumpla; este queda como respaldo.
 
 ### LED RGB NationStar RS-3535MWAM (spec B2; verificado el 2026-11-04)
 
@@ -343,7 +343,7 @@ Dos terminales SMD sin polaridad marcada (piezo).
 | Pin | Nombre | Conexión | Fuente |
 |-----|--------|----------|--------|
 | 4 | R+ | 3V3 | p6 |
-| 3 | R- | GPIO38 (LED_R) a través de 750 Ω | p6 |
+| 3 | R- | GPIO38 (LED_R) a través de 750 Ω (1 kΩ en paralelo con 3 kΩ del kit O19) | p6 |
 | 5 | G+ | 3V3 | p6 |
 | 2 | G- | GPIO39 (LED_G) a través de 470 Ω | p6 |
 | 6 | B+ | 3V3 | p6 |
@@ -423,7 +423,7 @@ Dos terminales SMD sin polaridad marcada (piezo).
 
 ### Protección de batería
 
-Pieza por identificar: el `BQ2975DRBR` del BOM no existe (O16). Recomendación: comprar una batería con circuito de protección integrado (PCM), así no hace falta protección en la PCB. **POR DECIDIR** con la compra de la batería (O6).
+**Decidido el 2026-11-05:** la batería trae protección integrada (PCM) y la PCB no lleva IC protector; el `BQ2975DRBR` del BOM no existía (O16, retirado). Batería de prueba elegida el 2026-11-07: LiPo 603450 de 1200 mAh con PCM y JST PH 2.0 (`COMPRAS.md` O6).
 
 ## Consideraciones de diseño
 
@@ -460,4 +460,5 @@ Pieza por identificar: el `BQ2975DRBR` del BOM no existe (O16). Recomendación: 
 | 2.6 | 2026-11-05 | Pulsador: BZCN TSC015A05026A del docente (4.5 x 4.5 mm; terminales 1-2 y 3-4 unidos) en lugar del C&K PTS645; CSV actualizado |
 | 2.7 | 2026-11-05 | Red COM del CN3791 con dos 470 nF X7R del docente en serie (235 nF) en lugar de un 220 nF comprado; CSV actualizado |
 | 2.8 | 2026-11-05 | Lista de pendientes actualizada: batería provisional con protección integrada (sin IC protector), panel de 6 V de 1 a 1.5 W y lista de lo que se revisa antes de comprar |
+| 2.9 | 2026-11-07 | Zumbador: se mantiene el requisito de 80 dBA si se consigue. Panel y batería de prueba elegidos. C1 del CN3791 es el electrolítico del docente. RPROG y la resistencia del LED rojo se arman en paralelo con el kit O19. Protección de batería integrada en la celda. Bulk de 3.3 V por decidir |
 | 2.0 | 2026-10-30 | Rehecho contra el datasheet v1.8 del módulo. GPIO05 ya no se repite. Sin GPIO22-34. USB D+/D- corregidos. GNSS con TX/RX cruzados |

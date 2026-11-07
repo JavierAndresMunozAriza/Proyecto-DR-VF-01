@@ -13,8 +13,8 @@ La arquitectura del sistema se basa en el microcontrolador ESP32-S3-WROOM-1U-N16
     \item \textbf{Sistema de Posicionamiento}: u-blox MAX-M10S GNSS multiconstelación.
     \item \textbf{Sensor de Inercia y Movimiento}: IMU de 6 ejes con bajo consumo; el modelo es el LSM6DS3TR-C, que tiene el docente (decidido el 2026-11-03).
     \item \textbf{Transceptor de Radiofrecuencia}: módulo LoRa DX-LR30-900M22S (SX1262 integrado, interfaz SPI, 915 MHz, alimentación de 1.8 a 3.7 V).
-    \item \textbf{Gestión de Energía y Carga}: la batería es el nodo central. El cargador solar MPPT CN3791 (6 V) carga la batería únicamente desde el panel solar; la carga por USB-C pasa por el cargador lineal TP4056 (500 mA) y el USB nunca alimenta el sistema. Un LDO de 1 A con \textit{Iq} de 25~$\mu$A, TLV75733P (3.3 V), se alimenta solo de la batería. El medidor de batería MAX17048 ($\text{I}^2\text{C}$, dirección 0x36) se conecta a la batería y el USBLC6-2SC6 protege D+, D$-$ y VBUS. El circuito integrado de protección de la batería está \textbf{POR DECIDIR}: el código BQ2975DRBR del BOM no existe y la pieza debe identificarse.
-    \item \textbf{Antenas} (posiciones en la carcasa \textbf{POR DECIDIR}): antena LoRa flexible de 8~cm con conector u.FL (915 MHz), antena FPC Würth 2015301200 de 2.4 GHz para el Wi-Fi/BLE del ESP32-S3 y antena GNSS pasiva de parche de 18$\times$18$\times$4~mm (MPN \textbf{POR DECIDIR}).
+    \item \textbf{Gestión de Energía y Carga}: la batería es el nodo central. El cargador solar MPPT CN3791 (6 V) carga la batería únicamente desde el panel solar; la carga por USB-C pasa por el cargador lineal TP4056 (500 mA) y el USB nunca alimenta el sistema. Un LDO de 1 A con \textit{Iq} de 25~$\mu$A, TLV75733P (3.3 V), se alimenta solo de la batería. El medidor de batería MAX17048 ($\text{I}^2\text{C}$, dirección 0x36) se conecta a la batería y el USBLC6-2SC6 protege D+, D$-$ y VBUS. El circuito integrado de protección de la batería está integrada en la celda (PCM) y la PCB no lleva circuito integrado protector (el BQ2975DRBR del BOM no existía).
+    \item \textbf{Antenas} (posiciones en la carcasa \textbf{POR DECIDIR}): antena LoRa flexible de 8~cm con conector u.FL (915 MHz), antena FPC Würth 2015301200 de 2.4 GHz para el Wi-Fi/BLE del ESP32-S3 y antena GNSS pasiva de parche de 18$\times$18~mm con cable (prueba: HX-TWGPS-184-CV0; la definitiva está \textbf{POR DECIDIR}).
 \end{itemize}
 
 \section{Presupuesto de Potencia}
@@ -118,31 +118,31 @@ El módulo ESP32-S3-WROOM-1U-N16R8 está especificado de $-40$ a $65\,^\circ\tex
 \rowcolor{categorybg}
 \textbf{Cant.} & \textbf{Descripción} & \textbf{MPN} & \textbf{Fabricante} & \textbf{Proveedor} \\
 \midrule
-1 & Módulo ESP32-S3 (16 MB Flash quad, 8 MB PSRAM octal, conector U.FL) & ESP32-S3-WROOM-1U-N16R8 & Espressif & Digi-Key \\
+1 & Módulo ESP32-S3 (16 MB Flash quad, 8 MB PSRAM octal, conector U.FL) & ESP32-S3-WROOM-1U-N16R8 & Espressif & AliExpress \\
 \rowcolor{rowalt}
-1 & Módulo GNSS Multiconstelación & MAX-M10S-00B & u-blox & Avnet \\
-1 & Antena GNSS pasiva de parche con cable y u.FL, 1575.42 MHz, 18$\times$18$\times$4~mm & \textbf{POR DECIDIR} (MPN pendiente) & --- & --- \\
+1 & Módulo GNSS Multiconstelación & MAX-M10S-00B & u-blox & AliExpress \\
+1 (+1) & Antena GNSS pasiva de parche con cable y u.FL, 1575.42 MHz, 18$\times$18~mm, cerámica de 4~mm (prueba; la definitiva está \textbf{POR DECIDIR}) & HX-TWGPS-184-CV0 & HXANT (Hongxin) & AliExpress \\
 \rowcolor{rowalt}
 1 & Sensor de Inercia IMU 6 ejes & LSM6DS3TR-C & STMicroelectronics & Docente \\
 1 & Módulo LoRa 915 MHz con SX1262, interfaz SPI, 20$\times$14$\times$2.3~mm & DX-LR30-900M22S (variante SMD, no la variante SP) & DX-SMART & AliExpress \\
 \rowcolor{rowalt}
 1 & Antena LoRa 915 MHz flexible de 8~cm con conector u.FL & sin MPN (listado del proveedor) & genérico & AliExpress \\
-2 & Conector u.FL SMD para las antenas LoRa y GNSS & U.FL-R-SMT-1 (por verificar) & Hirose & Digi-Key \\
+2 & Conector u.FL SMD para las antenas LoRa y GNSS & U.FL-R-SMT-1(10) & Hirose & AliExpress \\
 \rowcolor{rowalt}
-1 & Antena FPC 2.4 GHz (Wi-Fi/BLE del módulo, vía U.FL) & 2015301200 & Würth Elektronik & Mouser \\
-1 & Optoacoplador & VO617A-1-E & Vishay & Mouser \\
+1 & Antena FPC 2.4 GHz (Wi-Fi/BLE del módulo, vía U.FL) & 2015301200 & Würth Elektronik & AliExpress \\
+1 & Optoacoplador & VO617A-1X017T & Vishay & AliExpress \\
 \rowcolor{rowalt}
-1 & Buzzer piezoeléctrico & PKMCS0909E4000-R1 & Murata & Digi-Key \\
-1 & Medidor de batería (\textit{fuel gauge}), $\text{I}^2\text{C}$ & MAX17048 (encapsulado exacto \textbf{POR DECIDIR}) & Analog Devices (Maxim) & Digi-Key \\
+1 & Buzzer piezoeléctrico de más de 80~dBA a 1~m & \textbf{POR DECIDIR} (respaldo: PKMCS0909E4000-R1, unos 52~dB a 1~m) & --- & AliExpress \\
+1 & Medidor de batería (\textit{fuel gauge}), $\text{I}^2\text{C}$ & MAX17048G+T10 (TDFN-8) & Analog Devices (Maxim) & AliExpress \\
 \rowcolor{rowalt}
-1 & Regulador LDO 3.3 V, 1 A, \textit{Iq} 25~$\mu$A, SOT-23-5 & TLV75733PDBVR & Texas Instruments & Digi-Key \\
+1 & Regulador LDO 3.3 V, 1 A, \textit{Iq} 25~$\mu$A, SOT-23-5 & TLV75733PDBVR & Texas Instruments & AliExpress \\
 1 & Cargador solar MPPT (solo desde el panel solar) & CN3791 & Consonance & AliExpress \\
 \rowcolor{rowalt}
-1 & Cargador lineal para la carga por USB-C (500 mA con RPROG de 2.4~k$\Omega$) & TP4056 (ESOP-8) & NanJing Top Power & Docente (sin compra) \\
-1 & Protección de batería (\textbf{POR DECIDIR}) & \textbf{POR DECIDIR}: el código BQ2975DRBR del BOM no existe, pieza por identificar & --- & --- \\
+1 & Cargador lineal para la carga por USB-C (500 mA con RPROG de 2.4~k$\Omega$) & TP4056 (ESOP-8) & YONGYUTAI & Docente (sin compra) \\
+--- & Protección de batería: integrada en la celda (PCM), sin circuito integrado en la PCB & --- & --- & --- \\
 \rowcolor{rowalt}
-1 & Batería LiPo 3.7 V, 1S (capacidad \textbf{POR DECIDIR}: 1200 o 1500~mAh) & PL063-1500 (referencia actual del BOM) & PowerStream & Digi-Key \\
-1 & Panel solar de 6 V nominal, al menos 1~W & \textbf{POR DECIDIR}: el HTJ-2W-D del BOM no declara su tensión & --- & --- \\
+1 & Batería LiPo 3.7 V, 1S, con PCM y JST PH 2.0 (prueba: 603450 de 1200~mAh; la definitiva está \textbf{POR DECIDIR}: 1200 o 1500~mAh) & sin MPN (prueba) & --- & AliExpress \\
+1 & Panel solar de 6 V, de 1 a 1.5~W (prueba: 6 V y 220~mA, 120$\times$90~mm; el definitivo está \textbf{POR DECIDIR}) & sin MPN (prueba) & --- & AliExpress \\
 \rowcolor{rowalt}
 1 & Conector USB-C hembra de 16 pines (programación por USB nativo y entrada del TP4056) & TYPE-C-3.1-16PIN & Shou Han & Docente \\
 1 & Protección ESD USB 2.0 de 2 líneas, SOT23-6 (D+/D$-$ y VBUS) & USBLC6-2SC6 & STMicroelectronics & Docente \\
@@ -150,7 +150,7 @@ El módulo ESP32-S3-WROOM-1U-N16R8 está especificado de $-40$ a $65\,^\circ\tex
 \end{tabularx}
 \end{table}
 
-\noindent Los pasivos, los LED, los conectores JST, el botón, el cristal de 32.768~kHz y las piezas mecánicas están en \texttt{hardware/BOM.md}.
+\noindent Los pasivos, los LED, los conectores JST, el botón, el cristal de 32.768~kHz y las piezas mecánicas están en \texttt{hardware/BOM.md}. Todo lo que no tiene el docente se compra por AliExpress (decidido el 7 de noviembre de 2026); los enlaces están en \texttt{hardware/COMPRAS.md}.
 
 \subsection{Estructura de Costos Estimada}
 

@@ -72,9 +72,9 @@ Sin tolerancias definidas: dependen de piezas aún no elegidas. No se asigna nin
 | Elemento | Nominal | Tolerancia | Estado |
 |----------|---------|------------|--------|
 | Tapa ciega USB-C | POR DECIDIR (BOM, sección 2.2) | Pendiente | Tipo de sellado POR DECIDIR |
-| Hueco y fijación del panel solar | Pendiente (6V, al menos 1W, MPN POR DECIDIR) | Pendiente | Panel sin MPN |
+| Hueco y fijación del panel solar | Pendiente (6 V, de 1 a 1.5 W; el panel de prueba mide 120 x 90 mm; el definitivo está POR DECIDIR) | Pendiente | Panel definitivo sin elegir |
 | Paso del cable del panel (JST PH) | Pendiente | Pendiente | Ver `mechanical/IP67_SPEC.md`, sección 5 |
-| Alojamiento de la batería | Pendiente (LiPo de 1200mAh o 1500mAh, POR DECIDIR) | Pendiente | Tamaño de la celda abierto |
+| Alojamiento de la batería | Pendiente (celda de prueba 603450, unos 6 x 34 x 50 mm según el código del formato, a medir al recibirla; la definitiva, de 1200 o 1500 mAh, está POR DECIDIR) | Pendiente | Tamaño de la celda definitiva abierto |
 
 ## Elementos de Fijación
 
@@ -111,14 +111,14 @@ Según el BOM, sección 2.1 (tornillo M2x6 cabeza allen e inserto roscado M2).
 
 ## Antenas
 
-El BOM lista tres antenas (ver `mechanical/ANTENNA_PLACEMENT.md`). Las tolerancias están pendientes: no hay hoja de datos del Würth 2015301200 ni del parche GNSS. Los valores del texto anterior para una sola antena FPC (65.0mm x 15.0mm, 0.1mm de dieléctrico, pads de soldadura) no proceden de la hoja de datos de esa pieza, describían una soldadura directa que el BOM no usa y se retiraron.
+El BOM lista tres antenas (ver `mechanical/ANTENNA_PLACEMENT.md`). Las tolerancias están pendientes: no hay hoja de datos del Würth 2015301200, y del parche GNSS de prueba (`HX-TWGPS-184-CV0`) solo hay los dibujos del vendedor. Los valores del texto anterior para una sola antena FPC (65.0mm x 15.0mm, 0.1mm de dieléctrico, pads de soldadura) no proceden de la hoja de datos de esa pieza, describían una soldadura directa que el BOM no usa y se retiraron.
 
 ### 1. Dimensiones Físicas
 | Antena | Dimensión | Nominal | Tolerancia |
 |--------|-----------|---------|------------|
 | FPC Wi-Fi/BLE 2.4 GHz (Würth 2015301200) | Longitud, anchura y grosor | Pendiente | Pendiente |
 | Flexible LoRa 915 MHz con u.FL | Longitud | 80.0 (8 cm, BOM) | Pendiente |
-| Parche GNSS pasivo (MPN POR DECIDIR) | Largo x ancho x alto | 18.0 x 18.0 x 4.0 (BOM) | Pendiente |
+| Parche GNSS pasivo de prueba (`HX-TWGPS-184-CV0`; el definitivo está POR DECIDIR) | Largo x ancho x alto | 18 x 18, cerámica de 4 y 6.5 de alto en total con su placa (dibujo del vendedor) | ±2 en largo y ancho y ±0.1 en el grosor de la cerámica (dibujo del vendedor) |
 
 ### 2. Conectores u.FL
 | Característica | Tolerancia | Notas |
@@ -126,7 +126,7 @@ El BOM lista tres antenas (ver `mechanical/ANTENNA_PLACEMENT.md`). Las toleranci
 | Posición del conector u.FL SMD de la antena LoRa | Pendiente | U.FL-R-SMT-1 a verificar (BOM, sección 1.3) |
 | Conector U.FL del módulo ESP32-S3-WROOM-1U (FPC Wi-Fi/BLE) | Pendiente | Pieza del módulo |
 | Recorrido del cable de la antena LoRa | Pendiente | 8 cm de largo |
-| Conexión de la antena GNSS | Pendiente | POR DECIDIR |
+| Conexión de la antena GNSS | Pendiente | Cable RF1.13 con IPEX1 (compatible con U.FL) al U.FL-R-SMT-1 de la PCB (decidido el 2026-11-04) |
 
 ## Correa de Ajuste
 
