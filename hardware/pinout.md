@@ -139,7 +139,7 @@ Lista única para todo el mapa de conexiones (actualizada el 2026-11-05). Ningun
 - **Línea de 50 Ω:** calcular el ancho con el apilado real del fabricante para la PCB de 0.8 mm.
 
 **Por revisar antes de comprar o crear (auditoría del stock del docente, 2026-11-05; ver `hardware/AUDITORIA_STOCK_DOCENTE.md`)**
-- **Schottky D1 y D2 del CN3791 (O20):** el PSBD1DF40V1H del docente no sirve (unos 40 µA por diodo a 65 °C y 4 V, estimado de la Fig. 2 de su datasheet); comprar 2 con fuga garantizada (`COMPRAS.md` O20).
+- **Schottky D1 y D2 del CN3791 (O20):** se usan los PSBD1DF40V1H del docente (decidido el 2026-11-06): unos 5 µA por diodo a 40 °C y 4 V, estimado de la Fig. 2 de su datasheet; no se compra nada (`COMPRAS.md` O20).
 - **Bulk de 3.3 V (O25):** el MPN TAJA107K016RNJ parece no existir; valorar el electrolítico de 100 µF del docente.
 - **Diodo ESD de la alimentación:** evaluar el LESD5Z3.3T1G del docente.
 - **Regulador:** se queda el TLV75733P; el DS8570F8 del classroom consume 0.6 mA en reposo (`datasheets/ds8570f8_datasheet.pdf`, p. 5).
@@ -298,8 +298,8 @@ SSOP de 10 pines con paso de 1.00 mm y sin pad expuesto (p11); no usar una huell
 | Parte | Valor | Por qué | Fuente |
 |-------|-------|---------|--------|
 | M1 | AP2301 del docente | Canal P de nivel lógico; Vgs de ±12 V frente al recorte de 8 V del CN3791; Vds de -20 V | p7-8; hoja del AP2301 |
-| D1 | Schottky de baja fuga (O20), **montado** | Sin D1, de noche la batería alimenta el divisor MPPT (unos 8 µA) y el panel, y pierde unos 21 µA por el diodo del MOSFET. Con D1 solo queda su fuga | p9 |
-| D2 | Schottky de baja fuga (O20) | Diodo de rueda libre; de noche queda en inversa a VBAT | p9 |
+| D1 | Schottky PSBD1DF40V1H del docente (O20), **montado** | Sin D1, de noche la batería alimenta el divisor MPPT (unos 8 µA) y el panel, y pierde unos 21 µA por el diodo del MOSFET. Con D1 solo queda su fuga | p9 |
+| D2 | Schottky PSBD1DF40V1H del docente (O20) | Diodo de rueda libre; de noche queda en inversa a VBAT | p9 |
 | L | **47 µH**, CY54-47UH del docente (0.71 A, 355 mΩ) | La regla L > 5 x (VCC - VBAT) µH pide más de 25 µH con 8 V de panel en circuito abierto y 3.0 V de batería; el de 22 µH quedaba al límite. Rizado de unos 0.10 A a 6 V y 3.7 V (cálculo propio); sirve hasta unos 0.6 A de carga | p8 |
 | RCS | 0.12 V / I de carga (O22); con un panel de 1 W, unos 0.25 A, sale de unos 0.47 Ω en 0805 | ICH = 120 mV / RCS, ±8 % | p4, p6 |
 | C1 | Electrolítico más 10 µF X5R 25 V más 470 nF | El datasheet pide los tres en paralelo. El electrolítico de 100 µF 35 V del docente es de agujero pasante (6.3 x 12 mm): sirve si cabe en altura; si no, uno SMD por comprar (**POR DECIDIR**) | p8 |

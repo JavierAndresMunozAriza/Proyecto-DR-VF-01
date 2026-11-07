@@ -66,7 +66,7 @@ Esta carpeta contiene **solo** hojas de datos (PDF) y este índice. Los PDF no s
 | TI TPS7A05 (TPS7A0533) | https://www.ti.com/lit/ds/symlink/tps7a05.pdf | Entrega 200 mA como máximo y las cargas suman 224 a 394 mA. Sustituido por el TLV75733P en el BOM v1.4 |
 | "Manual de usuario" del vendedor del USBLC6-2SC6 | (guardado a mano, borrado el 2026-10-31) | Texto genérico de advertencias sin ningún parámetro: no es una hoja de datos |
 | TI TMP102 (SBOS397I) | https://www.ti.com/lit/ds/symlink/tmp102.pdf | Sin uso desde el 2026-11-03 (no hay corte de carga por frío). Verificado: 1.4 a 3.6 V, 3.2 µA a 1 conversión/s, ±2 °C máx. de -25 a +85 °C |
-| Schottky SS34-TD, TVS SMF5.0CA, ferrita HCB1608KF-600T20 | copias de LCSC (ver `COMPRAS.md` 1.2) | No aprobados: fuga inversa de hasta 0.5 mA a 25 °C (SS34-TD), 400 µA máx. a 5 V (SMF5.0CA) y la ferrita no figura en el catálogo de TAI-TECH. El PSBD1DF40V1H ya tiene PDF local (sección 3) y su decisión sigue abierta (O20) |
+| Schottky SS34-TD, TVS SMF5.0CA, ferrita HCB1608KF-600T20 | copias de LCSC (ver `COMPRAS.md` 1.2) | No aprobados: fuga inversa de hasta 0.5 mA a 25 °C (SS34-TD), 400 µA máx. a 5 V (SMF5.0CA) y la ferrita no figura en el catálogo de TAI-TECH. El PSBD1DF40V1H ya tiene PDF local (sección 3) y se usa en D1 y D2 (O20, decidido el 2026-11-06) |
 | Kingbright L-154A4SURK/G5T y Lite-On LTST-C193KGKT | - | Reemplazados por el LED RGB del docente (RS-3535MWAM) en el BOM v1.7; el primero no tiene datasheet con ese código |
 | Amphenol GSB1C41110SSHR (USB-C) | - | Reemplazado por el USB-C del docente (Shou Han TYPE-C-3.1-16PIN) en el BOM v1.6 |
 
