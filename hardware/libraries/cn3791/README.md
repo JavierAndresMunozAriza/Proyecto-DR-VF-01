@@ -1,6 +1,6 @@
 # CN3791 (Consonance) - datos para dibujar el símbolo y la huella
 
-**Estado: SIN ARCHIVO DE ALTIUM.** No se encontró un símbolo ni una huella descargable del CN3791 (2026-11-07): LCSC `C154992` solo trae la hoja y SnapMagic no lo lista. Hay que dibujarlos con los datos de abajo.
+**Estado: HAY UNA LIBRERÍA EN SNAPMAGIC, SIN VERIFICAR.** Corrección del 2026-11-07: antes escribí que no existía; sí hay una en https://www.snapeda.com/parts/CN3791/Consonance/view-part/ (símbolo y huella; no la creó SnapMagic, la sube un usuario, y hay que mapear símbolo y huella tras importarla). LCSC `C154992` solo la trae para EasyEDA. Antes de usarla hay que comprobar con `altium_lib_check.py` que la huella tenga **paso 1.00 mm** y cuerpo de 3.9 x 4.9 mm (no un SSOP de 0.65 mm) y que la numeración de pines sea la de abajo. Si no coincide, se dibuja con los datos de este archivo.
 
 ## Aviso sobre el paquete
 

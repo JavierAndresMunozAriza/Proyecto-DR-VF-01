@@ -200,9 +200,9 @@ LGA-14, 2.5 x 3.0 mm. Modo I2C.
 
 Los pull-ups del bus I2C son los 4.7 kΩ a 3V3 compartidos con el MAX17048 (el datasheet muestra 10 kΩ en su figura, p45). WHO_AM_I lee 0x6A (p49).
 
-### Módulo LoRa DX-LR30-900M22S (folleto del vendedor, `hardware/datasheets/lr30-900m22s_vendor_brochure.pdf`; sin datasheet)
+### Módulo LoRa DX-LR30-900M22S (manual técnico V2.0 del fabricante, `hardware/datasheets/dx-lr30-900m22s_module_manual.pdf`, y folleto del vendedor)
 
-Variante a comprar: **LR30-900M22S** (módulo SMD de 20 x 14 x 2.3 mm, paso de 1.27 mm, 1.8 a 3.7 V). No la "SP", que es una placa con STM32 y UART. **Todo lo de esta tabla sale de material de marketing (folleto p5 y p11) y no está verificado.**
+Variante a comprar: **LR30-900M22S** (módulo SMD de 20 x 14 x 2.3 mm, paso de 1.27 mm, 1.8 a 3.7 V). No la "SP", que es una placa con STM32 y UART. **Actualización del 2026-11-07:** el manual técnico oficial V2.0 confirma los 22 pines (los pines 6 y 7 se llaman RXEN y TXEN), la alimentación de 1.8 a 3.7 V (máximo absoluto 3.7 V; "≥ 3.3 V garantiza la potencia de salida") y el paso de 1.27 mm; detalles y coordenadas de la huella en `hardware/libraries/dx-lr30/README.md`. Sigue sin confirmarse por dónde sale la antena (conector IPEX del módulo o pad ANT).
 
 | Pad | Nombre | Conexión | Fuente |
 |-----|--------|----------|--------|
