@@ -107,6 +107,8 @@ El sistema opera en diferentes estados de potencia según el modelo de máquinas
 - **Voltaje de operación**: VDD de 2.5 a 4.5V (se conecta a la batería)
 - **Corriente en hibernación**: 3μA. Entra solo cuando detecta un estado de baja corriente
 - **Corriente activa**: 23μA
+- **Periodo de muestreo del ADC**: 250 ms en modo activo y 45 s en hibernación (datasheet)
+- **Cuándo se lee (decidido el 2026-11-07)**: antes de cada transmisión LoRa y en los despertares existentes; el MCU no despierta de deep sleep cada 60 s solo para leerla (mientras está despierto sí se lee cada 60 s sin costo extra). Un despertar completo del ESP32-S3 son unos 281 ms (estimación de diseño, `docs/firmware_docs/REAL_TIME_RISKS.md`) a 80 mA = 22.5 mAs: despertar cada 60 s solo para leer sumaría unos 375 μA, más que todo el presupuesto de reposo de 150 μA (RNF-03), y cada 60 min sumaría unos 6.2 μA
 
 ### 9. Cargador USB-C (TP4056)
 **Carga lineal de 500mA** (datasheet TP4056):

@@ -209,7 +209,7 @@ El firmware es un único código base sobre **Zephyr RTOS** para dos placas: la 
 
 #### **Core 0 (PRO_CPU) — Mantenimiento, Energía y Comunicaciones:**
 1. **`Task_LoRaTX` (Prioridad 3):** Despierta al recibir mensajes en `Queue_Telemetry`, formatea paquetes y transmite vía SPI al módulo LoRa (SX1262)
-2. **`Task_PowerMgmt` (Prioridad 1):** Lee batería desde MAX17048 cada 60s, gestiona transición a Deep Sleep
+2. **`Task_PowerMgmt` (Prioridad 1):** Lee la batería desde el MAX17048 cada 60 s mientras el MCU está despierto y siempre antes de cada transmisión LoRa; no despierta el MCU solo para leerla (ver `docs/firmware_docs/FSM_DESIGN.md`, guard de batería baja), gestiona transición a Deep Sleep
 
 #### **Core 1 (APP_CPU) — Cálculo Determinista y Adquisición:**
 1. **`Task_Geofence` (Prioridad 4):** Ejecuta algoritmo Ray-Casting/Point-in-Polygon, activa `OPTO_CTRL` (GPIO 1) si animal fuera de zona

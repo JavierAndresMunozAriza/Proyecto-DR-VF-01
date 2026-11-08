@@ -224,7 +224,7 @@ El firmware se diseñará bajo un enfoque de **Sistema en Tiempo Real (STR)** so
 
 #### **Core 0 (PRO_CPU) — Mantenimiento, Energía y Comunicaciones:**
 1. **`Task_LoRaTX` (Prioridad Alta - 3):** Despierta al recibir un mensaje en la cola `Queue_Telemetry`, formatea el paquete y lo transmite vía SPI al SX1262.
-2. **`Task_PowerMgmt` (Prioridad Baja - 1):** Lee la batería desde el MAX17048 cada 60 segundos y gestiona la transición a *Deep Sleep* si la IMU no detecta movimiento durante más de 5 minutos.
+2. **`Task_PowerMgmt` (Prioridad Baja - 1):** Lee la batería desde el MAX17048 cada 60 segundos mientras el MCU está despierto y siempre antes de cada transmisión LoRa (el MCU no despierta solo para leerla; ver `docs/firmware_docs/FSM_DESIGN.md`, guard de batería baja) y gestiona la transición a *Deep Sleep* si la IMU no detecta movimiento durante más de 5 minutos.
 
 #### **Core 1 (APP_CPU) — Cálculo Determinista y Adquisición:**
 1. **`Task_Geofence` (Prioridad Máxima - 4):** Ejecuta el algoritmo *Ray-Casting / Point-in-Polygon* al recibir nuevas coordenadas. Si el animal está fuera de la zona, activa inmediatamente `OPTO_CTRL` (GPIO 1, Optoacoplador) sin esperar ciclo de transmisión.
