@@ -145,7 +145,7 @@ Las piezas del docente que el diseño usa y cuyo datasheet **no está** en la ca
 | 1 | Pulsador: ¿el del docente (TSC015, 4.5 x 4.5 mm) o el PTS645 de 6x6? | **DECIDIDO (2026-11-05): el del docente.** Documentos actualizados y `libraries/pts645/` borrada |
 | 2 | Schottky O20 | **DECIDIDO (2026-11-06):** se usan los PSBD1DF40V1H del docente y no se compra el O20 (`PLAN_MANANA.md`, paso 17) |
 | 3 | 220 nF (O21) | **DECIDIDO (2026-11-05):** se quita el lote y se usan 2 x 470 nF X7R del docente en serie (235 nF). Documentos actualizados (BOM v1.12, COMPRAS, pinout v2.7, CSV). Falta confirmar que el docente tenga al menos 3 de 470 nF |
-| 4 | Tantalio O25 | Verificar el MPN. Valorar primero el electrolítico del docente como bulk. **Sigue abierto** (paso 26 del plan): el código TAJA107K016RNJ parece no existir |
+| 4 | Tantalio O25 | Verificar el MPN. Valorar primero el electrolítico del docente como bulk. **Cerrado el 2026-11-07** (paso 26 del plan): no se compra el tantalio, que parece no existir (TAJA107K016RNJ); se usa un 22 µF del docente más una huella 1206 sin montar |
 | 5 | JST SH de 4 pines (O17) | **DECIDIDO (2026-11-05):** se quita del BOM y de las compras (sin uso). Si más adelante hace falta uno de 4 pines, empezar por la cabecera del docente |
 | 6 | Diodo ESD de la alimentación y MOSFET del protector | **Revisado el 2026-11-07:** el LESD5Z3.3T1G cumple (VRWM 3.3 V, fuga máxima de 1 µA a 25 °C). El DN2302S ya no hace falta: el protector se retiró el 2026-11-05 |
 | 7 | Regulador | **DECIDIDO (2026-11-06):** se queda el TLV75733P; el DS8570F8 consume 0.6 mA (`PLAN_MANANA.md`, paso 18) |

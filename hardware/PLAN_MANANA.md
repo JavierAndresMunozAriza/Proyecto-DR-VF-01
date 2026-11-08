@@ -16,7 +16,7 @@ Orden recomendado. **Quién:** *Tú* = navegador, compras o Altium; *Yo* = Claud
 | 1. Descargas | Hecho |
 | 2. Datasheets del docente | Hecho (filas 6 a 15). La fila 16 es opcional y no se bajó |
 | 3. Revisión con lo descargado | Hecho (pasos 17 a 21) |
-| 4. Elegir | Pasos 22, 23 y 25 hechos con piezas de prueba; el 24 (zumbador) y el 26 (bulk de 3.3 V) siguen abiertos. Ver "Resultados del bloque 4" al final |
+| 4. Elegir | Pasos 22, 23 y 25 hechos con piezas de prueba; el 24 (zumbador de prueba) y el 26 (bulk de 3.3 V, sin compra) quedaron cerrados el 2026-11-07. Ver "Resultados del bloque 4" al final |
 | 5. Compras | **Cambio del 2026-11-07:** todo se compra por AliExpress, no por Digi-Key ni Mouser. El pedido es un solo cuadro al inicio de `COMPRAS.md`: 20 piezas con enlace, 0 sin enlace y el bulk de 3.3 V por decidir |
 | 6. Librerías | Faltan el CN3791, el módulo LoRa y el zumbador; lo demás ya está en la biblioteca propia `DR-VF-01` |
 | 7. Limpieza de documentos | Pasos 38 y 39 hechos el 2026-11-07; el 40 (borrar el datasheet viejo del cristal) es tuyo |
@@ -68,7 +68,7 @@ Abre cada enlace y baja el PDF del datasheet. Las piezas de las filas 6 a 11 son
 | 23 | **Parche GNSS pasivo** | 18 x 18 x 4 mm, 1575.42 MHz, pasivo, con cable corto y u.FL, con datasheet de un fabricante conocido |
 | 24 | **Zumbador** | Hoy el elegido da unos 52 dB a 1 m y `IP67_SPEC.md` pide más de 80 dBA. Cambiar el zumbador o el requisito |
 | 25 | **Batería provisional** | Local, 1S de 4.2 V, **con protección integrada**, de 500 mAh o más, JST PH de 2 pines (o adaptable). Mide la polaridad al recibirla |
-| 26 | **Bulk de 3.3 V** y **diodo ESD de la alimentación** | Tantalio (el código `TAJA107K016RNJ` parece no existir) o el electrolítico del docente; y el `LESD5Z3.3T1G` del docente |
+| 26 | **Bulk de 3.3 V** y **diodo ESD de la alimentación** | Cerrado el 2026-11-07: sin tantalio; un segundo 22 µF del docente junto al LoRa y una huella 1206 sin montar. Diodo ESD: el `LESD5Z3.3T1G` del docente |
 
 ## Bloque 5. Compras (tú), con los links que yo te dejo
 
@@ -128,5 +128,5 @@ Las piezas elegidas son para la prueba de la primera placa (la PCB llega a inici
 | 23 | **Parche GNSS de prueba:** HXANT `HX-TWGPS-184-CV0`, 2 unidades (18 x 18 mm, cerámica de 4 mm, 6.5 mm de alto en total, pasivo, cable RF1.13 con IPEX1; O3). Sin datasheet propio: la hoja del vendedor es del modelo de 15 mm. Prueba: cobre de unos 50 x 50 mm debajo y C/N0 al aire libre. **Definitivo:** POR DECIDIR, candidato C&T RF `CTRF-ANTENNA-GPS-1575-181804-IPEX` |
 | 24 | **Zumbador:** se mantiene el requisito de más de 80 dBA a 1 m si se consigue uno que lo cumpla. Falta buscarlo; el Murata PKMCS0909E4000-R1 queda como respaldo |
 | 25 | **Batería de prueba:** LiPo 603450 de 1200 mAh con protección (PCM) y JST PH 2.0, de Nasal Store (O6). La protección la declara la imagen del vendedor, sin verificar. Medir la polaridad antes de enchufarla. **Definitiva:** POR DECIDIR (1200 o 1500 mAh) |
-| 26 | Abierto: el código TAJA107K016RNJ parece no existir; la alternativa es el electrolítico de 100 µF 35 V del docente. El diodo ESD de la alimentación es el LESD5Z3.3T1G del docente (revisado en el paso 21) |
+| 26 | **Cerrado el 2026-11-07:** no se compra el bulk de 100 µF; el TX de 120 mA dura 0.5 s y lo sostiene la batería, así que se agrega un 22 µF del docente junto al LoRa (riel de unos 55 µF) y una huella 1206 sin montar; se mide el rizado en la primera placa. El diodo ESD de la alimentación es el LESD5Z3.3T1G del docente (revisado en el paso 21) |
 

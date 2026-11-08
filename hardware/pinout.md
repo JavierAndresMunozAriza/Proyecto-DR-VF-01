@@ -122,7 +122,7 @@ Lista única para todo el mapa de conexiones (actualizada el 2026-11-05). Ningun
 **Decisiones del autor**
 1. **Zumbador:** el PKMCS0909E4000-R1 da unos 52 dB a 1 m y `mechanical/IP67_SPEC.md` pide más de 80 dBA. **Decidido el 2026-11-07:** 80 dBA a 1 m son unos 100 dB a 10 cm y no se alcanzan a 3.3 V directo del GPIO2; se compra un zumbador de prueba, se mide el nivel real a 1 m en la primera placa y se revisa SR-30 con ese dato. El Murata queda como respaldo (`COMPRAS.md` O14).
 2. **Electrolítico de entrada del CN3791 (C1):** el de 100 µF 35 V del docente es de agujero pasante (6.3 x 12 mm). Sirve si cabe en la altura de la carcasa; si no, uno SMD por comprar.
-3. **Bulk de 3.3 V:** el tantalio de 100 µF (1 o 2) más los cerámicos no pueden pasar de 200 µF a la salida del TLV75733P; hoy suman unos 32.5 µF.
+3. **Bulk de 3.3 V (decidido el 2026-11-07):** sin tantalio de 100 µF; un segundo 22 µF del docente junto al LoRa (riel de unos 55 µF, bajo los 200 µF del TLV75733P) y una huella 1206 sin montar. Se mide el rizado en el TX de la primera placa.
 4. **Protección de batería (decidido el 2026-11-05):** la batería lleva protección integrada (PCM) y no hay IC protector en la PCB. Batería provisional: cualquier 1S de 3.7 V con PCM y conector JST PH de 2 pines; la definitiva (una LiPo mejor) se consigue después por el costo de envío (`COMPRAS.md` O6).
 5. **Panel solar (O7):** de 6 V y de 1 W a 1.5 W (decidido el 2026-11-05). Panel de prueba elegido el 2026-11-07: 6 V y 220 mA (1.32 W), 120 x 90 mm, con cable (`COMPRAS.md` O7). El definitivo está **POR DECIDIR** y fija los valores finales de R3 y R4 del MPPT y de RCS (O22). Con 1 W la corriente es de 0.17 A y con 1.5 W de 0.25 A, así que un RCS de unos 0.47 Ω cubre todo el rango.
 6. **LED de carga del TP4056:** opcional en CHRG, solo con USB.
@@ -140,7 +140,7 @@ Lista única para todo el mapa de conexiones (actualizada el 2026-11-05). Ningun
 
 **Por revisar antes de comprar o crear (auditoría del stock del docente, 2026-11-05; ver `hardware/AUDITORIA_STOCK_DOCENTE.md`)**
 - **Schottky D1 y D2 del CN3791 (O20):** se usan los PSBD1DF40V1H del docente (decidido el 2026-11-06): unos 5 µA por diodo a 40 °C y 4 V, estimado de la Fig. 2 de su datasheet; no se compra nada (`COMPRAS.md` O20).
-- **Bulk de 3.3 V (O25):** el MPN TAJA107K016RNJ parece no existir; valorar el electrolítico de 100 µF del docente.
+- **Bulk de 3.3 V (O25):** cerrado el 2026-11-07 sin compra (22 µF del docente más una huella 1206 sin montar); falta medir el rizado en el TX.
 - **Diodo ESD de la alimentación:** evaluar el LESD5Z3.3T1G del docente.
 - **Regulador:** se queda el TLV75733P; el DS8570F8 del classroom consume 0.6 mA en reposo (`datasheets/ds8570f8_datasheet.pdf`, p. 5).
 - **Huella del TP4056:** sirve la `SOIC_8_3.9mm_EP` del docente. Falta enlazarla en la biblioteca y agregar el pin 9 (EP) a GND; su máscara y pasta ya están en Rule Expansion (`PLAN_MANANA.md`, paso 19).
@@ -238,7 +238,7 @@ SOT-23-5 (DBV), sin pad térmico.
 | 4 | NC | Sin conectar (no tiene conexión interna) | p3 |
 | 5 | OUT | Riel de 3V3 con 1 µF o más a GND | p4, p15 |
 
-La salida admite de 1 a 200 µF en total (p4). Suma actual en el riel de 3.3 V: 22 µF y 0.1 µF del ESP32, 10 µF y 100 nF del LoRa, dos 100 nF del IMU y 100 nF del GNSS, unos 32.5 µF; el bulk de 100 µF sigue **POR DECIDIR** (tantalio TAJA107K016RNJ, cuyo código parece no existir, o el electrolítico de 100 µF del docente; paso 26 del plan) y el total no debe pasar de 200 µF. Caída máxima de 425 mV a 1 A (p6). Con el regulador apagado o bajo UVLO, la salida se descarga con unos 120 Ω (p12).
+La salida admite de 1 a 200 µF en total (p4). Suma actual en el riel de 3.3 V: 22 µF y 0.1 µF del ESP32, 10 µF y 100 nF del LoRa, dos 100 nF del IMU y 100 nF del GNSS, unos 32.5 µF; **el bulk de 100 µF se cerró el 2026-11-07 sin compra**: un segundo 22 µF del docente junto al LoRa (unos 55 µF en total) y una huella 1206 sin montar; el total no debe pasar de 200 µF. Caída máxima de 425 mV a 1 A (p6). Con el regulador apagado o bajo UVLO, la salida se descarga con unos 120 Ω (p12).
 
 ### Medidor de batería MAX17048 (datasheet verificado el 2026-11-04)
 
