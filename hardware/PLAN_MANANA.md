@@ -99,6 +99,22 @@ Abre cada enlace y baja el PDF del datasheet. Las piezas de las filas 6 a 11 son
 | 39 | `datasheets/README.md`: una fila por cada datasheet nuevo |
 | 40 | Tú: borrar el datasheet viejo del cristal con `! rm "/home/xavi/Proyecto DR-VF-01/hardware/datasheets/ecs_ecs-.327-12.5.pdf"` |
 
+## Al recibir las piezas (checklist, 2026-11-07)
+
+Las piezas llegan entre el 13 y el 27 de nov. Antes de dibujar la huella o soldar:
+
+| Pieza | Qué comprobar |
+|-------|---------------|
+| Zumbador PS1240 (O14) | **Medir el nivel real a 1 m** con un sonómetro, con el PWM de 4 kHz a 3.3 V desde el GPIO2, y revisar el requisito SR-30 (`reports/secciones/01_requerimientos/04_requerimientos_srd.tex:32`, hoy 80 dBA). También la altura (el título dice 3.5 mm y la hoja 6.5 mm) y la separación entre patas contra la huella de SnapMagic |
+| Módulo LoRa (A1) | Medir con calibre los pads y el hueco entre pines para dibujar su huella (`libraries/dx-lr30/README.md`) |
+| LTV-817S-TA1-B (O13) | Distancia entre patas (esperada 10.16 mm) contra la huella `SOIC254P1016X440-4N`; marcado del chip |
+| U.FL (O4) | Medir los pads (masa 1.05 x 2.2 mm, 4.0 mm exteriores, 1.9 interiores) y el pin central |
+| Cristal 32.768 kHz (O8) | Huella contra su datasheet; si el RTC no arranca en la primera placa, comprar el ECS exacto (ESR máx. 70 kΩ) |
+| Resistencia 0R47 (O22) | Marcado `R47` |
+| JST PH (O26), panel (O7) y batería (O6) | Polaridad con el multímetro y marcar "+" en la serigrafía; en el panel, la tensión de circuito abierto al sol (el CN3791 pide más de unos 6.2 V) |
+| TLV75733 (O1) | Marcado del chip |
+| 22 µF junto al LoRa | Con osciloscopio, rizado del riel de 3.3 V en el TX; si cae, montar el 1206 vacío |
+
 ## Bloque 8. Antes del layout (otro día)
 
 | # | Qué | Detalle |
