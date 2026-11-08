@@ -119,7 +119,7 @@ Las piezas llegan entre el 13 y el 27 de nov. Antes de dibujar la huella o solda
 
 | # | Qué | Detalle |
 |---|-----|---------|
-| 41 | Elegir fabricante de PCB y apilado | La PCB es de 0.8 mm (por el USB-C). Con eso, anchos, vías y separaciones mínimas. Hoy no hay fabricante elegido |
+| 41 | Elegir fabricante de PCB y apilado | **Decidido el 2026-11-07:** JLCPCB, 2 capas, 0.8 mm (por el USB-C), acabado ENIG. Mínimos: 0.127 mm de pista y separación y vía de 0.3 mm; sin impedancia controlada en 2 capas (`PCB_REGLAS.md`). Falta ver el precio y el envío a Colombia al pedir |
 | 42 | Reglas de diseño (`PCB_REGLAS.md`) | **Borrador hecho el 2026-11-07** (`hardware/PCB_REGLAS.md`): qué va lejos de qué, anchos, vías, línea de 50 Ω. Los mínimos del fabricante y el apilado real quedan por confirmar (paso 41). Tú las cargas en Altium para que el DRC avise en vivo |
 | 43 | Mecánica IP67 | Fijación y sellado del panel, paso del cable y tapas ciegas del USB-C |
 | 44 | Esquemático y revisión final | Dibujarlo con `pinout.md`, imprimir las huellas a escala 1:1, y la revisión final antes de fabricar (las 6 auditorías cuando digas que todo es definitivo) |

@@ -1,6 +1,6 @@
 # Reglas de diseño de la PCB (borrador del 2026-11-07)
 
-Paso 42 de `PLAN_MANANA.md`. Se extrae de las guías de Espressif y u-blox y de los datasheets de `hardware/datasheets/`. Cada valor lleva su fuente, o está marcado **estimación** (cuenta propia, no medida) o **por confirmar** (depende del fabricante, que aún no está elegido, paso 41). Las reglas de la sección 2 se cargan en Altium para que el DRC avise en vivo.
+Paso 42 de `PLAN_MANANA.md`. Se extrae de las guías de Espressif y u-blox y de los datasheets de `hardware/datasheets/`. Cada valor lleva su fuente, o está marcado **estimación** (cuenta propia, no medida) o **por confirmar**. El fabricante quedó elegido el 2026-11-07 (paso 41): **JLCPCB**, 2 capas, 0.8 mm, acabado **ENIG**. Las reglas de la sección 2 se cargan en Altium para que el DRC avise en vivo.
 
 ## 1. Supuestos del apilado
 
@@ -8,20 +8,23 @@ Paso 42 de `PLAN_MANANA.md`. Se extrae de las guías de Espressif y u-blox y de 
 |------|-------|--------|
 | Capas | 2 (Top y Bottom) | `docs/ARCHITECTURE.md` 133-134 |
 | Material y espesor total | FR4, 0.8 mm (por el layout del USB-C de 16 pines) | `docs/ARCHITECTURE.md` 133 |
-| Cobre | 1 oz (35 µm) | supuesto, por confirmar |
+| Fabricante y acabado | JLCPCB, ENIG | decidido por el usuario el 2026-11-07 |
+| Tolerancia del espesor | ±0.1 mm por debajo de 1.0 mm: de 0.7 a 0.9 mm | centro de ayuda de JLCPCB (`jlcpcb.com/capabilities/pcb-capabilities`) |
+| Control de impedancia | solo desde 4 capas: en 2 capas no se pide | centro de ayuda de JLCPCB; confirmar al cotizar |
+| Cobre | 1 oz (35 µm) | supuesto, por confirmar al pedir |
 | Dieléctrico entre capas | 0.8 − 2 x 0.035 = 0.73 mm | estimación |
-| εr del FR4 | 4.4 | valor típico; por confirmar |
+| εr del FR4 | 4.4 (rango 4.2 a 4.6) | valor típico; por confirmar |
 | Plano de masa | vertido de GND en ambas capas; la capa inferior queda como plano de referencia continuo bajo la RF y el USB | `docs/ARCHITECTURE.md` 134 |
 
 ## 2. Reglas para cargar en Altium
 
 | Regla | Valor | Estado |
 |-------|-------|--------|
-| Ancho de pista, señal | 0.2 mm mínimo | por confirmar con el fabricante |
+| Ancho de pista, señal | 0.2 mm mínimo (JLCPCB admite 0.127 mm en 1-2 capas) | mínimo del fabricante confirmado en su centro de ayuda; 0.2 mm es mi margen |
 | Ancho de pista, potencia (3V3, VBAT, GND local) | 0.3 mm mínimo; 0.5 mm en el lazo del CN3791 | estimación (IPC-2221, 1 oz, ΔT = 10 °C: 0.3 mm ≈ 1 A) |
-| Separación entre cobre | 0.2 mm mínimo | por confirmar |
-| Vía estándar | taladro 0.3 mm, pad 0.6 mm | por confirmar |
-| **Línea de 50 Ω (LoRa y GNSS)** | microstrip de **1.35 mm** sobre el plano de la capa inferior (1.3 mm → 51.2 Ω; 1.4 mm → 49.0 Ω) | **estimación** (Hammerstad-Jensen con corrección por grosor): confirmar con la calculadora del fabricante |
+| Separación entre cobre | 0.2 mm mínimo (JLCPCB admite 0.127 mm en 1-2 capas) | mínimo del fabricante confirmado; 0.2 mm es mi margen |
+| Vía estándar | taladro 0.3 mm, pad 0.6 mm | 0.3 mm es el mínimo de JLCPCB en 1-2 capas (tolerancia +0.13 / −0.08 mm): la vía queda justo en el mínimo; usar 0.35 mm de taladro donde haya espacio |
+| **Línea de 50 Ω (LoRa y GNSS)** | microstrip de **1.35 mm** sobre el plano de la capa inferior: 50.1 Ω con 0.8 mm y εr 4.4; **de 45.8 a 54.0 Ω (≈ ±8 %)** con la tolerancia de espesor de 0.7 a 0.9 mm | **estimación** (Hammerstad-Jensen con corrección por grosor): al no haber impedancia controlada en 2 capas, esa dispersión se acepta para líneas cortas de 868/915 MHz y 1575 MHz; se mide el alcance en la primera placa |
 | **Par USB D+/D−** | 90 Ω ±10 %, igual longitud, sin cruzar capas, GND continuo debajo y cobre de GND alrededor | `esp32-s3_hardware_design_guidelines.pdf` 1.4.8 |
 | Anchura del par USB en este apilado | pistas de ~1.2 mm con ~0.8 mm de separación daría 90 Ω | **estimación**; no cabe junto a los pads de 0.5 mm del USB-C |
 | Máscara y pasta | modo Rule, expansión de máscara de 0.05 mm (la regla del docente según mis notas) | por confirmar contra el proyecto del docente |
@@ -60,7 +63,8 @@ Orden de ubicación sugerido: 1) conectores y módulos con antena (ESP32, LoRa, 
 
 ## 5. Puntos abiertos
 
-1. **Fabricante y apilado real** (paso 41): confirmar espesor del dieléctrico, εr, cobre y mínimos de pista, separación y vía; con eso se recalcula la línea de 50 Ω con la calculadora del fabricante.
+1. **Fabricante cerrado (JLCPCB, ENIG, 2 capas, 0.8 mm).** Al hacer el pedido, comprobar en la página: el espesor de 0.8 mm, el acabado ENIG, el precio, el plazo de fabricación y el **envío a Colombia con los impuestos de importación** (no encontré datos). El espesor del dieléctrico y el εr reales no los publica el fabricante en 2 capas: la línea de 50 Ω queda con la dispersión de la sección 2.
+1b. **Fecha límite del pedido:** la PCB se espera a inicios de diciembre; hay que fijarla al conocer el plazo real de entrega, con el esquemático, el layout y las librerías (CN3791, LoRa, 0.47 Ω, huella 1206) terminados antes.
 2. **Tamaño de la PCB y de la caja:** sin definir (ver `PLAN_MANANA.md`).
 3. **Comprobaciones en la primera placa:** enumeración y programación por USB, fix del GNSS con el parche sobre el plano de cobre, rizado del riel de 3.3 V en el TX y alcance del LoRa.
 4. Las reglas de máscara y de separación del docente se verifican contra las huellas ya guardadas en `shared_lib` antes de fijar el DRC.
