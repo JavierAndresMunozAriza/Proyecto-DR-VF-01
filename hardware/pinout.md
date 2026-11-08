@@ -120,7 +120,7 @@
 Lista única para todo el mapa de conexiones (actualizada el 2026-11-05). Ninguno lo decidió el asistente.
 
 **Decisiones del autor**
-1. **Zumbador:** el PKMCS0909E4000-R1 da unos 52 dB a 1 m y `mechanical/IP67_SPEC.md` pide más de 80 dBA. **Decidido el 2026-11-07:** se mantiene el requisito si se consigue un zumbador que lo cumpla; se busca otro y el Murata queda como respaldo (`COMPRAS.md` O14).
+1. **Zumbador:** el PKMCS0909E4000-R1 da unos 52 dB a 1 m y `mechanical/IP67_SPEC.md` pide más de 80 dBA. **Decidido el 2026-11-07:** 80 dBA a 1 m son unos 100 dB a 10 cm y no se alcanzan a 3.3 V directo del GPIO2; se compra un zumbador de prueba, se mide el nivel real a 1 m en la primera placa y se revisa SR-30 con ese dato. El Murata queda como respaldo (`COMPRAS.md` O14).
 2. **Electrolítico de entrada del CN3791 (C1):** el de 100 µF 35 V del docente es de agujero pasante (6.3 x 12 mm). Sirve si cabe en la altura de la carcasa; si no, uno SMD por comprar.
 3. **Bulk de 3.3 V:** el tantalio de 100 µF (1 o 2) más los cerámicos no pueden pasar de 200 µF a la salida del TLV75733P; hoy suman unos 32.5 µF.
 4. **Protección de batería (decidido el 2026-11-05):** la batería lleva protección integrada (PCM) y no hay IC protector en la PCB. Batería provisional: cualquier 1S de 3.7 V con PCM y conector JST PH de 2 pines; la definitiva (una LiPo mejor) se consigue después por el costo de envío (`COMPRAS.md` O6).
@@ -301,7 +301,7 @@ SSOP de 10 pines con paso de 1.00 mm y sin pad expuesto (p11); no usar una huell
 | D1 | Schottky PSBD1DF40V1H del docente (O20), **montado** | Sin D1, de noche la batería alimenta el divisor MPPT (unos 8 µA) y el panel, y pierde unos 21 µA por el diodo del MOSFET. Con D1 solo queda su fuga | p9 |
 | D2 | Schottky PSBD1DF40V1H del docente (O20) | Diodo de rueda libre; de noche queda en inversa a VBAT | p9 |
 | L | **47 µH**, CY54-47UH del docente (0.71 A, 355 mΩ) | La regla L > 5 x (VCC - VBAT) µH pide más de 25 µH con 8 V de panel en circuito abierto y 3.0 V de batería; el de 22 µH quedaba al límite. Rizado de unos 0.10 A a 6 V y 3.7 V (cálculo propio); sirve hasta unos 0.6 A de carga | p8 |
-| RCS | 0.12 V / I de carga (O22); con un panel de 1 W, unos 0.25 A, sale de unos 0.47 Ω en 0805 | ICH = 120 mV / RCS, ±8 % | p4, p6 |
+| RCS | 0.12 V / I de carga (O22); con un panel de 1 W, unos 0.25 A, sale de unos 0.47 Ω en 0603 (huella `0603_res`; los 30 mW a 0.25 A caben) | ICH = 120 mV / RCS, ±8 % | p4, p6 |
 | C1 | Electrolítico más 10 µF X5R 25 V más 470 nF | El datasheet pide los tres en paralelo. El electrolítico de 100 µF 35 V del docente es de agujero pasante (6.3 x 12 mm): se usa ese (decidido el 2026-11-05: la carcasa es grande y los 12 mm de alto no son problema; `COMPRAS.md` D12). Su serie CD110 trabaja de -40 a +105 °C (hoja de HRK); la vida útil del 100 µF no está en la hoja | p8 |
 | C2 | 100 nF X7R de VG a VCC | | p2 |
 | C3 | Dos 10 µF X5R 25 V en BAT | El datasheet pide electrolítico más cerámico; solo cerámico es válido con más capacidad, porque la batería siempre está conectada | p8 |
@@ -334,7 +334,7 @@ Dos terminales SMD sin polaridad marcada (piezo).
 | 2 | GND | hoja de Murata p1 |
 
 - Excitación externa con onda cuadrada de 4 kHz. Una salida de 0 a 3.3 V equivale a ±1.65 V, algo más que los ±1.5 V con los que Murata mide 72 dB típicos a 10 cm (p2). Con 100 Ω el pico de corriente es de 33 mA, por debajo de los 40 mA del GPIO, y la media es de unos 0.12 mA (cálculo propio con unos 9 nF, valor de un distribuidor sin verificar).
-- **Requisito incumplido:** `mechanical/IP67_SPEC.md` pide más de 80 dBA a 1 m. Con 72 dB a 10 cm este zumbador da unos 52 dB a 1 m, y unos 70 dB incluso a su máximo de ±12.5 V. **Decidido el 2026-11-07:** se mantiene el requisito si se consigue un zumbador que lo cumpla; este queda como respaldo.
+- **Requisito incumplido:** `mechanical/IP67_SPEC.md` pide más de 80 dBA a 1 m. Con 72 dB a 10 cm este zumbador da unos 52 dB a 1 m, y unos 70 dB incluso a su máximo de ±12.5 V. **Decidido el 2026-11-07:** se compra un zumbador de prueba y se mide el nivel real antes de revisar el requisito; este queda como respaldo.
 
 ### LED RGB NationStar RS-3535MWAM (spec B2; verificado el 2026-11-04)
 

@@ -35,8 +35,8 @@ La flash externa GD25Q128CWIGR y la SRAM externa IS62WVS5128GBLL-10NL **se elimi
 |-------|-------------|-----|------------|-----------|
 | 1 | Módulo LoRa SX1262 915 MHz, interfaz **SPI**, 20x14x2.3 mm (reemplaza al chip SX1262 suelto SX1262IMLTRT) | DX-LR30-900M22S (variante SMD; no la "SP") | DX-SMART | AliExpress |
 | 1 | Antena LoRa 915 MHz flexible de 8 cm con conector u.FL | sin MPN (listado "IPEX 1.13 868/915 MHz 2 dBi 8 cm") | genérico | AliExpress |
-| 2 | Conector u.FL SMD para las antenas LoRa y GNSS | U.FL-R-SMT-1(10) (huella verificada contra el dibujo de Hirose el 2026-11-06) | Hirose | AliExpress (anuncio por elegir) |
-| 1 | Antena FPC 2.4 GHz (Wi-Fi/BLE del módulo, vía U.FL) | 2015301200 | Würth Elektronik | AliExpress (anuncio por elegir; si no está, una FPC de 2.4 GHz con u.FL) |
+| 2 | Conector u.FL SMD para las antenas LoRa y GNSS | U.FL-R-SMT-1(10) (huella verificada contra el dibujo de Hirose el 2026-11-06). Comprado un compatible (receptáculo SMD de 3 pads, equivalente al Molex 20279-001E), cuyo dibujo coincide con la huella; medir los pads al recibirlo | Hirose (compatible para la prueba) | AliExpress, DQLZV Official Store (`COMPRAS.md` O4) |
+| 1 | Antena FPC 2.4 GHz (Wi-Fi/BLE del módulo, vía U.FL) | 2015301200 (Würth, no verificado); para la prueba se compró una FPC de 2.4 GHz de 42 x 12 mm con cable de 10 cm e IPX1 | Würth Elektronik (genérica para la prueba) | AliExpress, STX Store (`COMPRAS.md` O9) |
 
 El chip SX1262 suelto se sustituye por un módulo: ya integra el cristal de 32 MHz, el conmutador de antena y la adaptación, lo que cierra el bloqueante de la sección RF. Confirmado en el material del vendedor (`docs/datasheets/SX1262 LoRa módulo desarrollador.pdf`): interfaz **SPI**, SX1262 original, 1.8 a 3.7 V, 0 a +22 dBm, 850 a 930 MHz, pines NSS, SCK, MOSI, MISO, RESET, BUSY, DIO1, DIO2, DIO3, RX, TX y ANT (tabla en `hardware/pinout.md`). Es material de marketing, no el datasheet de Semtech. Para comprar, elegir la variante **LR30 900M22S**; la "900M22SP" es una placa con STM32 y UART.
 
@@ -48,8 +48,8 @@ Pendiente de confirmar con el vendedor: para qué sirve DIO2 y si el pin TX va u
 | Cant. | Descripción | MPN | Fabricante | Proveedor |
 |-------|-------------|-----|------------|-----------|
 | 1 | IMU 6 ejes LSM6DS3TR-C (decidido el 2026-11-03) | LSM6DS3TR-C | STMicroelectronics | Docente (classroom) |
-| 1 | Optoacoplador | VO617A-1X017T (bin -1, SMD; el sufijo -1-E no está en la tabla de pedidos del datasheet) | Vishay | AliExpress (anuncio por elegir) |
-| 1 | Buzzer piezoeléctrico de más de 80 dBA a 1 m (el requisito se mantiene si se consigue; decidido el 2026-11-07) | por elegir; respaldo: PKMCS0909E4000-R1, que da unos 52 dB a 1 m y no cumple | por elegir (respaldo: Murata) | AliExpress (por buscar) |
+| 1 | Optoacoplador | LTV-817S-TA1-B (reemplaza al VO617A-1X017T, que no se encuentra en AliExpress; mismo formato SMD-4 y pines: se reutiliza el símbolo y la huella `SOIC254P1016X440-4N` de la biblioteca; verificar al recibirlo la distancia entre patas y su CTR contra el datasheet de Lite-On) | Lite-On | AliExpress, Hiram Store (`COMPRAS.md` O13) |
+| 1 | Buzzer piezoeléctrico de prueba (decidido el 2026-11-07: se mide el nivel real a 1 m y después se revisa el requisito de más de 80 dBA, SR-30) | PS1240 pasivo de 4 kHz (hoja del TDK PS1240P02BT: 70 dBA mín. a 10 cm, unos 50 dBA a 1 m); respaldo: PKMCS0909E4000-R1 | TZT (copia del TDK) | AliExpress, All-goods-are-freeshipping (`COMPRAS.md` O14) |
 | 1 | Medidor de batería (fuel gauge), I2C | MAX17048G+T10 (TDFN de 8 pines) | Analog Devices (Maxim) | AliExpress (`COMPRAS.md` A5) |
 
 **IMU (decidido el 2026-11-03):** LSM6DS3TR-C del docente. Cumple RF-06: el wake-up se enruta a INT1 (`MD1_CFG.INT1_WU`, datasheet DocID030071 p.92), consume 9 µA a 12.5 Hz en baja potencia y 3 µA en power-down (p.24) y alimenta de 1.71 a 3.6 V. No tiene MLC, así que la clasificación de conducta dentro del sensor queda fuera de la Fase 1. Si la Fase 4 la pide, el LSM6DSOX comparte la huella LGA-14 de 2.5 x 3 mm, con los pines 10 y 11 sin conectar. Zephyr no tiene un driver con el nombre del LSM6DS3TR-C, y los drivers de la familia (`st,lsm6dsl` y `st,lsm6dso`) no implementan el trigger de wake-up: el wake-up se configura con la librería oficial de ST (`lsm6ds3tr-c_STdC`, en `modules/hal/st/sensor/stmemsc`).
@@ -59,7 +59,7 @@ El MAX17048 lo exigen `docs/REQUIREMENTS.md` y `docs/ARCHITECTURE.md` y no estab
 ### 1.5 Gestión de energía
 | Cant. | Descripción | MPN | Fabricante | Proveedor |
 |-------|-------------|-----|------------|-----------|
-| 1 | Regulador LDO 3.3 V, **1 A**, Iq 25 µA, SOT-23-5 (reemplaza al TPS7A0533, de 200 mA) | TLV75733PDBVR | Texas Instruments | AliExpress (anuncio por elegir) |
+| 1 | Regulador LDO 3.3 V, **1 A**, Iq 25 µA, SOT-23-5 (reemplaza al TPS7A0533, de 200 mA) | TLV75733PDBVR | Texas Instruments | AliExpress, Hui Li Long Store (lote de 5; ver O1 en `COMPRAS.md`) |
 | 1 | Cargador solar MPPT CN3791 | CN3791 | Consonance | AliExpress |
 | 1 | Cargador lineal para la carga por USB-C (1 A máx.; se limita a 500 mA con RPROG de 2.4 kΩ) | TP4056 (ESOP-8; el pad térmico se conecta a GND, el fabricante lo exige en la p. 2; huella `SOIC_8_3.9mm_EP` de la biblioteca, no la `SOIC_8_3.9mm`) | YONGYUTAI | Docente (prototipo); producción: distribuidor por definir |
 | 1 | Batería LiPo 603450 de 1200 mAh, 1S de 3.7 V, con protección integrada y conector JST PH 2.0 de 2 pines. Elegida el 2026-11-07 para la prueba de la primera placa; la definitiva se consigue después | sin MPN (anuncio de AliExpress) | Nasal Store (vendedor) | AliExpress (`COMPRAS.md` O6) |
@@ -97,7 +97,7 @@ Decidido el 2026-11-03: el LED RGB del docente reemplaza al Kingbright L-154A4SU
 ### 1.8 Pasivos
 | Cant. | Descripción | MPN | Fabricante | Proveedor |
 |-------|-------------|-----|------------|-----------|
-| 1 | Cristal **32.768 kHz** (RTC del ESP32-S3), CL 12.5 pF | ECS-.327-12.5-34B-TR (ECX-31B, 3.2 x 1.5 x 0.9 mm, ±20 ppm, ESR 70 kΩ máx.) | ECS | AliExpress (anuncio por elegir) |
+| 1 | Cristal **32.768 kHz** (RTC del ESP32-S3), CL 12.5 pF | ECS-.327-12.5-34B-TR (ECX-31B, 3.2 x 1.5 x 0.9 mm, ±20 ppm, ESR 70 kΩ máx.). Pieza de prueba comprada: cristal genérico 3215 de 12.5 pF y ±20 ppm "compatible FC-135", sin ESR declarado; comprobar que el RTC arranca y que la huella coincide con su datasheet | ECS (genérico para la prueba) | AliExpress, ShenzhenRUNHONGW... (`COMPRAS.md` O8) |
 | 4 | Capacitor cerámico NP0 33 pF, dos en serie por pata del cristal (16.5 pF por pata: con CL 12.5 pF y 3 a 5 pF parásitos hacen falta 15 a 19 pF por pata; los 22 pF anteriores daban 14 a 16 pF de carga, alta) | CC0603JRNPO9BN330 | YAGEO | Docente (biblioteca) |
 | 10 | Capacitor cerámico 100 nF X7R, 50 V (módulo, IMU x2, GNSS, LoRa, MAX17048, VG del CN3791, botón y repuestos; detalle en `pinout.md`) | CC0603KRX7R9BB104 | YAGEO | AliExpress (lote con MPN nombrado, `COMPRAS.md` O21) |
 | 8 | Capacitor cerámico 10 µF X5R (entrada del TLV75733P, LoRa, VCC y BAT del TP4056, C1 y dos de C3 del CN3791, riel de 3.3 V) | CL21A106KAYNNNE (25 V, 0805) y TCC0603X5R106K100CT (10 V, 0603, solo en el riel de 3.3 V) | Samsung y CCTC | Docente (biblioteca) |
@@ -110,7 +110,7 @@ Decidido el 2026-11-03: el LED RGB del docente reemplaza al Kingbright L-154A4SU
 | 2 | Resistor 5.1 kΩ 1 % (CC1 y CC2 del USB-C como dispositivo) | por definir (serie RC0603FR-07) | Yageo | AliExpress (kit, `COMPRAS.md` O19); plan B: un 4.7 kΩ de 1 % del docente por línea (-7.8 %, dentro de Rd de ±20 %, Microchip AN1914 tabla 1) |
 | 1 | Resistor 120 Ω en serie con dos condensadores 470 nF X7R en serie, 235 nF (red del pin COM del CN3791; el datasheet p.3 y p.7 pide 220 nF) | FRC0603F1200TS y HGC0603R7474K500NTHJ (x2) | FOJAN y Chinocera | Docente (biblioteca) |
 | 2 | Resistor 22 o 33 Ω (serie de USB D+ y D-, guía de Espressif p.21) | por definir | por definir | AliExpress (kit, O19); plan B: tres 100R en paralelo por línea |
-| 1 | Resistor de sensado del CN3791, 1 %, RCS = 0.12 V / corriente de carga | unos 0.47 Ω, límite de unos 0.25 A (por confirmar, `COMPRAS.md` O22) | por definir | AliExpress (anuncio por elegir) |
+| 1 | Resistor de sensado del CN3791, 1 %, RCS = 0.12 V / corriente de carga | 0.47 Ω en 0603 (huella `0603_res`), límite de unos 0.25 A; sale del kit de 10 valores de 0.10 a 1.00 Ω (`COMPRAS.md` O22) | por definir | AliExpress, YXSHENG (`COMPRAS.md` O22) |
 | 2 | Diodo Schottky de baja fuga (D1 y D2 del CN3791; D1 se monta para cortar la fuga nocturna de la batería) | PSBD1DF40V1H (40 V, 1 A, SOD-123FL; fuga estimada de unos 5 µA por diodo a 40 °C y 4 V, `COMPRAS.md` O20) | Prisemi | Docente (biblioteca) |
 
 **Cubierto por el docente** (`hardware/COMPRAS.md` D9 y D10): resistencias 0603 de 330 Ω, 1 kΩ, 4.7 kΩ y 10 kΩ, y condensadores de 1 µF, 10 µF (25 V y 10 V), 22 µF de 16 V y 33 pF NP0. El 100 nF de la biblioteca es Y5V y no sirve (ver `COMPRAS.md` O21). El resto se compra (`COMPRAS.md` O19, O21 y O22): kit de resistencias 0603 1 %, lote de condensadores X7R y resistencia de sensado. Los Schottky D1 y D2 son los PSBD1DF40V1H del docente (O20). Si el pedido de AliExpress falla, `COMPRAS.md` 1.2 arma los valores con piezas del docente.
@@ -143,7 +143,7 @@ Decidido el 2026-11-03: el LED RGB del docente reemplaza al Kingbright L-154A4SU
 | Cant. | Descripción | MPN | Fabricante | Proveedor |
 |-------|-------------|-----|------------|-----------|
 | 1 | Panel solar de 6 V, 220 mA, 120 x 90 mm, con cable. Elegido el 2026-11-07 para la prueba de la primera placa; el definitivo queda por decidir (candidato: Voltaic P124) | variante `6V 220mA 120x90Cable` | SunMoonMall Store (vendedor) | AliExpress (`COMPRAS.md` O7) |
-| 1 | Cable del panel con conector JST PH 2.0 de 2 pines (se suelda a los cables del panel) | sin MPN (conector con cable ya crimpado) | — | AliExpress (anuncio por elegir, `COMPRAS.md` O26) |
+| 1 | Cable del panel con conector JST PH 2.0 de 2 pines (se suelda a los cables del panel) | sin MPN (conector con cable ya crimpado; variante `Single head`, 10 cm, 26 AWG, lote de 10) | — | AliExpress, XMS Store (`COMPRAS.md` O26) |
 
 **Decidido el 2026-10-30:** panel de **6 V nominal** (el CN3791 con el divisor MPPT de 6 V). **Rango decidido el 2026-11-05: de 1 W a 1.5 W** (a 6 V son de 0.17 a 0.25 A; un RCS de unos 0.47 Ω cubre hasta 0.25 A). **Elegido el 2026-11-07 para la prueba de la primera placa:** panel de 6 V y 220 mA, de 120 x 90 mm y con cable (AliExpress, `COMPRAS.md` O7). **POR DECIDIR:** el panel definitivo (candidato: Voltaic P124, 6 V y 1.22 W, con tensión de máxima potencia de 6.07 V y de circuito abierto de 7.09 V según fichas de tienda; falta su datasheet). El HTJ-2W-D de 2 W que figuraba antes se descartó por no declarar su voltaje. Antes decía: `docs/ARCHITECTURE.md` usa 6 V / 1.5 W y el diagrama del informe un "MPPT CN3791 6V". El CN3791 necesita un panel de voltaje coherente con su divisor MPPT: fijar un solo valor.
 

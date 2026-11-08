@@ -17,7 +17,7 @@ Orden recomendado. **Quién:** *Tú* = navegador, compras o Altium; *Yo* = Claud
 | 2. Datasheets del docente | Hecho (filas 6 a 15). La fila 16 es opcional y no se bajó |
 | 3. Revisión con lo descargado | Hecho (pasos 17 a 21) |
 | 4. Elegir | Pasos 22, 23 y 25 hechos con piezas de prueba; el 24 (zumbador) y el 26 (bulk de 3.3 V) siguen abiertos. Ver "Resultados del bloque 4" al final |
-| 5. Compras | **Cambio del 2026-11-07:** todo se compra por AliExpress, no por Digi-Key ni Mouser. El pedido es un solo cuadro al inicio de `COMPRAS.md`: 11 piezas con enlace, 9 sin enlace y el bulk de 3.3 V por decidir |
+| 5. Compras | **Cambio del 2026-11-07:** todo se compra por AliExpress, no por Digi-Key ni Mouser. El pedido es un solo cuadro al inicio de `COMPRAS.md`: 20 piezas con enlace, 0 sin enlace y el bulk de 3.3 V por decidir |
 | 6. Librerías | Faltan el CN3791, el módulo LoRa y el zumbador; lo demás ya está en la biblioteca propia `DR-VF-01` |
 | 7. Limpieza de documentos | Pasos 38 y 39 hechos el 2026-11-07; el 40 (borrar el datasheet viejo del cristal) es tuyo |
 | 8. Antes del layout | Pendiente |
