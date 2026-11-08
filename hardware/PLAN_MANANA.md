@@ -105,7 +105,7 @@ Las piezas llegan entre el 13 y el 27 de nov. Antes de dibujar la huella o solda
 
 | Pieza | Qué comprobar |
 |-------|---------------|
-| Zumbador PS1240 (O14) | **Medir el nivel real a 1 m** con un sonómetro, con el PWM de 4 kHz a 3.3 V desde el GPIO2, y revisar el requisito SR-30 (`reports/secciones/01_requerimientos/04_requerimientos_srd.tex:32`, hoy 80 dBA). También la altura (el título dice 3.5 mm y la hoja 6.5 mm) y la separación entre patas contra la huella de SnapMagic |
+| Zumbador PS1240 (O14) | **Medir el nivel real a 1 m** con un sonómetro, con el PWM de 4 kHz a 3.3 V desde el GPIO2, y revisar el requisito SR-30 (`reports/secciones/01_requerimientos/04_requerimientos_srd.tex:32`, hoy 80 dBA). También la altura (el título dice 3.5 mm y la hoja 6.5 mm) y la separación entre patas (la huella ya descargada usa 5.0 mm, `libraries/ps1240/README.md`) |
 | Módulo LoRa (A1) | Medir con calibre los pads y el hueco entre pines para dibujar su huella (`libraries/dx-lr30/README.md`) |
 | LTV-817S-TA1-B (O13) | Distancia entre patas (esperada 10.16 mm) contra la huella `SOIC254P1016X440-4N`; marcado del chip |
 | U.FL (O4) | Medir los pads (masa 1.05 x 2.2 mm, 4.0 mm exteriores, 1.9 interiores) y el pin central |
@@ -120,7 +120,7 @@ Las piezas llegan entre el 13 y el 27 de nov. Antes de dibujar la huella o solda
 | # | Qué | Detalle |
 |---|-----|---------|
 | 41 | Elegir fabricante de PCB y apilado | La PCB es de 0.8 mm (por el USB-C). Con eso, anchos, vías y separaciones mínimas. Hoy no hay fabricante elegido |
-| 42 | Reglas de diseño (`PCB_REGLAS.md`) | Yo extraigo de los datasheets y guías (Espressif, u-blox, CN3791): qué va lejos de qué, anchos, vías, línea de 50 Ω. Tú las cargas en Altium para que el DRC avise en vivo |
+| 42 | Reglas de diseño (`PCB_REGLAS.md`) | **Borrador hecho el 2026-11-07** (`hardware/PCB_REGLAS.md`): qué va lejos de qué, anchos, vías, línea de 50 Ω. Los mínimos del fabricante y el apilado real quedan por confirmar (paso 41). Tú las cargas en Altium para que el DRC avise en vivo |
 | 43 | Mecánica IP67 | Fijación y sellado del panel, paso del cable y tapas ciegas del USB-C |
 | 44 | Esquemático y revisión final | Dibujarlo con `pinout.md`, imprimir las huellas a escala 1:1, y la revisión final antes de fabricar (las 6 auditorías cuando digas que todo es definitivo) |
 

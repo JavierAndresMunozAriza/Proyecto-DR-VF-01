@@ -110,7 +110,7 @@ Objetivos para la antena Wi-Fi/BLE de 2.4 GHz, sin fuente en el repositorio y pe
 - Se retiraron los pads de soldadura directa del texto anterior (feed de 1.5mm x 1.5mm y dos pads de tierra de 1.0mm x 1.0mm): el BOM usa conectores u.FL
 
 ### 2. Impedancia de Transmisión
-- **Línea de 50 Ω**: del pad ANT del módulo LoRa al conector u.FL. Ancho, grosor del dieléctrico y longitud: pendientes hasta definir el apilado de la PCB
+- **Línea de 50 Ω**: del pad ANT del módulo LoRa al conector u.FL. Ancho propuesto de 1.35 mm (estimación con 0.73 mm de dieléctrico y εr 4.4, `hardware/PCB_REGLAS.md`); grosor del dieléctrico real y longitud: pendientes hasta definir el fabricante y el apilado de la PCB
 - **Soldadura**: Aleación SAC305 (valor del texto anterior, sin fuente)
 
 ### 3. Verificación Eléctrica
