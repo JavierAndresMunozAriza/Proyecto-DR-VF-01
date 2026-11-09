@@ -49,7 +49,7 @@ En la Figura \ref{fig:bloques_hw}, los bloques en línea continua representan el
 \rowcolor{categorybg}
 \textbf{Módulo / Periférico} & \textbf{Protocolo} & \textbf{Pines ESP32-S3} & \textbf{Notas de Ruteo en PCB} \\ \hline
 GPS u-blox MAX-M10S & UART1 & GPIO 18 (RX1), GPIO 17 (TX1) & Intercambiar TX/RX en ruteo de pista. EXTINT en GPIO 21. \\ \hline
-IMU (LSM6DS3TR-C) & I$^2$C & GPIO 8 (SDA), GPIO 9 (SCL) & Requiere resistencias pull-up de $4.7~\text{k}\Omega$ a 3.3V. INT1 en GPIO 4 (despierta de Deep Sleep). \\ \hline
+IMU (LSM6DS3TR-C) & I$^2$C & GPIO 8 (SDA), GPIO 9 (SCL) & Requiere resistencias pull-up de $3.3~\text{k}\Omega$ a 3.3V. INT1 en GPIO 4 (despierta de Deep Sleep). \\ \hline
 Medidor MAX17048 & I$^2$C & GPIO 8 (SDA), GPIO 9 (SCL) & Comparte bus I$^2$C con la IMU. Dirección 0x36; se alimenta desde la batería. \\ \hline
 LoRa DX-LR30-900M22S & SPI & GPIO 10 (NSS), 12 (SCK), 13 (MISO), 11 (MOSI) & Líneas DIO1 (GPIO 6), BUSY (GPIO 14), NRESET (GPIO 5), RXEN (GPIO 42) y TXEN (GPIO 47) mapeadas. \\ \hline
 Optoacoplador / Buzzer & GPIO Digital & GPIO 1 (Disparo), GPIO 2 (PWM) & Separación estricta de plano de masa. \\ \hline

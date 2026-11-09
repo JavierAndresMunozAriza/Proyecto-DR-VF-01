@@ -142,7 +142,7 @@ $$R_{CS} = \frac{0.12\text{ V}}{1.0\text{ A}} = 0.12\ \Omega\ (120\text{ m}\Omeg
 ### 3.4 Protecciones e Integridad de Señal
 1. **Desacople en Alta Frecuencia:** Capacitores cerámicos $100\text{ nF}$ (0805) en los pines de alimentación de cada módulo individual.
 2. **Capacitor Tanque (Bulk):** Capacitor de $10\ \mu\text{F} - 100\ \mu\text{F}$ en el bus de $3.3\text{V}$ para absorber transitorios durante la transmisión LoRa.
-3. **Resistencias de Pull-Up I2C:** Dos resistencias de $4.7\text{ k}\Omega$ en las líneas `SDA` y `SCL`.
+3. **Resistencias de Pull-Up I2C:** Dos resistencias de $3.3\text{ k}\Omega$ en las líneas `SDA` y `SCL`.
 4. **Red RC de Reset:** $10\text{ k}\Omega$ a $3.3\text{V}$ y $1\ \mu\text{F}$ a $GND$ en el pin `EN` del ESP32-S3 para prevenir arranques erráticos.
 5. **Aislamiento Galvánico para Actuador:** Optoacoplador VO617A accionado con una resistencia serie de entrada ($330\ \Omega$ provisional, limitando la corriente del GPIO a $\sim 6.6\text{ mA}$; el valor final se calcula con el datasheet, ver [hardware/pinout.md](../hardware/pinout.md)) y una resistencia *pull-down* de $100\text{ k}\Omega$ en `GPIO1` (lado de entrada, según `hardware/pinout.md` y `hardware/BOM.md`).
 
@@ -171,7 +171,7 @@ El único mapa de pines vigente es [hardware/pinout.md](../hardware/pinout.md). 
 | Función | Periférico | GPIO |
 | :--- | :--- | :--- |
 | Bus SPI | Módulo LoRa DX-LR30-900M22S (SX1262) | NSS 10, MOSI 11, SCK 12, MISO 13 (BUSY 14, DIO1 6, NRESET 5, RXEN 42, TXEN 47) |
-| Bus I2C | IMU (LSM6DS3TR-C), MAX17048 (0x36) | SDA 8, SCL 9 (pull-up 4.7 kΩ) |
+| Bus I2C | IMU (LSM6DS3TR-C), MAX17048 (0x36) | SDA 8, SCL 9 (pull-up 3.3 kΩ) |
 | UART1 | GNSS MAX-M10S | TX 17, RX 18 |
 | IMU | INT1 (wake-up; LSM6DS3TR-C) | 4 |
 | Actuador | Optoacoplador VO617A (`OPTO_CTRL`) | 1 |
@@ -195,7 +195,7 @@ Lista del prototipo con DevKit. La lista canónica de la PCB final (TLV75733PDBV
 | 1 | LED 3mm Rojo | Through-Hole | Indicador visual de disparo |
 | 5 | Capacitores $100\text{ nF}$ | Cerámico SMD 0805 | Desacople de Alta Frecuencia |
 | 1 | Capacitor $100\ \mu\text{F} / 16\text{V}$ | Electrolítico / Tántalo | Capacitor Tanque $3.3\text{V}$ |
-| 2 | Resistencias $4.7\text{ k}\Omega$ | SMD 0805 | Pull-Ups I2C |
+| 2 | Resistencias $3.3\text{ k}\Omega$ | SMD 0805 | Pull-Ups I2C |
 | 1 | Resistencia $330\ \Omega$ | Through-Hole / SMD 0805 | Limitadora Optoacoplador |
 | 1 | Resistencia $100\text{ k}\Omega$ | Through-Hole / SMD 0805 | Pull-Down de GPIO1 (entrada del optoacoplador) |
 | N | Headers Hembra / Macho 2.54mm | Tiras de Pinos | Zócalos para Carrier Board |

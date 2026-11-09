@@ -64,7 +64,7 @@ Este documento presenta el análisis térmico detallado de todos los componentes
 ### 4. Cargador USB (TP4056)
 **Especificaciones** (datasheet TP4056, `hardware/datasheets/tp4056_datasheet.pdf`):
 - Voltaje de entrada: 5.0V del USB-C (rango 4.0 a 8.0V)
-- Corriente de carga: 500mA con RPROG de 2.4kΩ (máximo 1A con 1.2kΩ)
+- Corriente de carga: 500 mA con RPROG de 1.9 kΩ (1.8 kΩ + 100 Ω; con el chip de Yongyutai, 1.91 kΩ da 500 mA y 0.91 kΩ da 1 A)
 - Regulación térmica: reduce la corriente cuando el chip llega a 145°C
 
 **Cálculos** (carga con la celda a 3.7V):

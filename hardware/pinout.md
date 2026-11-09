@@ -28,8 +28,8 @@
 | 5 | 5 | LORA_RESET | SX1262 NRESET | RTC |
 | 6 | 6 | LORA_DIO1 | SX1262 DIO1 | **RTC, interrupción / despertar** |
 | 7 | 7 | BUTTON | Botón de usuario | **RTC, despierta**. 10 kΩ a 3V3, 1 kΩ en serie y 100 nF a GND |
-| 8 | 12 | I2C_SDA | LSM6DS3TR-C, MAX17048 | Pull-up 4.7 kΩ |
-| 9 | 17 | I2C_SCL | LSM6DS3TR-C, MAX17048 | Pull-up 4.7 kΩ |
+| 8 | 12 | I2C_SDA | LSM6DS3TR-C, MAX17048 | Pull-up 3.3 kΩ |
+| 9 | 17 | I2C_SCL | LSM6DS3TR-C, MAX17048 | Pull-up 3.3 kΩ |
 | 10 | 18 | LORA_NSS | SX1262 NSS | FSPI CS0. Alto al inicio |
 | 11 | 19 | LORA_MOSI | SX1262 MOSI | FSPI D |
 | 12 | 20 | LORA_SCK | SX1262 SCK | FSPI CLK |
@@ -41,7 +41,7 @@
 | 18 | 11 | GNSS_RX | MAX-M10S **TXD** (pin 2) | UART1 RX del ESP32 |
 | 19 | 13 | USB_D- | USB-C D- | USB nativo |
 | 20 | 14 | USB_D+ | USB-C D+ | USB nativo |
-| 21 | 23 | GNSS_EXTINT | MAX-M10S EXTINT (pin 5) | Salida del ESP32 hacia una entrada del GNSS (opcional: dejar abierta si no se usa) |
+| 21 | 23 | CHG_INHIBIT | Transistor N en el pin MPPT del CN3791 | Salida, RTC (retiene el estado en sueño). Corta la carga solar con calor (decidido el 2026-11-09); el EXTINT del GNSS queda sin conectar |
 | 35-37 | 28-30 | no disponibles | — | PSRAM octal |
 | 38 | 31 | LED_R | LED RGB rojo (cátodo) | Activo en bajo, 750 Ω en serie. En DevKitC-1 v1.1 coincide con el LED integrado |
 | 39 | 32 | LED_G | LED RGB verde (cátodo) | Activo en bajo, 470 Ω en serie |
@@ -52,7 +52,7 @@
 | 44 | 36 | RXD0 | Punto de prueba / UART RX del módem de Fase 2 | Ídem |
 | 45, 46 | 26, 16 | (reservados) | — | Strapping. No conectar |
 | 47 | 24 | LORA_TXEN | Módulo LoRa, pin TX (pin 7, conmutador de antena) | Salida. Si el conmutador lo gobierna DIO2 (pin 8 unido a pin 7), dejar libre |
-| 48 | 25 | RESERVA_F2 | Módem Fase 2 (PWRKEY) | Libre en Fase 1 |
+| 48 | 25 | GNSS_RESET | MAX-M10S RESET_N (pin 9) por un 0 Ω | Salida en drenador abierto: bajo 1 ms o más = reset. Antes reserva del PWRKEY del módem de la Fase 2: el 0 Ω se quita si se usa el módem |
 
 **Señales retiradas del mapa anterior:** `POWER_GOOD` y `ENABLE_CHG` (CN3791). El datasheet del CN3791 (`hardware/datasheets/cn3791_datasheet.pdf`) confirma que no tiene esos pines: sus pines son VG, GND, CHRG, DONE, COM, MPPT, BAT, CSP, VCC y DRV, y CHRG y DONE son salidas de drenador abierto. El TP4056 (carga por USB-C) tiene dos salidas de estado de drenador abierto (pines 6 y 7), pero no queda un GPIO libre para leerlas: ver la sección del TP4056.
 
@@ -64,7 +64,7 @@
 |-----|--------|------|-----|----------|--------|
 | 1 | GND | - | GND | Plano de masa | Tabla 3-1 |
 | 2 | 3V3 | - | 3V3 | Salida del TLV75733P; 22 µF y 0.1 µF X7R pegados al pin | Tabla 6-2, figura 9-1 |
-| 3 | EN | - | EN | 10 kΩ a 3V3 y 1 µF a GND; punto de prueba. Nunca flotante | Tabla 3-1, capítulo 9 |
+| 3 | EN | - | EN | 10 kΩ a 3V3 y 1 µF a GND; punto de prueba y botón a GND (reinicio). Nunca flotante | Tabla 3-1, capítulo 9 |
 | 4 | IO4 | 4 | IMU_INT1 | INT1 del LSM6DS3TR-C (pin 4). RTC, despierta de deep sleep | pinout.md |
 | 5 | IO5 | 5 | LORA_RESET | RESET del módulo LoRa (pin 15) | pinout.md |
 | 6 | IO6 | 6 | LORA_DIO1 | DIO1 del módulo LoRa (pin 13). RTC, despierta | pinout.md |
@@ -73,22 +73,22 @@
 | 9 | IO16 | 16 | XTAL_32K_N | Cristal de 32.768 kHz y su carga | Tabla 3-1 |
 | 10 | IO17 | 17 | GNSS_TX | RXD del MAX-M10S (pin 3). UART1 TX | pinout.md |
 | 11 | IO18 | 18 | GNSS_RX | TXD del MAX-M10S (pin 2). UART1 RX | pinout.md |
-| 12 | IO8 | 8 | I2C_SDA | SDA del LSM6DS3TR-C (pin 14) y del MAX17048; pull-up de 4.7 kΩ | pinout.md |
+| 12 | IO8 | 8 | I2C_SDA | SDA del LSM6DS3TR-C (pin 14) y del MAX17048; pull-up de 3.3 kΩ | pinout.md |
 | 13 | IO19 | 19 | USB_D- | D- del USB-C a través del USBLC6; huella de 22 o 33 Ω en serie | Tabla 3-1, guía p.21 |
 | 14 | IO20 | 20 | USB_D+ | D+ del USB-C a través del USBLC6; huella de 22 o 33 Ω en serie | Tabla 3-1, guía p.21 |
 | 15 | IO3 | 3 | - | Sin conectar (strapping de JTAG; se ignora con los eFuse de fábrica) | Tabla 4-1, tabla 4-5 |
 | 16 | IO46 | 46 | - | Sin conectar (strapping; pull-down interno) | Tabla 4-1, tabla 4-3 |
-| 17 | IO9 | 9 | I2C_SCL | SCL del LSM6DS3TR-C (pin 13) y del MAX17048; pull-up de 4.7 kΩ | pinout.md |
+| 17 | IO9 | 9 | I2C_SCL | SCL del LSM6DS3TR-C (pin 13) y del MAX17048; pull-up de 3.3 kΩ | pinout.md |
 | 18 | IO10 | 10 | LORA_NSS | NSS del módulo LoRa (pin 19). FSPICS0 | pinout.md |
 | 19 | IO11 | 11 | LORA_MOSI | MOSI del módulo LoRa (pin 17). FSPID | pinout.md |
 | 20 | IO12 | 12 | LORA_SCK | SCK del módulo LoRa (pin 18). FSPICLK | pinout.md |
 | 21 | IO13 | 13 | LORA_MISO | MISO del módulo LoRa (pin 16). FSPIQ | pinout.md |
 | 22 | IO14 | 14 | LORA_BUSY | BUSY del módulo LoRa (pin 14) | pinout.md |
-| 23 | IO21 | 21 | GNSS_EXTINT | EXTINT del MAX-M10S (pin 5); opcional | pinout.md |
+| 23 | IO21 | 21 | CHG_INHIBIT | Transistor N en el pin MPPT del CN3791 (corte de carga solar); RTC, retiene el estado en sueño | pinout.md |
 | 24 | IO47 | 47 | LORA_TXEN | Pin TX (7) del conmutador del módulo LoRa. POR DECIDIR | pinout.md |
-| 25 | IO48 | 48 | RESERVA_F2 | Reserva de la Fase 2 (PWRKEY del módem) | pinout.md |
+| 25 | IO48 | 48 | GNSS_RESET | RESET_N del MAX-M10S (pin 9) por un 0 Ω, en drenador abierto; antes reserva del módem de la Fase 2 | pinout.md |
 | 26 | IO45 | 45 | - | Sin conectar (strapping de VDD_SPI; pull-down interno) | Tabla 4-1, tabla 4-4 |
-| 27 | IO0 | 0 | BOOT | 10 kΩ a 3V3; pad o botón a GND para el modo descarga | Tabla 4-1, tabla 4-3 |
+| 27 | IO0 | 0 | BOOT | 10 kΩ a 3V3; punto de prueba y botón a GND para el modo descarga | Tabla 4-1, tabla 4-3 |
 | 28 | IO35 | 35 | - | Sin conectar: PSRAM octal del N16R8 | Tabla 3-1, nota b |
 | 29 | IO36 | 36 | - | Sin conectar: PSRAM octal del N16R8 | Tabla 3-1, nota b |
 | 30 | IO37 | 37 | - | Sin conectar: PSRAM octal del N16R8 | Tabla 3-1, nota b |
@@ -107,8 +107,8 @@
 ### Reglas de conexión
 
 1. **Alimentación:** el pin 2 se alimenta a 3.0 a 3.6 V (máximo absoluto 3.6 V) y el suministro debe dar al menos 0.5 A (tabla 6-2); el TLV75733P entrega 1 A. Un 22 µF y un 0.1 µF X7R van pegados al pin 2 (figura 9-1), más 10 µF a la entrada de alimentación (guía de hardware, p.8 y p.11). Los pines 1, 40 y el EPAD 41 van a GND con vías al plano. Soldar el EPAD no es obligatorio según el datasheet, pero mejora la térmica; con la cantidad justa de pasta.
-2. **EN (pin 3):** 10 kΩ a 3V3 y 1 µF a GND (figura 9-1 y guía p.11), nunca flotante. Los umbrales son VIH de 0.75 x VDD y VIL de 0.25 x VDD (tabla 6-3). Con alimentación solar de subida lenta la guía sugiere un supervisor de unos 3.0 V (p.11 y p.12): pendiente.
-3. **Strapping:** GPIO0 (pin 27) con 10 kΩ a 3V3 y un pad o botón a GND; a GND al soltar EN entra en descarga. GPIO46 ya está en 0 por defecto, así que para descargar solo hace falta GPIO0 a GND (tabla 4-3). GPIO3, GPIO45 y GPIO46 (pines 15, 26 y 16) quedan sin conectar. GPIO3 se ignora con los eFuse de fábrica (tabla 4-5), y por eso GPIO39 a GPIO42 son GPIO normales.
+2. **EN (pin 3):** 10 kΩ a 3V3 y 1 µF a GND (figura 9-1 y guía p.11), nunca flotante. Los umbrales son VIH de 0.75 x VDD y VIL de 0.25 x VDD (tabla 6-3). Con alimentación solar de subida lenta la guía sugiere un supervisor de unos 3.0 V (p.11 y p.12). **Decidido el 2026-11-08:** no se agrega en la primera placa: el ESP32 se alimenta del LDO desde la batería y el riel sube en unos 550 µs, y el panel carga la batería, no el riel. Riesgo residual: medir en la primera placa el arranque con batería baja y la rampa del riel; si falla, se agrega en la segunda revisión.
+3. **Strapping:** GPIO0 (pin 27) con 10 kΩ a 3V3, un botón a GND y el punto de prueba; a GND al soltar EN entra en descarga. GPIO46 ya está en 0 por defecto, así que para descargar solo hace falta GPIO0 a GND (tabla 4-3). GPIO3, GPIO45 y GPIO46 (pines 15, 26 y 16) quedan sin conectar. GPIO3 se ignora con los eFuse de fábrica (tabla 4-5), y por eso GPIO39 a GPIO42 son GPIO normales.
 4. **USB nativo:** D- al pin 13 y D+ al pin 14, pasando por el USBLC6-2SC6; la guía pide huellas en serie de 22 o 33 Ω (se reservan, valor inicial a elegir) y condensadores a tierra sin montar (p.21). VBUS no alimenta al módulo: va solo al TP4056 y al USBLC6.
 5. **UART0:** 499 Ω en serie en el pin 37 (TXD0, guía p.16) y puntos de prueba en los pines 36 y 37.
 6. **Cristal de 32.768 kHz:** entre los pines 8 y 9 con dos cargas de 16.5 pF por pata (dos 33 pF en serie; ver `BOM.md` 1.8). ESR de 70 kΩ o menos (guía p.14). Sin cristal, GPIO15 y GPIO16 serían GPIO libres.
@@ -126,7 +126,7 @@ Lista única para todo el mapa de conexiones (actualizada el 2026-11-05). Ningun
 4. **Protección de batería (decidido el 2026-11-05):** la batería lleva protección integrada (PCM) y no hay IC protector en la PCB. Batería provisional: cualquier 1S de 3.7 V con PCM y conector JST PH de 2 pines; la definitiva (una LiPo mejor) se consigue después por el costo de envío (`COMPRAS.md` O6).
 5. **Panel solar (O7):** de 6 V y de 1 W a 1.5 W (decidido el 2026-11-05). Panel de prueba elegido el 2026-11-07: 6 V y 220 mA (1.32 W), 120 x 90 mm, con cable (`COMPRAS.md` O7). El definitivo está **POR DECIDIR** y fija los valores finales de R3 y R4 del MPPT y de RCS (O22). Con 1 W la corriente es de 0.17 A y con 1.5 W de 0.25 A, así que un RCS de unos 0.47 Ω cubre todo el rango.
 6. **LED de carga del TP4056:** opcional en CHRG, solo con USB.
-7. **Supervisor de tensión en EN:** la guía de Espressif lo sugiere con alimentación solar de subida lenta.
+7. **Supervisor de tensión en EN:** la guía de Espressif lo sugiere con alimentación solar de subida lenta. **Decidido el 2026-11-08:** no se agrega en la primera placa (ver la regla de EN); se mide en el banco y se revisa en la segunda revisión.
 8. **Salida del optoacoplador en la Fase 4:** hoy alimenta un LED desde el mismo 3V3; en la Fase 4 va a un conector aislado.
 9. **Ubicación de los LED** bajo una ventana sellada (IP67).
 
@@ -141,7 +141,7 @@ Lista única para todo el mapa de conexiones (actualizada el 2026-11-05). Ningun
 **Por revisar antes de comprar o crear (auditoría del stock del docente, 2026-11-05; ver `hardware/AUDITORIA_STOCK_DOCENTE.md`)**
 - **Schottky D1 y D2 del CN3791 (O20):** se usan los PSBD1DF40V1H del docente (decidido el 2026-11-06): unos 5 µA por diodo a 40 °C y 4 V, estimado de la Fig. 2 de su datasheet; no se compra nada (`COMPRAS.md` O20).
 - **Bulk de 3.3 V (O25):** cerrado el 2026-11-07 sin compra (22 µF del docente más una huella 1206 sin montar); falta medir el rizado en el TX.
-- **Diodo ESD de la alimentación:** evaluar el LESD5Z3.3T1G del docente.
+- **Diodo ESD de la alimentación:** decidido el 2026-11-08: no se agrega el LESD5Z3.3T1G, porque el riel de 3.3 V queda dentro de la caja y su fuga de hasta 1 µA a 3.3 V resta al presupuesto de reposo; el USBLC6 protege VBUS. Si se quiere protección en el panel (J3) o en la batería (J2), va una TVS de más de 8 V (la librería trae `TVS_12V_1CH_BID_SOD_123`). Tampoco se agrega un fusible PTC en el USB-C: el TP4056 limita la corriente y un PTC resta margen al VCC mínimo de 4.35 V del TP4056 de Yongyutai.
 - **Regulador:** se queda el TLV75733P; el DS8570F8 del classroom consume 0.6 mA en reposo (`datasheets/ds8570f8_datasheet.pdf`, p. 5).
 - **Huella del TP4056:** sirve la `SOIC_8_3.9mm_EP` del docente. Falta enlazarla en la biblioteca y agregar el pin 9 (EP) a GND; su máscara y pasta ya están en Rule Expansion (`PLAN_MANANA.md`, paso 19).
 - **Datasheets** de las piezas del docente que usamos: bajarlos a `hardware/datasheets/` (lista en la sección 8 de la auditoría).
@@ -161,11 +161,11 @@ Los números de pin físico de los CI van solo donde se verificaron en la hoja d
 | 2 | TXD | GPIO18 (UART1 RX del ESP32) | DS p9 |
 | 3 | RXD | GPIO17 (UART1 TX del ESP32); tiene pull-up interno | DS p9-10 |
 | 4 | TIMEPULSE | Sin conectar: nada puede bajarlo al arrancar o el módulo entra en safeboot | IM p29, p90 |
-| 5 | EXTINT | GPIO21 (opcional); pull-up interno | IM p29, p47 |
+| 5 | EXTINT | Sin conectar (GPIO21 pasa a CHG_INHIBIT, decidido el 2026-11-09); abierto queda en alto por su pull-up interno | IM p29, p47 |
 | 6 | V_BCKP | Sin conectar: no hay respaldo independiente | IM p73-74 |
-| 7 | V_IO | 3V3, unido a VCC (figura 23 del manual) | IM p73-74 |
-| 8 | VCC | 3V3 | IM p73-74 |
-| 9 | RESET_N | Sin conectar (pull-up interno de 10 kΩ). Sin condensador a GND | DS p9, p12; IM p28 |
+| 7 | V_IO | 3V3_GNSS (3V3 por un 0 Ω de medición), unido a VCC (figura 23 del manual) | IM p73-74 |
+| 8 | VCC | 3V3_GNSS (3V3 por un 0 Ω de medición) | IM p73-74 |
+| 9 | RESET_N | GPIO48 (GNSS_RESET) por un 0 Ω, en drenador abierto: bajo 1 ms o más = reset (decidido el 2026-11-09). Pull-up interno de 10 kΩ. Sin condensador a GND | DS p9, p12; IM p28 |
 | 11 | RF_IN | Línea de 50 Ω (coplanar con masa en la capa 2, corta y cercada con vías) hasta el u.FL del parche; el bloqueo DC es interno | DS p12; IM p77, p81 |
 | 13 | LNA_EN | Sin conectar (antena pasiva); no sirve para otra función | IM p7, p94 |
 | 14 | VCC_RF | Sin conectar | IM p8 |
@@ -198,7 +198,7 @@ LGA-14, 2.5 x 3.0 mm. Modo I2C.
 | 13 | SCL | GPIO9 | p20 |
 | 14 | SDA | GPIO8 | p20 |
 
-Los pull-ups del bus I2C son los 4.7 kΩ a 3V3 compartidos con el MAX17048 (el datasheet muestra 10 kΩ en su figura, p45). WHO_AM_I lee 0x6A (p49).
+Los pull-ups del bus I2C son los 3.3 kΩ a 3V3 compartidos con el MAX17048 (el datasheet muestra 10 kΩ en su figura, p45). Con 4.7 kΩ y unos 80 pF la subida da 319 ns, sobre el límite de 300 ns a 400 kHz; con 3.3 kΩ da 224 ns. WHO_AM_I lee 0x6A (p49).
 
 ### Módulo LoRa DX-LR30-900M22S (manual técnico V2.0 del fabricante, `hardware/datasheets/dx-lr30-900m22s_module_manual.pdf`, y folleto del vendedor)
 
@@ -208,17 +208,17 @@ Variante a comprar: **LR30-900M22S** (módulo SMD de 20 x 14 x 2.3 mm, paso de 1
 |-----|--------|----------|--------|
 | 1-4, 10-12, 20, 22 | GND | GND | folleto p11 |
 | 5 | DIO3 | Sin conectar. Si el módulo trae TCXO, DIO3 lo alimenta (`SetDIO3AsTCXOCtrl`); se confirma en el arranque leyendo GetDeviceErrors (XOSC_START_ERR) | folleto p11; SX1262 p81-82 |
-| 6 | RX (conmutador de antena) | GPIO42 (LORA_RXEN) a través de un 0 Ω | folleto p11 |
-| 7 | TX (conmutador de antena) | GPIO47 (LORA_TXEN) a través de un 0 Ω | folleto p11 |
+| 6 | RX (conmutador de antena) | GPIO42 (LORA_RXEN) a través de un 0 Ω; 100 kΩ a GND del lado del módulo (flota en sueño) | folleto p11 |
+| 7 | TX (conmutador de antena) | GPIO47 (LORA_TXEN) a través de un 0 Ω; 100 kΩ a GND del lado del módulo (flota en sueño) | folleto p11 |
 | 8 | DIO2 | Sin conectar, con un 0 Ω **sin montar** hacia el pad 7 | folleto p11; SX1262 p54, p81 |
-| 9 | VCC | 3V3 con 10 µF y 100 nF pegados al pad (recomendación propia: el SX1262 pide 118 mA en TX a +22 dBm) | SX1262 p17 |
+| 9 | VCC | 3V3_LORA (3V3 por un 0 Ω de medición) con 10 µF y 100 nF pegados al pad (recomendación propia: el SX1262 pide 118 mA en TX a +22 dBm) | SX1262 p17 |
 | 13 | DIO1 | GPIO6 (interrupción, despierta de deep sleep) | folleto p11 |
 | 14 | BUSY | GPIO14, sin pull-down: en sleep el chip lo mantiene en alto con 20 kΩ y un pull-down gastaría unos 165 µA | SX1262 p52 |
 | 15 | RESET | GPIO5. Pull-up interno de unos 50 kΩ: no forzarlo a bajo en deep sleep (gastaría unos 66 µA) | SX1262 p50, p54 |
 | 16 | MISO | GPIO13 | folleto p11 |
 | 17 | MOSI | GPIO11 | folleto p11 |
-| 18 | SCK | GPIO12 | folleto p11 |
-| 19 | NSS | GPIO10. Mantenerlo en alto en deep sleep (retención de GPIO): un flanco de bajada despierta la radio | SX1262 p51 |
+| 18 | SCK | GPIO12 por un 0 Ω en serie, con un condensador sin montar a GND del lado del módulo (guía de Espressif p.13) | folleto p11 |
+| 19 | NSS | GPIO10. 100 kΩ a 3V3 del lado del módulo (NSS flota al arrancar). Mantenerlo en alto en deep sleep (retención de GPIO): un flanco de bajada despierta la radio | SX1262 p51 |
 | 21 | ANT | Línea de 50 Ω hasta el conector u.FL de la PCB | folleto p9, p11 |
 
 - **Por qué los 0 Ω:** el folleto no dice si RX y TX son entradas del conmutador ni si TX va unido a DIO2 por dentro. Con 0 Ω en los pads 6 y 7, y un 0 Ω sin montar entre DIO2 y TX, la misma PCB sirve para los dos diseños posibles sin choque de salidas. Si DIO2 gobierna el conmutador, se usa `SetDIO2AsRfSwitchCtrl` (SX1262 p81), se quita el 0 Ω del pad 7 y GPIO47 queda libre.
@@ -236,7 +236,7 @@ SOT-23-5 (DBV), sin pad térmico.
 | 2 | GND | GND | p3 |
 | 3 | EN | Unido a IN (sin apagado) | p12 |
 | 4 | NC | Sin conectar (no tiene conexión interna) | p3 |
-| 5 | OUT | Riel de 3V3 con 1 µF o más a GND | p4, p15 |
+| 5 | OUT | 3V3_LDO con 1 µF o más a GND; un 0 Ω de medición lo une al riel de 3V3 | p4, p15 |
 
 La salida admite de 1 a 200 µF en total (p4). Suma actual en el riel de 3.3 V: 22 µF y 0.1 µF del ESP32, 10 µF y 100 nF del LoRa, dos 100 nF del IMU y 100 nF del GNSS, unos 32.5 µF; **el bulk de 100 µF se cerró el 2026-11-07 sin compra**: un segundo 22 µF del docente junto al LoRa (unos 55 µF en total) y una huella 1206 sin montar; el total no debe pasar de 200 µF. Caída máxima de 425 mV a 1 A (p6). Con el regulador apagado o bajo UVLO, la salida se descarga con unos 120 Ω (p12).
 
@@ -265,12 +265,12 @@ ESOP-8 con pad térmico.
 | Pin | Nombre | Conexión | Fuente |
 |-----|--------|----------|--------|
 | 1 | TEMP | GND (sin corte por temperatura, decisión del 2026-11-03) | p2 |
-| 2 | PROG | 2.4 kΩ a GND (500 mA, RNF-05): 3 kΩ en paralelo con 12 kΩ del kit O19, que no trae 2.4 kΩ | p2 |
+| 2 | PROG | 1.9 kΩ a GND (500 mA, RNF-05): 1.8 kΩ en serie con 100 Ω, ambos del kit O19. Con el chip de Yongyutai, 1.91 kΩ da 500 mA y 2.4 kΩ solo 400 mA | Yongyutai p3-4 |
 | 3 | GND | GND | p2 |
-| 4 | VCC | VBUS del USB-C después del USBLC6, con 10 µF a GND | p3 |
+| 4 | VCC | VBUS del USB-C después del USBLC6, con 10 µF X7R a GND (el fabricante recomienda X7R o tantalio) | p3 |
 | 5 | BAT | Nodo de batería con 10 µF a GND | p3 |
-| 6 | STDBY | Sin conectar (drenador abierto; no queda GPIO libre) | p3 |
-| 7 | CHRG | Sin conectar (drenador abierto). Opción: LED rojo 0805 del docente con 1 kΩ a VCC, que solo enciende con USB | p3 |
+| 6 | STDBY | GND (el fabricante pide tierra en las salidas de estado sin usar; decidido el 2026-11-09) | p3 |
+| 7 | CHRG | GND (como STDBY). Opción: LED rojo 0805 del docente con 1 kΩ a VCC, que solo enciende con USB | p3 |
 | 8 | CE | VCC (como en el circuito típico) | p3 |
 | Pad | Térmico | GND, con cobre y vías para disipar | p1 |
 
@@ -284,10 +284,10 @@ SSOP de 10 pines con paso de 1.00 mm y sin pad expuesto (p11); no usar una huell
 |-----|--------|----------|--------|
 | 1 | VG | 100 nF X7R a VCC (C2) | p2, p3 |
 | 2 | GND | GND, con cobre amplio (es el disipador) | p3, p10 |
-| 3 | CHRG | GPIO41 (CHRG_STAT) con 10 kΩ a 3V3; drenador abierto hasta 30 V | p3-4 |
+| 3 | CHRG | GPIO41 (CHRG_STAT) con 100 kΩ a 3V3 (con 10 kΩ gastaba 330 µA mientras carga); drenador abierto hasta 30 V | p3-4 |
 | 4 | DONE | GND (salida de estado que no se usa) | p7 |
 | 5 | COM | 120 Ω en serie con 235 nF X7R (dos 470 nF X7R del docente en serie) a GND (R2 y C4); su masa vuelve al pin GND | p2, p10 |
-| 6 | MPPT | Divisor: R3 de VCC a MPPT = 390 kΩ + 10 kΩ; R4 de MPPT a GND = 100 kΩ. V_MPPT = 1.205 x (1 + 400/100) = 6.025 V | p6 |
+| 6 | MPPT | Divisor: R3 de VCC a MPPT = 390 kΩ + 10 kΩ; R4 de MPPT a GND = 100 kΩ. V_MPPT = 1.205 x (1 + 400/100) = 6.025 V. Transistor N (Q3) de MPPT a GND, puerta a GPIO21 (CHG_INHIBIT) con 100 kΩ a GND: por debajo de 1.23 V no inicia un ciclo de carga (decidido el 2026-11-09; falta verificar en la primera placa que también frene una carga en curso; el DN2302S conduce con 3.3 V en la puerta según su datasheet) | p6 |
 | 7 | BAT | Lado de la batería de RCS, con conexión Kelvin | p10 |
 | 8 | CSP | Lado del inductor de RCS, con conexión Kelvin | p10 |
 | 9 | VCC | Positivo del panel, con C1 | p2 |
@@ -364,7 +364,7 @@ Dos terminales SMD sin polaridad marcada (piezo).
 - El símbolo del docente tiene 2 pines y la huella 4 pads: los dos pads llamados 1 son los terminales 1 y 2 del datasheet (siempre unidos) y los dos llamados 2 son los terminales 3 y 4 (siempre unidos). Al pulsar se conecta una pareja con la otra.
 - Corriente nominal de 50 mA a 12 V DC (datasheet de BZCN p1); esta línea maneja unos 0.33 mA a 3.3 V. Fuerza de 260 gf ±50. El datasheet no declara rango de temperatura.
 - Antirrebote: al soltar, τ = 11 kΩ x 100 nF = 1.1 ms y llega a VIH en 1.5 ms; al pulsar, τ = 100 µs. Agregar unos 20 ms de antirrebote por firmware. Sin consumo en sleep con el botón suelto.
-- EN y GPIO0 llevan además pads de prueba para reset y modo descarga (ver la sección del módulo).
+- EN y GPIO0 llevan, además de los pads de prueba, un botón cada uno a GND (el mismo TSC015) para reiniciar y entrar en modo descarga (decidido el 2026-11-08; ver la sección del módulo).
 
 ### Cristal de 32.768 kHz ECS-.327-12.5-34B-TR (ECX-31B)
 
@@ -401,13 +401,14 @@ Dos terminales SMD sin polaridad marcada (piezo).
 
 - Enrutado de paso (entra por un pin y sale por el opuesto) y el USBLC6 lo más cerca posible del conector (ST p5-6). Las resistencias de 22 Ω van del lado del ESP32, cerca del módulo (ST p8; Espressif p21); salen del kit (O19).
 - Con el plan B de piezas del docente, CC1 y CC2 llevan un 4.7 kΩ cada una (ver `COMPRAS.md` 1.2).
+- Dos condensadores a GND sin montar (33 pF, DNP) en D+ y D-, del lado del módulo respecto a las resistencias de 22 Ω (guía de Espressif p.21).
 
 ### Conectores de batería y panel (JST S2B-PH-K-S)
 
 | Pin | Batería | Panel solar | Fuente |
 |-----|---------|-------------|--------|
 | 1 | Negativo (GND) | Negativo (GND) | elección de diseño |
-| 2 | Positivo (VBAT: protección, TP4056 BAT, CN3791 BAT por RCS, MAX17048 y TLV75733P IN) | Positivo (VCC del CN3791) | elección de diseño |
+| 2 | Positivo, por un AP2301 contra batería invertida, hacia VBAT (VBAT: protección, TP4056 BAT, CN3791 BAT por RCS, MAX17048 y TLV75733P IN) | Positivo (VCC del CN3791) | elección de diseño |
 
 - JST no define polaridad y los fabricantes de baterías usan las dos. **Antes de soldar, medir los cables de la batería y del panel que se compren** y marcar "+" en la serigrafía. Usar el mismo orden en los dos conectores.
 - 2 A, 100 V, -40 a +105 °C, para PCB de 0.8 a 1.6 mm (jst_b2b-ph-k-s.pdf p1).
@@ -424,7 +425,7 @@ Dos terminales SMD sin polaridad marcada (piezo).
 
 ### Protección de batería
 
-**Decidido el 2026-11-05:** la batería trae protección integrada (PCM) y la PCB no lleva IC protector; el `BQ2975DRBR` del BOM no existía (O16, retirado). Batería de prueba elegida el 2026-11-07: LiPo 603450 de 1200 mAh con PCM y JST PH 2.0 (`COMPRAS.md` O6).
+**Decidido el 2026-11-05:** la batería trae protección integrada (PCM) y la PCB no lleva IC protector; el `BQ2975DRBR` del BOM no existía (O16, retirado). Batería de prueba elegida el 2026-11-07: LiPo 603450 de 1200 mAh con PCM y JST PH 2.0 (`COMPRAS.md` O6). **Decidido el 2026-11-09:** protección de polaridad con un AP2301 entre J2 y VBAT (drenador a J2 +, fuente a VBAT, puerta a GND), porque el JST no tiene polaridad fija y una batería al revés llevaría unos 2.8 A por D2, el inductor y RCS (`audit/power.md` PD-1). En el panel no se agrega.
 
 ## Consideraciones de diseño
 
@@ -436,7 +437,7 @@ Dos terminales SMD sin polaridad marcada (piezo).
 - IMU: XL_HM_MODE = 1 para el modo de 9 µA (ver `docs/firmware_docs/REAL_TIME_RISKS.md`).
 
 1. Niveles lógicos de 3.3 V en todos los pines.
-2. Fuentes de despertar de deep sleep: IMU_INT1 (GPIO4), LORA_DIO1 (GPIO6), BUTTON (GPIO7). EXTINT es una entrada del GNSS y no despierta al ESP32.
+2. Fuentes de despertar de deep sleep: IMU_INT1 (GPIO4), LORA_DIO1 (GPIO6), BUTTON (GPIO7). GPIO21 (CHG_INHIBIT) no despierta: solo retiene su estado en sueño.
 3. Mantener `OPTO_CTRL` en bajo durante deep sleep con la retención de GPIO RTC (`rtc_gpio_hold_en`) además del pull-down externo.
 4. Pines SPI con longitudes de pista similares y lejos de la antena del módulo.
 5. Puntos de prueba en TXD0, RXD0, EN, GPIO0, 3V3 y GND.
@@ -447,6 +448,8 @@ Dos terminales SMD sin polaridad marcada (piezo).
 |------|-------|-------------|
 | Normal | Alto (pull-up) | Arranca desde flash |
 | Descarga | Bajo al soltar EN | Programación por USB nativo (GPIO19/20) o UART0 |
+
+Con los botones: mantén BOOT pulsado, pulsa y suelta EN, y suelta BOOT. El modo descarga es obligatorio con el flash vacío y cuando el firmware usa el USB para otra función, como el CDC de la Fase 2 (guía de Espressif, sección 1.5).
 
 ## Revisión
 
@@ -463,3 +466,7 @@ Dos terminales SMD sin polaridad marcada (piezo).
 | 2.8 | 2026-11-05 | Lista de pendientes actualizada: batería provisional con protección integrada (sin IC protector), panel de 6 V de 1 a 1.5 W y lista de lo que se revisa antes de comprar |
 | 2.9 | 2026-11-07 | Zumbador: se mantiene el requisito de 80 dBA si se consigue. Panel y batería de prueba elegidos. C1 del CN3791 es el electrolítico del docente. RPROG y la resistencia del LED rojo se arman en paralelo con el kit O19. Protección de batería integrada en la celda. Bulk de 3.3 V por decidir |
 | 2.0 | 2026-10-30 | Rehecho contra el datasheet v1.8 del módulo. GPIO05 ya no se repite. Sin GPIO22-34. USB D+/D- corregidos. GNSS con TX/RX cruzados |
+| 2.10 | 2026-11-08 | RPROG del TP4056: 1.9 kΩ (1.8 kΩ + 100 Ω) en lugar de 2.4 kΩ, según la tabla medida del datasheet de Yongyutai (500 mA con 1.91 kΩ). Hallazgo de la verificación independiente de las hojas del esquemático |
+| 2.11 | 2026-11-08 | EN y BOOT llevan un botón a GND además del punto de prueba (para reiniciar y entrar en modo descarga al programar por USB-C). Tres pulsadores TSC015 en total |
+| 2.12 | 2026-11-08 | Decididos sin agregar en la primera placa: fusible PTC en el USB-C, diodo ESD LESD5Z3.3T1G en el riel de 3.3 V y supervisor de tensión en EN. Se revisan tras medir la primera placa |
+| 2.13 | 2026-11-09 | Cambios tras las auditorías MCU y POWER: GPIO21 = CHG_INHIBIT (corte de carga solar) y GPIO48 = GNSS_RESET (el EXTINT del GNSS queda sin conectar); AP2301 contra batería invertida; pull-up de NSS y pull-downs de RXEN/TXEN de 100 kΩ; CHRG_STAT con 100 kΩ; pull-ups de I2C de 3.3 kΩ; STDBY y CHRG del TP4056 a GND; 10 µF X7R en VCC del TP4056; puentes de 0 Ω para medir 3V3, GNSS y LoRa; condensadores sin montar en D+/D- y SCK; pads de prueba TP8 a TP11 |

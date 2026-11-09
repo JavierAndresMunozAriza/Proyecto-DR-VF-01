@@ -29,7 +29,7 @@ La batería es el nodo central: dos cargadores independientes la cargan y todo e
 ```
 
 - **Dos cargadores:** el CN3791 regula la entrada a la tensión MPPT (6 V) y solo inicia carga si el pin MPPT supera 1.23 V, es decir, con más de unos 6.2 V en la entrada (sección 2.2). Un USB de 5 V nunca la inicia. El TP4056 acepta de 4.0 a 8.0 V y entrega hasta 1 A.
-- **TP4056:** carga lineal con terminación a C/10. Con RPROG de 2.4 kΩ limita a 500 mA y disipa unos 0.65 W con 5 V de entrada y la celda a 3.7 V; su regulación térmica protege el chip a 145 °C. Con 500 mA, la carga tarda no menos de 3 h para 1500 mAh (2.4 h para 1200 mAh) antes de la cola a tensión constante. No hay una línea de estado de carga confirmada que el MCU pueda leer: las salidas de estado del TP4056 no tienen GPIO asignado (GPIO42 ya es LORA_RXEN), **POR DECIDIR** (`hardware/pinout.md`).
+- **TP4056:** carga lineal con terminación a C/10. Con RPROG de 1.9 kΩ limita a 500 mA y disipa unos 0.65 W con 5 V de entrada y la celda a 3.7 V; su regulación térmica protege el chip a 145 °C. Con 500 mA, la carga tarda no menos de 3 h para 1500 mAh (2.4 h para 1200 mAh) antes de la cola a tensión constante. No hay una línea de estado de carga confirmada que el MCU pueda leer: las salidas de estado del TP4056 no tienen GPIO asignado (GPIO42 ya es LORA_RXEN), **POR DECIDIR** (`hardware/pinout.md`).
 - **LDO TLV75733P:** la entrada nunca pasa de 4.2 V, así que a 300 mA disipa 0.27 W (ver `hardware/THERMAL.md`). Sin batería la placa no arranca desde el USB. Se descartó el DS8570F8 del classroom: consume 0.6 mA con EN activo y sin carga (`hardware/datasheets/ds8570f8_datasheet.pdf`, p. 5), 24 veces los 25 µA del TLV75733P, y pide VDD de 3 V como mínimo aparte de VIN.
 - **Programación:** por el USB-C, con el USB nativo del ESP32-S3 (GPIO19 y GPIO20) y el botón BOOT a GND para el modo descarga (`hardware/pinout.md`). La placa debe tener la batería conectada.
 - **Protección de batería (decidido el 2026-11-05):** la batería lleva protección integrada y la PCB no tiene IC protector (`hardware/BOM.md`, sección 1.5).
@@ -115,7 +115,7 @@ $$R_{CS} = \frac{0.12\text{ V}}{1.0\text{ A}} = 0.12\ \Omega\ (120\text{ m}\Omeg
 
 1. **Desacople en Alta Frecuencia:** Capacitores cerámicos 100 nF (0805) en pines de alimentación de cada módulo
 2. **Capacitor Tanque (Bulk):** Capacitor de 10 μF - 100 μF en bus de 3.3V para transitorios LoRa
-3. **Resistencias de Pull-Up I2C:** Dos resistencias de 4.7 kΩ en líneas SDA y SCL
+3. **Resistencias de Pull-Up I2C:** Dos resistencias de 3.3 kΩ en líneas SDA y SCL
 4. **Red RC de Reset:** 10 kΩ a 3.3V y 1 μF a GND en pin EN del ESP32-S3
 5. **Aislamiento Galvánico para Actuador:** Optoacoplador VO617A con resistencia serie en la entrada (330 Ω provisional, limita la corriente del GPIO a ~6.6 mA; el valor final se calcula con el datasheet del VO617A, ver `hardware/pinout.md`) y pull-down de 100 kΩ en GPIO1 (lado de entrada, `hardware/pinout.md` y `hardware/BOM.md`)
 
@@ -143,9 +143,9 @@ El único mapa de pines vigente es [hardware/pinout.md](../hardware/pinout.md). 
 | :--- | :--- | :--- |
 | Bus SPI | Módulo LoRa DX-LR30-900M22S (SX1262) | NSS 10, MOSI 11, SCK 12, MISO 13 |
 | Control LoRa | Módulo DX-LR30-900M22S | BUSY 14, DIO1 6 (despierta), NRESET 5, RXEN 42, TXEN 47 |
-| Bus I2C | IMU (LSM6DS3TR-C), MAX17048 (dirección 0x36) | SDA 8, SCL 9 (pull-up 4.7 kΩ) |
+| Bus I2C | IMU (LSM6DS3TR-C), MAX17048 (dirección 0x36) | SDA 8, SCL 9 (pull-up 3.3 kΩ) |
 | UART1 | GNSS MAX-M10S | TX 17 (hacia RXD), RX 18 (desde TXD) |
-| GNSS | MAX-M10S EXTINT (entrada del GNSS, opcional) | 21 |
+| Corte de carga solar | `CHG_INHIBIT` (transistor N en el pin MPPT del CN3791; retiene su estado en sueño) | 21 |
 | IMU | INT1 (LSM6DS3TR-C) | 4 (despierta de Deep Sleep) |
 | Actuador | Optoacoplador VO617A (`OPTO_CTRL`) | 1 |
 | Buzzer | PWM | 2 |
@@ -155,7 +155,8 @@ El único mapa de pines vigente es [hardware/pinout.md](../hardware/pinout.md). 
 | Estado de carga USB | TP4056 (salidas de estado) | sin GPIO asignado (**POR DECIDIR**; GPIO42 ya es LORA_RXEN) |
 | Alerta del medidor | MAX17048 ALRT | sin GPIO asignado en `hardware/pinout.md` |
 | USB nativo / BOOT | D- / D+, BOOT | 19 / 20, 0 (a GND = modo descarga) |
-| Módem Fase 2 | UART TX / RX, PWRKEY | 43 / 44, 48 (módem **POR DECIDIR**: A7670SA o BG95-M3) |
+| GNSS | RESET_N del MAX-M10S (`GNSS_RESET`, por un 0 Ω) | 48 |
+| Módem Fase 2 | UART TX / RX, PWRKEY | 43 / 44, y PWRKEY sin pin: GPIO48 ya lo usa `GNSS_RESET` (se quita ese 0 Ω y se reasigna si se usa el módem; módem **POR DECIDIR**: A7670SA o BG95-M3) |
 | Consola | UART0 TX / RX | 43 / 44 (puntos de prueba; en Fase 2 la consola pasa a USB CDC) |
 
 **Nota Técnica:** El GNSS usa UART1 (GPIO 17/18), no el bus I2C. GPIO 43/44 (UART0) quedan como puntos de prueba para consola. Las reglas del módulo (pines de strapping, USB nativo en GPIO 19/20, PSRAM octal) están en [hardware/pinout.md](../hardware/pinout.md).
@@ -178,7 +179,7 @@ Lista del prototipo con DevKit. La lista de la PCB final (TLV75733PDBVR, TP4056,
 | 1 | LED 3mm Rojo | Through-Hole | Indicador visual de disparo |
 | 5 | Capacitores 100 nF | Cerámico SMD 0805 | Desacople de Alta Frecuencia |
 | 1 | Capacitor 100 μF/16V | Electrolítico/Tántalo | Capacitor Tanque 3.3V |
-| 2 | Resistencias 4.7 kΩ | SMD 0805 | Pull-Ups I2C |
+| 2 | Resistencias 3.3 kΩ | SMD 0805 | Pull-Ups I2C |
 | 1 | Resistencia 330 Ω | Through-Hole/SMD 0805 | Limitadora Optoacoplador |
 | 1 | Resistencia 100 kΩ | Through-Hole/SMD 0805 | Pull-Down de GPIO1 (entrada del optoacoplador) |
 | N | Headers Hembra/Macho 2.54mm | Tiras de Pinos | Zócalos para Carrier Board |

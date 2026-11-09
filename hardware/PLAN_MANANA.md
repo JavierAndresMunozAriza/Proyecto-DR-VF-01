@@ -45,7 +45,7 @@ Abre cada enlace y baja el PDF del datasheet. Las piezas de las filas 6 a 11 son
 | 10 | LED RGB `RS-3535MWAM` | [LCSC C842778](https://www.lcsc.com/product-detail/Light-Emitting-Diodes-LED_Foshan-NationStar-Optoelectronics-RS-3535MWAM_C842778.html) |
 | 11 | Electrolítico `35V100uF CD110` (HRK) | [LCSC C2960381](https://lcsc.com/product-detail/Aluminum-Electrolytic-Capacitors-Leaded_HRK-35V100uF-CD110_C2960381.html) |
 | 12 | LED rojo `XL-2012SURC` | [LCSC C965812](https://www.lcsc.com/product-detail/Light-Emitting-Diodes-LED_XINGLIGHT-XL-2012SURC_C965812.html) |
-| 13 | TVS `LESD5Z3.3T1G` (para el diodo ESD de la alimentación) | [LCSC C136161](https://lcsc.com/product-detail/ESD-and-Surge-Protection-TVS-ESD_LRC-LESD5Z3-3T1G_C136161.html) |
+| 13 | TVS `LESD5Z3.3T1G` (para el diodo ESD de la alimentación; **ya no se usa, decidido el 2026-11-08**) | [LCSC C136161](https://lcsc.com/product-detail/ESD-and-Surge-Protection-TVS-ESD_LRC-LESD5Z3-3T1G_C136161.html) |
 | 14 | Chinocera 22 µF `HGC0805R5226M160NSLJ` | [LCSC C33546008](https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_Chinocera-HGC0805R5226M160NSLJ_C33546008.html) |
 | 15 | Chinocera 470 nF `HGC0603R7474K500NTHJ` | [LCSC C33546006](https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_Chinocera-HGC0603R7474K500NTHJ_C33546006.html) |
 | 16 | Opcionales (una hoja por familia): `CL21A106KAYNNNE` [C15850](https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_Samsung-Electro-Mechanics-CL21A106KAYNNNE_C15850.html), `CL10A105KB8NNNC` [C15849](https://www.lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_Samsung-Electro-Mechanics-CL10A105KB8NNNC_C15849.html), `TCC0603X5R106K100CT` [C380314](https://www.lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_CCTC-TCC0603X5R106K100CT_C380314.html), `CC0603JRNPO9BN330` [C107047](https://www.lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_YAGEO-CC0603JRNPO9BN330_C107047.html), resistencia `FRC0603J103TS` [C2930027](https://www.lcsc.com/product-detail/Chip-Resistor-Surface-Mount_FOJAN-FRC0603J103TS_C2930027.html) | Solo para tener la ficha completa |
@@ -68,7 +68,7 @@ Abre cada enlace y baja el PDF del datasheet. Las piezas de las filas 6 a 11 son
 | 23 | **Parche GNSS pasivo** | 18 x 18 x 4 mm, 1575.42 MHz, pasivo, con cable corto y u.FL, con datasheet de un fabricante conocido |
 | 24 | **Zumbador** | Hoy el elegido da unos 52 dB a 1 m y `IP67_SPEC.md` pide más de 80 dBA. Cambiar el zumbador o el requisito |
 | 25 | **Batería provisional** | Local, 1S de 4.2 V, **con protección integrada**, de 500 mAh o más, JST PH de 2 pines (o adaptable). Mide la polaridad al recibirla |
-| 26 | **Bulk de 3.3 V** y **diodo ESD de la alimentación** | Cerrado el 2026-11-07: sin tantalio; un segundo 22 µF del docente junto al LoRa y una huella 1206 sin montar. Diodo ESD: el `LESD5Z3.3T1G` del docente |
+| 26 | **Bulk de 3.3 V** y **diodo ESD de la alimentación** | Cerrado el 2026-11-07: sin tantalio; un segundo 22 µF del docente junto al LoRa y una huella 1206 sin montar. Diodo ESD: no se agrega (decidido el 2026-11-08; ver los pendientes de `pinout.md`) |
 
 ## Bloque 5. Compras (tú), con los links que yo te dejo
 
@@ -144,5 +144,5 @@ Las piezas elegidas son para la prueba de la primera placa (la PCB llega a inici
 | 23 | **Parche GNSS de prueba:** HXANT `HX-TWGPS-184-CV0`, 2 unidades (18 x 18 mm, cerámica de 4 mm, 6.5 mm de alto en total, pasivo, cable RF1.13 con IPEX1; O3). Sin datasheet propio: la hoja del vendedor es del modelo de 15 mm. Prueba: cobre de unos 50 x 50 mm debajo y C/N0 al aire libre. **Definitivo:** POR DECIDIR, candidato C&T RF `CTRF-ANTENNA-GPS-1575-181804-IPEX` |
 | 24 | **Zumbador:** se mantiene el requisito de más de 80 dBA a 1 m si se consigue uno que lo cumpla. Falta buscarlo; el Murata PKMCS0909E4000-R1 queda como respaldo |
 | 25 | **Batería de prueba:** LiPo 603450 de 1200 mAh con protección (PCM) y JST PH 2.0, de Nasal Store (O6). La protección la declara la imagen del vendedor, sin verificar. Medir la polaridad antes de enchufarla. **Definitiva:** POR DECIDIR (1200 o 1500 mAh) |
-| 26 | **Cerrado el 2026-11-07:** no se compra el bulk de 100 µF; el TX de 120 mA dura 0.5 s y lo sostiene la batería, así que se agrega un 22 µF del docente junto al LoRa (riel de unos 55 µF) y una huella 1206 sin montar; se mide el rizado en la primera placa. El diodo ESD de la alimentación es el LESD5Z3.3T1G del docente (revisado en el paso 21) |
+| 26 | **Cerrado el 2026-11-07:** no se compra el bulk de 100 µF; el TX de 120 mA dura 0.5 s y lo sostiene la batería, así que se agrega un 22 µF del docente junto al LoRa (riel de unos 55 µF) y una huella 1206 sin montar; se mide el rizado en la primera placa. El diodo ESD de la alimentación era el LESD5Z3.3T1G del docente (revisado en el paso 21); **decidido el 2026-11-08: no se agrega** (ver `pinout.md`) |
 

@@ -102,7 +102,7 @@ El docente tiene físicamente todo lo que hay en su biblioteca `shared_lib.IntLi
 | Plan B | `COMPRAS.md` 1.2 | Reconstruye los valores del kit | No tiene fila para los 470 Ω del LED verde (con 330 + 150 Ω del docente daría 480 Ω) |
 | Fabricante del TP4056 | `BOM.md:64` | NanJing Top Power | `COMPRAS.md:59`: YONGYUTAI, como la biblioteca |
 | Origen de los 390 kΩ y 1 kΩ | `BOM.md:110` vs `COMPRAS.md:157` | El BOM los toma del docente | O19 dice que vienen del kit. El docente los tiene los dos |
-| Origen de los 2.4 kΩ | `BOM.md:111` vs `COMPRAS.md:157` | "Del kit" | El kit no lo trae: se arma con 3K en paralelo con 12K |
+| Origen de los 2.4 kΩ | `BOM.md:111` vs `COMPRAS.md:157` | "Del kit" | El kit no lo trae: se armaba con 3K en paralelo con 12K. **Superado el 2026-11-08:** RPROG pasa a 1.9 kΩ (1K8 + 100R en serie, ambos del kit) |
 | MPN del 100 nF X7R | `BOM.md:104` vs `COMPRAS.md:159` | "CC0603KRX7R9BB104 YAGEO, lote con MPN nombrado" | El listado "no nombra marca ni MPN" |
 
 ## 5. Oportunidades que trae el classroom (no son requisitos)
