@@ -35,8 +35,15 @@ TEST_OBJECTS = $(TEST_SOURCES:.c=.o)
 TARGET = geofence_test
 EXECUTABLE = $(TARGET)
 DEBUG_EXECUTABLE = $(TARGET)_debug
+STRESS_EXECUTABLE = $(TARGET)_stress
+SANITIZE_EXECUTABLE = $(TARGET)_sanitize
+SANITIZE_STRESS_EXECUTABLE = $(TARGET)_sanitize_stress
+STRESS_SOURCES = $(TESTDIR)/test_geofence_stress.c
+SANITIZE_FLAGS = -g -O1 -fno-omit-frame-pointer \
+	-fsanitize=address,undefined,float-divide-by-zero,float-cast-overflow \
+	-fno-sanitize-recover=all
 
-.PHONY: all test clean debug help depend
+.PHONY: all test stress sanitize clean debug help depend
 
 all: $(EXECUTABLE)
 
@@ -52,8 +59,25 @@ test: $(EXECUTABLE)
 	@echo "Running tests..."
 	./$(EXECUTABLE)
 
+# Randomized stress test: hundreds of thousands of cases, fixed seed.
+# Pass another seed with `make stress SEED=123`.
+stress: $(STRESS_EXECUTABLE)
+	./$(STRESS_EXECUTABLE) $(SEED)
+
+$(STRESS_EXECUTABLE): $(SOURCES) $(STRESS_SOURCES) $(HEADERS)
+	$(CC) $(CFLAGS) $(SOURCES) $(STRESS_SOURCES) -o $@ $(LDFLAGS)
+
+# The unit tests and the stress test under AddressSanitizer and
+# UndefinedBehaviorSanitizer (also reports memory leaks).
+sanitize: $(SOURCES) $(TEST_SOURCES) $(STRESS_SOURCES) $(HEADERS)
+	$(CC) $(CFLAGS) $(SANITIZE_FLAGS) $(SOURCES) $(TEST_SOURCES) -o $(SANITIZE_EXECUTABLE) $(LDFLAGS)
+	$(CC) $(CFLAGS) $(SANITIZE_FLAGS) $(SOURCES) $(STRESS_SOURCES) -o $(SANITIZE_STRESS_EXECUTABLE) $(LDFLAGS)
+	./$(SANITIZE_EXECUTABLE)
+	./$(SANITIZE_STRESS_EXECUTABLE) $(SEED)
+
 clean:
-	rm -f $(OBJECTS) $(TEST_OBJECTS) $(EXECUTABLE) $(DEBUG_EXECUTABLE)
+	rm -f $(OBJECTS) $(TEST_OBJECTS) $(EXECUTABLE) $(DEBUG_EXECUTABLE) \
+		$(STRESS_EXECUTABLE) $(SANITIZE_EXECUTABLE) $(SANITIZE_STRESS_EXECUTABLE)
 	@echo "Cleaned build artifacts"
 
 # Debug target
@@ -66,6 +90,8 @@ help:
 	@echo "Available targets:"
 	@echo "  all     - Build the test executable"
 	@echo "  test    - Build and run tests"
+	@echo "  stress  - Run the randomized stress test (SEED=n to change the seed)"
+	@echo "  sanitize - Run the tests and the stress test under ASan and UBSan"
 	@echo "  clean   - Remove build artifacts"
 	@echo "  debug   - Build debug version"
 	@echo "  depend  - Print source dependencies"
