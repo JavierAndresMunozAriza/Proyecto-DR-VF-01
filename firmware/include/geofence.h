@@ -224,9 +224,30 @@ double geofence_calculate_distance(const geopoint_t* point1, const geopoint_t* p
  * Despite the name, this measures to the vertices only, not to the
  * edges: for a point next to the middle of a long edge the result is the
  * distance to a corner, not the distance to the border. It is not a
- * distance to the boundary and must not be used as one.
+ * distance to the boundary and must not be used as one; use
+ * geofence_distance_to_boundary() for that.
  */
 double geofence_get_closest_boundary_point(const geopoint_t* point, const geofence_t* fence, geopoint_t* closest_point);
+
+/**
+ * @brief Get the distance from a point to the polygon boundary
+ * @param point Test point, inside or outside the polygon
+ * @param fence Target polygon (at least 3 vertices)
+ * @return Distance in meters to the nearest edge (not vertex), or -1.0 on
+ *         invalid input (engine not initialized, NULL argument, fewer
+ *         than 3 vertices, or invalid coordinates)
+ *
+ * The distance is unsigned: it does not say whether the point is inside.
+ * Combine it with the point-in-polygon functions for that.
+ *
+ * Each edge is the straight segment between two vertices in the
+ * latitude/longitude plane, as in the point-in-polygon functions. The
+ * distance uses a local flat projection centered on the point, which
+ * agrees with the haversine distance to well under 1% for points within a
+ * few kilometers of the boundary. The antimeridian limitation applies.
+ * Time complexity: O(n) where n is number of vertices.
+ */
+double geofence_distance_to_boundary(const geopoint_t* point, const geofence_t* fence);
 
 /**
  * @brief Validate geofence polygon for correctness

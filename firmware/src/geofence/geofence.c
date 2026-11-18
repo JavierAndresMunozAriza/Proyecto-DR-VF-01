@@ -381,3 +381,61 @@ double geofence_get_closest_boundary_point(const geopoint_t *point,
 	*closest_point = best_point;
 	return min_distance;
 }
+
+/*
+ * Distance from the origin to the segment A-B, in the units of A and B.
+ * The closest point of the segment is A + t * (B - A), with t in [0, 1].
+ */
+static double origin_to_segment(double ax, double ay, double bx, double by)
+{
+	double dx = bx - ax;
+	double dy = by - ay;
+	double len_sq = dx * dx + dy * dy;
+	double t = 0.0;
+
+	if (len_sq > 0.0) {
+		t = fmin(fmax(-(ax * dx + ay * dy) / len_sq, 0.0), 1.0);
+	}
+
+	return hypot(ax + t * dx, ay + t * dy);
+}
+
+double geofence_distance_to_boundary(const geopoint_t *point,
+				     const geofence_t *fence)
+{
+	const double meters_per_deg_lat = DEG_TO_RAD(1.0) * EARTH_RADIUS_METERS;
+	double meters_per_deg_lon;
+	double best = DISTANCE_ERROR;
+	uint16_t i;
+
+	if (!can_query_point(point, fence)) {
+		return DISTANCE_ERROR;
+	}
+
+	/* Flat projection centered on the point: the point is the origin. */
+	meters_per_deg_lon =
+		meters_per_deg_lat * cos(DEG_TO_RAD(point->latitude));
+
+	for (i = 0; i < fence->num_vertices; i++) {
+		const geopoint_t *v1 = &fence->vertices[i];
+		const geopoint_t *v2 =
+			&fence->vertices[(i + 1) % fence->num_vertices];
+		double distance;
+
+		if (!is_valid_coordinate(v1->latitude, v1->longitude)) {
+			return DISTANCE_ERROR;
+		}
+
+		distance = origin_to_segment(
+			(v1->longitude - point->longitude) * meters_per_deg_lon,
+			(v1->latitude - point->latitude) * meters_per_deg_lat,
+			(v2->longitude - point->longitude) * meters_per_deg_lon,
+			(v2->latitude - point->latitude) * meters_per_deg_lat);
+
+		if (best < 0.0 || distance < best) {
+			best = distance;
+		}
+	}
+
+	return best;
+}

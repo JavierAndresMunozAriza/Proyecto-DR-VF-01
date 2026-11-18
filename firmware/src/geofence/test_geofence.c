@@ -770,6 +770,111 @@ static void test_closest_boundary_point(void)
 	geofence_destroy_polygon(&fence);
 }
 
+/* geofence_distance_to_boundary (nearest edge, not vertex) */
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
+/* Meters per degree of latitude on the engine's spherical Earth model. */
+#define METERS_PER_DEG_LAT (M_PI / 180.0 * 6371000.0)
+
+/* Meters per degree of longitude at a given latitude. */
+static double meters_per_deg_lon(double latitude)
+{
+	return METERS_PER_DEG_LAT * cos(latitude * M_PI / 180.0);
+}
+
+static void test_distance_to_boundary(void)
+{
+	geofence_t fence = { 0 };
+	geofence_t two = { 0 };
+	geofence_t notch = { 0 };
+	const double south = test_field[0].latitude;
+	const double west = test_field[0].longitude;
+	const double mid_lon = -74.0030;
+	const geopoint_t inside_south = { south + 5.0 / METERS_PER_DEG_LAT, mid_lon };
+	const geopoint_t outside_south = { south - 10.0 / METERS_PER_DEG_LAT, mid_lon };
+	const geopoint_t outside_corner = {
+		south - 10.0 / METERS_PER_DEG_LAT,
+		west - 10.0 / meters_per_deg_lon(south)
+	};
+	const geopoint_t center = { 40.7158, mid_lon };
+	const geopoint_t in_notch = { 1.5, 1.5 };
+	const geopoint_t bad = { 999.0, 0.0 };
+	const geopoint_t nan_point = { NAN, 0.0 };
+
+	engine_up();
+	CHECK_EQ(geofence_create_polygon(&fence, test_field,
+					 TEST_FIELD_VERTICES),
+		 GEOFENCE_SUCCESS);
+
+	/* The nearest edge, not the nearest vertex (about 250 m away). */
+	CHECK_NEAR(geofence_distance_to_boundary(&inside_south, &fence), 5.0,
+		   1e-6);
+	CHECK_NEAR(geofence_distance_to_boundary(&outside_south, &fence), 10.0,
+		   1e-6);
+
+	/* Outside a corner the nearest point of the boundary is the vertex. */
+	CHECK_NEAR(geofence_distance_to_boundary(&outside_corner, &fence),
+		   10.0 * sqrt(2.0), 1e-3);
+
+	/* On the boundary and on a vertex the distance is zero. */
+	CHECK_NEAR(geofence_distance_to_boundary(&test_field[0], &fence), 0.0,
+		   1e-6);
+	CHECK_NEAR(geofence_distance_to_boundary(&(geopoint_t){ south, mid_lon },
+						 &fence), 0.0, 1e-6);
+
+	/* From the center the nearest edges are the west and east ones. */
+	CHECK_NEAR(geofence_distance_to_boundary(&center, &fence),
+		   (mid_lon - west) * meters_per_deg_lon(center.latitude), 1e-6);
+
+	/* Reversed vertex order gives the same answer. */
+	{
+		geofence_t reversed = { 0 };
+
+		CHECK_EQ(geofence_create_polygon(&reversed, test_field_cw,
+						 TEST_FIELD_VERTICES),
+			 GEOFENCE_SUCCESS);
+		CHECK_NEAR(geofence_distance_to_boundary(&inside_south, &reversed),
+			   5.0, 1e-6);
+		geofence_destroy_polygon(&reversed);
+	}
+
+	/* Concave polygon: a point in the notch measures to the notch edges. */
+	CHECK_EQ(geofence_create_polygon(&notch, l_shape,
+					 (uint16_t)ARRAY_SIZE(l_shape)),
+		 GEOFENCE_SUCCESS);
+	CHECK_NEAR(geofence_distance_to_boundary(&in_notch, &notch),
+		   0.5 * meters_per_deg_lon(in_notch.latitude), 1e-3);
+	geofence_destroy_polygon(&notch);
+
+	/* Invalid input returns -1.0. */
+	CHECK_NEAR(geofence_distance_to_boundary(NULL, &fence), -1.0, 0.0);
+	CHECK_NEAR(geofence_distance_to_boundary(&center, NULL), -1.0, 0.0);
+	CHECK_NEAR(geofence_distance_to_boundary(&bad, &fence), -1.0, 0.0);
+	CHECK_NEAR(geofence_distance_to_boundary(&nan_point, &fence), -1.0, 0.0);
+
+	CHECK_EQ(geofence_create_polygon(&two, test_field, 2), GEOFENCE_SUCCESS);
+	CHECK_NEAR(geofence_distance_to_boundary(&center, &two), -1.0, 0.0);
+	geofence_destroy_polygon(&two);
+
+	/* A polygon with an invalid vertex is rejected, not measured. */
+	CHECK_EQ(geofence_create_polygon(&two, test_field, TEST_FIELD_VERTICES),
+		 GEOFENCE_SUCCESS);
+	two.vertices[2].latitude = NAN;
+	CHECK_NEAR(geofence_distance_to_boundary(&center, &two), -1.0, 0.0);
+	two.vertices[2] = test_field[2];
+	two.vertices[3].longitude = 999.0;
+	CHECK_NEAR(geofence_distance_to_boundary(&center, &two), -1.0, 0.0);
+	geofence_destroy_polygon(&two);
+
+	geofence_deinit();
+	CHECK_NEAR(geofence_distance_to_boundary(&center, &fence), -1.0, 0.0);
+
+	geofence_destroy_polygon(&fence);
+}
+
 /* Host measurement, printed only: it proves nothing about the target. */
 
 #define MEASURE_ITERATIONS 10000
@@ -824,6 +929,7 @@ static const test_entry_t tests[] = {
 	{ "algorithms_agree",        test_algorithms_agree },
 	{ "distance",                test_distance },
 	{ "closest_boundary_point",  test_closest_boundary_point },
+	{ "distance_to_boundary",    test_distance_to_boundary },
 	{ "host_measurement",        print_host_measurement }
 };
 
