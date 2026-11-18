@@ -6,8 +6,10 @@
 # - Separate compilation and linking
 # - Easy testing integration
 #
-# `make` and `make test` build and run the single test binary,
-# test_geofence.c. Override the compiler with `make CC=clang`.
+# `make test` builds and runs the unit tests (test_geofence.c, one binary).
+# `make stress`, `make sanitize` and `make cross-check` add the randomized
+# stress test, the sanitizer runs and the compile check for both boards; see
+# `make help`. Override the compiler with `make CC=clang`.
 
 # Compiler settings. make predefines CC as "cc", so a plain `CC ?= gcc`
 # would never apply; keep the default gcc but honor CC from the
@@ -111,15 +113,15 @@ debug:
 # Help target
 help:
 	@echo "Available targets:"
-	@echo "  all     - Build the test executable"
-	@echo "  test    - Build and run tests"
-	@echo "  stress  - Run the randomized stress test (SEED=n to change the seed)"
-	@echo "  sanitize - Run the tests and the stress test under ASan and UBSan"
-	@echo "  cross-check - Compile the engine for Cortex-M33 and ESP32-S3 with strict warnings"
-	@echo "  clean   - Remove build artifacts"
-	@echo "  debug   - Build debug version"
-	@echo "  depend  - Print source dependencies"
-	@echo "  help    - Show this help"
+	@echo "  all         - Build the unit test executable"
+	@echo "  test        - Build and run the unit tests"
+	@echo "  stress      - Run the randomized stress test (SEED=n changes the seed)"
+	@echo "  sanitize    - Run the tests and the stress test under ASan and UBSan"
+	@echo "  cross-check - Compile the engine for Cortex-M33 and ESP32-S3, strict warnings"
+	@echo "  clean       - Remove build artifacts"
+	@echo "  debug       - Build the unit tests with debug flags"
+	@echo "  depend      - Print source dependencies"
+	@echo "  help        - Show this help"
 
 # Dependencies
 depend: $(SOURCES) $(HEADERS) $(TEST_SOURCES)
