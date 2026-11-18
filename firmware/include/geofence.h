@@ -71,6 +71,14 @@ typedef struct {
 } geofence_t;
 
 /**
+ * @brief Result of a full geofence check, see geofence_check()
+ */
+typedef struct {
+    bool inside;        /**< True if the point is inside the polygon */
+    double distance_m;  /**< Distance in meters to the nearest edge, >= 0 */
+} geofence_result_t;
+
+/**
  * @brief Geofence system configuration
  *
  * geofence_init() requires non-zero max_polygons and max_vertices_total
@@ -248,6 +256,27 @@ double geofence_get_closest_boundary_point(const geopoint_t* point, const geofen
  * Time complexity: O(n) where n is number of vertices.
  */
 double geofence_distance_to_boundary(const geopoint_t* point, const geofence_t* fence);
+
+/**
+ * @brief Check a point against a polygon: inside or outside, and how far
+ *        from the boundary
+ * @param point Test point (for example a GNSS fix)
+ * @param fence Target polygon
+ * @param result Output: inside flag and distance to the nearest edge,
+ *        written only on success
+ * @return GEOFENCE_SUCCESS on success;
+ *         GEOFENCE_ERROR_NOT_INITIALIZED if geofence_init() was not
+ *         called; GEOFENCE_ERROR_INVALID_PARAM if point, fence or result
+ *         is NULL, or a coordinate (the point's or a vertex's) is out of
+ *         range or NaN; GEOFENCE_ERROR_EMPTY_POLYGON if the polygon has
+ *         fewer than 3 vertices
+ *
+ * Unlike the bool point-in-polygon functions, an error here is never
+ * confused with "outside": the caller can reject a bad GNSS fix instead
+ * of treating it as an exit from the fence. Points on the boundary follow
+ * the half-open rule described at the top of this file.
+ */
+int geofence_check(const geopoint_t* point, const geofence_t* fence, geofence_result_t* result);
 
 /**
  * @brief Validate geofence polygon for correctness

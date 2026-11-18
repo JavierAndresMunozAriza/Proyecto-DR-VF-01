@@ -875,6 +875,91 @@ static void test_distance_to_boundary(void)
 	geofence_destroy_polygon(&fence);
 }
 
+/* geofence_check (inside/outside and distance, errors never read as outside) */
+
+static void test_check(void)
+{
+	geofence_t fence = { 0 };
+	geofence_t empty = { 0 };
+	geofence_result_t result;
+	const geopoint_t inside = { 40.7128 + 5.0 / METERS_PER_DEG_LAT, -74.0030 };
+	const geopoint_t outside = { 40.7128 - 10.0 / METERS_PER_DEG_LAT, -74.0030 };
+	const geopoint_t bad = { 999.0, 0.0 };
+	const geopoint_t nan_point = { NAN, 0.0 };
+	const geofence_result_t untouched = { true, 123.0 };
+	size_t i;
+
+	/* The engine is not initialized yet. */
+	result = untouched;
+	CHECK_EQ(geofence_check(&inside, &fence, &result),
+		 GEOFENCE_ERROR_NOT_INITIALIZED);
+	CHECK_EQ(result.inside, untouched.inside);
+	CHECK_NEAR(result.distance_m, untouched.distance_m, 0.0);
+
+	engine_up();
+	CHECK_EQ(geofence_create_polygon(&fence, test_field,
+					 TEST_FIELD_VERTICES),
+		 GEOFENCE_SUCCESS);
+
+	/* Inside and outside both succeed, with the distance to the edge. */
+	CHECK_EQ(geofence_check(&inside, &fence, &result), GEOFENCE_SUCCESS);
+	CHECK(result.inside);
+	CHECK_NEAR(result.distance_m, 5.0, 1e-6);
+
+	CHECK_EQ(geofence_check(&outside, &fence, &result), GEOFENCE_SUCCESS);
+	CHECK(!result.inside);
+	CHECK_NEAR(result.distance_m, 10.0, 1e-6);
+
+	/* Errors are reported and the output is left untouched. */
+	result = untouched;
+	CHECK_EQ(geofence_check(NULL, &fence, &result),
+		 GEOFENCE_ERROR_INVALID_PARAM);
+	CHECK_EQ(geofence_check(&inside, NULL, &result),
+		 GEOFENCE_ERROR_INVALID_PARAM);
+	CHECK_EQ(geofence_check(&inside, &fence, NULL),
+		 GEOFENCE_ERROR_INVALID_PARAM);
+	CHECK_EQ(geofence_check(&bad, &fence, &result),
+		 GEOFENCE_ERROR_INVALID_PARAM);
+	CHECK_EQ(geofence_check(&nan_point, &fence, &result),
+		 GEOFENCE_ERROR_INVALID_PARAM);
+	CHECK_EQ(geofence_check(&inside, &empty, &result),
+		 GEOFENCE_ERROR_EMPTY_POLYGON);
+
+	fence.vertices[1].latitude = NAN;
+	CHECK_EQ(geofence_check(&inside, &fence, &result),
+		 GEOFENCE_ERROR_INVALID_PARAM);
+	fence.vertices[1] = test_field[1];
+
+	CHECK_EQ(result.inside, untouched.inside);
+	CHECK_NEAR(result.distance_m, untouched.distance_m, 0.0);
+
+	/* A polygon cleared of vertices is empty, not invalid. */
+	geofence_clear_polygon(&fence);
+	CHECK_EQ(geofence_check(&inside, &fence, &result),
+		 GEOFENCE_ERROR_EMPTY_POLYGON);
+	geofence_destroy_polygon(&fence);
+
+	/* Agrees with the standalone functions over a grid around the field. */
+	CHECK_EQ(geofence_create_polygon(&fence, test_field,
+					 TEST_FIELD_VERTICES),
+		 GEOFENCE_SUCCESS);
+	for (i = 0; i < 400; i++) {
+		const geopoint_t p = {
+			40.7100 + (double)(i / 20) * 0.0005,
+			-74.0080 + (double)(i % 20) * 0.0005
+		};
+
+		CHECK_EQ(geofence_check(&p, &fence, &result), GEOFENCE_SUCCESS);
+		CHECK_EQ(result.inside,
+			 geofence_is_point_in_polygon_ray_casting(&p, &fence));
+		CHECK_NEAR(result.distance_m,
+			   geofence_distance_to_boundary(&p, &fence), 0.0);
+	}
+
+	geofence_destroy_polygon(&fence);
+	engine_down();
+}
+
 /* Host measurement, printed only: it proves nothing about the target. */
 
 #define MEASURE_ITERATIONS 10000
@@ -930,6 +1015,7 @@ static const test_entry_t tests[] = {
 	{ "distance",                test_distance },
 	{ "closest_boundary_point",  test_closest_boundary_point },
 	{ "distance_to_boundary",    test_distance_to_boundary },
+	{ "check",                   test_check },
 	{ "host_measurement",        print_host_measurement }
 };
 

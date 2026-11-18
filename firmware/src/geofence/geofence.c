@@ -208,6 +208,36 @@ void geofence_destroy_polygon(geofence_t *fence)
 	fence->capacity = 0;
 }
 
+int geofence_check(const geopoint_t *point, const geofence_t *fence,
+		   geofence_result_t *result)
+{
+	double distance;
+
+	if (!g_initialized) {
+		return GEOFENCE_ERROR_NOT_INITIALIZED;
+	}
+
+	if (!point || !fence || !result ||
+	    !is_valid_coordinate(point->latitude, point->longitude)) {
+		return GEOFENCE_ERROR_INVALID_PARAM;
+	}
+
+	if (!fence->vertices || fence->num_vertices < MIN_POLYGON_VERTICES) {
+		return GEOFENCE_ERROR_EMPTY_POLYGON;
+	}
+
+	/* Also rejects a polygon with an invalid vertex. */
+	distance = geofence_distance_to_boundary(point, fence);
+	if (distance < 0.0) {
+		return GEOFENCE_ERROR_INVALID_PARAM;
+	}
+
+	result->inside =
+		geofence_is_point_in_polygon_ray_casting(point, fence);
+	result->distance_m = distance;
+	return GEOFENCE_SUCCESS;
+}
+
 bool geofence_validate_polygon(const geofence_t *fence)
 {
 	uint16_t i;
