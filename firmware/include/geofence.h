@@ -28,12 +28,23 @@
  *   point (NULL, NaN or out-of-range coordinates), an invalid or too
  *   small polygon, and an uninitialized engine all return false. The
  *   caller must validate the GNSS fix and the engine state before it
- *   treats false as "outside".
+ *   treats false as "outside", or use geofence_check(), which reports
+ *   these cases as error codes instead.
  * - Antimeridian: polygons that cross longitude +/-180 are not
  *   supported, because longitudes are compared as plain numbers.
  * - Re-creation: geofence_create_polygon() does not free the storage of
  *   the structure it receives. Calling it twice on the same structure
  *   leaks the first array; call geofence_destroy_polygon() first.
+ *
+ * Thread safety
+ *
+ * geofence_init() and geofence_deinit() change global state without a
+ * lock: call them only at boot, before any other task uses the engine.
+ * The queries (point-in-polygon, distance and geofence_check()) only
+ * read their arguments and allocate nothing, so they may run
+ * concurrently on the same polygon, but not while another task changes
+ * it. Creating, growing, clearing and destroying a polygon use the heap
+ * and need one writer at a time: never call them from an ISR.
  */
 
 #ifndef GEOFENCE_H
@@ -147,6 +158,8 @@ int geofence_create_polygon(geofence_t* fence, const geopoint_t* vertices, uint1
  *
  * The storage grows with realloc when it is full: the capacity doubles
  * (8 for a polygon created empty), so the vertices pointer can change.
+ * point may point into fence->vertices: it is copied before the storage
+ * can move.
  */
 int geofence_add_vertex(geofence_t* fence, const geopoint_t* point);
 
@@ -234,6 +247,11 @@ double geofence_calculate_distance(const geopoint_t* point1, const geopoint_t* p
  * distance to a corner, not the distance to the border. It is not a
  * distance to the boundary and must not be used as one; use
  * geofence_distance_to_boundary() for that.
+ *
+ * It also runs the full haversine formula once per vertex, which is slow
+ * on a microcontroller without a double-precision FPU (an estimate, not
+ * measured: about 150 ms for 1000 vertices on a 64 MHz Cortex-M33). Keep
+ * it out of the 50 ms real-time path (RF-02).
  */
 double geofence_get_closest_boundary_point(const geopoint_t* point, const geofence_t* fence, geopoint_t* closest_point);
 
@@ -250,9 +268,16 @@ double geofence_get_closest_boundary_point(const geopoint_t* point, const geofen
  *
  * Each edge is the straight segment between two vertices in the
  * latitude/longitude plane, as in the point-in-polygon functions. The
- * distance uses a local flat projection centered on the point, which
- * agrees with the haversine distance to well under 1% for points within a
- * few kilometers of the boundary. The antimeridian limitation applies.
+ * distance uses a local flat projection centered on the point. Measured
+ * against the haversine distance for points within a few kilometers of
+ * the boundary, the error stays under 0.2% up to 85 degrees of latitude
+ * and grows toward the poles (about 0.8% at 89 degrees): do not rely on
+ * it for a polygon within a few degrees of a pole.
+ *
+ * The antimeridian limitation applies to the distance too: when the
+ * point and the polygon lie on opposite sides of longitude +/-180, the
+ * longitudes are subtracted as plain numbers and the result is
+ * meaningless (it can exceed half the Earth's circumference).
  * Time complexity: O(n) where n is number of vertices.
  */
 double geofence_distance_to_boundary(const geopoint_t* point, const geofence_t* fence);
@@ -267,14 +292,21 @@ double geofence_distance_to_boundary(const geopoint_t* point, const geofence_t* 
  * @return GEOFENCE_SUCCESS on success;
  *         GEOFENCE_ERROR_NOT_INITIALIZED if geofence_init() was not
  *         called; GEOFENCE_ERROR_INVALID_PARAM if point, fence or result
- *         is NULL, or a coordinate (the point's or a vertex's) is out of
- *         range or NaN; GEOFENCE_ERROR_EMPTY_POLYGON if the polygon has
- *         fewer than 3 vertices
+ *         is NULL, a coordinate (the point's or a vertex's) is out of
+ *         range or NaN, or the polygon claims 3 or more vertices but has
+ *         no vertex array; GEOFENCE_ERROR_EMPTY_POLYGON if the polygon
+ *         has fewer than 3 vertices. The checks run in this order: engine
+ *         state, arguments and the point, the vertex count, then the
+ *         vertices.
  *
  * Unlike the bool point-in-polygon functions, an error here is never
  * confused with "outside": the caller can reject a bad GNSS fix instead
- * of treating it as an exit from the fence. Points on the boundary follow
- * the half-open rule described at the top of this file.
+ * of treating it as an exit from the fence.
+ *
+ * "inside" uses ray casting (the even-odd rule), so for a
+ * self-intersecting polygon the region enclosed twice counts as outside.
+ * A point exactly on the boundary follows the rule described at the top
+ * of this file, which callers must not rely on.
  */
 int geofence_check(const geopoint_t* point, const geofence_t* fence, geofence_result_t* result);
 

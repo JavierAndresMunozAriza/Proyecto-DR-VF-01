@@ -21,6 +21,7 @@
 
 #define EARTH_RADIUS_METERS 6371000.0
 #define DEG_TO_RAD(deg) ((deg) * M_PI / 180.0)
+#define METERS_PER_DEG_LAT (DEG_TO_RAD(1.0) * EARTH_RADIUS_METERS)
 
 #define MAX_LATITUDE_DEG 90.0
 #define MAX_LONGITUDE_DEG 180.0
@@ -71,6 +72,34 @@ static double cross_product(const geopoint_t *o, const geopoint_t *a,
 {
 	return (a->longitude - o->longitude) * (b->latitude - o->latitude) -
 	       (a->latitude - o->latitude) * (b->longitude - o->longitude);
+}
+
+/*
+ * Squared distance from the origin to the segment A-B, in the squared units
+ * of A and B. The closest point of the segment is A + t * (B - A), with t in
+ * [0, 1]. Squares are compared so the per-edge loop needs no sqrt or hypot.
+ */
+static double origin_to_segment_sq(double ax, double ay, double bx, double by)
+{
+	double dx = bx - ax;
+	double dy = by - ay;
+	double len_sq = dx * dx + dy * dy;
+	double t = 0.0;
+	double cx;
+	double cy;
+
+	if (len_sq > 0.0) {
+		t = -(ax * dx + ay * dy) / len_sq;
+		if (t < 0.0) {
+			t = 0.0;
+		} else if (t > 1.0) {
+			t = 1.0;
+		}
+	}
+
+	cx = ax + t * dx;
+	cy = ay + t * dy;
+	return cx * cx + cy * cy;
 }
 
 /*
@@ -164,6 +193,7 @@ int geofence_create_polygon(geofence_t *fence, const geopoint_t *vertices,
 
 int geofence_add_vertex(geofence_t *fence, const geopoint_t *point)
 {
+	geopoint_t vertex;
 	int ret;
 
 	if (!g_initialized || !fence || !point) {
@@ -174,6 +204,9 @@ int geofence_add_vertex(geofence_t *fence, const geopoint_t *point)
 		return GEOFENCE_ERROR_INVALID_PARAM;
 	}
 
+	/* Copy first: point may alias the vertex array that growing moves. */
+	vertex = *point;
+
 	if (fence->num_vertices >= fence->capacity) {
 		ret = grow_capacity(fence);
 		if (ret != GEOFENCE_SUCCESS) {
@@ -181,7 +214,7 @@ int geofence_add_vertex(geofence_t *fence, const geopoint_t *point)
 		}
 	}
 
-	fence->vertices[fence->num_vertices] = *point;
+	fence->vertices[fence->num_vertices] = vertex;
 	fence->num_vertices++;
 
 	return GEOFENCE_SUCCESS;
@@ -206,36 +239,6 @@ void geofence_destroy_polygon(geofence_t *fence)
 	fence->vertices = NULL;
 	fence->num_vertices = 0;
 	fence->capacity = 0;
-}
-
-int geofence_check(const geopoint_t *point, const geofence_t *fence,
-		   geofence_result_t *result)
-{
-	double distance;
-
-	if (!g_initialized) {
-		return GEOFENCE_ERROR_NOT_INITIALIZED;
-	}
-
-	if (!point || !fence || !result ||
-	    !is_valid_coordinate(point->latitude, point->longitude)) {
-		return GEOFENCE_ERROR_INVALID_PARAM;
-	}
-
-	if (!fence->vertices || fence->num_vertices < MIN_POLYGON_VERTICES) {
-		return GEOFENCE_ERROR_EMPTY_POLYGON;
-	}
-
-	/* Also rejects a polygon with an invalid vertex. */
-	distance = geofence_distance_to_boundary(point, fence);
-	if (distance < 0.0) {
-		return GEOFENCE_ERROR_INVALID_PARAM;
-	}
-
-	result->inside =
-		geofence_is_point_in_polygon_ray_casting(point, fence);
-	result->distance_m = distance;
-	return GEOFENCE_SUCCESS;
 }
 
 bool geofence_validate_polygon(const geofence_t *fence)
@@ -412,30 +415,11 @@ double geofence_get_closest_boundary_point(const geopoint_t *point,
 	return min_distance;
 }
 
-/*
- * Distance from the origin to the segment A-B, in the units of A and B.
- * The closest point of the segment is A + t * (B - A), with t in [0, 1].
- */
-static double origin_to_segment(double ax, double ay, double bx, double by)
-{
-	double dx = bx - ax;
-	double dy = by - ay;
-	double len_sq = dx * dx + dy * dy;
-	double t = 0.0;
-
-	if (len_sq > 0.0) {
-		t = fmin(fmax(-(ax * dx + ay * dy) / len_sq, 0.0), 1.0);
-	}
-
-	return hypot(ax + t * dx, ay + t * dy);
-}
-
 double geofence_distance_to_boundary(const geopoint_t *point,
 				     const geofence_t *fence)
 {
-	const double meters_per_deg_lat = DEG_TO_RAD(1.0) * EARTH_RADIUS_METERS;
 	double meters_per_deg_lon;
-	double best = DISTANCE_ERROR;
+	double best_sq = HUGE_VAL;
 	uint16_t i;
 
 	if (!can_query_point(point, fence)) {
@@ -444,28 +428,58 @@ double geofence_distance_to_boundary(const geopoint_t *point,
 
 	/* Flat projection centered on the point: the point is the origin. */
 	meters_per_deg_lon =
-		meters_per_deg_lat * cos(DEG_TO_RAD(point->latitude));
+		METERS_PER_DEG_LAT * cos(DEG_TO_RAD(point->latitude));
 
 	for (i = 0; i < fence->num_vertices; i++) {
 		const geopoint_t *v1 = &fence->vertices[i];
 		const geopoint_t *v2 =
 			&fence->vertices[(i + 1) % fence->num_vertices];
-		double distance;
+		double distance_sq;
 
 		if (!is_valid_coordinate(v1->latitude, v1->longitude)) {
 			return DISTANCE_ERROR;
 		}
 
-		distance = origin_to_segment(
+		distance_sq = origin_to_segment_sq(
 			(v1->longitude - point->longitude) * meters_per_deg_lon,
-			(v1->latitude - point->latitude) * meters_per_deg_lat,
+			(v1->latitude - point->latitude) * METERS_PER_DEG_LAT,
 			(v2->longitude - point->longitude) * meters_per_deg_lon,
-			(v2->latitude - point->latitude) * meters_per_deg_lat);
+			(v2->latitude - point->latitude) * METERS_PER_DEG_LAT);
 
-		if (best < 0.0 || distance < best) {
-			best = distance;
+		if (distance_sq < best_sq) {
+			best_sq = distance_sq;
 		}
 	}
 
-	return best;
+	return sqrt(best_sq);
+}
+
+int geofence_check(const geopoint_t *point, const geofence_t *fence,
+		   geofence_result_t *result)
+{
+	double distance;
+
+	if (!g_initialized) {
+		return GEOFENCE_ERROR_NOT_INITIALIZED;
+	}
+
+	if (!point || !fence || !result ||
+	    !is_valid_coordinate(point->latitude, point->longitude)) {
+		return GEOFENCE_ERROR_INVALID_PARAM;
+	}
+
+	if (fence->num_vertices < MIN_POLYGON_VERTICES) {
+		return GEOFENCE_ERROR_EMPTY_POLYGON;
+	}
+
+	/* Also rejects a NULL vertex array and a polygon with an invalid vertex. */
+	distance = geofence_distance_to_boundary(point, fence);
+	if (distance < 0.0) {
+		return GEOFENCE_ERROR_INVALID_PARAM;
+	}
+
+	result->inside =
+		geofence_is_point_in_polygon_ray_casting(point, fence);
+	result->distance_m = distance;
+	return GEOFENCE_SUCCESS;
 }

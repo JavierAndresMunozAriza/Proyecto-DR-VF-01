@@ -788,10 +788,10 @@ static double meters_per_deg_lon(double latitude)
 static void test_distance_to_boundary(void)
 {
 	geofence_t fence = { 0 };
-	geofence_t two = { 0 };
-	geofence_t notch = { 0 };
+	geofence_t other = { 0 };
 	const double south = test_field[0].latitude;
 	const double west = test_field[0].longitude;
+	const double east = test_field[1].longitude;
 	const double mid_lon = -74.0030;
 	const geopoint_t inside_south = { south + 5.0 / METERS_PER_DEG_LAT, mid_lon };
 	const geopoint_t outside_south = { south - 10.0 / METERS_PER_DEG_LAT, mid_lon };
@@ -799,10 +799,18 @@ static void test_distance_to_boundary(void)
 		south - 10.0 / METERS_PER_DEG_LAT,
 		west - 10.0 / meters_per_deg_lon(south)
 	};
+	const geopoint_t below_corner = { south - 10.0 / METERS_PER_DEG_LAT, west };
+	/* On the line of the south edge, beyond its east end. */
+	const geopoint_t past_east_end = { south, east + 10.0 / meters_per_deg_lon(south) };
 	const geopoint_t center = { 40.7158, mid_lon };
 	const geopoint_t in_notch = { 1.5, 1.5 };
 	const geopoint_t bad = { 999.0, 0.0 };
 	const geopoint_t nan_point = { NAN, 0.0 };
+	/* Duplicate consecutive vertex: a zero-length edge. */
+	const geopoint_t with_duplicate[] = {
+		test_field[0], test_field[0], test_field[1], test_field[2], test_field[3]
+	};
+	const geopoint_t all_equal[] = { test_field[0], test_field[0], test_field[0] };
 
 	engine_up();
 	CHECK_EQ(geofence_create_polygon(&fence, test_field,
@@ -819,6 +827,10 @@ static void test_distance_to_boundary(void)
 	CHECK_NEAR(geofence_distance_to_boundary(&outside_corner, &fence),
 		   10.0 * sqrt(2.0), 1e-3);
 
+	/* Beyond the end of an edge the vertex is nearest, not a shortened edge. */
+	CHECK_NEAR(geofence_distance_to_boundary(&past_east_end, &fence), 10.0,
+		   1e-6);
+
 	/* On the boundary and on a vertex the distance is zero. */
 	CHECK_NEAR(geofence_distance_to_boundary(&test_field[0], &fence), 0.0,
 		   1e-6);
@@ -830,24 +842,44 @@ static void test_distance_to_boundary(void)
 		   (mid_lon - west) * meters_per_deg_lon(center.latitude), 1e-6);
 
 	/* Reversed vertex order gives the same answer. */
-	{
-		geofence_t reversed = { 0 };
+	CHECK_EQ(geofence_create_polygon(&other, test_field_cw,
+					 TEST_FIELD_VERTICES),
+		 GEOFENCE_SUCCESS);
+	CHECK_NEAR(geofence_distance_to_boundary(&inside_south, &other), 5.0,
+		   1e-6);
+	geofence_destroy_polygon(&other);
 
-		CHECK_EQ(geofence_create_polygon(&reversed, test_field_cw,
-						 TEST_FIELD_VERTICES),
-			 GEOFENCE_SUCCESS);
-		CHECK_NEAR(geofence_distance_to_boundary(&inside_south, &reversed),
-			   5.0, 1e-6);
-		geofence_destroy_polygon(&reversed);
-	}
+	/* A duplicate vertex adds a zero-length edge and changes nothing. */
+	CHECK_EQ(geofence_create_polygon(&other, with_duplicate,
+					 (uint16_t)ARRAY_SIZE(with_duplicate)),
+		 GEOFENCE_SUCCESS);
+	CHECK_NEAR(geofence_distance_to_boundary(&inside_south, &other), 5.0,
+		   1e-6);
+	geofence_destroy_polygon(&other);
+
+	/* A polygon whose vertices are all equal is a point. */
+	CHECK_EQ(geofence_create_polygon(&other, all_equal,
+					 (uint16_t)ARRAY_SIZE(all_equal)),
+		 GEOFENCE_SUCCESS);
+	CHECK_NEAR(geofence_distance_to_boundary(&below_corner, &other), 10.0,
+		   1e-6);
+	geofence_destroy_polygon(&other);
 
 	/* Concave polygon: a point in the notch measures to the notch edges. */
-	CHECK_EQ(geofence_create_polygon(&notch, l_shape,
+	CHECK_EQ(geofence_create_polygon(&other, l_shape,
 					 (uint16_t)ARRAY_SIZE(l_shape)),
 		 GEOFENCE_SUCCESS);
-	CHECK_NEAR(geofence_distance_to_boundary(&in_notch, &notch),
+	CHECK_NEAR(geofence_distance_to_boundary(&in_notch, &other),
 		   0.5 * meters_per_deg_lon(in_notch.latitude), 1e-3);
-	geofence_destroy_polygon(&notch);
+	geofence_destroy_polygon(&other);
+
+	/* Coordinates exactly on the limits are valid, just beyond are not. */
+	CHECK(geofence_distance_to_boundary(&(geopoint_t){ 90.0, 180.0 }, &fence) > 0.0);
+	CHECK(geofence_distance_to_boundary(&(geopoint_t){ -90.0, -180.0 }, &fence) > 0.0);
+	CHECK_NEAR(geofence_distance_to_boundary(&(geopoint_t){ 90.0000001, 0.0 },
+						 &fence), -1.0, 0.0);
+	CHECK_NEAR(geofence_distance_to_boundary(&(geopoint_t){ 0.0, -180.0000001 },
+						 &fence), -1.0, 0.0);
 
 	/* Invalid input returns -1.0. */
 	CHECK_NEAR(geofence_distance_to_boundary(NULL, &fence), -1.0, 0.0);
@@ -855,21 +887,21 @@ static void test_distance_to_boundary(void)
 	CHECK_NEAR(geofence_distance_to_boundary(&bad, &fence), -1.0, 0.0);
 	CHECK_NEAR(geofence_distance_to_boundary(&nan_point, &fence), -1.0, 0.0);
 
-	CHECK_EQ(geofence_create_polygon(&two, test_field, 2), GEOFENCE_SUCCESS);
-	CHECK_NEAR(geofence_distance_to_boundary(&center, &two), -1.0, 0.0);
-	geofence_destroy_polygon(&two);
+	CHECK_EQ(geofence_create_polygon(&other, test_field, 2), GEOFENCE_SUCCESS);
+	CHECK_NEAR(geofence_distance_to_boundary(&center, &other), -1.0, 0.0);
+	geofence_destroy_polygon(&other);
 
 	/* A polygon with an invalid vertex is rejected, not measured. */
-	CHECK_EQ(geofence_create_polygon(&two, test_field, TEST_FIELD_VERTICES),
+	CHECK_EQ(geofence_create_polygon(&other, test_field, TEST_FIELD_VERTICES),
 		 GEOFENCE_SUCCESS);
-	two.vertices[2].latitude = NAN;
-	CHECK_NEAR(geofence_distance_to_boundary(&center, &two), -1.0, 0.0);
-	two.vertices[2] = test_field[2];
-	two.vertices[3].longitude = 999.0;
-	CHECK_NEAR(geofence_distance_to_boundary(&center, &two), -1.0, 0.0);
-	geofence_destroy_polygon(&two);
+	other.vertices[2].latitude = NAN;
+	CHECK_NEAR(geofence_distance_to_boundary(&center, &other), -1.0, 0.0);
+	other.vertices[2] = test_field[2];
+	other.vertices[3].longitude = 999.0;
+	CHECK_NEAR(geofence_distance_to_boundary(&center, &other), -1.0, 0.0);
+	geofence_destroy_polygon(&other);
 
-	geofence_deinit();
+	engine_down();
 	CHECK_NEAR(geofence_distance_to_boundary(&center, &fence), -1.0, 0.0);
 
 	geofence_destroy_polygon(&fence);
@@ -877,15 +909,37 @@ static void test_distance_to_boundary(void)
 
 /* geofence_check (inside/outside and distance, errors never read as outside) */
 
+/* The output of a failed check must be left as it was. */
+#define CHECK_UNTOUCHED(result, original)                                  \
+	do {                                                               \
+		CHECK_EQ((result).inside, (original).inside);              \
+		CHECK_NEAR((result).distance_m, (original).distance_m, 0.0); \
+	} while (0)
+
+/* A grid of test points around the field: GRID_ROWS x GRID_COLUMNS. */
+#define GRID_ROWS 20
+#define GRID_COLUMNS 20
+#define GRID_START_LAT 40.7100
+#define GRID_START_LON (-74.0080)
+#define GRID_STEP_DEG 0.0005
+
+/* Pentagram, vertices visited every second point: a self-intersecting polygon. */
+static const geopoint_t pentagram[] = {
+	{ 1.000000, 0.000000 }, { -0.809017, 0.587785 }, { 0.309017, -0.951057 },
+	{ 0.309017, 0.951057 }, { -0.809017, -0.587785 }
+};
+
 static void test_check(void)
 {
 	geofence_t fence = { 0 };
-	geofence_t empty = { 0 };
+	geofence_t other = { 0 };
+	const geofence_t no_array = { NULL, 3, 3 };
 	geofence_result_t result;
 	const geopoint_t inside = { 40.7128 + 5.0 / METERS_PER_DEG_LAT, -74.0030 };
 	const geopoint_t outside = { 40.7128 - 10.0 / METERS_PER_DEG_LAT, -74.0030 };
 	const geopoint_t bad = { 999.0, 0.0 };
 	const geopoint_t nan_point = { NAN, 0.0 };
+	const geopoint_t origin = { 0.0, 0.0 };
 	const geofence_result_t untouched = { true, 123.0 };
 	size_t i;
 
@@ -893,8 +947,7 @@ static void test_check(void)
 	result = untouched;
 	CHECK_EQ(geofence_check(&inside, &fence, &result),
 		 GEOFENCE_ERROR_NOT_INITIALIZED);
-	CHECK_EQ(result.inside, untouched.inside);
-	CHECK_NEAR(result.distance_m, untouched.distance_m, 0.0);
+	CHECK_UNTOUCHED(result, untouched);
 
 	engine_up();
 	CHECK_EQ(geofence_create_polygon(&fence, test_field,
@@ -922,39 +975,96 @@ static void test_check(void)
 		 GEOFENCE_ERROR_INVALID_PARAM);
 	CHECK_EQ(geofence_check(&nan_point, &fence, &result),
 		 GEOFENCE_ERROR_INVALID_PARAM);
-	CHECK_EQ(geofence_check(&inside, &empty, &result),
-		 GEOFENCE_ERROR_EMPTY_POLYGON);
+
+	/* A polygon claiming vertices it does not have is invalid, not empty. */
+	CHECK_EQ(geofence_check(&inside, &no_array, &result),
+		 GEOFENCE_ERROR_INVALID_PARAM);
 
 	fence.vertices[1].latitude = NAN;
 	CHECK_EQ(geofence_check(&inside, &fence, &result),
 		 GEOFENCE_ERROR_INVALID_PARAM);
 	fence.vertices[1] = test_field[1];
+	CHECK_UNTOUCHED(result, untouched);
 
-	CHECK_EQ(result.inside, untouched.inside);
-	CHECK_NEAR(result.distance_m, untouched.distance_m, 0.0);
-
-	/* A polygon cleared of vertices is empty, not invalid. */
+	/* Fewer than 3 vertices: empty, whatever the vertex array holds. */
+	CHECK_EQ(geofence_check(&inside, &other, &result),
+		 GEOFENCE_ERROR_EMPTY_POLYGON);
+	for (i = 1; i <= 2; i++) {
+		CHECK_EQ(geofence_create_polygon(&other, test_field, (uint16_t)i),
+			 GEOFENCE_SUCCESS);
+		CHECK_EQ(geofence_check(&inside, &other, &result),
+			 GEOFENCE_ERROR_EMPTY_POLYGON);
+		geofence_destroy_polygon(&other);
+	}
 	geofence_clear_polygon(&fence);
 	CHECK_EQ(geofence_check(&inside, &fence, &result),
 		 GEOFENCE_ERROR_EMPTY_POLYGON);
+
+	/* The point is checked before the polygon. */
+	CHECK_EQ(geofence_check(&bad, &fence, &result),
+		 GEOFENCE_ERROR_INVALID_PARAM);
+	CHECK_UNTOUCHED(result, untouched);
 	geofence_destroy_polygon(&fence);
 
-	/* Agrees with the standalone functions over a grid around the field. */
+	/* Coordinates exactly on the limits are valid. */
 	CHECK_EQ(geofence_create_polygon(&fence, test_field,
 					 TEST_FIELD_VERTICES),
 		 GEOFENCE_SUCCESS);
-	for (i = 0; i < 400; i++) {
+	CHECK_EQ(geofence_check(&(geopoint_t){ 90.0, 180.0 }, &fence, &result),
+		 GEOFENCE_SUCCESS);
+	CHECK_EQ(geofence_check(&(geopoint_t){ -90.0, -180.0 }, &fence, &result),
+		 GEOFENCE_SUCCESS);
+
+	/* "inside" is even-odd: the doubly enclosed center of a pentagram is outside. */
+	geofence_destroy_polygon(&other);
+	CHECK_EQ(geofence_create_polygon(&other, pentagram,
+					 (uint16_t)ARRAY_SIZE(pentagram)),
+		 GEOFENCE_SUCCESS);
+	CHECK(!geofence_is_point_in_polygon_ray_casting(&origin, &other));
+	CHECK(geofence_is_point_in_polygon_winding_number(&origin, &other));
+	CHECK_EQ(geofence_check(&origin, &other, &result), GEOFENCE_SUCCESS);
+	CHECK(!result.inside);
+	geofence_destroy_polygon(&other);
+
+	/* Agrees with the standalone functions over a grid around the field. */
+	for (i = 0; i < GRID_ROWS * GRID_COLUMNS; i++) {
 		const geopoint_t p = {
-			40.7100 + (double)(i / 20) * 0.0005,
-			-74.0080 + (double)(i % 20) * 0.0005
+			GRID_START_LAT + (double)(i / GRID_COLUMNS) * GRID_STEP_DEG,
+			GRID_START_LON + (double)(i % GRID_COLUMNS) * GRID_STEP_DEG
 		};
 
 		CHECK_EQ(geofence_check(&p, &fence, &result), GEOFENCE_SUCCESS);
 		CHECK_EQ(result.inside,
 			 geofence_is_point_in_polygon_ray_casting(&p, &fence));
 		CHECK_NEAR(result.distance_m,
-			   geofence_distance_to_boundary(&p, &fence), 0.0);
+			   geofence_distance_to_boundary(&p, &fence), 1e-9);
 	}
+
+	geofence_destroy_polygon(&fence);
+	engine_down();
+}
+
+/* geofence_add_vertex with a point that lives inside the polygon's own array */
+
+static void test_add_vertex_alias(void)
+{
+	geofence_t fence = { 0 };
+	size_t i;
+
+	engine_up();
+	CHECK_EQ(geofence_create_polygon(&fence, test_field,
+					 TEST_FIELD_VERTICES),
+		 GEOFENCE_SUCCESS);
+
+	/* Each addition may move the array while the argument points into it. */
+	for (i = 0; i < 100; i++) {
+		const geopoint_t expected = fence.vertices[i % TEST_FIELD_VERTICES];
+
+		CHECK_EQ(geofence_add_vertex(&fence, &fence.vertices[i % TEST_FIELD_VERTICES]),
+			 GEOFENCE_SUCCESS);
+		CHECK(same_point(&fence.vertices[fence.num_vertices - 1], &expected));
+	}
+	CHECK_EQ(fence.num_vertices, TEST_FIELD_VERTICES + 100);
 
 	geofence_destroy_polygon(&fence);
 	engine_down();
@@ -1016,6 +1126,7 @@ static const test_entry_t tests[] = {
 	{ "closest_boundary_point",  test_closest_boundary_point },
 	{ "distance_to_boundary",    test_distance_to_boundary },
 	{ "check",                   test_check },
+	{ "add_vertex_alias",        test_add_vertex_alias },
 	{ "host_measurement",        print_host_measurement }
 };
 
