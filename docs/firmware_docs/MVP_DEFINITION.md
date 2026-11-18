@@ -103,6 +103,8 @@ typedef struct {
 bool geofence_is_point_in_polygon_ray_casting(const geopoint_t* point, const geofence_t* fence);
 ```
 
+**Llamada que usará la FSM**: `geofence_check()` devuelve en una sola llamada si el punto está dentro y la distancia en metros al lado más cercano del polígono (`geofence_distance_to_boundary()`, que mide al lado y no al vértice). Si la lectura del GNSS no es válida devuelve un código de error en lugar de `false`, de modo que una lectura inválida no se confunde con una salida de la geocerca. La distancia al borde alimenta la alerta del LED RGB de la prueba de concepto (verde lejos del límite, rojo al llegar a él). El motor se verifica en el PC con `make test`, `make stress` (unos 3,8 millones de casos aleatorios) y `make sanitize`, y `make cross-check` comprueba que compila para el Cortex-M33 y el ESP32-S3.
+
 ### 3. Comunicación LoRa
 **Configuración**:
 - Frecuencia: 915MHz (ISM band)

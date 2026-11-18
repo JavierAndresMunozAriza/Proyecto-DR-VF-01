@@ -127,6 +127,8 @@ La transición más crítica del sistema ocurre entre los estados \texttt{SLEEP}
 
 El algoritmo PiP se propone en C puro optimizando las operaciones de punto flotante para aprovechar la unidad FPU hardware del ESP32-S3 (propuesta de diseño: el motor actual del repositorio, \texttt{geofence.c}, usa aritmética \texttt{double}):
 
+Además del test de pertenencia, el motor ofrece \texttt{geofence\_check()}, que devuelve en una sola llamada si el punto está dentro y la distancia en metros al lado más cercano del polígono, y un código de error cuando la lectura del GNSS no es válida, de modo que no se confunde con una salida de la geocerca. Esa distancia se usa para graduar la alerta del LED RGB (verde lejos del límite, rojo al llegar a él). El motor se prueba en el PC con unos 3,8 millones de casos aleatorios y con los sanitizadores de memoria, y se comprueba que compila para el Cortex-M33 y el ESP32-S3.
+
 \begin{verbatim}
 bool pip_optimized(const point_t* p, const polygon_t* poly) {
     int crosses = 0;

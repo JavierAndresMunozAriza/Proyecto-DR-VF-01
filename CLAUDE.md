@@ -21,13 +21,18 @@ The hook lives in `.git/hooks/`, so a new clone needs `gga install`. Commit mess
 
 ## Commands
 
-Host tests run from `firmware/src/geofence`. There is a single test file, `test_geofence.c`, and it exits non-zero on any failed check:
+Host tests run from `firmware/src/geofence`. The unit tests are in `test_geofence.c` and exit non-zero on any failed check:
 
 ```bash
-make test
+make test         # unit tests
+make stress       # ~3.8M randomized cases, fixed seed (SEED=n to change it)
+make sanitize     # unit + stress tests under ASan and UBSan (also finds leaks)
+make cross-check  # compile geofence.c for Cortex-M33 and ESP32-S3 with strict warnings
 ```
 
-`make debug` adds debug flags and `make clean` removes every build artifact. Host timing printed by the tests proves nothing about the 50 ms target (RF-02); that needs a measurement on the board.
+`make cross-check` uses the Zephyr SDK compilers in `~/zephyr-sdk-1.0.1` (`ZEPHYR_SDK=` to change the path); it compiles but does not link. `make debug` adds debug flags and `make clean` removes every build artifact. Host timing printed by the tests proves nothing about the 50 ms target (RF-02); that needs a measurement on the board.
+
+For the application, `geofence_check()` is the call to use: it returns inside/outside plus the distance to the nearest edge, and an error code (never "outside") for a bad GNSS fix. `geofence_distance_to_boundary()` is accurate up to 85 degrees of latitude, and the antimeridian is not supported (see `geofence.h`).
 
 No linter or formatter is configured; GCC warnings are the only static check.
 
