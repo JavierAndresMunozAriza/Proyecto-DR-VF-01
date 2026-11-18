@@ -19,7 +19,7 @@ Branch: `feat/geofence-hardening`. Delivery strategy: ask-on-risk. Test runner: 
 - [x] U1 `geofence_distance_to_boundary()` (S6, inline) - commit 50b9d1b
 - [x] U2 `geofence_check()` (S7, inline)
 - [x] U3 Stress tests >= 200000 cases + `make sanitize` (S2, inline)
-- [ ] U4 `make cross-check` for ARM and ESP32-S3 (S1, inline)
+- [x] U4 `make cross-check` for ARM and ESP32-S3 (S1, inline)
 - [ ] U4b Independent reviewers, one by one (S4, delegated: independent verifier requested by the user)
 - [ ] U5 Docs and morning report (S3, inline)
 
@@ -31,3 +31,4 @@ Branch: `feat/geofence-hardening`. Delivery strategy: ask-on-risk. Test runner: 
 - L4 (2026-11-17): U0 done. Next: U1.
 - L5 (2026-11-18): U1 and U2 done, 13 tests / 2840 checks green. Next: U3 stress tests.
 - L6 (2026-11-18): U3 done. `make stress`: ~3.6M cases per seed, 6 seeds, 0 failures; `make sanitize` (ASan+UBSan+leaks) clean; 3 injected mutations all caught. Finding: ray casting and winding number can differ for points only within rounding of an edge (expected, header already warns); the test excludes those. Next: U4 cross-check.
+- L7 (2026-11-18): U4 done. `make cross-check`: geofence.c compiles with -Werror and strict warnings on host, Cortex-M33 (3248 B text, 24 B bss) and ESP32-S3 (3349 B text, 17 B bss). Next: U4b reviewers one by one.

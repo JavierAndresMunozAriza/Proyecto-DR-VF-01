@@ -43,7 +43,7 @@ SANITIZE_FLAGS = -g -O1 -fno-omit-frame-pointer \
 	-fsanitize=address,undefined,float-divide-by-zero,float-cast-overflow \
 	-fno-sanitize-recover=all
 
-.PHONY: all test stress sanitize clean debug help depend
+.PHONY: all test stress sanitize cross-check clean debug help depend
 
 all: $(EXECUTABLE)
 
@@ -75,7 +75,30 @@ sanitize: $(SOURCES) $(TEST_SOURCES) $(STRESS_SOURCES) $(HEADERS)
 	./$(SANITIZE_EXECUTABLE)
 	./$(SANITIZE_STRESS_EXECUTABLE) $(SEED)
 
+# Compile (no link) the engine for both target boards with the Zephyr SDK
+# compilers and strict warnings treated as errors: Cortex-M33 (nRF9151,
+# Thingy:91 X) and Xtensa LX7 (ESP32-S3). Prints the object size.
+ZEPHYR_SDK ?= $(HOME)/zephyr-sdk-1.0.1
+SDK_GNU = $(ZEPHYR_SDK)/gnu
+CM33_PREFIX = $(SDK_GNU)/arm-zephyr-eabi/bin/arm-zephyr-eabi-
+ESP32S3_PREFIX = $(SDK_GNU)/xtensa-espressif_esp32s3_zephyr-elf/bin/xtensa-espressif_esp32s3_zephyr-elf-
+CM33_FLAGS = -mcpu=cortex-m33 -mthumb -mfloat-abi=hard -mfpu=fpv5-sp-d16
+STRICT_FLAGS = -std=c99 -O2 -Wall -Wextra -Wpedantic -Werror -Wshadow \
+	-Wconversion -Wdouble-promotion -Wcast-qual -Wstrict-prototypes \
+	-Wmissing-prototypes -Wundef -I$(INCDIR)
+CROSS_OBJECTS = geofence_cm33.o geofence_esp32s3.o
+
+cross-check: $(SOURCES) $(HEADERS)
+	@test -x $(CM33_PREFIX)gcc || { echo "missing $(CM33_PREFIX)gcc (set ZEPHYR_SDK)"; exit 1; }
+	@test -x $(ESP32S3_PREFIX)gcc || { echo "missing $(ESP32S3_PREFIX)gcc (set ZEPHYR_SDK)"; exit 1; }
+	$(CC) $(STRICT_FLAGS) -c $(SOURCES) -o /dev/null
+	$(CM33_PREFIX)gcc $(CM33_FLAGS) $(STRICT_FLAGS) -c $(SOURCES) -o geofence_cm33.o
+	$(ESP32S3_PREFIX)gcc $(STRICT_FLAGS) -c $(SOURCES) -o geofence_esp32s3.o
+	$(CM33_PREFIX)size geofence_cm33.o
+	$(ESP32S3_PREFIX)size geofence_esp32s3.o
+
 clean:
+	rm -f $(CROSS_OBJECTS)
 	rm -f $(OBJECTS) $(TEST_OBJECTS) $(EXECUTABLE) $(DEBUG_EXECUTABLE) \
 		$(STRESS_EXECUTABLE) $(SANITIZE_EXECUTABLE) $(SANITIZE_STRESS_EXECUTABLE)
 	@echo "Cleaned build artifacts"
@@ -92,6 +115,7 @@ help:
 	@echo "  test    - Build and run tests"
 	@echo "  stress  - Run the randomized stress test (SEED=n to change the seed)"
 	@echo "  sanitize - Run the tests and the stress test under ASan and UBSan"
+	@echo "  cross-check - Compile the engine for Cortex-M33 and ESP32-S3 with strict warnings"
 	@echo "  clean   - Remove build artifacts"
 	@echo "  debug   - Build debug version"
 	@echo "  depend  - Print source dependencies"
