@@ -1,0 +1,75 @@
+\section{Test setup and methodology}
+
+Each test was done in the environment that could be best controlled, and it is described here together with
+its limits. The figures of the results section come from the logs saved as evidence, and each one can be traced
+back to one of those files.
+
+\subsection{Tests on the PC}
+
+\begin{itemize}
+  \item \textbf{Fence engine:} \dHostTests{} tests with \dHostChecks{} checks, and a randomized test of
+        \dStressCases{} cases with a fixed seed that compares the engine's distance with the haversine distance.
+        They are repeated under memory-error and undefined-behavior detectors.
+  \item \textbf{Pure C modules} (\texttt{alert\_color}, \texttt{fence\_square}, \texttt{app\_fsm},
+        \texttt{demo\_route}, \texttt{bench\_polygon}): each has its own test. Those of \texttt{fence\_square},
+        \texttt{demo\_route} and \texttt{bench\_polygon} use the real engine, not a copy. The one of
+        \texttt{app\_fsm} covers the 25 combinations of state and event.
+  \item \textbf{Cross-compilation:} the engine is compiled for Cortex-M33 and ESP32-S3 with warnings as
+        errors. Compiling does not prove that it works on the ESP32-S3.
+\end{itemize}
+
+\subsection{Timing of \texttt{geofence\_check()} on the board}
+
+The firmware is built with the benchmark enabled. At boot, before the GNSS and the button start, it builds
+regular polygons of 4, 16, 64, 256 and 1024 vertices with a radius of 500~m, and for each one it times a batch
+of 40 calls: 20 points that are surely inside and 20 that are surely outside. It reports the total time and
+the mean per call, and counts the wrong classifications.
+
+Since the kernel counter runs at \dClockHz~Hz and each reading has a resolution of \dTickUs~$\mu$s, a single
+call is not timed but the whole batch. It is repeated in three consecutive boots. The time is that of the
+kernel counter, not that of an oscilloscope on a pin.
+
+\subsection{Demo mode}
+
+The board button is pressed and the console is read while the simulated route runs. The route does not use the
+real position: it starts from a fictitious center. The log is checked for the state change, the creation of the
+fence, the 42 steps with their distance and color, and the return to searching when pressed again.
+
+\subsection{Time to first fix from a cold start}
+
+The modem keeps satellite data in non-volatile memory, so a normal reset is a hot start. To measure a cold
+start, the build that deletes that data at every boot is used (only the oscillator offset of the device itself
+is kept, as the modem library documentation advises). The board runs on battery, outdoors, without a PC. A
+stopwatch measures from power-on until the LED is steady green, which is equivalent to the first fix with a
+reported accuracy of 50~m or better. Three boots were done; the third was left on for five more minutes so the
+modem would store its data.
+
+It is a manual measurement, with an uncertainty of about 2~s from the reaction of the person holding the
+stopwatch, and it has no console log.
+
+\subsection{Position accuracy, static test}
+
+With the normal firmware, which keeps the stored data, the board is left still, flat and face up, and the
+console is recorded. The last boot is analyzed. The first minute of fixes is discarded because the receiver is
+still converging, and the scatter of the positions around their own mean is computed, after converting them to
+meters east and north:
+
+\begin{itemize}
+  \item \textbf{CEP50:} the median of the distance to the mean. Half of the fixes fall within that radius.
+  \item \textbf{CEP95:} the 95th percentile of that distance.
+  \item \textbf{DRMS:} the root of the mean of the squared distances.
+  \item \textbf{Reported accuracy:} the estimate the receiver itself gives for each fix (1 sigma, 2D).
+\end{itemize}
+
+This measures \emph{precision}, that is, how much the fixes scatter around their mean. It does not measure
+absolute error: there was no reference of known coordinates and no RTK receiver, and a constant error that
+affects all fixes equally is not seen. The computation is done by a script that checks itself with points of a
+known result and writes only derived figures, without coordinates.
+
+\subsection{Conditions of the field tests}
+
+The three cold starts were done in a neighborhood street between houses, with a partly cloudy sky, in the
+middle of the morning. The static test was done from a first-floor window facing south, with the window open
+and the board practically outside, with a little tree and power cables nearby. Neither was done in an open
+field. The height of the obstacles, the percentage of visible sky and the radio interference were not
+recorded.

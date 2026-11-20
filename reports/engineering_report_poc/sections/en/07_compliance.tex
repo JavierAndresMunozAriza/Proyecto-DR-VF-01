@@ -1,0 +1,50 @@
+\section{Compliance matrix}
+
+This section compares the results with the criteria of the specifications table. Each status is valid
+\emph{only for the PoC platform} (the \dSoc{} on a \dBoard{}) and for the conditions in which it was measured.
+None of them transfers as is to the product PCB.
+
+\subsection{Acceptance criteria of the PoC}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabularx}{\textwidth}{|l p{2.5cm} X X|}
+\hline
+\tablehead{\textbf{ID} & \textbf{Status} & \textbf{Result} & \textbf{Evidence}} \\ \hline
+PoC-01 & Partial & Below 50~ms up to about 800 vertices; \dBenchMsThousand~ms with 1024. & \texttt{logs/geofence\_benchmark.log} \\ \hline
+PoC-02 & Not met under these conditions & CEP50 of \dStaticRunTwoCepFifty{} to \dStaticBothCepFifty~m against \dReqCep~m, with a partly obstructed sky and less than 15 minutes. & \texttt{static\_offsets.csv}, \texttt{analyze\_static.py} \\ \hline
+PoC-03 & Not met & 1~Hz, not above 1~Hz. & \texttt{static\_offsets.csv} \\ \hline
+PoC-04 & Met & The LED blinks red when leaving the fence. & \texttt{logs/demo\_mode\_session.log} \\ \hline
+PoC-05 & Met & Green at 20~m or more, a mix toward red, blinking red outside. & \texttt{logs/demo\_mode\_session.log} \\ \hline
+PoC-06 & Met & \texttt{FIX\_LOST} after 10~s without a fix, twice, and PC tests. & Private capture, \texttt{logs/host\_tests.log} \\ \hline
+PoC-07 & Measured (informative) & 54, 90 and 136~s; 1.8 to 4.5 times the \dTtffSpecCold~s of the datasheet; no fix in 20 min from the window. & \texttt{field\_ttff\_manual.csv} \\ \hline
+PoC-08 & Measured & \dFlashBytes~B of flash (\dFlashPercent~\%) and \dRamBytes~B of RAM (\dRamPercent~\%). & \texttt{logs/build\_memory.log} \\ \hline
+PoC-09 & Met & Distance error of \dStressWorstErrorPct~\% against the documented 0.2~\%. & \texttt{logs/host\_tests.log} \\ \hline
+PoC-10 & Met (compiles) & Six modules compile for Cortex-M33 and ESP32-S3; nothing was run on the ESP32-S3. & \texttt{logs/cross\_check.log} \\ \hline
+PoC-11 & Met & \texttt{SEARCHING} $\to$ \texttt{DEMO} $\to$ \texttt{SEARCHING} without a GNSS signal. & \texttt{logs/demo\_mode\_session.log} \\ \hline
+\end{tabularx}
+\caption{Status of each acceptance criterion of the PoC.}
+\end{table}
+
+\subsection{Requirements of the Technical Report}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabularx}{\textwidth}{|p{4.6cm} p{3cm} X|}
+\hline
+\tablehead{\textbf{Requirement} & \textbf{Status in the PoC} & \textbf{Note}} \\ \hline
+SR-10, F-01 (GNSS $>$ 1~Hz) & Not met & The \dSoc{} receiver gives 1~Hz. The requirement is for the MAX-M10S. \\ \hline
+SR-11, F-01 (error $\le$ \dReqCep~m CEP) & Not met under these conditions & Measured as scatter, not as absolute accuracy. The SRD does not define the CEP. An open-sky test with a reference point is missing. \\ \hline
+SR-12, F-02 ($<$ 50~ms) & Partial & Met up to about 800 vertices on the \dSoc{}. Measuring it on the ESP32-S3 with an oscilloscope is missing. \\ \hline
+F-03 (deterrence) & Partial & Only the visual alert with the LED. There is no acoustic stage nor pulse. \\ \hline
+F-04, NF-02, SR-31 (isolation) & Not covered & It is PCB hardware. \\ \hline
+F-05, SR-20, SR-23 (LoRa) & Not covered & The PoC does not use LoRa. \\ \hline
+F-06, SR-21 (web configuration) & Not covered & The PoC has no web server nor perimeter configuration. \\ \hline
+F-07 to F-11, NF-01, NF-05 (power and protections) & Not covered & It is PCB hardware. \\ \hline
+F-12, SR-13 (wake on motion) & Not covered & The PoC does not use the IMU nor deep sleep. \\ \hline
+NF-07 (perimeter in non-volatile memory) & Not covered & The fence is created at every boot and is not saved. \\ \hline
+\end{tabularx}
+\caption{Status of the requirements of the Technical Report in the PoC.}
+\end{table}

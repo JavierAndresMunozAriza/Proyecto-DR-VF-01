@@ -1,0 +1,85 @@
+\section{Design theory and calculations}
+
+\subsection{Membership in a polygon}
+
+The engine decides whether a point is inside a polygon with the ray casting method and the even-odd rule: a
+ray is cast from the point and the number of polygon sides it crosses is counted; if the number is odd, the
+point is inside. The vertices are given in order and the last one is joined to the first. In a polygon that
+crosses itself, the region covered twice counts as outside.
+
+A point that lies exactly on the boundary is classified with a half-open rule: in an axis-aligned rectangle,
+the south side, the west side and the south-west corner count as inside, and the rest as outside. The result
+on the exact boundary must not be used as data.
+
+\subsection{Distance to the boundary}
+
+The distance shown is the distance to the nearest side, not to the nearest vertex. To compute it, the engine
+projects the coordinates onto a local plane centered on the point:
+
+\begin{equation}
+x = (\lambda - \lambda_0)\,\frac{\pi}{180}\,R\cos\varphi_0, \qquad
+y = (\varphi - \varphi_0)\,\frac{\pi}{180}\,R,
+\end{equation}
+
+with $R = 6371$~km, so that one degree of latitude is about 111\,195~m. The distance is the minimum, over
+all sides, of the distance from the origin to the segment. It is an unsigned distance: membership in the
+polygon is decided separately.
+
+The error of this flat projection with respect to the haversine distance is documented in the engine as
+below 0.2~\% up to 85° of latitude, and it grows toward the poles. It is not used near the poles, nor with
+polygons that cross the antimeridian (longitude $\pm180^\circ$), because longitudes are subtracted as plain
+numbers.
+
+\subsection{A single call that does not confuse errors with ``outside''}
+
+The membership functions return a boolean, so they cannot tell ``outside'' from ``invalid input''. That is why
+the application uses \texttt{geofence\_check()}, which in a single call returns whether the point is inside
+and the distance to the boundary, and returns an error code if the fix is not valid (coordinates out of range
+or not numbers, an empty polygon or an engine that was not started). An invalid fix is never interpreted as
+leaving the fence.
+
+\subsection{Square fence around a point}
+
+For a center $(\varphi_0, \lambda_0)$ and a half-side $h$, the corners are computed with
+
+\begin{equation}
+\Delta\varphi = \frac{h}{111\,195}, \qquad \Delta\lambda = \frac{\Delta\varphi}{\cos\varphi_0},
+\end{equation}
+
+and the corners are $(\varphi_0 \mp \Delta\varphi,\ \lambda_0 \mp \Delta\lambda)$, in the order south-west,
+south-east, north-east and north-west. Longitude is adjusted with the cosine of the latitude because a degree
+of longitude is shorter away from the equator. The construction is rejected if the latitude of the center
+exceeds 85° or if the square would cross the antimeridian.
+
+\subsection{From distance to color}
+
+With a safe distance $S = 20$~m and a distance $d$ to the boundary, with the point inside, the color is
+
+\begin{equation}
+t = \min\!\left(\frac{d}{S},\,1\right), \qquad
+R = \operatorname{round}\bigl(255\,(1-t)\bigr), \qquad
+G = \operatorname{round}\bigl(255\,t\bigr), \qquad B = 0.
+\end{equation}
+
+At $d \ge S$ the color is pure green, and at $d = 0$, steady red. Outside the fence, or on any invalid input
+(a non-finite or negative distance, or $S \le 0$), the result is blinking red, the fail-safe state.
+
+\subsection{Time budget}
+
+The cost of \texttt{geofence\_check()} is linear in the number $N$ of vertices, because it walks every side once
+to decide membership and once more to compute the distance. Measured on the board (see the results section),
+the time per call fits
+
+\begin{equation}
+T(N) \approx \dBenchFitOffsetUs~\mu\text{s} + \dBenchFitSlopeUs~\mu\text{s}\cdot N,
+\end{equation}
+
+so the 50~ms limit of SR-12 would be reached near \dBenchLimitVertices{} vertices. The engine uses
+double-precision numbers; since the floating-point unit of the Cortex-M33 is single precision, those
+operations probably run in software, and that is probably where the cost per vertex comes from. This is an
+inference from the compiler flags, not a measurement.
+
+\subsection{Resolution of the measuring clock}
+
+The kernel cycle counter runs at \dClockHz~Hz, so each reading has a resolution of \dTickUs~$\mu$s. A call can
+last less than that, so a single call is not timed: a batch of 40 is timed and the total is divided by 40.

@@ -1,0 +1,52 @@
+\section{Limitations and future work}
+
+\subsection{Limitations of the measurements}
+
+\begin{itemize}
+  \item \textbf{It is precision, not accuracy.} There was no reference of known coordinates and no RTK
+        receiver. A constant error that affects all fixes equally is not seen in the scatter.
+  \item \textbf{It was not open sky.} The cold starts were done in a neighborhood street between houses and
+        the static test from a window with a tree and cables nearby. The height of the obstacles, the
+        percentage of visible sky and the radio interference were not recorded.
+  \item \textbf{The static test was short.} About 9.5 minutes of useful data remained, not the 15 planned,
+        split into two runs. The two runs gave different results and their means are \dStaticRunSeparation~m
+        apart, so a longer test at another time could give different numbers.
+  \item \textbf{One board, one place, one day.} None of this was repeated with another board, at another place
+        or at another time, which is when the visible constellation changes.
+  \item \textbf{The three cold-start times were timed by hand}, with no console log, with an uncertainty of
+        about 2~s, and without noting the exact weather of each one.
+  \item \textbf{The satellite list does not measure the signal.} It counts satellites that appear in the
+        receiver's response, not satellites with a usable signal nor used in the fix, because the firmware does
+        not log signal strength.
+  \item \textbf{The fence time was measured with the kernel counter}, not with an oscilloscope on a pin, and
+        with regular polygons of 500~m radius, not with a real fence.
+  \item \textbf{A platform different from the product's.} Everything was measured on the \dSoc{}, not on the
+        ESP32-S3 nor with the u-blox receiver of the PCB, which are the targets of SR-11 and SR-12.
+  \item \textbf{An unverified inference:} that the cost per vertex of the fence comes from running the
+        double-precision operations in software.
+\end{itemize}
+
+\subsection{Design decisions that could change}
+
+The 60~m square fence, the 20~m distance for pure green, the 50~m accuracy limit to accept a fix and the 10~s
+to declare the fix lost are decisions of the PoC, not requirements of the Technical Report. The fence is
+generated around the first fix and is not saved: a reboot rebuilds it at another place.
+
+\subsection{Future work}
+
+\begin{enumerate}
+  \item \textbf{An open-sky accuracy test}, of at least 15 to 30 minutes, repeated at another time, and with a
+        reference of known coordinates or an RTK receiver, so that accuracy can be discussed.
+  \item \textbf{Signal diagnostics:} log the strength of each satellite, how many are used in the fix and which
+        satellites have stored data and until when, to explain the loss of fix and the slow start.
+  \item \textbf{A user-defined polygon} (the fence of a farm), instead of a square around the first fix. It is
+        planned as revision 1.1 of this report, storing the vertices in non-volatile memory and with a way to
+        create them that can be carried to the final PCB.
+  \item \textbf{Speed up the fence evaluation}, for example with single-precision or fixed-point arithmetic,
+        which would allow polygons with more vertices within the 50~ms.
+  \item \textbf{Port the firmware to the PCB:} a second GNSS adapter for the u-blox receiver, the board
+        definition with the ESP32-S3, and repeat the measurements there, including the fence time with an
+        oscilloscope.
+  \item \textbf{A second report} with this same template for the hardware of the collar, with its own
+        measurements.
+\end{enumerate}

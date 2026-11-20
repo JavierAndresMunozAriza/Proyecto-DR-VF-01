@@ -1,0 +1,35 @@
+\section{Key specifications and acceptance criteria}
+
+This section fixes, before measuring, what is asked of the PoC. The criteria derive from the requirements
+of the Technical Report; no new requirements were invented. When a criterion is a design decision of the
+PoC and does not come from a requirement, it is marked as \emph{new}. The results are presented in the
+results section and compared with this table in the compliance matrix.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabularx}{\textwidth}{|l l X X|}
+\hline
+\tablehead{\textbf{ID} & \textbf{Derives from} & \textbf{Criterion} & \textbf{Verification method}} \\ \hline
+PoC-01 & SR-12, F-02 & One fence evaluation (\texttt{geofence\_check()}) takes less than 50~ms. & Time batches of calls on the board with polygons of 4 to 1024 vertices. \\ \hline
+PoC-02 & SR-11, F-01 & Horizontal position error of 2.5~m CEP or less. The SRD does not define whether CEP means CEP50 or RMS. & Static test of at least 15 minutes at a fixed point under open sky; scatter of the fixes (CEP50 and CEP95). \\ \hline
+PoC-03 & SR-10, F-01 & Update rate above 1~Hz. & Timestamps of the fixes in the log. \\ \hline
+PoC-04 & F-03 & Visual alert when the fence boundary is crossed. & Observation of the LED and the demo mode log. \\ \hline
+PoC-05 & New (design) & LED gradient: pure green at 20~m or more from the boundary, a mix toward red when approaching, red at the boundary and blinking outside. & Log of the simulated route of the demo mode (42 steps). \\ \hline
+PoC-06 & New (design) & Fail-safe: with no fix for 10~s the LED blinks magenta; with no GNSS, blinking red; an invalid reading is never taken as being outside. & PC tests and field observation. \\ \hline
+PoC-07 & New (informative) & Time to first fix, compared with the nRF9151 datasheet (30.5~s cold, 1.3~s hot). & Time from boot to fence creation, in at least 3 cold starts. \\ \hline
+PoC-08 & New & Memory footprint of the firmware. & Memory table of the build. \\ \hline
+PoC-09 & New & The algorithm is correct and the error of the distance to the boundary is below 0.2~\% up to 85° of latitude (limit documented in the engine). & Tests and randomized tests on the PC. \\ \hline
+PoC-10 & New & The pure C modules compile unchanged for Cortex-M33 and ESP32-S3. Compiling is not the same as running on the ESP32-S3. & Cross-compilation with warnings as errors. \\ \hline
+PoC-11 & New & The demo mode works without a GNSS signal. & Log: \texttt{SEARCHING} $\to$ \texttt{DEMO} $\to$ \texttt{SEARCHING}. \\ \hline
+\end{tabularx}
+\caption{Acceptance criteria of the PoC and their traceability.}
+\end{table}
+
+\subsection{Out of scope of the PoC}
+
+The PoC does not cover, and this report claims nothing about: the acoustic stage and the deterrent pulse
+(F-03, SR-30), galvanic isolation with an optocoupler (F-04, NF-02), LoRa telemetry (F-05), the web
+configuration server (F-06), power management, charging and protections (F-07 to F-11, NF-01), wake-up by
+motion with the IMU (F-12) and storing the perimeter in non-volatile memory (NF-07). These requirements will
+be verified on the PCB.

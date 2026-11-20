@@ -1,0 +1,197 @@
+\section{Measured results}
+
+All figures are from the \dSoc{} on a \dBoard{} with the firmware of commit \texttt{\dFirmwareCommit}, and they
+come from the logs saved as evidence. They are not from the ESP32-S3 nor from the u-blox receiver of the final
+PCB.
+
+\subsection{Time of \texttt{geofence\_check()} (PoC-01)}
+
+Mean per call of a batch of 40, in three consecutive boots. The three boots agree within a maximum difference
+of 0.02~\% and all 40 classifications of each polygon were correct.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|r r r X|}
+\hline
+\tablehead{\textbf{Vertices} & \textbf{Mean per call} & \textbf{Margin against 50~ms} & \textbf{Status}} \\ \hline
+4 & \dBenchUsFour~$\mu$s & \dBenchMarginFour$\times$ & Met \\ \hline
+16 & \dBenchMsSixteen~ms & \dBenchMarginSixteen$\times$ & Met \\ \hline
+64 & \dBenchMsSixtyFour~ms & \dBenchMarginSixtyFour$\times$ & Met \\ \hline
+256 & \dBenchMsTwoFiftySix~ms & \dBenchMarginTwoFiftySix$\times$ & Met \\ \hline
+1024 & \dBenchMsThousand~ms & \dBenchMarginThousand$\times$ & \textbf{Not met} \\ \hline
+\end{tabularx}
+\caption{Mean time of \texttt{geofence\_check()} on the board.}
+\end{table}
+
+The cost is linear: $T(N) \approx \dBenchFitOffsetUs~\mu\text{s} + \dBenchFitSlopeUs~\mu\text{s}\cdot N$, with
+differences of at most 1.5~$\mu$s from the means. The 50~ms limit is reached near \dBenchLimitVertices{}
+vertices. \textbf{Criterion PoC-01 is met for polygons of up to about 800 vertices and is not met with 1024.}
+The fence of a farm, with tens or a few hundred vertices, falls inside. It is a measurement with the kernel
+counter and not with an oscilloscope.
+
+\subsection{Cold-start first fix (PoC-07)}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|c r X|}
+\hline
+\tablehead{\textbf{Boot} & \textbf{Time to green LED} & \textbf{Ratio to the \dTtffSpecCold~s of the datasheet}} \\ \hline
+1 & \dTtffRunA~s & 3.0$\times$ \\ \hline
+2 & \dTtffRunB~s & 1.8$\times$ \\ \hline
+3 & \dTtffRunC~s & 4.5$\times$ \\ \hline
+\end{tabularx}
+\caption{Time to the first usable fix after a cold start, measured with a stopwatch.}
+\end{table}
+
+The mean is \dTtffMean~s, the median \dTtffMedian~s and the standard deviation \dTtffSd~s, with only three
+samples. The \dSoc{} datasheet gives \dTtffSpecCold~s typical for a cold start, under open sky, at 25~°C and
+with an external low-noise amplifier with a SAW filter; it is not known whether this board meets that
+assumption. The tests were done in a neighborhood street between houses, not under open sky, so the
+comparison is indicative. The uncertainty of the measurement is about 2~s. The time measured is to a fix with
+a reported accuracy of 50~m or better, not to the very first fix.
+
+With the same cold start, this time from the window of the static test, \textbf{there was no fix in
+\dWindowColdMinutes{} minutes}. In that time the receiver's satellite list ranged between
+\dWindowColdListedMin{} and \dWindowColdListedMax, with four or more only \dWindowColdFourPct~\% of the time,
+except for a peak of \dWindowColdPeak{} in the first seconds of the search. That list counts satellites that
+appear in the receiver's response, not satellites with a usable signal nor used in the fix. A possible
+explanation, which was not verified, is that without assistance data the receiver has to decode the orbit of
+each satellite from its own signal, and that requires a stronger and more continuous signal than the partly
+obstructed sky of that window.
+
+\subsection{GNSS position in the static test (PoC-02 and PoC-03)}
+
+The test was done from a first-floor window facing south, open, with the board practically outside, with the
+normal firmware and the stored satellite data. The board stayed still for the \dStaticRecordingMinutes{}
+minutes of the recording. The sequence was:
+
+\begin{itemize}
+  \item At \dStaticFirstFixS~s after the reset the first fix arrived, with a reported accuracy of
+        \dStaticFirstFixAcc~m, which the application discarded for exceeding 50~m. At \dStaticFenceS~s an
+        acceptable fix created the fence and the application moved to \texttt{MONITORING}.
+  \item \textbf{First run:} until \dStaticRunOneEndS~s, \dStaticRunOneFixes{} accepted fixes at 1~Hz
+        (\dStaticRunOneMinutes~min), with a single gap of \dStaticMaxGapS~s. The reported accuracy converged
+        from \dStaticAccStart~m to about \dStaticAccConverged~m in under a minute. At the end it degraded
+        gradually, from \dStaticTailAccFrom{} to \dStaticTailAccTo~m, the satellite list dropped to 3 or 4, and
+        at \dStaticLostFirstS~s the application moved to \texttt{FIX\_LOST}.
+  \item \textbf{No fix for \dStaticGapMinutes{} minutes.} The receiver kept searching with the board still.
+  \item \textbf{Second run:} at \dStaticRunTwoStartS~s the fix came back, with an initial reported accuracy of
+        \dStaticRunTwoFirstAcc~m, and there were \dStaticRunTwoFixes{} accepted fixes until
+        \dStaticRunTwoEndS~s (\dStaticRunTwoMinutes~min). At \dStaticLostSecondS~s it degraded again and the
+        application went back to \texttt{FIX\_LOST}.
+\end{itemize}
+
+That the fix is lost and comes back with the board still indicates that what changes is the signal that
+arrives, not the board. The cause was not determined: the PoC firmware does not log the signal strength of
+each satellite. One hypothesis, not verified, is that the satellites, as they move across the sky, pass behind
+the trees, the cables or the edge of the window.
+
+\textbf{PoC-03.} The interval between fixes within each run was 1.01~s: the receiver delivers 1~Hz in
+continuous mode, and therefore \textbf{does not exceed 1~Hz}, as SR-10 asks. That requirement targets the
+receiver of the PCB.
+
+\textbf{PoC-02.} The first \dStaticSkipS~s of fixes of each run were discarded, because of the receiver's
+convergence, and the scatter of the positions around their own mean was computed. \dStaticBothUsed{} fixes
+remained, about 9.5 minutes of data, below the 15 minutes planned.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|X r r r|}
+\hline
+\tablehead{\textbf{Statistic} & \textbf{Run 1} & \textbf{Run 2} & \textbf{Both runs}} \\ \hline
+Fixes used & \dStaticRunOneUsed & \dStaticRunTwoUsed & \dStaticBothUsed \\ \hline
+CEP50 (m) & \dStaticRunOneCepFifty & \dStaticRunTwoCepFifty & \dStaticBothCepFifty \\ \hline
+CEP95 (m) & \dStaticRunOneCepNinetyFive & \dStaticRunTwoCepNinetyFive & \dStaticBothCepNinetyFive \\ \hline
+DRMS (m) & \dStaticRunOneDrms & \dStaticRunTwoDrms & \dStaticBothDrms \\ \hline
+Reported accuracy, median (m) & \dStaticRunOneAcc & \dStaticRunTwoAcc & \dStaticBothAcc \\ \hline
+\end{tabularx}
+\caption{Scatter of the position in the static test, after discarding the first 60~s of each run.}
+\end{table}
+
+With only the fixes whose reported accuracy was \dStableLimit~m or better (\dStableUsed{} fixes from the two
+runs), the CEP50 is \dStableCepFifty~m, the CEP95 \dStableCepNinetyFive~m and the DRMS \dStableDrms~m;
+filtering by reported accuracy does not improve the scatter.
+
+Against the SRD criterion of \dReqCep~m CEP, the measured CEP50 is \dStaticRatioTwo{} times larger in the best
+run, \dStaticRatioOne{} times in the worst and \dStaticRatioBoth{} times with both together. Against the
+\dSoc{} datasheet, which gives a CEP50 of \dNordicCepFifty~m in continuous tracking under open sky, it does not
+match either, but the conditions are not the same. \textbf{Criterion PoC-02 is not met under these
+conditions.} This does not allow saying what it would give under open sky.
+
+Three remarks about the numbers:
+
+\begin{itemize}
+  \item \textbf{The scatter of the two runs together is larger than that of each one.} The means of the two
+        runs are \dStaticRunSeparation~m apart. That is, the error has a slow part, which changes with the
+        visible constellation, and a short test underestimates it. This suggests that the value of an isolated
+        run, such as the 3.5~m of the second one, is not representative.
+  \item \textbf{The tail is heavy:} the CEP95 is about 2.7 times the CEP50 in each run, that is, most fixes are
+        close to the mean but there are large deviations.
+  \item \textbf{The accuracy reported by the receiver} (1 sigma, median of about 11 to 13~m) is larger than the
+        scatter observed within a run (DRMS of 5 to 8~m). They do not contradict each other: the scatter around
+        the mean does not see a constant error that affects all fixes of the run equally.
+\end{itemize}
+
+\subsection{LED alert and demo mode (PoC-04, PoC-05 and PoC-11)}
+
+The demo mode log shows \texttt{SEARCHING} $\to$ \texttt{DEMO}, the creation of the 60~m fence around the
+fictitious point, 42 steps of the route and \texttt{DEMO} $\to$ \texttt{SEARCHING} when pressed again. Some
+steps, as they came out in the log:
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|r c c X|}
+\hline
+\tablehead{\textbf{Distance to the boundary} & \textbf{Inside} & \textbf{Color (R, G, B)} & \textbf{LED}} \\ \hline
+30.00~m & yes & 0, 255, 0 & Steady green \\ \hline
+24.00~m & yes & 0, 255, 0 & Steady green \\ \hline
+18.00~m & yes & 26, 229, 0 & Starts mixing toward red \\ \hline
+12.00~m & yes & 102, 153, 0 & Mix \\ \hline
+6.00~m & yes & 179, 76, 0 & Much redder \\ \hline
+0.00~m & no & 255, 0, 0 & Blinking red (on the exact boundary the half-open rule gives outside) \\ \hline
+6.00~m & no & 255, 0, 0 & Blinking red, outside \\ \hline
+4.00~m & yes & 204, 51, 0 & On the way back, inside \\ \hline
+10.00~m & yes & 128, 127, 0 & Mix \\ \hline
+22.00~m & yes & 0, 255, 0 & Steady green \\ \hline
+\end{tabularx}
+\caption{Steps of the demo mode (\texttt{evidence/logs/demo\_mode\_session.log}).}
+\end{table}
+
+The sequence matches the design: steady green at 20~m or more from the boundary, a mix toward red when
+approaching, and blinking red outside, up to 10~m beyond the boundary, and back. The person doing the test
+pressed the button, saw the board enter the demo mode and, when pressing again, saw the LED go back to
+blinking blue. The demo mode worked without a GNSS signal. \textbf{PoC-04, PoC-05 and PoC-11 are met} in the
+PoC.
+
+\subsection{Fail-safe behavior (PoC-06)}
+
+\begin{itemize}
+  \item In the static test, the log shows \texttt{MONITORING} $\to$ \texttt{FIX\_LOST} at \dStaticLostFirstS~s
+        and again at \dStaticLostSecondS~s, in each case about ten seconds after the last accepted fix, and
+        \texttt{FIX\_LOST} $\to$ \texttt{MONITORING} when the fix came back.
+  \item The person doing the tests observed the LED blinking magenta when the fix was lost, different from the
+        blinking red of being outside the fence.
+  \item The PC tests check that a non-finite or negative distance, a non-positive \texttt{safe\_m} and any
+        unknown state give the fail-safe result, and that \texttt{FAULT} is only left through the demo mode.
+\end{itemize}
+
+\subsection{Memory footprint (PoC-08)}
+
+The normal firmware takes \dFlashBytes~B of flash (\dFlashPercent~\% of the \dFlashRegion~B available to the
+application) and \dRamBytes~B of RAM (\dRamPercent~\% of \dRamRegion~B). The build with the benchmark takes
+\dFlashBench~B and the one that deletes the satellite data, \dFlashCold~B; both use the same RAM. The fence
+engine takes \dEngineBytesCmThree~B compiled for Cortex-M33 and \dEngineBytesEsp~B for ESP32-S3.
+
+\subsection{Algorithm correctness and portability (PoC-09 and PoC-10)}
+
+The engine passes its \dHostTests{} tests (\dHostChecks{} checks) and \dStressCases{} randomized cases with a
+fixed seed, without failures, also under memory-error detectors. The worst error of the engine's distance
+against haversine was \dStressWorstErrorPct~\%, ten times smaller than the documented 0.2~\%. \textbf{PoC-09 is
+met.}
+
+The five pure C modules and the engine compile unchanged, with strict warnings as errors, for the PC, the
+Cortex-M33 and the ESP32-S3. \textbf{PoC-10 is met as compilation}; nothing was run on the ESP32-S3.

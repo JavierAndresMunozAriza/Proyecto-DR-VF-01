@@ -1,0 +1,157 @@
+\section{System description}
+
+\subsection{What the PoC does}
+
+The PoC turns the GNSS position of the collar into a graded visual alert. The GNSS receiver of the \dSoc{}
+delivers one position per second. The application takes the first fix of acceptable accuracy as the center
+and defines a 60~m square fence around it. From then on every fix is compared with the fence and the
+distance to the boundary is shown on the RGB LED of the board: green far from the boundary, a mix toward red
+when approaching, red at the boundary and blinking red outside. A button starts a demo mode that plays a
+simulated route, to show the alert without a GNSS signal.
+
+\subsection{PoC hardware}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|l X|}
+\hline
+\tablehead{\textbf{Item} & \textbf{Detail}} \\ \hline
+Board & \dBoard, powered over USB-C or by its battery \\ \hline
+Processor and GNSS & \dSoc{}: runs the application and contains the modem with the GNSS receiver \\ \hline
+RGB LED & Three PWM channels (red, green and blue) with an 8~ms period \\ \hline
+User button & ``Button 1'', the one in the center of the board, active low with a pull-up resistor \\ \hline
+GNSS antenna & The one on the board, with the antenna configuration that the SDK provides by default for this board \\ \hline
+Console & Log over USB (virtual serial port, 115\,200 baud) \\ \hline
+\end{tabularx}
+\caption{Hardware of the proof of concept.}
+\end{table}
+
+The PoC uses a commercial development board to validate the logic before the product PCB exists; the PCB
+will use an ESP32-S3 and a u-blox MAX-M10S receiver.
+
+\subsection{Firmware architecture}
+
+The firmware is divided into three layers. The \emph{pure C} modules depend neither on the hardware nor on the
+operating system, so they are tested on the PC and compiled for other boards unchanged. The \emph{adapters}
+isolate the hardware and the RTOS behind a small interface. Changing board means rewriting the adapters, not
+the logic.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw, rounded corners, align=center, font=\scriptsize, minimum height=0.95cm, text width=2.55cm},
+  wide/.style={draw, rounded corners, align=center, font=\small, minimum height=1cm, text width=13.6cm, fill=headbg},
+  lbl/.style={font=\bfseries\scriptsize, anchor=west}, >=Stealth]
+\node[wide] (app) at (0,0) {\texttt{main.c}: application loop (state machine, fix evaluation, LED control)};
+\node[box, fill=groupbg] (p1) at (-5.9,-2.1) {\texttt{geofence}\\point in polygon and distance};
+\node[box, fill=groupbg] (p2) at (-2.95,-2.1) {\texttt{fence\_square}\\square around a point};
+\node[box, fill=groupbg] (p3) at (0,-2.1) {\texttt{alert\_color}\\distance to color};
+\node[box, fill=groupbg] (p4) at (2.95,-2.1) {\texttt{app\_fsm}\\state transitions};
+\node[box, fill=groupbg] (p5) at (5.9,-2.1) {\texttt{demo\_route}\\simulated route};
+\node[box] (a1) at (-4.4,-4.2) {\texttt{gnss}\\receiver fixes};
+\node[box] (a2) at (-1.45,-4.2) {\texttt{rgb\_led}\\LED by PWM};
+\node[box] (a3) at (1.45,-4.2) {\texttt{button}\\button with debounce};
+\node[box] (a4) at (4.4,-4.2) {\texttt{timing}\\time and sleep};
+\node[box, fill=headbg] (h1) at (-4.4,-6.2) {\dSoc{} modem\\(GNSS)};
+\node[box, fill=headbg] (h2) at (-1.45,-6.2) {PWM};
+\node[box, fill=headbg] (h3) at (1.45,-6.2) {GPIO with interrupt};
+\node[box, fill=headbg] (h4) at (4.4,-6.2) {Zephyr kernel};
+\foreach \p in {p1,p2,p3,p4,p5} \draw[->] (app.south -| \p.north) -- (\p.north);
+\draw[->] (app.south -| a1.north) -- (a1.north);
+\draw[->] (app.south -| a2.north) -- (a2.north);
+\draw[->] (app.south -| a3.north) -- (a3.north);
+\draw[->] (app.south -| a4.north) -- (a4.north);
+\foreach \i in {1,2,3,4} \draw[->] (a\i.south) -- (h\i.north);
+\node[lbl] at (7.35,-2.1) {Pure C};
+\node[lbl] at (6.1,-4.2) {Adapters};
+\node[lbl] at (6.1,-6.2) {SDK};
+\end{tikzpicture}
+\caption{Firmware layers: pure C logic, adapters and SDK.}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabularx}{\textwidth}{|l l X|}
+\hline
+\tablehead{\textbf{Module} & \textbf{Type} & \textbf{Responsibility}} \\ \hline
+\texttt{geofence} & Pure C & Fence engine: membership in a polygon and distance to the boundary. \\ \hline
+\texttt{fence\_square} & Pure C & Computes the corners of a square centered on a point. \\ \hline
+\texttt{alert\_color} & Pure C & Converts the distance to the boundary into the alert color. \\ \hline
+\texttt{app\_fsm} & Pure C & Transition function of the state machine. \\ \hline
+\texttt{demo\_route} & Pure C & Position of a simulated walker on the demo route. \\ \hline
+\texttt{gnss} & Adapter & Common receiver interface: open, read, write, control, test and close. Its implementation for the \dSoc{} uses the modem in GNSS-only mode. \\ \hline
+\texttt{rgb\_led} & Adapter & Sets the LED color by PWM. \\ \hline
+\texttt{button} & Adapter & Reads the button with an interrupt that only raises a flag and a 300~ms debounce. \\ \hline
+\texttt{timing} & Adapter & Time stamps and sleep, on top of the kernel. \\ \hline
+\texttt{main} & Application & Joins the modules: a loop every 250~ms. \\ \hline
+\end{tabularx}
+\caption{Firmware modules.}
+\end{table}
+
+\subsection{State machine}
+
+The application follows an explicit state machine. The transition function is pure C and its test covers the
+25 combinations of state and event.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  st/.style={draw, rounded corners, fill=headbg, minimum width=2.7cm, minimum height=0.9cm, font=\small\ttfamily},
+  ev/.style={font=\scriptsize\ttfamily, fill=white, inner sep=1pt}, >=Stealth]
+\node[st] (S) at (0,0) {SEARCHING};
+\node[st] (M) at (5.2,0) {MONITORING};
+\node[st] (L) at (10.4,0) {FIX\_LOST};
+\node[st] (D) at (5.2,-3) {DEMO};
+\node[st] (F) at (0,-3) {FAULT};
+\draw[->] (S) -- node[ev, above] {FENCE\_CREATED} (M);
+\draw[->] (M) to[bend left=20] node[ev, above] {FIX\_TIMEOUT} (L);
+\draw[->] (L) to[bend left=20] node[ev, below] {FIX} (M);
+\draw[->] (S) -- node[ev, left] {GNSS\_FAILED} (F);
+\draw[->] (M) -- node[ev, right] {DEMO\_TOGGLE} (D);
+\draw[->] (D) -- node[ev, below, sloped] {DEMO\_TOGGLE} (S);
+\end{tikzpicture}
+\caption{Main states and transitions. \texttt{GNSS\_FAILED} leads to \texttt{FAULT} from
+\texttt{SEARCHING}, \texttt{MONITORING} and \texttt{FIX\_LOST}; \texttt{DEMO\_TOGGLE} leads to
+\texttt{DEMO} from any other state, including \texttt{FAULT}, and \texttt{DEMO} does not react to
+GNSS events.}
+\end{figure}
+
+\subsection{Operating parameters}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|X c|}
+\hline
+\tablehead{\textbf{Parameter} & \textbf{Value}} \\ \hline
+Period of the application loop & 250~ms \\ \hline
+Interval between receiver fixes (continuous mode) & 1~s \\ \hline
+Half of the side of the square fence (60~m side) & 30~m \\ \hline
+Distance to the boundary from which the LED is pure green & 20~m \\ \hline
+Maximum accuracy accepted for a fix & 50~m \\ \hline
+Time without a fix to enter \texttt{FIX\_LOST} & 10~s \\ \hline
+Demo route: step, maximum reach and steps per cycle & 2~m, 40~m, 40 \\ \hline
+\end{tabularx}
+\caption{Parameters of the PoC firmware.}
+\end{table}
+
+\subsection{Meaning of the LED}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|l X|}
+\hline
+\tablehead{\textbf{LED} & \textbf{Meaning}} \\ \hline
+Blinking blue & Searching: no fix has been accepted yet and the fence was not created. \\ \hline
+Blinking cyan & Fixes arrive, but with an accuracy worse than 50~m, and they are discarded. \\ \hline
+Steady green & Inside the fence, 20~m or more from the boundary. \\ \hline
+Mix of green and red & Inside the fence, less than 20~m from the boundary; the closer, the redder. \\ \hline
+Steady red & At the boundary, inside. \\ \hline
+Blinking red & Outside the fence, or the GNSS is not available. \\ \hline
+Blinking magenta & The fix was lost for more than 10~s after the fence was created. \\ \hline
+\end{tabularx}
+\caption{LED color code.}
+\end{table}

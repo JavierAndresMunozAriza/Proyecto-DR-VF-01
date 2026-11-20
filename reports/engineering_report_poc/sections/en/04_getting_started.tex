@@ -1,0 +1,56 @@
+\section{Getting started}
+
+This section describes how to reproduce the build, the flashing and the tests of the PoC.
+
+\subsection{Requirements}
+
+\begin{itemize}
+  \item \dNcs{} with its toolchain, installed with \texttt{nrfutil sdk-manager}.
+  \item The \texttt{nrfutil device} command, which flashing uses internally (\texttt{nrfutil install device}).
+  \item Linux, or Windows with WSL2. On WSL2 the board has to be shared with \texttt{usbipd-win}: run
+        \texttt{usbipd bind} once as administrator on the board's identifier, and then
+        \texttt{usbipd attach --wsl} every time it is connected.
+  \item A \texttt{udev} rule that grants access to Nordic devices (vendor \texttt{1915}); without it, flashing
+        fails with the error ``The device has no langid''.
+  \item A project path \emph{without spaces}: Zephyr does not support spaces in the application path. The build
+        script works around it with a symbolic link.
+\end{itemize}
+
+\subsection{Build and flash}
+
+From the \texttt{firmware/} folder a single script is used. It builds through the symbolic link and keeps the
+measurement builds in separate directories so they never overwrite the normal one:
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|l X|}
+\hline
+\tablehead{\textbf{Command} & \textbf{What it does}} \\ \hline
+\texttt{./build.sh} and \texttt{./build.sh flash} & Builds and flashes the normal firmware over USB (MCUboot). \\ \hline
+\texttt{./build.sh bench} and \texttt{flash-bench} & Builds and flashes the firmware with the \texttt{geofence\_check()} benchmark. \\ \hline
+\texttt{./build.sh cold} and \texttt{flash-cold} & Builds and flashes the firmware that deletes the satellite data at every boot, to measure a cold start. \\ \hline
+\texttt{./build.sh clean} & Deletes the build directories. \\ \hline
+\end{tabularx}
+\caption{Commands of \texttt{build.sh}.}
+\end{table}
+
+The two measurement variants are turned on with build options that are off by default
+(\texttt{CONFIG\_DRVF\_GEOFENCE\_BENCHMARK} and \texttt{CONFIG\_DRVF\_GNSS\_COLD\_START}), so the normal
+firmware does not change. Flashing prints almost nothing: the way to check that it worked is to read the
+console.
+
+\subsection{Console}
+
+The console is a virtual serial port over USB, at 115\,200 baud (on Linux, \texttt{/dev/ttyACM0}). Every line
+starts with the time since the last reset. At boot the modem firmware version appears, and then, every second,
+the satellites listed by system and, with a fix, the position, the reported accuracy, the distance to the
+boundary, the color and the time of the check.
+
+\subsection{Tests on the PC}
+
+The pure C modules have their tests on the PC, without a board. In \texttt{firmware/src/geofence}:
+\texttt{make test}, \texttt{make stress} (about 3.8 million randomized cases with a fixed seed),
+\texttt{make sanitize} (the same tests with memory-error and undefined-behavior detectors) and
+\texttt{make cross-check} (compiles the engine for Cortex-M33 and ESP32-S3 with warnings as errors). In
+\texttt{firmware/src/alert}, \texttt{fence}, \texttt{app}, \texttt{demo} and \texttt{bench}: \texttt{make test}.

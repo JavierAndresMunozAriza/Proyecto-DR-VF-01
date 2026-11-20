@@ -1,0 +1,56 @@
+\section{About this document}
+
+\subsection{Scope and purpose}
+
+This document presents the proof of concept (PoC) of the virtual fence of the DR-VF-01 collar. It
+describes what the firmware does, how it was verified and what results were measured, and it states
+just as clearly what the PoC does \emph{not} demonstrate. It is an engineering report on one part of
+the system; the complete project, with its architecture, hardware, mechanics and compliance, is in the
+\emph{Technical Report} (\texttt{docs/DR-VF-01\_Memoria\_Tecnica.pdf}, written in Spanish), which this
+report refers to and does not repeat.
+
+The PoC runs on a commercial development board, not on the product's PCB. Every figure in this report
+was measured on that board and cannot be transferred as is to the final PCB. See the limitations section.
+
+\subsection{Audience}
+
+It is written for an engineer who wants to understand the design, reproduce the tests or start from this
+firmware on another board, and for anyone evaluating the project.
+
+\subsection{Platform and versions}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|l X|}
+\hline
+\tablehead{\textbf{Item} & \textbf{Value}} \\ \hline
+Board & \dBoard \\ \hline
+Application processor and GNSS & \dSoc{} (LTE-M, NB-IoT and GNSS) \\ \hline
+SDK & \dNcs{} with \dZephyr \\ \hline
+Modem firmware & \dModemFw \\ \hline
+Firmware measured & commit \texttt{\dFirmwareCommit} of the repository \\ \hline
+Build & \texttt{firmware/build.sh} (see the getting started section) \\ \hline
+\end{tabularx}
+\caption{Platform and versions of the PoC.}
+\end{table}
+
+\subsection{Revision history}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|c l X|}
+\hline
+\tablehead{\textbf{Rev.} & \textbf{Status} & \textbf{Content}} \\ \hline
+1.0 & Draft & PoC firmware: 60~m square fence created with the first GNSS fix, and a demo mode started with a button. \\ \hline
+1.1 & Planned & Polygon defined by user-entered vertices (the fence of a farm). It will be added as a new section and new table rows; it does not rewrite what is already here. \\ \hline
+\end{tabularx}
+\caption{Report revisions.}
+\end{table}
+
+\subsection{How to read the identifiers}
+
+Requirements prefixed \texttt{F-} and \texttt{NF-} are those of the PRD of the Technical Report, and
+\texttt{SR-} are those of its SRD. The \texttt{PoC-} criteria belong to this report: each one says which
+requirement it derives from, or that it is a new design criterion.

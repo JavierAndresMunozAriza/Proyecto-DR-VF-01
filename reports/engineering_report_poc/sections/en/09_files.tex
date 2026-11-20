@@ -1,0 +1,42 @@
+\section{Design files and references}
+
+\subsection{Repository files}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|l X|}
+\hline
+\tablehead{\textbf{Path} & \textbf{Content}} \\ \hline
+\texttt{firmware/src/} & Firmware code: \texttt{geofence}, \texttt{fence}, \texttt{alert}, \texttt{app}, \texttt{demo}, \texttt{bench}, \texttt{button}, \texttt{gnss}, \texttt{led}, \texttt{timing} and \texttt{main.c}. \\ \hline
+\texttt{firmware/include/} & Headers of every module, with their documentation. \\ \hline
+\texttt{firmware/build.sh} & Build and flash, with the measurement variants. \\ \hline
+\texttt{reports/engineering\_report\_poc/evidence/} & Raw logs, derived figures and the analysis script of the static test. \\ \hline
+\texttt{docs/DR-VF-01\_Memoria\_Tecnica.pdf} & Technical Report of the project (in Spanish), which this report refers to. \\ \hline
+\end{tabularx}
+\caption{Files related to the PoC.}
+\end{table}
+
+\subsection{Evidence}
+
+Every figure of this report comes from a file in \texttt{evidence/}, described in its \texttt{README.md}: the
+console logs (\texttt{logs/}), the output of the PC tests and of the cross-compilation, the cold-start time
+measured by hand (\texttt{field\_ttff\_manual.csv}), the conditions of the tests
+(\texttt{field\_conditions.md}) and the offsets of the static test from its mean
+(\texttt{static\_offsets.csv}). The raw captures of the field tests contain the location of the board and are
+not published.
+
+\subsection{References}
+
+\begin{enumerate}
+  \item Nordic Semiconductor, \emph{nRF9151 Product Specification}, GNSS section, Table 2:
+        \url{https://docs.nordicsemi.com/r/bundle/ps_nrf9151/page/gps.html}. Sensitivity, time to first fix and
+        horizontal accuracy (CEP50) of the receiver.
+  \item Nordic Semiconductor, \emph{nRF Modem library}, GNSS interface document and modem header file, from
+        \dNcs{}. Data kept in non-volatile memory and its deletion to simulate a cold start; format of the
+        position and satellite data.
+  \item Nordic Semiconductor, \dNcs{} documentation for the Thingy:91~X. Components of the board and the
+        connectivity bridge of the nRF5340.
+  \item \emph{Technical Report of the DR-VF-01 collar} (in Spanish), \texttt{docs/DR-VF-01\_Memoria\_Tecnica.pdf}.
+        PRD and SRD requirements to which the traceability refers.
+\end{enumerate}
