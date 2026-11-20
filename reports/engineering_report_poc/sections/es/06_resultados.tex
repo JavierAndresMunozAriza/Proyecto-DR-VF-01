@@ -221,6 +221,29 @@ Si esa explicación fuera cierta, el firmware habría mostrado el rojo del borde
 medía, porque acepta fixes con precisión de hasta 50~m. Por eso el diagnóstico de la señal figura entre los
 trabajos futuros.
 
+\textbf{Final de una prueba estática de unos 15 minutos.} Ese mismo día la persona se quedó quieta unos 15 minutos y
+al final volvió caminando a una casa. El monitor serie del teléfono solo conservó el último minuto, así que
+\textbf{los primeros minutos de esa prueba no se registraron} y no se puede calcular un CEP de ella. Lo conservado
+(\texttt{field\_\allowbreak static\_\allowbreak tail.csv}, transcrito) son \dTailFixes{} fixes en \dTailSpanS~s, todos fuera de la cerca:
+
+\begin{itemize}
+  \item En los primeros \dTailStillFixes{} fixes, con la persona quieta a unos 341~m del borde, la precisión reportada
+        fue de \dTailStillAccLow{} a \dTailStillAccHigh~m y la distancia al borde varió de \dTailStillDistLow{} a
+        \dTailStillDistHigh~m. Junto con la caminata al aire libre (\dWalkAccMin{} a \dWalkAccMax~m), es otro indicio de
+        que con cielo abierto el receptor estima entre 2 y 3~m. Sigue siendo la estimación del receptor, no el
+        error frente a un punto conocido.
+  \item Después, mientras la persona volvía a la casa, la precisión reportada creció de \dTailStillAccHigh{} a
+        \dTailAccTo~m en \dTailDegradeS~s y la posición se desplazó unos \dTailShiftM~m. Los siguientes \dTailIgnored{}
+        fixes (de \dTailIgnoredLow{} a \dTailIgnoredHigh~m) se descartaron y \texttt{MONITORING} $\to$ \texttt{FIX\_LOST}
+        llegó \dTailLostS~s después del último fix aceptado, la cuarta vez que se observa. Los satélites en
+        seguimiento eran \dTailSats{} en ese instante, lo que sugiere (no está comprobado) que el conteo se actualiza con retraso y que la precisión
+        reportada avisa antes.
+  \item El LED siguió en rojo parpadeante todo el tiempo y la comprobación tardó \dTailCheckUs~\textmu s.
+\end{itemize}
+
+Aquí el desplazamiento de la posición se explica porque la persona caminaba, así que esta captura no apoya ni
+descarta la hipótesis de extrapolación de la caminata anterior.
+
 \subsection{Huella de memoria (PoC-08)}
 
 El firmware normal ocupa \dFlashBytes~B de flash (\dFlashPercent~\% de los \dFlashRegion~B disponibles para

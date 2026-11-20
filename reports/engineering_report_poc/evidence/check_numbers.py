@@ -249,6 +249,31 @@ def check_walks(m):
     check("data.tex check time inside and outside", inside == {int(num(m, "dCrossCheckInUs"))} and outside == {int(num(m, "dCrossCheckOutUs"))})
 
 
+def check_tail(m):
+    rows = csv_rows("field_static_tail.csv")
+    fixes = [r for r in rows if r["event"] == "fix"]
+    ignored = [r for r in rows if r["event"] == "ignored"]
+    lost = [r for r in rows if r["event"] == "fix_lost"][0]
+    sats = [r for r in rows if r["event"] == "sats"][0]
+    acc = [float(r["reported_accuracy_m"]) for r in fixes]
+    dist = [float(r["distance_m"]) for r in fixes]
+    t = [float(r["uptime_s"]) for r in fixes]
+    check("static tail: accepted rows are one per second, no gaps", all(int(b) - int(a) == 1 for a, b in zip(t, t[1:])))
+    check("data.tex tail fixes and span", num(m, "dTailFixes") == len(fixes) and num(m, "dTailSpanS") == round(t[-1] - t[0]))
+    n = 0
+    while acc[n] <= num(m, "dTailStillAccHigh"):
+        n += 1
+    check("data.tex tail still part: fixes and accuracy range", num(m, "dTailStillFixes") == n and num(m, "dTailStillAccLow") == min(acc[:n])
+          and num(m, "dTailStillAccHigh") == max(acc[:n]))
+    check("data.tex tail still part: distance range", close(num(m, "dTailStillDistLow"), min(dist[:n]), 0.06) and close(num(m, "dTailStillDistHigh"), max(dist[:n]), 0.06))
+    check("data.tex tail degradation", num(m, "dTailAccTo") == acc[-1] and num(m, "dTailDegradeS") == round(t[-1] - t[n - 1])
+          and close(num(m, "dTailShiftM"), dist[-1] - dist[n - 1], 0.06))
+    check("data.tex tail ignored fixes", num(m, "dTailIgnored") == len(ignored) and num(m, "dTailIgnoredLow") == float(ignored[0]["reported_accuracy_m"])
+          and num(m, "dTailIgnoredHigh") == float(ignored[-1]["reported_accuracy_m"]) and all(float(r["reported_accuracy_m"]) > 50 for r in ignored))
+    check("data.tex tail FIX_LOST after the last accepted fix (s)", close(num(m, "dTailLostS"), float(lost["uptime_s"]) - t[-1], 0.05))
+    check("data.tex tail satellites and check time", num(m, "dTailSats") == float(sats["satellites"]) and {int(r["check_us"]) for r in fixes} == {int(num(m, "dTailCheckUs"))})
+
+
 # --- the two languages -----------------------------------------------------------------
 def check_languages(m):
     used = {}
@@ -274,7 +299,7 @@ def check_languages(m):
 def main():
     m = load_data()
     check("data.tex parsed", len(m) > 50, f"{len(m)} macros")
-    for step in (check_benchmark, check_build, check_host_tests, check_ttff, check_static, check_walks, check_languages):
+    for step in (check_benchmark, check_build, check_host_tests, check_ttff, check_static, check_walks, check_tail, check_languages):
         step(m)
     print(f"{checks} checks, {len(failures)} failed")
     return 1 if failures else 0

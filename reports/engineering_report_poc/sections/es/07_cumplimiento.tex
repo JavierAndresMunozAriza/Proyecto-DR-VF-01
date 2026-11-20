@@ -13,11 +13,11 @@ se midió. Ninguno se traslada sin más a la PCB del producto.
 \hline
 \tablehead{\textbf{ID} & \textbf{Estado} & \textbf{Resultado} & \textbf{Evidencia}} \\ \hline
 PoC-01 & Parcial & Menos de 50~ms hasta unos 800 vértices; \dBenchMsThousand~ms con 1024. & \texttt{logs/geofence\_benchmark.log} \\ \hline
-PoC-02 & No cumple en estas condiciones & CEP50 de \dStaticRunTwoCepFifty{} a \dStaticBothCepFifty~m frente a \dReqCep~m, con cielo parcial y menos de 15 minutos; al aire libre, el receptor estimó \dWalkAccMin{} a \dWalkAccMax~m durante \dWalkSeconds~s (no es un CEP medido). & \texttt{static\_offsets.csv}, \texttt{field\_walk\_open\_sky.csv}, \texttt{analyze\_static.py} \\ \hline
+PoC-02 & No cumple en estas condiciones & CEP50 de \dStaticRunTwoCepFifty{} a \dStaticBothCepFifty~m frente a \dReqCep~m, con cielo parcial y menos de 15 minutos; al aire libre, el receptor estimó \dWalkAccMin{} a \dWalkAccMax~m durante \dWalkSeconds~s (no es un CEP medido) y de \dTailStillAccLow{} a \dTailStillAccHigh~m quieto, al final de una prueba de 15 minutos que no se registró completa. & \texttt{static\_offsets.csv}, \texttt{field\_walk\_open\_sky.csv}, \texttt{analyze\_static.py} \\ \hline
 PoC-03 & No cumple & 1~Hz, sin superar 1~Hz. & \texttt{static\_offsets.csv} \\ \hline
 PoC-04 & Cumple & El LED parpadea en rojo al salir de la cerca. & \texttt{logs/demo\_mode\_session.log} \\ \hline
 PoC-05 & Cumple & Verde a 20~m o más, mezcla hacia el rojo, rojo parpadeante fuera. & \texttt{logs/demo\_mode\_session.log} \\ \hline
-PoC-06 & Cumple & \texttt{FIX\_LOST} a los 10~s sin fix, tres veces, y tests del PC. & Captura privada, \texttt{field\_walk\_signal\_loss.csv}, \texttt{logs/host\_tests.log} \\ \hline
+PoC-06 & Cumple & \texttt{FIX\_LOST} a los 10~s sin fix, cuatro veces, y tests del PC. & Captura privada, \texttt{field\_walk\_signal\_loss.csv}, \texttt{field\_\allowbreak static\_\allowbreak tail.csv}, \texttt{logs/host\_tests.log} \\ \hline
 PoC-07 & Medido (informativo) & 54, 90 y 136~s; 1.8 a 4.5 veces los \dTtffSpecCold~s de la hoja de datos; sin fix en 20 min desde la ventana. & \texttt{field\_ttff\_manual.csv} \\ \hline
 PoC-08 & Medido & \dFlashBytes~B de flash (\dFlashPercent~\%) y \dRamBytes~B de RAM (\dRamPercent~\%). & \texttt{logs/build\_memory.log} \\ \hline
 PoC-09 & Cumple & Error de distancia de \dStressWorstErrorPct~\% frente al 0.2~\% documentado. & \texttt{logs/host\_tests.log} \\ \hline

@@ -222,6 +222,29 @@ If that explanation were true, the firmware would have shown the red of the edge
 longer being measured, because it accepts fixes with an accuracy of up to 50~m. That is why the signal diagnostic
 is among the future work items.
 
+\textbf{End of a static test of about 15 minutes.} The same day the person stood still for about 15 minutes and at the
+end walked back to a house. The phone's serial monitor kept only the last minute, so \textbf{the first minutes
+of that test were not recorded} and no CEP can be computed from it. What was kept (\texttt{field\_\allowbreak static\_\allowbreak tail.csv}, transcribed) is
+\dTailFixes{} fixes over \dTailSpanS~s, all outside the fence:
+
+\begin{itemize}
+  \item In the first \dTailStillFixes{} fixes, with the person standing still about 341~m from the edge, the reported
+        accuracy was \dTailStillAccLow{} to \dTailStillAccHigh~m and the distance to the edge varied from \dTailStillDistLow{} to
+        \dTailStillDistHigh~m. Together with the walk in the open (\dWalkAccMin{} to \dWalkAccMax~m), it is another hint
+        that under an open sky the receiver estimates between 2 and 3~m. It is still the receiver's estimate, not
+        the error against a known point.
+  \item Then, while the person walked back to the house, the reported accuracy grew from \dTailStillAccHigh{} to
+        \dTailAccTo~m in \dTailDegradeS~s and the position moved about \dTailShiftM~m. The next \dTailIgnored{} fixes
+        (\dTailIgnoredLow{} to \dTailIgnoredHigh~m) were discarded and \texttt{MONITORING} $\to$ \texttt{FIX\_LOST} came
+        \dTailLostS~s after the last accepted fix, the fourth time it is observed. The satellites being tracked were
+        \dTailSats{} at that moment, which suggests (not verified) that the count is updated late and that the reported accuracy
+        warns earlier.
+  \item The LED stayed blinking red the whole time and the check took \dTailCheckUs~\textmu s.
+\end{itemize}
+
+Here the movement of the position is explained by the person walking, so this capture neither supports nor rules
+out the extrapolation hypothesis of the previous walk.
+
 \subsection{Memory footprint (PoC-08)}
 
 The normal firmware takes \dFlashBytes~B of flash (\dFlashPercent~\% of the \dFlashRegion~B available to the
