@@ -1,0 +1,58 @@
+\section{Puesta en marcha}
+
+Esta sección describe cómo reproducir la compilación, el flasheo y las pruebas de la PoC.
+
+\subsection{Requisitos}
+
+\begin{itemize}
+  \item \dNcs{} con su cadena de herramientas, instalada con \texttt{nrfutil sdk-manager}.
+  \item El comando \texttt{nrfutil device}, que el flasheo usa por dentro (\texttt{nrfutil install device}).
+  \item Linux, o Windows con WSL2. En WSL2 hay que compartir la placa con \texttt{usbipd-win}: se
+        ejecuta una vez como administrador \texttt{usbipd bind} sobre el identificador de la placa,
+        y después \texttt{usbipd attach --wsl} cada vez que se conecta.
+  \item Una regla de \texttt{udev} que dé permiso sobre los dispositivos de Nordic
+        (fabricante \texttt{1915}); sin ella, el flasheo falla con el error ``The device has no
+        langid''.
+  \item Una ruta del proyecto \emph{sin espacios}: Zephyr no soporta espacios en la ruta de la
+        aplicación. El script de compilación lo resuelve con un enlace simbólico.
+\end{itemize}
+
+\subsection{Compilación y flasheo}
+
+Desde la carpeta \texttt{firmware/} se usa un solo script, que compila por el enlace simbólico y
+deja las compilaciones de medición en directorios aparte para que nunca pisen la normal:
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|l X|}
+\hline
+\tablehead{\textbf{Comando} & \textbf{Qué hace}} \\ \hline
+\texttt{./build.sh} y \texttt{./build.sh flash} & Compila y flashea el firmware normal por USB (MCUboot). \\ \hline
+\texttt{./build.sh bench} y \texttt{flash-bench} & Compila y flashea el firmware con el benchmark de \texttt{geofence\_check()}. \\ \hline
+\texttt{./build.sh cold} y \texttt{flash-cold} & Compila y flashea el firmware que borra los datos de satélites en cada arranque, para medir el arranque en frío. \\ \hline
+\texttt{./build.sh clean} & Borra los directorios de compilación. \\ \hline
+\end{tabularx}
+\caption{Comandos de \texttt{build.sh}.}
+\end{table}
+
+Las dos variantes de medición se activan con opciones de compilación que vienen apagadas
+(\texttt{CONFIG\_DRVF\_GEOFENCE\_BENCHMARK} y \texttt{CONFIG\_DRVF\_GNSS\_COLD\_START}), de modo
+que el firmware normal no cambia. El flasheo apenas imprime nada: la forma de comprobar que
+funcionó es leer la consola.
+
+\subsection{Consola}
+
+La consola es un puerto serie virtual por USB, a 115\,200 baudios (en Linux, \texttt{/dev/ttyACM0}).
+Cada línea empieza con el tiempo desde el último reinicio. Al arrancar aparece la versión del
+firmware del módem, y después, cada segundo, los satélites listados por sistema y, con fix, la
+posición, la precisión reportada, la distancia al borde, el color y el tiempo de la comprobación.
+
+\subsection{Pruebas en el PC}
+
+Los módulos de C puro tienen sus pruebas en el PC, sin placa. En \texttt{firmware/src/geofence}:
+\texttt{make test}, \texttt{make stress} (unos 3.8 millones de casos aleatorios con semilla fija),
+\texttt{make sanitize} (las mismas pruebas con detectores de errores de memoria y de comportamiento
+indefinido) y \texttt{make cross-check} (compila el motor para Cortex-M33 y ESP32-S3 con las
+advertencias como errores). En \texttt{firmware/src/alert}, \texttt{fence}, \texttt{app}, \texttt{demo}
+y \texttt{bench}: \texttt{make test}.

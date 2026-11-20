@@ -1,0 +1,79 @@
+\section{Montaje y metodología de pruebas}
+
+Cada prueba se hizo en el entorno que mejor se podía controlar y se declara aquí junto con sus
+límites. Las cifras de la sección de resultados salen de los registros que se guardaron como
+evidencia, y cada una se puede rastrear hasta uno de esos archivos.
+
+\subsection{Pruebas en el PC}
+
+\begin{itemize}
+  \item \textbf{Motor de cerca:} \dHostTests{} pruebas con \dHostChecks{} comprobaciones, y una prueba
+        aleatoria de \dStressCases{} casos con semilla fija que compara la distancia del motor con
+        la distancia de haversine. Se repiten bajo detectores de errores de memoria y de comportamiento
+        indefinido.
+  \item \textbf{Módulos de C puro} (\texttt{alert\_color}, \texttt{fence\_square}, \texttt{app\_fsm},
+        \texttt{demo\_route}, \texttt{bench\_polygon}): cada uno tiene su prueba. Las de
+        \texttt{fence\_square}, \texttt{demo\_route} y \texttt{bench\_polygon} usan el motor real y no
+        una copia. La de \texttt{app\_fsm} recorre las 25 combinaciones de estado y evento.
+  \item \textbf{Compilación cruzada:} el motor se compila para Cortex-M33 y ESP32-S3 con advertencias
+        como errores. Compilar no demuestra que funcione en el ESP32-S3.
+\end{itemize}
+
+\subsection{Medida del tiempo de \texttt{geofence\_check()} en la placa}
+
+Se compila el firmware con el benchmark activado. Al arrancar, antes de iniciar el GNSS y el botón,
+construye polígonos regulares de 4, 16, 64, 256 y 1024 vértices con un radio de 500~m, y para cada uno
+mide un lote de 40 llamadas: 20 puntos seguramente dentro y 20 seguramente fuera. Reporta el tiempo
+total y la media por llamada, y cuenta las clasificaciones erróneas.
+
+Como el contador del kernel corre a \dClockHz~Hz y cada lectura tiene \dTickUs~$\mu$s de resolución,
+no se mide una llamada suelta sino el lote completo. Se repite en tres arranques consecutivos. El
+tiempo es el del contador del kernel, no el de un osciloscopio sobre un pin.
+
+\subsection{Modo demo}
+
+Se pulsa el botón de la placa y se lee la consola mientras corre la ruta simulada. La ruta no usa
+la posición real: sale de un centro ficticio. Se comprueba que el registro muestra el cambio de
+estado, la creación de la cerca, los 42 pasos con su distancia y su color, y el regreso a la
+búsqueda al pulsar de nuevo.
+
+\subsection{Tiempo hasta el primer fix en frío}
+
+El módem guarda datos de satélites en memoria no volátil, por lo que un reinicio normal es un
+arranque en caliente. Para medir un arranque en frío se usa la compilación que borra esos datos en
+cada arranque (se conserva solo el desfase del oscilador del propio dispositivo, como indica la
+documentación de la librería del módem). La placa funciona a batería, en exteriores, sin PC. Con un
+cronómetro se mide desde que se enciende hasta que el LED queda en verde fijo, que equivale al primer
+fix con precisión reportada de 50~m o mejor. Se hicieron tres arranques; el tercero se dejó encendido
+cinco minutos más para que el módem guardara sus datos.
+
+Es una medida manual, con una incertidumbre de unos 2~s por la reacción de quien cronometra, y no
+tiene registro de la consola.
+
+\subsection{Precisión de la posición, prueba estática}
+
+Con el firmware normal, que conserva los datos guardados, la placa se deja quieta, plana y boca
+arriba, y se graba la consola. Se analiza el último arranque. Se descarta el primer minuto de fixes
+porque el receptor aún converge, y se calcula la dispersión de las posiciones respecto a su propio
+promedio, tras pasarlas a metros hacia el este y hacia el norte:
+
+\begin{itemize}
+  \item \textbf{CEP50:} la mediana de la distancia al promedio. La mitad de los fixes cae dentro de ese radio.
+  \item \textbf{CEP95:} el percentil 95 de esa distancia.
+  \item \textbf{DRMS:} la raíz del promedio de los cuadrados de la distancia.
+  \item \textbf{Precisión reportada:} la estimación que da el propio receptor para cada fix (1 sigma, 2D).
+\end{itemize}
+
+Esto mide la \emph{precisión}, es decir cuánto se dispersan los fixes alrededor de su promedio. No
+mide el error absoluto: no hubo una referencia de coordenadas conocidas ni un receptor RTK, y un error
+constante que afecte a todos los fixes por igual no se ve. El cálculo lo hace un script que se
+comprueba a sí mismo con puntos de resultado conocido y que solo escribe cifras derivadas, sin
+coordenadas.
+
+\subsection{Condiciones de las pruebas de campo}
+
+Los tres arranques en frío se hicieron en una calle de barrio entre casas, con el cielo parcialmente
+nublado, a media mañana. La prueba estática se hizo desde una ventana de primer piso orientada al sur, con la
+ventana abierta y la placa prácticamente afuera, con un poco de árbol y cables eléctricos cerca. Ninguna
+fue en campo abierto. No se registraron la altura de los obstáculos, el porcentaje de cielo visible ni
+la interferencia de radio.
