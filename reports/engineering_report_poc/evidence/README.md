@@ -30,6 +30,7 @@ compilación durante la sesión de trabajo; no se guardó el hash junto a cada c
 Además, fuera de `logs/`:
 
 - `field_ttff_manual.csv`: tres tiempos hasta el primer fix en frío, medidos con cronómetro en exteriores (la placa iba a batería, sin PC). No hay log de la consola de esas pruebas.
+- `field_conditions.md`: hora, clima, entorno y colocación de las pruebas de campo, sin ubicación.
 - `analyze_static.py`: calcula la dispersión de una prueba estática a partir de una captura privada y solo escribe cifras derivadas y desplazamientos relativos a la media.
 - `private/` (ignorada por git): capturas crudas de las pruebas de campo, que contienen la ubicación real.
 
