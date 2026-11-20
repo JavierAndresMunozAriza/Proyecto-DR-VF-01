@@ -1,0 +1,29 @@
+[00:00:25.313,171] <inf> main: offset -10 m insideý*** Booting nRF Connect SDK v2.7.99-cfb2a11d0139 ***
+*** Using Zephyr OS v3.6.99-2fb756ef5c41 ***
+Attempting to boot slot 0.
+Attempting to boot from address 0x8200.
+I: Verifying signature against key 0.
+I: Hash: 0x3e...f9
+I: Firmware signature verified.
+Firmware version 2
+Booting (0x8200).[00:00:00.255,096] <inf> spi_nor: GD25LE255E@0: 32 MiBy flash
+*** Booting nRF Connect SDK v3.4.1-b20f8619ba9a ***
+*** Using Zephyr OS v4.4.2-33fa6a7aac6a ***
+[00:00:00.290,954] <inf> main: Geofence ready, 4 vertices, safe distance 20 m
+[00:00:00.291,320] <inf> main: offset 40 m inside=1 dist=39.99 m rgb=0,255,0 blink=0 check=305 us
+[00:00:01.292,175] <inf> main: offset 38 m inside=1 dist=37.99 m rgb=0,255,0 blink=0 check=275 us
+[00:00:02.293,060] <inf> main: offset 36 m inside=1 dist=35.99 m rgb=0,255,0 blink=0 check=275 us
+[00:00:03.293,914] <inf> main: offset 34 m inside=1 dist=33.99 m rgb=0,255,0 blink=0 check=275 us
+[00:00:04.294,799] <inf> main: offset 32 m inside=1 dist=31.99 m rgb=0,255,0 blink=0 check=275 us
+[00:00:05.295,654] <inf> main: offset 30 m inside=1 dist=29.99 m rgb=0,255,0 blink=0 check=275 us
+[00:00:06.296,539] <inf> main: offset 28 m inside=1 dist=27.99 m rgb=0,255,0 blink=0 check=275 us
+[00:00:07.297,393] <inf> main: offset 26 m inside=1 dist=25.99 m rgb=0,255,0 blink=0 check=275 us
+[00:00:08.298,278] <inf> main: offset 24 m inside=1 dist=23.99 m rgb=0,255,0 blink=0 check=275 us
+[00:00:09.299,163] <inf> main: offset 22 m inside=1 dist=21.99 m rgb=0,255,0 blink=0 check=275 us
+[00:00:10.300,048] <inf> main: offset 20 m inside=1 dist=19.99 m rgb=0,255,0 blink=0 check=275 us
+[00:00:11.300,903] <inf> main: offset 18 m inside=1 dist=17.99 m rgb=26,229,0 blink=0 check=275 us
+[00:00:12.301,818] <inf> main: offset 16 m inside=1 dist=15.99 m rgb=51,204,0 blink=0 check=275 us
+[00:00:13.302,703] <inf> main: offset 14 m inside=1 dist=13.99 m rgb=77,178,0 blink=0 check=275 us
+[00:00:14.303,619] <inf> main: offset 12 m inside=1 dist=11.99 m rgb=102,153,0 blink=0 check=275 us
+[00:00:15.304,504] <inf> main: offset 10 m inside=1 dist=9.99 m rgb=128,127,0 blink=0 check=275 us
+[00:00:16.305,419] <inf> main: offset 8 m inside=1 dist=7.99 m rgb=153,102,0 blink=0 check=275 us

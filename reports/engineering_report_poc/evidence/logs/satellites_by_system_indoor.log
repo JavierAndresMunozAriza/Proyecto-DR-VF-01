@@ -1,0 +1,37 @@
+[00:00:01.644,836] <inf> main: SEARCHING: 0 satellites tracked (GPS 0, QZSS 0, Galileo 0)
+[00:00:02.645,385] <inf> main: SEARCHING: 0 satellites tracked (GPS 0, QZSS 0, Galileo 0)
+*** Booting nRF Connect SDK v2.7.99-cfb2a11d0139 ***
+*** Using Zephyr OS v3.6.99-2fb756ef5c41 ***
+Attempting to boot slot 0.
+Attempting to boot from address 0x8200.
+I: Verifying signature against key 0.
+I: Hash: 0x3e...f9
+I: Firmware signature verified.
+Firmware version 2
+Booting (0x8200).[00:00:00.255,035] <inf> spi_nor: GD25LE255E@0: 32 MiBy flash
+*** Booting nRF Connect SDK v3.4.1-b20f8619ba9a ***
+*** Using Zephyr OS v4.4.2-33fa6a7aac6a ***
+[00:00:00.632,110] <inf> gnss: Modem firmware: mfw_nrf91x1_2.0.2
+[00:00:00.644,226] <inf> main: SEARCHING: 0 satellites tracked (GPS 0, QZSS 0, Galileo 0)
+[00:00:01.644,744] <inf> main: SEARCHING: 0 satellites tracked (GPS 0, QZSS 0, Galileo 0)
+[00:00:02.645,294] <inf> main: SEARCHING: 0 satellites tracked (GPS 0, QZSS 0, Galileo 0)
+[00:00:03.645,843] <inf> main: SEARCHING: 0 satellites tracked (GPS 0, QZSS 0, Galileo 0)
+[00:00:04.646,392] <inf> main: SEARCHING: 0 satellites tracked (GPS 0, QZSS 0, Galileo 0)
+[00:00:05.646,942] <inf> main: SEARCHING: 0 satellites tracked (GPS 0, QZSS 0, Galileo 0)
+[00:00:06.647,491] <inf> main: SEARCHING: 0 satellites tracked (GPS 0, QZSS 0, Galileo 0)
+[00:00:07.648,040] <inf> main: SEARCHING: 0 satellites tracked (GPS 0, QZSS 0, Galileo 0)
+[00:00:08.648,590] <inf> main: SEARCHING: 0 satellites tracked (GPS 0, QZSS 0, Galileo 0)
+[00:00:09.649,139] <inf> main: SEARCHING: 0 satellites tracked (GPS 0, QZSS 0, Galileo 0)
+[00:00:10.649,688] <inf> main: SEARCHING: 0 satellites tracked (GPS 0, QZSS 0, Galileo 0)
+[00:00:11.650,238] <inf> main: SEARCHING: 1 satellites tracked (GPS 1, QZSS 0, Galileo 0)
+[00:00:12.650,787] <inf> main: SEARCHING: 1 satellites tracked (GPS 1, QZSS 0, Galileo 0)
+[00:00:13.651,336] <inf> main: SEARCHING: 1 satellites tracked (GPS 1, QZSS 0, Galileo 0)
+[00:00:14.651,885] <inf> main: SEARCHING: 1 satellites tracked (GPS 1, QZSS 0, Galileo 0)
+[00:00:15.652,435] <inf> main: SEARCHING: 1 satellites tracked (GPS 1, QZSS 0, Galileo 0)
+[00:00:16.652,984] <inf> main: SEARCHING: 1 satellites tracked (GPS 1, QZSS 0, Galileo 0)
+[00:00:17.653,533] <inf> main: SEARCHING: 1 satellites tracked (GPS 1, QZSS 0, Galileo 0)
+[00:00:18.654,083] <inf> main: SEARCHING: 1 satellites tracked (GPS 1, QZSS 0, Galileo 0)
+[00:00:19.654,632] <inf> main: SEARCHING: 1 satellites tracked (GPS 1, QZSS 0, Galileo 0)
+[00:00:20.655,181] <inf> main: SEARCHING: 1 satellites tracked (GPS 1, QZSS 0, Galileo 0)
+[00:00:21.655,731] <inf> main: SEARCHING: 1 satellites tracked (GPS 1, QZSS 0, Galileo 0)
+[00:00:22.656,280] <inf> main: SEARCHING: 1 satellites tracked (GPS 1, QZSS 0, Galileo 0)

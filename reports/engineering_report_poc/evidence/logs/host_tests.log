@@ -1,0 +1,98 @@
+# Host test suites, firmware commit 0b19c71, 2026-11-20
+
+## geofence: make test
+ray_casting_regions: ok
+half_open_boundary: ok
+algorithms_agree: ok
+distance: ok
+closest_boundary_point: ok
+distance_to_boundary: ok
+check: ok
+add_vertex_alias: ok
+host measurement (not an RF-02 proof): 0.006 us per ray-casting call
+host_measurement: ok
+
+14 tests, 3067 checks, 0 failed
+
+## geofence: make stress
+seed 0x5eedf00dcafebabe: 3795130 cases, 0 failed, worst flat-vs-haversine error 0.0210%, 0.33 s
+
+## geofence: make sanitize
+half_open_boundary: ok
+algorithms_agree: ok
+distance: ok
+closest_boundary_point: ok
+distance_to_boundary: ok
+check: ok
+add_vertex_alias: ok
+host measurement (not an RF-02 proof): 0.015 us per ray-casting call
+host_measurement: ok
+
+14 tests, 3067 checks, 0 failed
+seed 0x5eedf00dcafebabe: 3795130 cases, 0 failed, worst flat-vs-haversine error 0.0210%, 0.48 s
+
+## geofence: make cross-check
+/home/xavi/zephyr-sdk-1.0.1/gnu/arm-zephyr-eabi/bin/arm-zephyr-eabi-gcc -mcpu=cortex-m33 -mthumb -mfloat-abi=hard -mfpu=fpv5-sp-d16 -std=c99 -O2 -Wall -Wextra -Wpedantic -Werror -Wshadow -Wconversion -Wdouble-promotion -Wcast-qual -Wstrict-prototypes -Wmissing-prototypes -Wundef -I../../include -c ./geofence.c -o geofence_cm33.o
+/home/xavi/zephyr-sdk-1.0.1/gnu/xtensa-espressif_esp32s3_zephyr-elf/bin/xtensa-espressif_esp32s3_zephyr-elf-gcc -std=c99 -O2 -Wall -Wextra -Wpedantic -Werror -Wshadow -Wconversion -Wdouble-promotion -Wcast-qual -Wstrict-prototypes -Wmissing-prototypes -Wundef -I../../include -c ./geofence.c -o geofence_esp32s3.o
+/home/xavi/zephyr-sdk-1.0.1/gnu/arm-zephyr-eabi/bin/arm-zephyr-eabi-size geofence_cm33.o
+   text	   data	    bss	    dec	    hex	filename
+   3336	      0	     24	   3360	    d20	geofence_cm33.o
+/home/xavi/zephyr-sdk-1.0.1/gnu/xtensa-espressif_esp32s3_zephyr-elf/bin/xtensa-espressif_esp32s3_zephyr-elf-size geofence_esp32s3.o
+   text	   data	    bss	    dec	    hex	filename
+   3429	      0	     17	   3446	    d76	geofence_esp32s3.o
+
+## alert: make test
+ok   green at the safe distance
+ok   green far beyond the safe distance
+ok   steady red on the boundary
+ok   half way is an even mix
+ok   close to the edge is mostly red
+ok   outside blinks red
+ok   NaN distance blinks red
+ok   infinite distance blinks red
+ok   negative distance blinks red
+ok   zero safe distance blinks red
+ok   NaN safe distance blinks red
+ok   searching without any fix blinks blue
+ok   searching with a poor-accuracy fix blinks cyan
+ok   fix lost blinks magenta, unlike outside the fence
+all checks passed
+
+## fence: make test
+ok   valid square returns 0
+ok   engine init
+ok   engine accepts the corners
+ok   center is inside
+ok   center is half_side from the edge
+ok   25 m north is inside, 5 m from the edge
+ok   40 m north is outside, 10 m from the edge
+ok   NULL center rejected
+ok   NULL output rejected
+ok   zero half side rejected
+ok   negative half side rejected
+ok   NaN half side rejected
+ok   NaN latitude rejected
+ok   latitude beyond 85 degrees rejected
+ok   square crossing the antimeridian rejected
+all checks passed
+
+## app: make test
+all 25 transitions and 3 extra checks passed
+
+## demo: make test
+ok   square fence
+ok   engine init
+ok   engine accepts the corners
+ok   step 0 starts at the center, 30 m from the edge
+ok   step 10 is 20 m north, 10 m from the edge
+ok   step 14 is 28 m north, 2 m from the edge
+ok   step 16 is 32 m north, outside by 2 m
+ok   step 20 is 40 m north, outside by 10 m
+ok   step 30 walks back, 20 m north, 10 m inside
+ok   step 40 is back at the center
+ok   the route repeats: step 60 equals step 20
+ok   round trip length
+ok   NULL center rejected
+ok   NULL output rejected
+ok   steps 0 and 40 give the same point
+all checks passed

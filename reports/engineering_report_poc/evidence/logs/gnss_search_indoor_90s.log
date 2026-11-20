@@ -1,0 +1,107 @@
+[00:00:25.651,794] <inf> main: Searching: 1 satellites tracked
+[00:00:26.652,343] <inf> main: Searching: 1 satellites tracked
+*** Booting nRF Connect SDK v2.7.99-cfb2a11d0139 ***
+*** Using Zephyr OS v3.6.99-2fb756ef5c41 ***
+Attempting to boot slot 0.
+Attempting to boot from address 0x8200.
+I: Verifying signature against key 0.
+I: Hash: 0x3e...f9
+I: Firmware signature verified.
+Firmware version 2
+Booting (0x8200).[00:00:00.255,035] <inf> spi_nor: GD25LE255E@0: 32 MiBy flash
+*** Booting nRF Connect SDK v3.4.1-b20f8619ba9a ***
+*** Using Zephyr OS v4.4.2-33fa6a7aac6a ***
+[00:00:00.626,586] <inf> gnss: Modem firmware: mfw_nrf91x1_2.0.2
+[00:00:00.638,885] <inf> main: Searching: 0 satellites tracked
+[00:00:01.639,373] <inf> main: Searching: 0 satellites tracked
+[00:00:02.639,923] <inf> main: Searching: 0 satellites tracked
+[00:00:03.640,441] <inf> main: Searching: 0 satellites tracked
+[00:00:04.640,991] <inf> main: Searching: 0 satellites tracked
+[00:00:05.641,510] <inf> main: Searching: 0 satellites tracked
+[00:00:06.642,059] <inf> main: Searching: 0 satellites tracked
+[00:00:07.642,578] <inf> main: Searching: 0 satellites tracked
+[00:00:08.643,127] <inf> main: Searching: 0 satellites tracked
+[00:00:09.643,646] <inf> main: Searching: 0 satellites tracked
+[00:00:10.644,195] <inf> main: Searching: 0 satellites tracked
+[00:00:11.644,714] <inf> main: Searching: 0 satellites tracked
+[00:00:12.645,263] <inf> main: Searching: 0 satellites tracked
+[00:00:13.645,782] <inf> main: Searching: 0 satellites tracked
+[00:00:14.646,331] <inf> main: Searching: 0 satellites tracked
+[00:00:15.646,850] <inf> main: Searching: 0 satellites tracked
+[00:00:16.647,399] <inf> main: Searching: 0 satellites tracked
+[00:00:17.647,918] <inf> main: Searching: 0 satellites tracked
+[00:00:18.648,468] <inf> main: Searching: 0 satellites tracked
+[00:00:19.648,986] <inf> main: Searching: 0 satellites tracked
+[00:00:20.649,536] <inf> main: Searching: 0 satellites tracked
+[00:00:21.650,054] <inf> main: Searching: 0 satellites tracked
+[00:00:22.650,604] <inf> main: Searching: 0 satellites tracked
+[00:00:23.651,123] <inf> main: Searching: 0 satellites tracked
+[00:00:24.651,672] <inf> main: Searching: 0 satellites tracked
+[00:00:25.652,191] <inf> main: Searching: 0 satellites tracked
+[00:00:26.652,740] <inf> main: Searching: 0 satellites tracked
+[00:00:27.653,289] <inf> main: Searching: 0 satellites tracked
+[00:00:28.653,808] <inf> main: Searching: 0 satellites tracked
+[00:00:29.654,327] <inf> main: Searching: 0 satellites tracked
+[00:00:30.654,876] <inf> main: Searching: 0 satellites tracked
+[00:00:31.655,395] <inf> main: Searching: 0 satellites tracked
+[00:00:32.655,944] <inf> main: Searching: 0 satellites tracked
+[00:00:33.656,463] <inf> main: Searching: 0 satellites tracked
+[00:00:34.657,012] <inf> main: Searching: 0 satellites tracked
+[00:00:35.657,531] <inf> main: Searching: 0 satellites tracked
+[00:00:36.658,081] <inf> main: Searching: 0 satellites tracked
+[00:00:37.658,599] <inf> main: Searching: 0 satellites tracked
+[00:00:38.659,149] <inf> main: Searching: 0 satellites tracked
+[00:00:39.659,667] <inf> main: Searching: 0 satellites tracked
+[00:00:40.660,217] <inf> main: Searching: 0 satellites tracked
+[00:00:41.660,736] <inf> main: Searching: 0 satellites tracked
+[00:00:42.661,285] <inf> main: Searching: 0 satellites tracked
+[00:00:43.661,834] <inf> main: Searching: 0 satellites tracked
+[00:00:44.662,384] <inf> main: Searching: 0 satellites tracked
+[00:00:45.662,902] <inf> main: Searching: 0 satellites tracked
+[00:00:46.663,452] <inf> main: Searching: 0 satellites tracked
+[00:00:47.663,970] <inf> main: Searching: 0 satellites tracked
+[00:00:48.664,520] <inf> main: Searching: 0 satellites tracked
+[00:00:49.665,039] <inf> main: Searching: 0 satellites tracked
+[00:00:50.665,588] <inf> main: Searching: 0 satellites tracked
+[00:00:51.666,107] <inf> main: Searching: 0 satellites tracked
+[00:00:52.666,656] <inf> main: Searching: 0 satellites tracked
+[00:00:53.667,175] <inf> main: Searching: 0 satellites tracked
+[00:00:54.667,724] <inf> main: Searching: 0 satellites tracked
+[00:00:55.668,243] <inf> main: Searching: 0 satellites tracked
+[00:00:56.668,792] <inf> main: Searching: 1 satellites tracked
+[00:00:57.669,311] <inf> main: Searching: 1 satellites tracked
+[00:00:58.669,860] <inf> main: Searching: 1 satellites tracked
+[00:00:59.670,410] <inf> main: Searching: 1 satellites tracked
+[00:01:00.670,959] <inf> main: Searching: 1 satellites tracked
+[00:01:01.671,478] <inf> main: Searching: 1 satellites tracked
+[00:01:02.672,027] <inf> main: Searching: 1 satellites tracked
+[00:01:03.672,546] <inf> main: Searching: 1 satellites tracked
+[00:01:04.673,095] <inf> main: Searching: 1 satellites tracked
+[00:01:05.673,614] <inf> main: Searching: 1 satellites tracked
+[00:01:06.674,163] <inf> main: Searching: 1 satellites tracked
+[00:01:07.674,682] <inf> main: Searching: 1 satellites tracked
+[00:01:08.675,231] <inf> main: Searching: 1 satellites tracked
+[00:01:09.675,750] <inf> main: Searching: 1 satellites tracked
+[00:01:10.676,300] <inf> main: Searching: 1 satellites tracked
+[00:01:11.676,818] <inf> main: Searching: 1 satellites tracked
+[00:01:12.677,368] <inf> main: Searching: 1 satellites tracked
+[00:01:13.677,886] <inf> main: Searching: 1 satellites tracked
+[00:01:14.678,436] <inf> main: Searching: 1 satellites tracked
+[00:01:15.678,955] <inf> main: Searching: 1 satellites tracked
+[00:01:16.679,504] <inf> main: Searching: 1 satellites tracked
+[00:01:17.680,023] <inf> main: Searching: 1 satellites tracked
+[00:01:18.680,572] <inf> main: Searching: 1 satellites tracked
+[00:01:19.681,091] <inf> main: Searching: 1 satellites tracked
+[00:01:20.681,640] <inf> main: Searching: 1 satellites tracked
+[00:01:21.682,159] <inf> main: Searching: 1 satellites tracked
+[00:01:22.682,708] <inf> main: Searching: 1 satellites tracked
+[00:01:23.683,227] <inf> main: Searching: 1 satellites tracked
+[00:01:24.683,776] <inf> main: Searching: 1 satellites tracked
+[00:01:25.684,295] <inf> main: Searching: 1 satellites tracked
+[00:01:26.684,844] <inf> main: Searching: 1 satellites tracked
+[00:01:27.685,363] <inf> main: Searching: 1 satellites tracked
+[00:01:28.685,913] <inf> main: Searching: 1 satellites tracked
+[00:01:29.686,431] <inf> main: Searching: 1 satellites tracked
+[00:01:30.686,981] <inf> main: Searching: 1 satellites tracked
+[00:01:31.687,500] <inf> main: Searching: 2 satellites tracked
+[00:01:32.688,049] <inf> main: Searching: 2 satellites tracked

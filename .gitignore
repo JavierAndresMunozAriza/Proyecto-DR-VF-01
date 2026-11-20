@@ -47,3 +47,6 @@ __pycache__/
 # Altium native libraries and project files (kept out of git, see CLAUDE.md: no EDA binaries)
 hardware/altium_project/
 hardware/libraries/*/altium_nativo/
+
+# Evidence logs of the engineering report are tracked (raw console captures and test output)
+!reports/engineering_report_poc/evidence/logs/*.log

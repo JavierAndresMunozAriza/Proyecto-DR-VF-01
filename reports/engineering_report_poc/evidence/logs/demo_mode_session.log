@@ -1,0 +1,155 @@
+[00:05:45.828,521] <inf> main: SEARCHING: 0 satellites tracked
+[00:05:46.829,071] <inf> main: SEARCHING: 0 satellites tracked
+[00:05:47.829,620] <inf> main: SEARCHING: 0 satellites tracked
+[00:05:48.830,169] <inf> main: SEARCHING: 0 satellites tracked
+[00:05:49.830,718] <inf> main: SEARCHING: 0 satellites tracked
+[00:05:50.080,871] <inf> main: State SEARCHING -> DEMO
+[00:05:50.080,993] <inf> main: Fence created: 60 m square around 4.609700, -74.081700
+[00:05:50.081,329] <inf> main: demo 4.609700, -74.081700 acc=0.0 m inside=1 dist=30.00 m rgb=0,255,0 blink=0 check=275 us
+[00:05:50.832,122] <inf> main: demo 4.609718, -74.081700 acc=0.0 m inside=1 dist=28.00 m rgb=0,255,0 blink=0 check=305 us
+[00:05:51.833,007] <inf> main: demo 4.609736, -74.081700 acc=0.0 m inside=1 dist=26.00 m rgb=0,255,0 blink=0 check=275 us
+[00:05:52.833,923] <inf> main: demo 4.609754, -74.081700 acc=0.0 m inside=1 dist=24.00 m rgb=0,255,0 blink=0 check=305 us
+[00:05:53.834,808] <inf> main: demo 4.609772, -74.081700 acc=0.0 m inside=1 dist=22.00 m rgb=0,255,0 blink=0 check=275 us
+[00:05:54.835,723] <inf> main: demo 4.609790, -74.081700 acc=0.0 m inside=1 dist=20.00 m rgb=0,255,0 blink=0 check=305 us
+[00:05:55.836,608] <inf> main: demo 4.609808, -74.081700 acc=0.0 m inside=1 dist=18.00 m rgb=26,229,0 blink=0 check=275 us
+[00:05:56.837,554] <inf> main: demo 4.609826, -74.081700 acc=0.0 m inside=1 dist=16.00 m rgb=51,204,0 blink=0 check=305 us
+[00:05:57.838,409] <inf> main: demo 4.609844, -74.081700 acc=0.0 m inside=1 dist=14.00 m rgb=77,178,0 blink=0 check=275 us
+[00:05:58.839,324] <inf> main: demo 4.609862, -74.081700 acc=0.0 m inside=1 dist=12.00 m rgb=102,153,0 blink=0 check=275 us
+[00:05:59.840,209] <inf> main: demo 4.609880, -74.081700 acc=0.0 m inside=1 dist=10.00 m rgb=128,127,0 blink=0 check=305 us
+[00:06:00.841,156] <inf> main: demo 4.609898, -74.081700 acc=0.0 m inside=1 dist=8.00 m rgb=153,102,0 blink=0 check=305 us
+[00:06:01.842,010] <inf> main: demo 4.609916, -74.081700 acc=0.0 m inside=1 dist=6.00 m rgb=179,76,0 blink=0 check=275 us
+[00:06:02.842,956] <inf> main: demo 4.609934, -74.081700 acc=0.0 m inside=1 dist=4.00 m rgb=204,51,0 blink=0 check=305 us
+[00:06:03.843,841] <inf> main: demo 4.609952, -74.081700 acc=0.0 m inside=1 dist=2.00 m rgb=230,25,0 blink=0 check=305 us
+[00:06:04.844,635] <inf> main: demo 4.609970, -74.081700 acc=0.0 m inside=0 dist=0.00 m rgb=255,0,0 blink=1 check=214 us
+[00:06:05.845,489] <inf> main: demo 4.609988, -74.081700 acc=0.0 m inside=0 dist=2.00 m rgb=255,0,0 blink=1 check=275 us
+[00:06:06.846,374] <inf> main: demo 4.610006, -74.081700 acc=0.0 m inside=0 dist=4.00 m rgb=255,0,0 blink=1 check=275 us
+[00:06:07.847,229] <inf> main: demo 4.610024, -74.081700 acc=0.0 m inside=0 dist=6.00 m rgb=255,0,0 blink=1 check=275 us
+[00:06:08.848,114] <inf> main: demo 4.610042, -74.081700 acc=0.0 m inside=0 dist=8.00 m rgb=255,0,0 blink=1 check=275 us
+[00:06:09.848,968] <inf> main: demo 4.610060, -74.081700 acc=0.0 m inside=0 dist=10.00 m rgb=255,0,0 blink=1 check=275 us
+[00:06:10.849,822] <inf> main: demo 4.610042, -74.081700 acc=0.0 m inside=0 dist=8.00 m rgb=255,0,0 blink=1 check=275 us
+[00:06:11.850,677] <inf> main: demo 4.610024, -74.081700 acc=0.0 m inside=0 dist=6.00 m rgb=255,0,0 blink=1 check=275 us
+[00:06:12.851,562] <inf> main: demo 4.610006, -74.081700 acc=0.0 m inside=0 dist=4.00 m rgb=255,0,0 blink=1 check=275 us
+[00:06:13.852,416] <inf> main: demo 4.609988, -74.081700 acc=0.0 m inside=0 dist=2.00 m rgb=255,0,0 blink=1 check=275 us
+[00:06:14.853,210] <inf> main: demo 4.609970, -74.081700 acc=0.0 m inside=0 dist=0.00 m rgb=255,0,0 blink=1 check=214 us
+[00:06:15.854,125] <inf> main: demo 4.609952, -74.081700 acc=0.0 m inside=1 dist=2.00 m rgb=230,25,0 blink=0 check=305 us
+[00:06:16.855,041] <inf> main: demo 4.609934, -74.081700 acc=0.0 m inside=1 dist=4.00 m rgb=204,51,0 blink=0 check=305 us
+[00:06:17.855,926] <inf> main: demo 4.609916, -74.081700 acc=0.0 m inside=1 dist=6.00 m rgb=179,76,0 blink=0 check=275 us
+[00:06:18.856,842] <inf> main: demo 4.609898, -74.081700 acc=0.0 m inside=1 dist=8.00 m rgb=153,102,0 blink=0 check=305 us
+[00:06:19.857,696] <inf> main: demo 4.609880, -74.081700 acc=0.0 m inside=1 dist=10.00 m rgb=128,127,0 blink=0 check=305 us
+[00:06:20.858,612] <inf> main: demo 4.609862, -74.081700 acc=0.0 m inside=1 dist=12.00 m rgb=102,153,0 blink=0 check=275 us
+[00:06:21.859,497] <inf> main: demo 4.609844, -74.081700 acc=0.0 m inside=1 dist=14.00 m rgb=77,178,0 blink=0 check=275 us
+[00:06:22.860,412] <inf> main: demo 4.609826, -74.081700 acc=0.0 m inside=1 dist=16.00 m rgb=51,204,0 blink=0 check=305 us
+[00:06:23.861,297] <inf> main: demo 4.609808, -74.081700 acc=0.0 m inside=1 dist=18.00 m rgb=26,229,0 blink=0 check=275 us
+[00:06:24.862,213] <inf> main: demo 4.609790, -74.081700 acc=0.0 m inside=1 dist=20.00 m rgb=0,255,0 blink=0 check=275 us
+[00:06:25.863,098] <inf> main: demo 4.609772, -74.081700 acc=0.0 m inside=1 dist=22.00 m rgb=0,255,0 blink=0 check=275 us
+[00:06:26.864,013] <inf> main: demo 4.609754, -74.081700 acc=0.0 m inside=1 dist=24.00 m rgb=0,255,0 blink=0 check=275 us
+[00:06:27.864,898] <inf> main: demo 4.609736, -74.081700 acc=0.0 m inside=1 dist=26.00 m rgb=0,255,0 blink=0 check=275 us
+[00:06:28.865,814] <inf> main: demo 4.609718, -74.081700 acc=0.0 m inside=1 dist=28.00 m rgb=0,255,0 blink=0 check=305 us
+[00:06:29.866,699] <inf> main: demo 4.609700, -74.081700 acc=0.0 m inside=1 dist=30.00 m rgb=0,255,0 blink=0 check=305 us
+[00:06:30.867,614] <inf> main: demo 4.609718, -74.081700 acc=0.0 m inside=1 dist=28.00 m rgb=0,255,0 blink=0 check=305 us
+[00:06:31.367,980] <inf> main: State DEMO -> SEARCHING
+[00:06:31.868,255] <inf> main: SEARCHING: 0 satellites tracked
+[00:06:32.868,835] <inf> main: SEARCHING: 0 satellites tracked
+[00:06:33.869,384] <inf> main: SEARCHING: 0 satellites tracked
+[00:06:34.869,934] <inf> main: SEARCHING: 0 satellites tracked
+[00:06:35.870,483] <inf> main: SEARCHING: 0 satellites tracked
+[00:06:36.871,032] <inf> main: SEARCHING: 0 satellites tracked
+[00:06:37.871,582] <inf> main: SEARCHING: 0 satellites tracked
+[00:06:38.872,131] <inf> main: SEARCHING: 0 satellites tracked
+[00:06:39.872,680] <inf> main: SEARCHING: 1 satellites tracked
+[00:06:40.873,229] <inf> main: SEARCHING: 1 satellites tracked
+[00:06:41.873,779] <inf> main: SEARCHING: 1 satellites tracked
+[00:06:42.874,328] <inf> main: SEARCHING: 2 satellites tracked
+[00:06:43.874,877] <inf> main: SEARCHING: 1 satellites tracked
+[00:06:44.875,427] <inf> main: SEARCHING: 1 satellites tracked
+[00:06:45.875,976] <inf> main: SEARCHING: 2 satellites tracked
+[00:06:46.876,525] <inf> main: SEARCHING: 1 satellites tracked
+[00:06:47.877,075] <inf> main: SEARCHING: 1 satellites tracked
+[00:06:48.877,624] <inf> main: SEARCHING: 1 satellites tracked
+[00:06:49.878,173] <inf> main: SEARCHING: 0 satellites tracked
+[00:06:50.878,723] <inf> main: SEARCHING: 1 satellites tracked
+[00:06:51.879,272] <inf> main: SEARCHING: 1 satellites tracked
+[00:06:52.879,821] <inf> main: SEARCHING: 1 satellites tracked
+[00:06:53.880,371] <inf> main: SEARCHING: 1 satellites tracked
+[00:06:54.880,950] <inf> main: SEARCHING: 1 satellites tracked
+[00:06:55.881,500] <inf> main: SEARCHING: 1 satellites tracked
+[00:06:56.882,049] <inf> main: SEARCHING: 1 satellites tracked
+[00:06:57.882,598] <inf> main: SEARCHING: 2 satellites tracked
+[00:06:58.883,148] <inf> main: SEARCHING: 2 satellites tracked
+[00:06:59.883,697] <inf> main: SEARCHING: 2 satellites tracked
+[00:07:00.884,246] <inf> main: SEARCHING: 2 satellites tracked
+[00:07:01.884,796] <inf> main: SEARCHING: 1 satellites tracked
+[00:07:02.885,345] <inf> main: SEARCHING: 0 satellites tracked
+[00:07:03.885,894] <inf> main: SEARCHING: 0 satellites tracked
+[00:07:04.886,474] <inf> main: SEARCHING: 0 satellites tracked
+[00:07:05.887,023] <inf> main: SEARCHING: 0 satellites tracked
+[00:07:06.887,573] <inf> main: SEARCHING: 1 satellites tracked
+[00:07:07.888,122] <inf> main: SEARCHING: 1 satellites tracked
+[00:07:08.888,702] <inf> main: SEARCHING: 1 satellites tracked
+[00:07:09.889,251] <inf> main: SEARCHING: 2 satellites tracked
+[00:07:10.889,831] <inf> main: SEARCHING: 1 satellites tracked
+[00:07:11.890,380] <inf> main: SEARCHING: 1 satellites tracked
+[00:07:12.890,930] <inf> main: SEARCHING: 2 satellites tracked
+[00:07:13.891,479] <inf> main: SEARCHING: 1 satellites tracked
+[00:07:14.892,028] <inf> main: SEARCHING: 2 satellites tracked
+[00:07:15.892,578] <inf> main: SEARCHING: 2 satellites tracked
+[00:07:16.893,127] <inf> main: SEARCHING: 1 satellites tracked
+[00:07:17.893,676] <inf> main: SEARCHING: 1 satellites tracked
+[00:07:18.894,195] <inf> main: SEARCHING: 1 satellites tracked
+[00:07:19.894,744] <inf> main: SEARCHING: 1 satellites tracked
+[00:07:20.895,294] <inf> main: SEARCHING: 1 satellites tracked
+[00:07:21.895,843] <inf> main: SEARCHING: 1 satellites tracked
+[00:07:22.896,392] <inf> main: SEARCHING: 1 satellites tracked
+[00:07:23.896,942] <inf> main: SEARCHING: 1 satellites tracked
+[00:07:24.897,491] <inf> main: SEARCHING: 2 satellites tracked
+[00:07:25.898,040] <inf> main: SEARCHING: 2 satellites tracked
+[00:07:26.898,590] <inf> main: SEARCHING: 1 satellites tracked
+[00:07:27.899,139] <inf> main: SEARCHING: 1 satellites tracked
+[00:07:28.899,688] <inf> main: SEARCHING: 0 satellites tracked
+[00:07:29.900,238] <inf> main: SEARCHING: 0 satellites tracked
+[00:07:30.900,787] <inf> main: SEARCHING: 0 satellites tracked
+[00:07:31.901,336] <inf> main: SEARCHING: 0 satellites tracked
+[00:07:32.901,885] <inf> main: SEARCHING: 0 satellites tracked
+[00:07:33.902,435] <inf> main: SEARCHING: 0 satellites tracked
+[00:07:34.902,984] <inf> main: SEARCHING: 0 satellites tracked
+[00:07:35.903,533] <inf> main: SEARCHING: 0 satellites tracked
+[00:07:36.904,083] <inf> main: SEARCHING: 1 satellites tracked
+[00:07:37.904,632] <inf> main: SEARCHING: 1 satellites tracked
+[00:07:38.905,212] <inf> main: SEARCHING: 1 satellites tracked
+[00:07:39.905,761] <inf> main: SEARCHING: 1 satellites tracked
+[00:07:40.906,311] <inf> main: SEARCHING: 0 satellites tracked
+[00:07:41.906,860] <inf> main: SEARCHING: 0 satellites tracked
+[00:07:42.907,409] <inf> main: SEARCHING: 0 satellites tracked
+[00:07:43.907,958] <inf> main: SEARCHING: 0 satellites tracked
+[00:07:44.908,538] <inf> main: SEARCHING: 0 satellites tracked
+[00:07:45.909,088] <inf> main: SEARCHING: 0 satellites tracked
+[00:07:46.909,667] <inf> main: SEARCHING: 0 satellites tracked
+[00:07:47.910,217] <inf> main: SEARCHING: 1 satellites tracked
+[00:07:48.910,797] <inf> main: SEARCHING: 1 satellites tracked
+[00:07:49.911,346] <inf> main: SEARCHING: 1 satellites tracked
+[00:07:50.911,895] <inf> main: SEARCHING: 1 satellites tracked
+[00:07:51.912,445] <inf> main: SEARCHING: 0 satellites tracked
+[00:07:52.913,024] <inf> main: SEARCHING: 0 satellites tracked
+[00:07:53.913,574] <inf> main: SEARCHING: 0 satellites tracked
+[00:07:54.914,154] <inf> main: SEARCHING: 0 satellites tracked
+[00:07:55.914,703] <inf> main: SEARCHING: 0 satellites tracked
+[00:07:56.915,283] <inf> main: SEARCHING: 0 satellites tracked
+[00:07:57.915,832] <inf> main: SEARCHING: 0 satellites tracked
+[00:07:58.916,381] <inf> main: SEARCHING: 0 satellites tracked
+[00:07:59.916,931] <inf> main: SEARCHING: 1 satellites tracked
+[00:08:00.917,480] <inf> main: SEARCHING: 1 satellites tracked
+[00:08:01.918,029] <inf> main: SEARCHING: 1 satellites tracked
+[00:08:02.918,609] <inf> main: SEARCHING: 1 satellites tracked
+[00:08:03.919,158] <inf> main: SEARCHING: 0 satellites tracked
+[00:08:04.919,708] <inf> main: SEARCHING: 1 satellites tracked
+[00:08:05.920,257] <inf> main: SEARCHING: 1 satellites tracked
+[00:08:06.920,837] <inf> main: SEARCHING: 1 satellites tracked
+[00:08:07.921,386] <inf> main: SEARCHING: 1 satellites tracked
+[00:08:08.921,966] <inf> main: SEARCHING: 1 satellites tracked
+[00:08:09.922,515] <inf> main: SEARCHING: 2 satellites tracked
+[00:08:10.923,095] <inf> main: SEARCHING: 2 satellites tracked
+[00:08:11.923,645] <inf> main: SEARCHING: 2 satellites tracked
+[00:08:12.924,194] <inf> main: SEARCHING: 1 satellites tracked
+[00:08:13.924,743] <inf> main: SEARCHING: 1 satellites tracked
+[00:08:14.925,323] <inf> main: SEARCHING: 1 satellites tracked
+[00:08:15.925,872] <inf> main: SEARCHING: 1 satellites tracked

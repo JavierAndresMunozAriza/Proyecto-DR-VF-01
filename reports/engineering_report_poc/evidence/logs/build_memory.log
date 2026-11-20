@@ -1,0 +1,26 @@
+# Firmware build (pristine), commit 0b19c71, 2026-11-20, board thingy91x/nrf9151/ns, NCS v3.4.1
+# The application image is the region with size 810858 B (non-secure flash); the other blocks are MCUboot, B0 and TF-M
+Memory region         Used Size  Region Size  %age Used
+           FLASH:       45036 B        80 KB     54.98%
+             RAM:       25288 B       256 KB      9.65%
+        IDT_LIST:           0 B        32 KB      0.00%
+--
+Memory region         Used Size  Region Size  %age Used
+           FLASH:       45036 B        80 KB     54.98%
+             RAM:       25288 B       256 KB      9.65%
+        IDT_LIST:           0 B        32 KB      0.00%
+--
+Memory region         Used Size  Region Size  %age Used
+           FLASH:       31632 B      32256 B     98.07%
+             RAM:        6344 B        32 KB     19.36%
+[142/143] Generating ../bin/tfm_s.bin, ../bin/tfm_s.elf, ../bin/tfm_s.hex
+--
+Memory region         Used Size  Region Size  %age Used
+           FLASH:       94268 B     810858 B     11.63%
+             RAM:       19776 B     211608 B      9.35%
+        IDT_LIST:           0 B        32 KB      0.00%
+--
+Memory region         Used Size  Region Size  %age Used
+           FLASH:       27056 B        32 KB     82.57%
+             RAM:       37448 B       256 KB     14.29%
+        IDT_LIST:           0 B        32 KB      0.00%
