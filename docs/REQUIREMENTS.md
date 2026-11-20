@@ -1,7 +1,7 @@
 # Matriz de Requerimientos — Proyecto DR-VF-01
 **Sistema Modular de Cerca Virtual para Ganado**  
-**Versión:** 1.1  
-**Fecha:** 31/10/2026  
+**Versión:** 1.2  
+**Fecha:** 20/11/2026  
 **Documento Principal:** [PROJECT_CONTEXT.md](./PROJECT_CONTEXT.md)
 
 ---
@@ -31,19 +31,22 @@
 | **RNF-08** | Protección IP67 de la carcasa | IP67 (objetivo de diseño; el PRD lo ubica en Fase 2) | Por definir | Por definir | **Pendiente:** sello del USB-C (MPN y tipo **POR DECIDIR**), `mechanical/IP67_SPEC.md` |
 | **RNF-09** | Rango de temperatura de operación | 0 a +65 °C (decidido el 2026-11-04), límite ambiente del módulo dentro de la carcasa; NF-05 usa 0 a 50 °C para la temperatura del aire en campo. Los componentes del BOM se eligen para -20 a +65 °C como margen y el módulo N16R8 admite -40 a 65 °C de ambiente | Por definir | Por definir | **Pendiente:** análisis en `hardware/THERMAL.md`. Alcance decidido el 2026-11-03: uso solo en zonas sin heladas (por debajo de unos 2.300 m). La carga de la batería no tiene corte por frío, por eso el rango empieza en 0 °C |
 
-## 3. Estado de Implementación
+## 3. Estado de Verificación
 
-- [ ] **RF-01**: Pendiente de implementación
-- [ ] **RF-02**: Pendiente de implementación. Dato (2026-11-20, nRF9151 en Thingy:91 X, benchmark por lotes): 350 µs con 4 vértices, 15.4 ms con 256 y 61.4 ms con 1024; crece linealmente (unos 111 µs + 59.9 µs por vértice) y llega a 50 ms cerca de los 830 vértices; falta medir en la placa final (ESP32-S3) con osciloscopio  
-- [ ] **RF-03**: Pendiente de implementación
-- [ ] **RF-04**: Pendiente de implementación
-- [ ] **RF-05**: Pendiente de implementación
-- [ ] **RNF-01**: Pendiente de verificación
-- [ ] **RNF-02**: Pendiente de verificación
-- [ ] **RNF-03**: Pendiente de verificación
-- [ ] **RNF-04**: Pendiente de verificación
-- [ ] **RF-06**: Pendiente de definición e implementación
-- [ ] **RNF-05 a RNF-09**: Pendientes de definición y verificación
+Estado de cada requerimiento según la prueba de concepto (PoC) en la Nordic Thingy:91 X (nRF9151), no en la PCB final. El detalle, los criterios `PoC-01` a `PoC-11`, la metodología y la evidencia están en el *Engineering Report* (`reports/engineering_report_poc/`, secciones de resultados y de cumplimiento). Medido el 2026-11-20.
+
+| ID | Estado en la PoC | Plataforma | Resultado |
+|----|------------------|------------|-----------|
+| **RF-01** | No cumple en estas condiciones | nRF9151, cielo parcial | CEP50 de 3.5 a 7.4 m frente a 2.5 m. Es precisión (dispersión), no exactitud absoluta; el CEP no está definido (CEP50 o RMS). Falta cielo abierto y un punto de referencia |
+| **RF-02** | Parcial | nRF9151 | 350 µs con 4 vértices y 61.4 ms con 1024; llega a 50 ms cerca de los 830 vértices. Falta medirlo en el ESP32-S3 con osciloscopio |
+| **RF-03** | Parcial | nRF9151 | Solo la alerta visual con el LED RGB; no hay optoacoplador, buzzer ni medición de corriente |
+| **RF-04** | No cubierto | — | La PoC no usa LoRa |
+| **RF-05** | No cubierto | — | La PoC no usa el MAX17048 |
+| **RF-06** | No cubierto | — | La PoC no usa la IMU ni el sueño profundo |
+| **RNF-01** a **RNF-04** | No verificado | — | Autonomía, determinismo en Zephyr (sin traza de latencias), consumo en sueño profundo y fiabilidad mecánica no se midieron |
+| **RNF-05** a **RNF-09** | No verificado | — | Siguen pendientes de definición y verificación |
+
+Además, el SRD pide GNSS a más de 1 Hz (SR-10): la nRF9151 entrega 1 Hz, así que no se cumple en la PoC; el requisito apunta al MAX-M10S.
 
 ---
 *Documento generado a partir de la matriz original en PROJECT_CONTEXT.md*

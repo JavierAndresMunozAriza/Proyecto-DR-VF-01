@@ -54,6 +54,8 @@ Report, from `reports/` (wraps `latexmk`, output in `reports/output/`):
 
 The final PDF is compiled in Overleaf, not here, and committed as `docs/DR-VF-01_Memoria_Tecnica.pdf` (the README links to it). Keep the `.tex` sources consistent, but do not spend time making `./build.sh` work: it exits 1 at `\spanishdeactivate{~<>}` (`reports/Configuracion.tex:8`) and that is accepted.
 
+The Engineering Report of the PoC (`reports/engineering_report_poc/`, Spanish `main_es.tex` and English `main_en.tex`) builds locally with `latexmk -pdf` and needs no `\spanishdeactivate`. Every figure lives in `data.tex` and traces to a file in `evidence/`; run `python3 -I evidence/check_numbers.py` after changing either (it must report 0 failed). Raw field captures with the real location go in `evidence/private/`, which git ignores: never print or commit coordinates.
+
 ## Architecture
 
 - **Specs:** `docs/PROJECT_CONTEXT.md` is the master document. It links to `docs/REQUIREMENTS.md` (RF-xx and RNF-xx requirements with traceability) and `docs/ARCHITECTURE.md` (power topology and component calculations). Firmware design is in `docs/firmware_docs/`.

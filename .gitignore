@@ -20,6 +20,8 @@ reports/output/
 *.pdf  
 # EXCEPCIÓN: Mantiene rastreado el PDF final listo para entrega en la raíz
 !DR-VF-01_Memoria_Tecnica.pdf
+!DR-VF-01_Engineering_Report_PoC_es.pdf
+!DR-VF-01_Engineering_Report_PoC_en.pdf
 # Firmware / Compiladores (Binarios y Build)
 build/
 .pio/
