@@ -40,3 +40,6 @@ firmware/src/geofence/geofence_test_debug
 
 # Gentle AI skill registry
 .atl/
+# Python bytecode caches
+__pycache__/
+*.pyc
