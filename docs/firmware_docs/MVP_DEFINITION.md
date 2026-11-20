@@ -169,7 +169,7 @@ int lora_send_geofence_alert(geopoint_t* location) {
 
 ### Tareas RTOS Principales
 ```c
-// Propuesta (el archivo aún no existe): firmware/src/main.c
+// Propuesta de diseño (el firmware/src/main.c actual es solo la prueba de concepto con ruta simulada, sin hilos)
 K_THREAD_DEFINE(imu_monitor, STACK_SIZE, imu_monitor_thread, 
                 NULL, NULL, NULL, IMU_PRIORITY, 0, 0);
 
@@ -212,6 +212,11 @@ K_THREAD_DEFINE(lora_handler, STACK_SIZE, lora_thread,
 3. **Fase 3 - Energy Management**: Optimización de consumo y estados de sueño
 4. **Fase 4 - User Interface**: Configuración web y experiencia de usuario
 5. **Principio de Elecia White**: "Build incrementally" - Progreso medible en cada fase
+
+### Estado de la prueba de concepto (Nordic Thingy:91 X)
+- **Paso 1, hecho (2026-11-19):** una aplicación Zephyr recorre una ruta simulada sobre un polígono de prueba, llama a `geofence_check()` y gradúa el LED RGB: verde a 20 m o más del límite, mezcla hacia rojo al acercarse y rojo parpadeante fuera del polígono. Verificado en la placa con el registro por consola y con el LED a la vista.
+- **Primer dato de RF-02:** `geofence_check()` tarda 275 µs con un polígono de 4 vértices en el nRF9151. Falta medir con polígonos grandes antes de dar el requisito por cumplido.
+- **Pendiente:** GNSS real, FSM de la aplicación, comunicaciones, IMU y la configuración de la placa ESP32-S3.
 
 ## Conclusiones
 

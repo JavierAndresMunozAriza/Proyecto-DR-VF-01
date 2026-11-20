@@ -34,6 +34,16 @@ make cross-check  # compile geofence.c for Cortex-M33 and ESP32-S3 with strict w
 
 For the application, `geofence_check()` is the call to use: it returns inside/outside plus the distance to the nearest edge, and an error code (never "outside") for a bad GNSS fix. `geofence_distance_to_boundary()` is accurate up to 85 degrees of latitude, and the antimeridian is not supported (see `geofence.h`).
 
+Thingy:91 X proof-of-concept app, from `firmware/`. Always go through the script: Zephyr does not support spaces anywhere in the application path (it splits `CONF_FILE` on spaces) and the repository folder name has one, so `build.sh` builds through a space-free symlink. Renaming the folder is planned and makes the symlink unnecessary:
+
+```bash
+./build.sh        # build; image in ~/.cache/dr-vf-01/build/dfu_application.zip
+./build.sh flash  # flash over USB-C (MCUboot); it prints almost nothing, check the console
+./build.sh clean
+```
+
+The app log is on `/dev/ttyACM0` at 115200 baud. `alert_color` has its own host tests (`make test` in `firmware/src/alert`). Flashing from WSL2 needs a udev rule, `SUBSYSTEM=="usb", ATTR{idVendor}=="1915", MODE="0666"` in `/etc/udev/rules.d/`, or `pyusb` fails with "The device has no langid".
+
 No linter or formatter is configured; GCC warnings are the only static check.
 
 Report, from `reports/` (wraps `latexmk`, output in `reports/output/`):
@@ -47,7 +57,7 @@ The final PDF is compiled in Overleaf, not here, and committed as `docs/DR-VF-01
 ## Architecture
 
 - **Specs:** `docs/PROJECT_CONTEXT.md` is the master document. It links to `docs/REQUIREMENTS.md` (RF-xx and RNF-xx requirements with traceability) and `docs/ARCHITECTURE.md` (power topology and component calculations). Firmware design is in `docs/firmware_docs/`.
-- **Firmware:** the code today is only the geofence engine (`firmware/include/geofence.h`, `firmware/src/geofence/geofence.c`) and its host tests. The RTOS application, drivers, FSM and board configuration exist only as designs in `docs/firmware_docs/`.
+- **Firmware:** the geofence engine (`firmware/include/geofence.h`, `firmware/src/geofence/geofence.c`) with its host tests, plus step 1 of the Thingy:91 X proof of concept: `firmware/src/main.c` (simulated route, no GNSS yet), `alert_color` (distance to RGB, host-tested), and the `rgb_led` and `timing` adapters. It runs on the board; `geofence_check()` takes 275 us for a 4-vertex polygon. Real GNSS, the application FSM, comms, IMU and the ESP32-S3 board configuration exist only as designs in `docs/firmware_docs/`.
 - **Report:** `reports/main.tex` is the root. It loads `Configuracion.tex` and one folder per domain under `reports/secciones/` (requirements, hardware, firmware, mechanical, commercial).
 - **Hardware and mechanical:** `hardware/` and `mechanical/` track Markdown specs only, with no EDA binaries.
 
@@ -64,5 +74,5 @@ Firmware design rules, based on Elecia White's *Making Embedded Systems*:
 Do not assume either side. Ask when the answer affects the work.
 
 - **Target (decided 2026-10-30):** two boards, one codebase on Zephyr. Proof of concept on the Nordic Thingy:91 X (nRF9151, nRF Connect SDK, LTE-M/NB-IoT/GNSS), then the final PCB on the ESP32-S3-WROOM-1U-N16R8 (LoRa SX1262, external GNSS, LSM6DSOX). `geofence.c`, the FSM and logging are shared; each board has its own overlay, `prj.conf` and `gnss`/`comms`/`imu` adapters. The README and `docs/` still describe one target or the other, and that contradiction is being removed. FreeRTOS is no longer the plan.
-- **Local toolchain:** `west`, Zephyr SDK 1.0.1 (`~/zephyr-sdk-1.0.1`) and upstream Zephyr (`~/zephyrproject`) are installed. nRF Connect SDK v3.4.1 is also installed (toolchain in `~/ncs`, workspace in `~/nordic/asset-tracker-template`). The upstream `west` in the `~/zephyrproject` venv cannot build Thingy:91 X targets, so use `~/nordic/ncs-shell.sh` (for example `~/nordic/ncs-shell.sh west build -p -b thingy91x/nrf9151/ns`). `nrfutil` has only `sdk-manager`; `nrfutil device` and `nrfjprog` are not installed. Flash over USB-C with `west thingy91x-dfu`; from WSL2 the board needs `usbipd bind` once and `usbipd attach` (it re-enumerates in MCUboot mode).
+- **Local toolchain:** `west`, Zephyr SDK 1.0.1 (`~/zephyr-sdk-1.0.1`) and upstream Zephyr (`~/zephyrproject`) are installed. nRF Connect SDK v3.4.1 is also installed (toolchain in `~/ncs`, workspace in `~/nordic/asset-tracker-template`). The upstream `west` in the `~/zephyrproject` venv cannot build Thingy:91 X targets, so use `~/nordic/ncs-shell.sh` (for example `~/nordic/ncs-shell.sh west build -p -b thingy91x/nrf9151/ns`). `nrfutil` has `sdk-manager` and `device` (installed 2026-11-19; `west thingy91x-dfu` calls `nrfutil device program`); `nrfjprog` is not installed. Flash over USB-C with `firmware/build.sh flash` (it wraps `west thingy91x-dfu`); from WSL2 the board needs `usbipd bind` once and `usbipd attach` (it re-enumerates in MCUboot mode).
 - **Geofence math:** the README now matches the code (`double`, ray casting, `malloc`/`realloc`); a fixed-point kernel is only planned.

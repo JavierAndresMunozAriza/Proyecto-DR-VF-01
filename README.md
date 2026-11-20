@@ -90,9 +90,13 @@ Batteries in remote cattle collars cannot be replaced frequently. The firmware i
 │   ├── ARCHITECTURE.md          # Power topology, component calculations, firmware architecture
 │   ├── firmware_docs/           # Boot sequences, FSM logic, Risk evaluation
 │   └── comercial_docs/          # System Datasheet & User Manual
-├── firmware/                    # Firmware source code (geofence engine so far)
-│   ├── include/                 # Public C headers (geofence.h)
-│   └── src/geofence/            # Core C Engine, Makefile, & Unit Tests
+├── firmware/                    # Firmware: geofence engine + Thingy:91 X proof of concept
+│   ├── include/                 # Public C headers
+│   ├── src/geofence/            # Core C Engine, Makefile, & Unit Tests
+│   ├── src/alert/               # Distance to RGB alert color, with host tests
+│   ├── src/led/, src/timing/    # RGB LED (PWM) and timing adapters
+│   ├── src/main.c               # Proof-of-concept app: simulated route + RGB alert
+│   └── build.sh                 # Build and flash for the Thingy:91 X
 ├── hardware/                    # Hardware design notes (no EDA files tracked yet)
 │   ├── BOM.md                   # Bill of Materials
 │   ├── COMPRAS.md               # Where to buy each part (sources and status)
@@ -117,6 +121,14 @@ cd firmware/src/geofence
 make test
 ```
 Timing printed by the host tests says nothing about the 50 ms requirement on the target; that needs a measurement on the board.
+
+### Proof of concept on the Nordic Thingy:91 X
+With nRF Connect SDK v3.4.1 installed, from `firmware/`:
+```
+./build.sh        # build
+./build.sh flash  # flash over USB-C (MCUboot)
+```
+The app walks a simulated route across a test polygon and shows the distance to the boundary on the RGB LED: green at 20 m or more, mixing toward red as it gets closer, blinking red outside. `geofence_check()` takes 275 µs for a 4-vertex polygon on the nRF9151 (measured on the board; larger polygons are not measured yet). The simulated route stands in for GNSS, which is the next step.
 
 ## 🛡️ License & Contact
 Distributed under the MIT License (see [LICENSE](./LICENSE)). Developed by engineering team for UNAL academic defense and industrial remote deployment readiness.

@@ -201,7 +201,7 @@ Siguiendo los principios de Elecia White:
 
 ### Watchdog Implementation
 ```c
-// Propuesta (el archivo aún no existe): firmware/src/main.c
+// Propuesta de diseño (el firmware/src/main.c actual es solo la prueba de concepto con ruta simulada, sin hilos)
 K_THREAD_DEFINE(geofence_task, STACK_SIZE, geofence_thread, 
                 NULL, NULL, NULL, PRIORITY, 0, 0);
 
