@@ -31,7 +31,8 @@ Además, fuera de `logs/`:
 
 - `field_ttff_manual.csv`: tres tiempos hasta el primer fix en frío, medidos con cronómetro en exteriores (la placa iba a batería, sin PC). No hay log de la consola de esas pruebas.
 - `field_conditions.md`: hora, clima, entorno y colocación de las pruebas de campo, sin ubicación.
-- `analyze_static.py`: calcula la dispersión de una prueba estática a partir de una captura privada y solo escribe cifras derivadas y desplazamientos relativos a la media.
+- `static_offsets.csv`: desplazamientos este y norte, en metros respecto al promedio, de los 569 fixes usados en la prueba estática (sin coordenadas absolutas), con su precisión reportada.
+- `analyze_static.py`: calcula la dispersión de una prueba estática a partir de una captura privada, separando los tramos de fixes y descartando la convergencia de cada uno, y solo escribe cifras derivadas y desplazamientos relativos a la media.
 - `private/` (ignorada por git): capturas crudas de las pruebas de campo, que contienen la ubicación real.
 
 ## Limitaciones de la evidencia (el informe debe declararlas)

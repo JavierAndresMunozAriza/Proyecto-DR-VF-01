@@ -10,11 +10,12 @@ This measures precision (scatter around the mean), not absolute accuracy: withou
 reference point of known coordinates there is no way to measure the absolute error.
 
 Usage:
-  python3 -I analyze_static.py [--skip SECONDS] <raw.log> [offsets.csv]   analyze a capture
+  python3 -I analyze_static.py [--skip SECONDS] [--gap SECONDS] <raw.log> [offsets.csv]   analyze a capture
   python3 -I analyze_static.py --selftest                                 check the maths on synthetic data
 
---skip drops the first SECONDS after the first fix, so the convergence of the receiver
-does not count as scatter.
+--skip drops the first SECONDS of every run of fixes, so the convergence of the receiver
+does not count as scatter. A new run starts when two fixes are more than --gap seconds apart
+(default 30), for example after the receiver lost its position and found it again.
 """
 import csv
 import math
@@ -58,6 +59,25 @@ def drop_initial(fixes, skip_s):
     if not fixes or skip_s <= 0:
         return fixes
     return [f for f in fixes if f[0] >= fixes[0][0] + skip_s]
+
+
+def split_runs(fixes, gap_s):
+    """Split the fixes into runs: a new run starts after a silence longer than gap_s."""
+    runs = []
+    for f in fixes:
+        if runs and f[0] - runs[-1][-1][0] <= gap_s:
+            runs[-1].append(f)
+        else:
+            runs.append([f])
+    return runs
+
+
+def drop_initial_per_run(fixes, skip_s, gap_s):
+    """Drop the convergence seconds at the start of every run of fixes."""
+    kept = []
+    for run in split_runs(fixes, gap_s):
+        kept.extend(drop_initial(run, skip_s))
+    return kept
 
 
 def nearest_rank(sorted_values, fraction):
@@ -140,6 +160,14 @@ def selftest():
     checks.append(("skip restores the exact CEP50", abs(statistics(kept)["cep50_m"] - radius) < 0.01))
     checks.append(("without skip the wild fixes inflate the scatter",
                    statistics(wild + circle)["cep95_m"] > radius + 1.0))
+    # Two runs of fixes separated by a long silence: each one has its own convergence to skip.
+    run_b = [(f[0] + 5000.0, f[1], f[2], f[3]) for f in wild + circle]
+    both = wild + circle + run_b
+    checks.append(("a long silence splits the fixes into two runs", len(split_runs(both, 30.0)) == 2))
+    kept_both = drop_initial_per_run(both, 5.0, 30.0)
+    checks.append(("each run loses only its own first seconds", len(kept_both) == 200))
+    checks.append(("two runs: the CEP50 is still the exact radius",
+                   abs(statistics(kept_both)["cep50_m"] - radius) < 0.01))
     failed = [name for name, ok in checks if not ok]
     for name, ok in checks:
         print(("ok   " if ok else "FAIL ") + name)
@@ -152,8 +180,12 @@ def main(argv):
         return selftest()
     args = argv[1:]
     skip_s = 0.0
-    if len(args) >= 2 and args[0] == "--skip":
-        skip_s = float(args[1])
+    gap_s = 30.0
+    while len(args) >= 2 and args[0] in ("--skip", "--gap"):
+        if args[0] == "--skip":
+            skip_s = float(args[1])
+        else:
+            gap_s = float(args[1])
         args = args[2:]
     if len(args) not in (1, 2):
         print(__doc__)
@@ -161,8 +193,14 @@ def main(argv):
     with open(args[0], errors="replace") as f:
         text = re.sub(r"\x1b\[[0-9;]*m", "", f.read()).replace("\r", "").replace("\x00", "")
     all_fixes = parse_fixes(text.splitlines())
-    fixes = drop_initial(all_fixes, skip_s)
-    print(f"fixes in the last boot {len(all_fixes)}, skipped as convergence {len(all_fixes) - len(fixes)}")
+    fixes = drop_initial_per_run(all_fixes, skip_s, gap_s)
+    runs = split_runs(all_fixes, gap_s)
+    print(f"fixes in the last boot {len(all_fixes)} in {len(runs)} run(s), "
+          f"skipped as convergence {len(all_fixes) - len(fixes)}")
+    for i, run in enumerate(runs, 1):
+        accs = sorted(f[3] for f in run)
+        print(f"  run {i}: uptime {run[0][0]:.0f} s to {run[-1][0]:.0f} s ({(run[-1][0] - run[0][0]) / 60:.1f} min), "
+              f"{len(run)} fixes, reported accuracy first {run[0][3]:.1f} m, median {accs[len(accs) // 2]:.1f} m")
     stats = statistics(fixes)
     report(stats)
     if stats is not None and len(args) == 2:

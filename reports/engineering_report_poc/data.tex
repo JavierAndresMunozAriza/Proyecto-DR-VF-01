@@ -39,6 +39,96 @@
 \newcommand{\dBenchFitSlopeUs}{59.87}
 \newcommand{\dBenchLimitVertices}{833}          % vertices that reach 50 ms by the linear fit
 
+% --- Derived benchmark values (from the means above, 50 ms = 50000 us) -------
+\newcommand{\dBenchMsSixteen}{1.07}
+\newcommand{\dBenchMsSixtyFour}{3.94}
+\newcommand{\dBenchMsTwoFiftySix}{15.44}
+\newcommand{\dBenchMsThousand}{61.42}
+\newcommand{\dBenchMarginFour}{143}
+\newcommand{\dBenchMarginSixteen}{47}
+\newcommand{\dBenchMarginSixtyFour}{12.7}
+\newcommand{\dBenchMarginTwoFiftySix}{3.2}
+\newcommand{\dBenchMarginThousand}{0.81}
+
+% --- Requirement and datasheet references ------------------------------------
+\newcommand{\dReqCep}{2.5}                       % SR-11, m
+\newcommand{\dNordicCepFifty}{2.0}               % nRF9151 spec, continuous tracking, m
+\newcommand{\dTtffSpecCold}{30.5}                % nRF9151 spec, s
+\newcommand{\dTtffSpecHot}{1.3}                  % nRF9151 spec, s
+
+% --- Cold-start time by stopwatch (evidence/field_ttff_manual.csv) -----------
+\newcommand{\dTtffRunA}{90}
+\newcommand{\dTtffRunB}{54}
+\newcommand{\dTtffRunC}{136}
+\newcommand{\dTtffMean}{93.3}
+\newcommand{\dTtffMedian}{90}
+\newcommand{\dTtffSd}{41.1}
+\newcommand{\dTtffRatioMin}{1.8}
+\newcommand{\dTtffRatioMax}{4.5}
+
+% --- Cold start from the window, no fix (derived from private captures) ------
+\newcommand{\dWindowColdMinutes}{20.1}
+\newcommand{\dWindowColdListedMin}{2}
+\newcommand{\dWindowColdListedMax}{6}
+\newcommand{\dWindowColdFourPct}{27}
+\newcommand{\dWindowColdPeak}{12}
+
+% --- Static test (evidence/analyze_static.py --skip 60, private capture, 35 min) --
+\newcommand{\dStaticRecordingMinutes}{35.0}
+\newcommand{\dStaticFirstFixS}{376}
+\newcommand{\dStaticFirstFixAcc}{73.6}
+\newcommand{\dStaticFenceS}{377}
+\newcommand{\dStaticAccStart}{48.0}
+\newcommand{\dStaticAccConverged}{13.4}
+\newcommand{\dStaticMaxGapS}{5}
+\newcommand{\dStaticSkipS}{60}
+% run 1: first stretch of accepted fixes
+\newcommand{\dStaticRunOneEndS}{823}
+\newcommand{\dStaticRunOneFixes}{442}
+\newcommand{\dStaticRunOneMinutes}{7.4}
+\newcommand{\dStaticTailAccFrom}{40.3}
+\newcommand{\dStaticTailAccTo}{48.3}
+\newcommand{\dStaticLostFirstS}{833}
+\newcommand{\dStaticGapMinutes}{16.7}
+% run 2: the fix came back
+\newcommand{\dStaticRunTwoStartS}{1834}
+\newcommand{\dStaticRunTwoEndS}{2080}
+\newcommand{\dStaticRunTwoFixes}{247}
+\newcommand{\dStaticRunTwoMinutes}{4.1}
+\newcommand{\dStaticRunTwoFirstAcc}{27.8}
+\newcommand{\dStaticLostSecondS}{2090}
+% statistics after skipping the first 60 s of each run
+\newcommand{\dStaticRunOneUsed}{382}
+\newcommand{\dStaticRunOneCepFifty}{5.81}
+\newcommand{\dStaticRunOneCepNinetyFive}{15.68}
+\newcommand{\dStaticRunOneDrms}{7.84}
+\newcommand{\dStaticRunOneAcc}{12.6}
+\newcommand{\dStaticRunTwoUsed}{187}
+\newcommand{\dStaticRunTwoCepFifty}{3.46}
+\newcommand{\dStaticRunTwoCepNinetyFive}{9.52}
+\newcommand{\dStaticRunTwoDrms}{5.24}
+\newcommand{\dStaticRunTwoAcc}{10.6}
+\newcommand{\dStaticBothUsed}{569}
+\newcommand{\dStaticBothCepFifty}{7.35}
+\newcommand{\dStaticBothCepNinetyFive}{14.11}
+\newcommand{\dStaticBothDrms}{8.58}
+\newcommand{\dStaticBothSigmaEast}{7.04}
+\newcommand{\dStaticBothSigmaNorth}{4.91}
+\newcommand{\dStaticBothAcc}{11.6}
+\newcommand{\dStableLimit}{20}
+\newcommand{\dStableUsed}{463}
+\newcommand{\dStableCepFifty}{7.51}
+\newcommand{\dStableCepNinetyFive}{13.73}
+\newcommand{\dStableDrms}{8.70}
+\newcommand{\dStaticRunSeparation}{10.3}
+\newcommand{\dStaticRatioOne}{2.3}
+\newcommand{\dStaticRatioTwo}{1.4}
+\newcommand{\dStaticRatioBoth}{2.9}
+
+% --- Other builds ------------------------------------------------------------
+\newcommand{\dFlashBench}{95\,692}
+\newcommand{\dFlashCold}{94\,472}
+
 % --- Host tests (evidence/logs/host_tests.log) ------------------------------
 \newcommand{\dHostTests}{14}
 \newcommand{\dHostChecks}{3\,067}

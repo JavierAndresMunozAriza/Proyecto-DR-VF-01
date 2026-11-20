@@ -1,0 +1,196 @@
+\section{Resultados medidos}
+
+Todas las cifras son de la \dSoc{} en una \dBoard{} con el firmware del commit \texttt{\dFirmwareCommit}, y
+salen de los registros guardados como evidencia. No son del ESP32-S3 ni del receptor u-blox de la PCB final.
+
+\subsection{Tiempo de \texttt{geofence\_check()} (PoC-01)}
+
+Media por llamada de un lote de 40, en tres arranques consecutivos. Los tres arranques coinciden
+con una diferencia máxima de 0.02~\% y las 40 clasificaciones de cada polígono fueron correctas.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|r r r X|}
+\hline
+\tablehead{\textbf{Vértices} & \textbf{Media por llamada} & \textbf{Margen frente a 50~ms} & \textbf{Estado}} \\ \hline
+4 & \dBenchUsFour~$\mu$s & \dBenchMarginFour$\times$ & Cumple \\ \hline
+16 & \dBenchMsSixteen~ms & \dBenchMarginSixteen$\times$ & Cumple \\ \hline
+64 & \dBenchMsSixtyFour~ms & \dBenchMarginSixtyFour$\times$ & Cumple \\ \hline
+256 & \dBenchMsTwoFiftySix~ms & \dBenchMarginTwoFiftySix$\times$ & Cumple \\ \hline
+1024 & \dBenchMsThousand~ms & \dBenchMarginThousand$\times$ & \textbf{No cumple} \\ \hline
+\end{tabularx}
+\caption{Tiempo medio de \texttt{geofence\_check()} en la placa.}
+\end{table}
+
+El costo es lineal: $T(N) \approx \dBenchFitOffsetUs~\mu\text{s} + \dBenchFitSlopeUs~\mu\text{s}\cdot N$,
+con diferencias de a lo sumo 1.5~$\mu$s respecto a las medias. El límite de 50~ms se alcanza cerca de los
+\dBenchLimitVertices{} vértices. \textbf{El criterio PoC-01 se cumple para polígonos de hasta unos 800 vértices
+y no se cumple con 1024.} Una cerca de una finca, con decenas o unos cientos de vértices, queda dentro. Es
+una medida con el contador del kernel y no con un osciloscopio.
+
+\subsection{Primer fix en frío (PoC-07)}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|c r X|}
+\hline
+\tablehead{\textbf{Arranque} & \textbf{Tiempo hasta el LED verde} & \textbf{Relación con los \dTtffSpecCold~s de la hoja de datos}} \\ \hline
+1 & \dTtffRunA~s & 3.0$\times$ \\ \hline
+2 & \dTtffRunB~s & 1.8$\times$ \\ \hline
+3 & \dTtffRunC~s & 4.5$\times$ \\ \hline
+\end{tabularx}
+\caption{Tiempo hasta el primer fix usable tras un arranque en frío, medido con cronómetro.}
+\end{table}
+
+La media es de \dTtffMean~s, la mediana de \dTtffMedian~s y la desviación de \dTtffSd~s, con solo tres
+muestras. La hoja de datos del \dSoc{} da \dTtffSpecCold~s típico en frío, en cielo abierto, a 25~°C y con
+un amplificador de bajo ruido externo con filtro SAW; no se sabe si esta placa cumple esa suposición.
+Las pruebas se hicieron en una calle de barrio entre casas, no en cielo abierto, así que la comparación es
+orientativa. La incertidumbre de la medida es de unos 2~s. El tiempo medido es hasta un fix con precisión
+reportada de 50~m o mejor, no hasta el primer fix a secas.
+
+Con el mismo arranque en frío, esta vez desde la ventana de la prueba estática, \textbf{no hubo ningún
+fix en \dWindowColdMinutes{} minutos}. En ese tiempo la lista de satélites del receptor osciló entre
+\dWindowColdListedMin{} y \dWindowColdListedMax, con cuatro o más solo el \dWindowColdFourPct~\% del
+tiempo, salvo un pico de \dWindowColdPeak{} en los primeros segundos de la búsqueda. Esa lista cuenta
+satélites que aparecen en la respuesta del receptor, no satélites con señal utilizable ni usados en el fix.
+Una explicación posible, que no se comprobó, es que sin datos de asistencia el receptor tiene que
+decodificar la órbita de cada satélite desde su propia señal, y eso exige una señal más fuerte y continua
+que la del cielo parcial de esa ventana.
+
+\subsection{Posición GNSS en la prueba estática (PoC-02 y PoC-03)}
+
+La prueba se hizo desde una ventana de primer piso orientada al sur, abierta, con la placa prácticamente
+fuera, con el firmware normal y los datos de satélites guardados. La placa estuvo quieta durante los
+\dStaticRecordingMinutes{} minutos que duró la grabación. La secuencia fue:
+
+\begin{itemize}
+  \item A los \dStaticFirstFixS~s del reinicio llegó el primer fix, con una precisión reportada de
+        \dStaticFirstFixAcc~m, que la aplicación descartó por pasar los 50~m. A los \dStaticFenceS~s un
+        fix aceptable creó la cerca y la aplicación pasó a \texttt{MONITORING}.
+  \item \textbf{Primer tramo:} hasta los \dStaticRunOneEndS~s, \dStaticRunOneFixes{} fixes aceptados a 1~Hz
+        (\dStaticRunOneMinutes~min), con un solo hueco de \dStaticMaxGapS~s. La precisión reportada
+        convergió de \dStaticAccStart~m a unos \dStaticAccConverged~m en menos de un minuto. Al final se
+        degradó de forma gradual, de \dStaticTailAccFrom{} a \dStaticTailAccTo~m, la lista de satélites bajó a
+        3 o 4, y a los \dStaticLostFirstS~s la aplicación pasó a \texttt{FIX\_LOST}.
+  \item \textbf{Sin fix durante \dStaticGapMinutes{} minutos.} El receptor siguió buscando con la placa quieta.
+  \item \textbf{Segundo tramo:} a los \dStaticRunTwoStartS~s el fix volvió, con una precisión reportada
+        inicial de \dStaticRunTwoFirstAcc~m, y hubo \dStaticRunTwoFixes{} fixes aceptados hasta los
+        \dStaticRunTwoEndS~s (\dStaticRunTwoMinutes~min). A los \dStaticLostSecondS~s se degradó de nuevo y la
+        aplicación volvió a \texttt{FIX\_LOST}.
+\end{itemize}
+
+Que el fix se pierda y vuelva con la placa quieta indica que lo que cambia es la señal que llega, no la
+placa. La causa no se determinó: el firmware de la PoC no registra la intensidad de señal de cada satélite.
+Una hipótesis, sin comprobar, es que los satélites, al moverse por el cielo, pasan detrás de los árboles, los
+cables o el borde de la ventana.
+
+\textbf{PoC-03.} El intervalo entre fixes dentro de cada tramo fue de 1.01~s: el receptor entrega 1~Hz en modo
+continuo, y por tanto \textbf{no supera 1~Hz}, como pide SR-10. Ese requisito apunta al receptor de la PCB.
+
+\textbf{PoC-02.} Se descartaron los primeros \dStaticSkipS~s de fixes de cada tramo, por la convergencia del
+receptor, y se calculó la dispersión de las posiciones respecto a su propio promedio. Quedaron
+\dStaticBothUsed{} fixes, unos 9.5 minutos de datos, por debajo de los 15 minutos previstos.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|X r r r|}
+\hline
+\tablehead{\textbf{Estadístico} & \textbf{Tramo 1} & \textbf{Tramo 2} & \textbf{Ambos tramos}} \\ \hline
+Fixes usados & \dStaticRunOneUsed & \dStaticRunTwoUsed & \dStaticBothUsed \\ \hline
+CEP50 (m) & \dStaticRunOneCepFifty & \dStaticRunTwoCepFifty & \dStaticBothCepFifty \\ \hline
+CEP95 (m) & \dStaticRunOneCepNinetyFive & \dStaticRunTwoCepNinetyFive & \dStaticBothCepNinetyFive \\ \hline
+DRMS (m) & \dStaticRunOneDrms & \dStaticRunTwoDrms & \dStaticBothDrms \\ \hline
+Precisión reportada, mediana (m) & \dStaticRunOneAcc & \dStaticRunTwoAcc & \dStaticBothAcc \\ \hline
+\end{tabularx}
+\caption{Dispersión de la posición en la prueba estática, tras descartar los primeros 60~s de cada tramo.}
+\end{table}
+
+Con solo los fixes cuya precisión reportada fue de \dStableLimit~m o mejor (\dStableUsed{} fixes de los dos
+tramos), el CEP50 es de \dStableCepFifty~m, el CEP95 de \dStableCepNinetyFive~m y el DRMS de \dStableDrms~m;
+filtrar por la precisión reportada no mejora la dispersión.
+
+Frente al criterio de \dReqCep~m CEP del SRD, el CEP50 medido es \dStaticRatioTwo{} veces mayor en el mejor tramo,
+\dStaticRatioOne{} veces en el peor y \dStaticRatioBoth{} veces con los dos juntos. Frente a la hoja de datos del
+\dSoc{}, que da CEP50 de \dNordicCepFifty~m en seguimiento continuo con cielo abierto, tampoco coincide, pero las
+condiciones no son las mismas. \textbf{El criterio PoC-02 no se cumple en estas condiciones.} Esto no permite
+decir qué daría con cielo abierto.
+
+Tres observaciones sobre los números:
+
+\begin{itemize}
+  \item \textbf{La dispersión de los dos tramos juntos es mayor que la de cada uno.} Los promedios de ambos
+        tramos están separados por \dStaticRunSeparation~m. Es decir, el error tiene una parte lenta, que
+        cambia con la constelación visible, y una prueba corta la subestima. Esto sugiere que el valor de un
+        tramo aislado, como el de 3.5~m del segundo, no es representativo.
+  \item \textbf{La cola es pesada:} el CEP95 es unas 2.7 veces el CEP50 en cada tramo, es
+        decir, la mayoría de los fixes están cerca del promedio pero hay desvíos grandes.
+  \item \textbf{La precisión que reporta el receptor} (1 sigma, mediana de unos 11 a 13~m) es mayor que la
+        dispersión observada dentro de un tramo (DRMS de 5 a 8~m). No se contradicen: la dispersión alrededor
+        del promedio no ve un error constante que afecte a todos los fixes del tramo por igual.
+\end{itemize}
+
+\subsection{Alerta del LED y modo demo (PoC-04, PoC-05 y PoC-11)}
+
+El registro del modo demo muestra \texttt{SEARCHING} $\to$ \texttt{DEMO}, la creación de la cerca de 60~m
+alrededor del punto ficticio, 42 pasos de la ruta y \texttt{DEMO} $\to$ \texttt{SEARCHING} al pulsar de
+nuevo. Algunos pasos, tal como salieron en el registro:
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|r c c X|}
+\hline
+\tablehead{\textbf{Distancia al borde} & \textbf{Dentro} & \textbf{Color (R, G, B)} & \textbf{LED}} \\ \hline
+30.00~m & sí & 0, 255, 0 & Verde fijo \\ \hline
+24.00~m & sí & 0, 255, 0 & Verde fijo \\ \hline
+18.00~m & sí & 26, 229, 0 & Empieza a mezclarse hacia el rojo \\ \hline
+12.00~m & sí & 102, 153, 0 & Mezcla \\ \hline
+6.00~m & sí & 179, 76, 0 & Mucho más rojo \\ \hline
+0.00~m & no & 255, 0, 0 & Rojo parpadeando (en el borde exacto la regla semiabierta da fuera) \\ \hline
+6.00~m & no & 255, 0, 0 & Rojo parpadeando, fuera \\ \hline
+4.00~m & sí & 204, 51, 0 & De regreso, dentro \\ \hline
+10.00~m & sí & 128, 127, 0 & Mezcla \\ \hline
+22.00~m & sí & 0, 255, 0 & Verde fijo \\ \hline
+\end{tabularx}
+\caption{Pasos del modo demo (\texttt{evidence/logs/demo\_mode\_session.log}).}
+\end{table}
+
+La secuencia coincide con el diseño: verde fijo a 20~m o más del borde, mezcla hacia el rojo al acercarse,
+y rojo parpadeante fuera, hasta 10~m más allá del borde, y de vuelta. La persona que hizo la prueba pulsó el
+botón, vio la placa entrar al modo demo y, al pulsar de nuevo, vio el LED volver al azul parpadeando. El
+modo demo funcionó sin señal GNSS. \textbf{PoC-04, PoC-05 y PoC-11 se cumplen} en la PoC.
+
+\subsection{Comportamiento a prueba de fallos (PoC-06)}
+
+\begin{itemize}
+  \item En la prueba estática, el registro muestra \texttt{MONITORING} $\to$ \texttt{FIX\_LOST} a los
+        \dStaticLostFirstS~s y otra vez a los \dStaticLostSecondS~s, en cada caso unos diez segundos después del
+        último fix aceptado, y \texttt{FIX\_LOST} $\to$ \texttt{MONITORING} cuando el fix volvió.
+  \item La persona que hizo las pruebas observó el LED en magenta parpadeando al perderse el fix, distinto del
+        rojo parpadeante de estar fuera de la cerca.
+  \item Los tests del PC comprueban que una distancia no finita o negativa, un \texttt{safe\_m} no positivo y
+        cualquier estado desconocido dan el resultado a prueba de fallos, y que \texttt{FAULT} solo se
+        abandona con el modo demo.
+\end{itemize}
+
+\subsection{Huella de memoria (PoC-08)}
+
+El firmware normal ocupa \dFlashBytes~B de flash (\dFlashPercent~\% de los \dFlashRegion~B disponibles para
+la aplicación) y \dRamBytes~B de RAM (\dRamPercent~\% de \dRamRegion~B). La compilación con el benchmark ocupa
+\dFlashBench~B y la que borra los datos de satélites, \dFlashCold~B; ambas usan la misma RAM. El motor de
+cerca ocupa \dEngineBytesCmThree~B compilado para Cortex-M33 y \dEngineBytesEsp~B para ESP32-S3.
+
+\subsection{Corrección del algoritmo y portabilidad (PoC-09 y PoC-10)}
+
+El motor pasa sus \dHostTests{} pruebas (\dHostChecks{} comprobaciones) y \dStressCases{} casos aleatorios con semilla
+fija, sin fallos, también con detectores de errores de memoria. El peor error de la distancia del motor
+frente a haversine fue de \dStressWorstErrorPct~\%, diez veces menor que el 0.2~\% documentado. \textbf{PoC-09
+se cumple.}
+
+Los cinco módulos de C puro y el motor compilan sin cambios, con las advertencias estrictas como errores, para
+el PC, el Cortex-M33 y el ESP32-S3. \textbf{PoC-10 se cumple como compilación}; no se ejecutó nada en el
+ESP32-S3.
