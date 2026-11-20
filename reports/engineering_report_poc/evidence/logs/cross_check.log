@@ -1,0 +1,13 @@
+# make cross-check (engine and the five other pure-C modules), commit d0ca13d, 2026-11-20
+# Strict flags: -std=c99 -O2 -Wall -Wextra -Wpedantic -Werror -Wshadow -Wconversion -Wdouble-promotion -Wcast-qual -Wstrict-prototypes -Wmissing-prototypes -Wundef
+/home/xavi/zephyr-sdk-1.0.1/gnu/arm-zephyr-eabi/bin/arm-zephyr-eabi-size geofence_cm33.o
+   text	   data	    bss	    dec	    hex	filename
+   3336	      0	     24	   3360	    d20	geofence_cm33.o
+/home/xavi/zephyr-sdk-1.0.1/gnu/xtensa-espressif_esp32s3_zephyr-elf/bin/xtensa-espressif_esp32s3_zephyr-elf-size geofence_esp32s3.o
+   text	   data	    bss	    dec	    hex	filename
+   3429	      0	     17	   3446	    d76	geofence_esp32s3.o
+cross-check ../alert/alert_color.c
+cross-check ../fence/fence_square.c
+cross-check ../app/app_fsm.c
+cross-check ../demo/demo_route.c
+cross-check ../bench/bench_polygon.c

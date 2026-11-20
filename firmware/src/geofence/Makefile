@@ -26,6 +26,10 @@ INCDIR = ../../include
 TESTDIR = .
 
 SOURCES = $(SRCDIR)/geofence.c
+
+# The other pure-C modules: `make cross-check` compiles them too, for the host and both targets.
+PURE_MODULES = ../alert/alert_color.c ../fence/fence_square.c ../app/app_fsm.c \
+	../demo/demo_route.c ../bench/bench_polygon.c
 HEADERS = $(INCDIR)/geofence.h
 TEST_SOURCES = $(TESTDIR)/test_geofence.c
 
@@ -98,6 +102,12 @@ cross-check: $(SOURCES) $(HEADERS)
 	$(ESP32S3_PREFIX)gcc $(STRICT_FLAGS) -c $(SOURCES) -o geofence_esp32s3.o
 	$(CM33_PREFIX)size geofence_cm33.o
 	$(ESP32S3_PREFIX)size geofence_esp32s3.o
+	@for m in $(PURE_MODULES); do \
+		echo "cross-check $$m"; \
+		$(CC) $(STRICT_FLAGS) -c $$m -o /dev/null || exit 1; \
+		$(CM33_PREFIX)gcc $(CM33_FLAGS) $(STRICT_FLAGS) -c $$m -o /dev/null || exit 1; \
+		$(ESP32S3_PREFIX)gcc $(STRICT_FLAGS) -c $$m -o /dev/null || exit 1; \
+	done
 
 clean:
 	rm -f $(CROSS_OBJECTS)
