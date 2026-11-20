@@ -1,0 +1,51 @@
+\section{Limitaciones y trabajo futuro}
+
+\subsection{Limitaciones de las mediciones}
+
+\begin{itemize}
+  \item \textbf{Es precisión, no exactitud.} No hubo una referencia de coordenadas conocidas ni un receptor RTK.
+        Un error constante que afecte a todos los fixes por igual no se ve en la dispersión.
+  \item \textbf{No fue cielo abierto.} Los arranques en frío se hicieron en una calle de barrio entre casas y la
+        prueba estática desde una ventana con árbol y cables cerca. No se registraron la altura de los
+        obstáculos, el porcentaje de cielo visible ni la interferencia de radio.
+  \item \textbf{La prueba estática fue corta.} Quedaron unos 9.5 minutos de datos útiles, no los 15 previstos,
+        repartidos en dos tramos. Los dos tramos dieron resultados distintos y sus promedios están separados por
+        \dStaticRunSeparation~m, así que una prueba más larga y en otro momento podría dar números distintos.
+  \item \textbf{Una placa, un lugar, un día.} Nada de esto se repitió con otra placa, en otro sitio ni en otra
+        hora, que es cuando cambia la constelación visible.
+  \item \textbf{Los tres tiempos en frío se cronometraron a mano}, sin registro de la consola, con una
+        incertidumbre de unos 2~s, y sin anotar el clima exacto de cada uno.
+  \item \textbf{La lista de satélites no mide la señal.} Cuenta satélites que aparecen en la respuesta del
+        receptor, no satélites con señal utilizable ni usados en el fix, porque el firmware no registra la
+        intensidad de señal.
+  \item \textbf{El tiempo de la cerca se midió con el contador del kernel}, no con un osciloscopio sobre un pin, y
+        con polígonos regulares de 500~m de radio, no con una cerca real.
+  \item \textbf{Plataforma distinta de la del producto.} Todo se midió en la \dSoc{}, no en el ESP32-S3 ni con el
+        receptor u-blox de la PCB, que son los destinos de SR-11 y SR-12.
+  \item \textbf{Una inferencia no comprobada:} que el costo por vértice de la cerca viene de ejecutar por software
+        las operaciones de doble precisión.
+\end{itemize}
+
+\subsection{Decisiones de diseño que podrían cambiar}
+
+La cerca cuadrada de 60~m, la distancia de 20~m para el verde puro, el límite de 50~m de precisión para
+aceptar un fix y los 10~s para declarar el fix perdido son decisiones de la PoC, no requerimientos de la
+Memoria Técnica. La cerca se genera alrededor del primer fix y no se guarda: un reinicio la reconstruye en
+otro lugar.
+
+\subsection{Trabajo futuro}
+
+\begin{enumerate}
+  \item \textbf{Prueba de precisión con cielo abierto}, de al menos 15 a 30 minutos, repetida en otra hora, y con
+        una referencia de coordenadas conocidas o un receptor RTK, para poder hablar de exactitud.
+  \item \textbf{Diagnóstico de la señal:} registrar la intensidad de cada satélite, cuántos se usan en el fix y
+        qué satélites tienen datos guardados y hasta cuándo, para explicar la pérdida de fix y el arranque lento.
+  \item \textbf{Polígono definido por el usuario} (cerca de una finca), en lugar de un cuadrado alrededor del
+        primer fix. Está prevista como la revisión 1.1 de este informe, guardando los vértices en memoria no
+        volátil y con una forma de crearlos que se pueda llevar a la PCB final.
+  \item \textbf{Acelerar la evaluación de la cerca}, por ejemplo con aritmética de precisión simple o de punto
+        fijo, que permitiría polígonos de más vértices dentro de los 50~ms.
+  \item \textbf{Portar el firmware a la PCB:} un segundo adaptador de GNSS para el receptor u-blox, la definición
+        de la placa con el ESP32-S3, y repetir las mediciones allí, incluido el tiempo de la cerca con osciloscopio.
+  \item \textbf{Un segundo informe} con esta misma plantilla para el hardware del collar, con sus propias mediciones.
+\end{enumerate}

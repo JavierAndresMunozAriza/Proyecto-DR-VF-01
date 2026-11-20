@@ -1,0 +1,50 @@
+\section{Matriz de cumplimiento}
+
+Esta sección compara los resultados con los criterios de la tabla de especificaciones. Cada estado
+vale \emph{solo para la plataforma de la PoC} (la \dSoc{} en una \dBoard{}) y para las condiciones en que
+se midió. Ninguno se traslada sin más a la PCB del producto.
+
+\subsection{Criterios de aceptación de la PoC}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabularx}{\textwidth}{|l p{2.5cm} X X|}
+\hline
+\tablehead{\textbf{ID} & \textbf{Estado} & \textbf{Resultado} & \textbf{Evidencia}} \\ \hline
+PoC-01 & Parcial & Menos de 50~ms hasta unos 800 vértices; \dBenchMsThousand~ms con 1024. & \texttt{logs/geofence\_benchmark.log} \\ \hline
+PoC-02 & No cumple en estas condiciones & CEP50 de \dStaticRunTwoCepFifty{} a \dStaticBothCepFifty~m frente a \dReqCep~m, con cielo parcial y menos de 15 minutos. & \texttt{static\_offsets.csv}, \texttt{analyze\_static.py} \\ \hline
+PoC-03 & No cumple & 1~Hz, sin superar 1~Hz. & \texttt{static\_offsets.csv} \\ \hline
+PoC-04 & Cumple & El LED parpadea en rojo al salir de la cerca. & \texttt{logs/demo\_mode\_session.log} \\ \hline
+PoC-05 & Cumple & Verde a 20~m o más, mezcla hacia el rojo, rojo parpadeante fuera. & \texttt{logs/demo\_mode\_session.log} \\ \hline
+PoC-06 & Cumple & \texttt{FIX\_LOST} a los 10~s sin fix, dos veces, y tests del PC. & Captura privada, \texttt{logs/host\_tests.log} \\ \hline
+PoC-07 & Medido (informativo) & 54, 90 y 136~s; 1.8 a 4.5 veces los \dTtffSpecCold~s de la hoja de datos; sin fix en 20 min desde la ventana. & \texttt{field\_ttff\_manual.csv} \\ \hline
+PoC-08 & Medido & \dFlashBytes~B de flash (\dFlashPercent~\%) y \dRamBytes~B de RAM (\dRamPercent~\%). & \texttt{logs/build\_memory.log} \\ \hline
+PoC-09 & Cumple & Error de distancia de \dStressWorstErrorPct~\% frente al 0.2~\% documentado. & \texttt{logs/host\_tests.log} \\ \hline
+PoC-10 & Cumple (compila) & Seis módulos compilan para Cortex-M33 y ESP32-S3; no se ejecutó nada en el ESP32-S3. & \texttt{logs/cross\_check.log} \\ \hline
+PoC-11 & Cumple & \texttt{SEARCHING} $\to$ \texttt{DEMO} $\to$ \texttt{SEARCHING} sin señal GNSS. & \texttt{logs/demo\_mode\_session.log} \\ \hline
+\end{tabularx}
+\caption{Estado de cada criterio de aceptación de la PoC.}
+\end{table}
+
+\subsection{Requerimientos de la Memoria Técnica}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabularx}{\textwidth}{|p{4.6cm} p{3cm} X|}
+\hline
+\tablehead{\textbf{Requerimiento} & \textbf{Estado en la PoC} & \textbf{Nota}} \\ \hline
+SR-10, F-01 (GNSS $>$ 1~Hz) & No cumple & El receptor de la \dSoc{} da 1~Hz. El requisito es del MAX-M10S. \\ \hline
+SR-11, F-01 (error $\le$ \dReqCep~m CEP) & No cumple en estas condiciones & Medido como dispersión, no como exactitud absoluta. El SRD no define el CEP. Falta una prueba con cielo abierto y un punto de referencia. \\ \hline
+SR-12, F-02 ($<$ 50~ms) & Parcial & Cumple hasta unos 800 vértices en la \dSoc{}. Falta medirlo en el ESP32-S3 con osciloscopio. \\ \hline
+F-03 (disuasión) & Parcial & Solo la alerta visual con el LED. No hay etapa acústica ni pulso. \\ \hline
+F-04, NF-02, SR-31 (aislamiento) & No cubierto & Es hardware de la PCB. \\ \hline
+F-05, SR-20, SR-23 (LoRa) & No cubierto & La PoC no usa LoRa. \\ \hline
+F-06, SR-21 (configuración web) & No cubierto & La PoC no tiene servidor web ni configuración del perímetro. \\ \hline
+F-07 a F-11, NF-01, NF-05 (energía y protecciones) & No cubierto & Es hardware de la PCB. \\ \hline
+F-12, SR-13 (despertar por movimiento) & No cubierto & La PoC no usa la IMU ni el sueño profundo. \\ \hline
+NF-07 (perímetro en memoria no volátil) & No cubierto & La cerca se crea en cada arranque y no se guarda. \\ \hline
+\end{tabularx}
+\caption{Estado de los requerimientos de la Memoria Técnica en la PoC.}
+\end{table}

@@ -1,0 +1,42 @@
+\section{Archivos de diseño y referencias}
+
+\subsection{Archivos del repositorio}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|l X|}
+\hline
+\tablehead{\textbf{Ruta} & \textbf{Contenido}} \\ \hline
+\texttt{firmware/src/} & Código del firmware: \texttt{geofence}, \texttt{fence}, \texttt{alert}, \texttt{app}, \texttt{demo}, \texttt{bench}, \texttt{button}, \texttt{gnss}, \texttt{led}, \texttt{timing} y \texttt{main.c}. \\ \hline
+\texttt{firmware/include/} & Cabeceras de cada módulo, con su documentación. \\ \hline
+\texttt{firmware/build.sh} & Compilación y flasheo, con las variantes de medición. \\ \hline
+\texttt{reports/engineering\_report\_poc/evidence/} & Registros crudos, cifras derivadas y el script de análisis de la prueba estática. \\ \hline
+\texttt{docs/DR-VF-01\_Memoria\_Tecnica.pdf} & Memoria Técnica del proyecto, a la que este informe remite. \\ \hline
+\end{tabularx}
+\caption{Archivos relacionados con la PoC.}
+\end{table}
+
+\subsection{Evidencia}
+
+Cada cifra de este informe sale de un archivo de \texttt{evidence/}, descrito en su \texttt{README.md}:
+los registros de la consola (\texttt{logs/}), la salida de las pruebas del PC y de la compilación cruzada, el
+tiempo en frío medido a mano (\texttt{field\_ttff\_manual.csv}), las condiciones de las pruebas
+(\texttt{field\_conditions.md}) y los desplazamientos de la prueba estática respecto a su promedio
+(\texttt{static\_offsets.csv}). Las capturas crudas de las pruebas de campo contienen la ubicación de la placa y
+no se publican.
+
+\subsection{Referencias}
+
+\begin{enumerate}
+  \item Nordic Semiconductor, \emph{nRF9151 Product Specification}, sección GNSS, Tabla 2:
+        \url{https://docs.nordicsemi.com/r/bundle/ps_nrf9151/page/gps.html}. Sensibilidad, tiempo hasta el primer fix y
+        precisión horizontal (CEP50) del receptor.
+  \item Nordic Semiconductor, \emph{nRF Modem library}, documento de la interfaz GNSS y archivo de cabecera
+        del módem, de \dNcs{}. Datos guardados en memoria no volátil y borrado para simular un
+        arranque en frío; formato de los datos de posición y de satélites.
+  \item Nordic Semiconductor, documentación de \dNcs{} para la Thingy:91~X. Componentes de la placa y puente de
+        conectividad del nRF5340.
+  \item \emph{Memoria Técnica del collar DR-VF-01}, \texttt{docs/DR-VF-01\_Memoria\_Tecnica.pdf}. Requerimientos
+        PRD y SRD a los que remite la trazabilidad.
+\end{enumerate}
