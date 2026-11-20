@@ -1,0 +1,89 @@
+\section{Teoría de diseño y cálculos}
+
+\subsection{Pertenencia a un polígono}
+
+El motor decide si un punto está dentro de un polígono con el método de lanzamiento de rayos
+(\emph{ray casting}) y la regla par-impar: se traza un rayo desde el punto y se cuenta cuántos
+lados del polígono cruza; si el número es impar, el punto está dentro. Los vértices se dan en
+orden y el último se une con el primero. En un polígono que se corta a sí mismo, la región
+cubierta dos veces cuenta como fuera.
+
+Un punto que cae exactamente sobre el borde se clasifica con una regla semiabierta: en un
+rectángulo alineado con los ejes, el lado sur, el lado oeste y la esquina suroeste cuentan como
+dentro, y el resto, como fuera. El resultado sobre el borde exacto no debe usarse como dato.
+
+\subsection{Distancia al borde}
+
+La distancia que se muestra es la distancia al lado más cercano, no al vértice más cercano. Para
+calcularla, el motor proyecta las coordenadas a un plano local centrado en el punto:
+
+\begin{equation}
+x = (\lambda - \lambda_0)\,\frac{\pi}{180}\,R\cos\varphi_0, \qquad
+y = (\varphi - \varphi_0)\,\frac{\pi}{180}\,R,
+\end{equation}
+
+con $R = 6371$~km, de modo que un grado de latitud equivale a unos 111\,195~m. La distancia es
+el mínimo, entre todos los lados, de la distancia del origen al segmento. Es una distancia sin
+signo: la pertenencia al polígono se decide aparte.
+
+El error de esta proyección plana respecto a la distancia de haversine está documentado en el
+motor como menor que 0.2~\% hasta los 85° de latitud, y crece hacia los polos. No se usa cerca de
+los polos, y tampoco con polígonos que crucen el antimeridiano (longitud $\pm180^\circ$), porque
+las longitudes se restan como números simples.
+
+\subsection{Una sola llamada que no confunde errores con ``fuera''}
+
+Las funciones de pertenencia devuelven un valor lógico, así que no pueden distinguir ``fuera'' de
+``entrada inválida''. Por eso la aplicación usa \texttt{geofence\_check()}, que en una sola llamada
+devuelve si el punto está dentro y la distancia al borde, y devuelve un código de error si el fix
+no es válido (coordenadas fuera de rango o no numéricas, polígono vacío o motor sin iniciar). Un
+fix inválido nunca se interpreta como una salida de la cerca.
+
+\subsection{Cerca cuadrada alrededor de un punto}
+
+Para un centro $(\varphi_0, \lambda_0)$ y una mitad de lado $h$, las esquinas se calculan con
+
+\begin{equation}
+\Delta\varphi = \frac{h}{111\,195}, \qquad \Delta\lambda = \frac{\Delta\varphi}{\cos\varphi_0},
+\end{equation}
+
+y las esquinas son $(\varphi_0 \mp \Delta\varphi,\ \lambda_0 \mp \Delta\lambda)$, en el orden
+suroeste, sureste, noreste y noroeste. La longitud se ajusta con el coseno de la latitud porque un
+grado de longitud mide menos al alejarse del ecuador. La construcción se rechaza si la latitud del
+centro pasa de 85° o si el cuadrado cruzaría el antimeridiano.
+
+\subsection{De la distancia al color}
+
+Con una distancia segura $S = 20$~m y una distancia $d$ al borde, con el punto dentro, el color es
+
+\begin{equation}
+t = \min\!\left(\frac{d}{S},\,1\right), \qquad
+R = \operatorname{round}\bigl(255\,(1-t)\bigr), \qquad
+G = \operatorname{round}\bigl(255\,t\bigr), \qquad B = 0.
+\end{equation}
+
+A $d \ge S$ el color es verde puro, y a $d = 0$, rojo fijo. Fuera de la cerca, o ante cualquier
+entrada inválida (distancia no finita o negativa, o $S \le 0$), el resultado es rojo
+parpadeante, el estado a prueba de fallos.
+
+\subsection{Presupuesto de tiempo}
+
+El costo de \texttt{geofence\_check()} es lineal en el número $N$ de vértices, porque recorre cada
+lado una vez para decidir la pertenencia y otra para calcular la distancia. Medido en la placa
+(ver la sección de resultados), el tiempo por llamada se ajusta a
+
+\begin{equation}
+T(N) \approx \dBenchFitOffsetUs~\mu\text{s} + \dBenchFitSlopeUs~\mu\text{s}\cdot N,
+\end{equation}
+
+con lo que el límite de 50~ms de SR-12 se alcanzaría cerca de los \dBenchLimitVertices{} vértices.
+El motor usa números de doble precisión; como la unidad de coma flotante del Cortex-M33 es de
+precisión simple, es probable que esas operaciones se ejecuten por software y que ahí esté el
+costo por vértice. Esto es una inferencia a partir de los indicadores del compilador, no una
+medición.
+
+\subsection{Resolución del reloj de medida}
+
+El contador de ciclos del kernel corre a \dClockHz~Hz, de modo que cada lectura tiene una
+resolución de \dTickUs~$\mu$s. Una llamada puede durar menos que eso, por lo que no se mide una
+llamada suelta sino un lote de 40 y se divide el tiempo total entre 40.

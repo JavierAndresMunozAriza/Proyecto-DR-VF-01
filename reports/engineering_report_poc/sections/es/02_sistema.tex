@@ -1,0 +1,157 @@
+\section{Descripción del sistema}
+
+\subsection{Qué hace la PoC}
+
+La PoC convierte la posición GNSS del collar en una alerta visual graduada. El receptor GNSS del
+\dSoc{} entrega una posición cada segundo. La aplicación toma el primer fix de precisión aceptable
+como centro y define alrededor una cerca cuadrada de 60~m de lado. Desde ese momento, cada fix se
+compara con la cerca y la distancia al borde se muestra en el LED RGB de la placa: verde lejos del
+borde, una mezcla hacia el rojo al acercarse, rojo en el borde y rojo parpadeante fuera. Un botón
+activa un modo demo que reproduce una ruta simulada, para mostrar la alerta sin señal GNSS.
+
+\subsection{Hardware de la PoC}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|l X|}
+\hline
+\tablehead{\textbf{Elemento} & \textbf{Detalle}} \\ \hline
+Placa & \dBoard, alimentada por USB-C o por su batería \\ \hline
+Procesador y GNSS & \dSoc{}: ejecuta la aplicación y contiene el módem con el receptor GNSS \\ \hline
+LED RGB & Tres canales por PWM (rojo, verde y azul) con un periodo de 8~ms \\ \hline
+Botón de usuario & ``Button 1'', el del centro de la placa, activo en nivel bajo con resistencia de pull-up \\ \hline
+Antena GNSS & La de la placa, con la configuración de antena que el SDK trae por defecto para esta placa \\ \hline
+Consola & Registro por USB (puerto serie virtual, 115\,200 baudios) \\ \hline
+\end{tabularx}
+\caption{Hardware de la prueba de concepto.}
+\end{table}
+
+La PoC usa una placa de desarrollo comercial para validar la lógica antes de que exista la PCB
+del producto, que usará un ESP32-S3 y un receptor u-blox MAX-M10S.
+
+\subsection{Arquitectura del firmware}
+
+El firmware se divide en tres capas. Los módulos de \emph{C puro} no dependen del hardware ni del
+sistema operativo, por lo que se prueban en el PC y se compilan para otras placas sin cambios. Los
+\emph{adaptadores} aíslan el hardware y el RTOS detrás de una interfaz pequeña. Cambiar de placa
+significa reescribir los adaptadores, no la lógica.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw, rounded corners, align=center, font=\scriptsize, minimum height=0.95cm, text width=2.55cm},
+  wide/.style={draw, rounded corners, align=center, font=\small, minimum height=1cm, text width=13.6cm, fill=headbg},
+  lbl/.style={font=\bfseries\scriptsize, anchor=west}, >=Stealth]
+\node[wide] (app) at (0,0) {\texttt{main.c}: bucle de la aplicación (máquina de estados, evaluación de fixes, control del LED)};
+\node[box, fill=groupbg] (p1) at (-5.9,-2.1) {\texttt{geofence}\\punto en polígono y distancia};
+\node[box, fill=groupbg] (p2) at (-2.95,-2.1) {\texttt{fence\_square}\\cuadrado alrededor de un punto};
+\node[box, fill=groupbg] (p3) at (0,-2.1) {\texttt{alert\_color}\\distancia a color};
+\node[box, fill=groupbg] (p4) at (2.95,-2.1) {\texttt{app\_fsm}\\transiciones de estado};
+\node[box, fill=groupbg] (p5) at (5.9,-2.1) {\texttt{demo\_route}\\ruta simulada};
+\node[box] (a1) at (-4.4,-4.2) {\texttt{gnss}\\fixes del receptor};
+\node[box] (a2) at (-1.45,-4.2) {\texttt{rgb\_led}\\LED por PWM};
+\node[box] (a3) at (1.45,-4.2) {\texttt{button}\\botón con antirrebote};
+\node[box] (a4) at (4.4,-4.2) {\texttt{timing}\\tiempo y espera};
+\node[box, fill=headbg] (h1) at (-4.4,-6.2) {módem \dSoc{}\\(GNSS)};
+\node[box, fill=headbg] (h2) at (-1.45,-6.2) {PWM};
+\node[box, fill=headbg] (h3) at (1.45,-6.2) {GPIO con interrupción};
+\node[box, fill=headbg] (h4) at (4.4,-6.2) {kernel de Zephyr};
+\foreach \p in {p1,p2,p3,p4,p5} \draw[->] (app.south -| \p.north) -- (\p.north);
+\draw[->] (app.south -| a1.north) -- (a1.north);
+\draw[->] (app.south -| a2.north) -- (a2.north);
+\draw[->] (app.south -| a3.north) -- (a3.north);
+\draw[->] (app.south -| a4.north) -- (a4.north);
+\foreach \i in {1,2,3,4} \draw[->] (a\i.south) -- (h\i.north);
+\node[lbl] at (7.35,-2.1) {C puro};
+\node[lbl] at (6.1,-4.2) {Adaptadores};
+\node[lbl] at (6.1,-6.2) {SDK};
+\end{tikzpicture}
+\caption{Capas del firmware: lógica en C puro, adaptadores y SDK.}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabularx}{\textwidth}{|l l X|}
+\hline
+\tablehead{\textbf{Módulo} & \textbf{Tipo} & \textbf{Responsabilidad}} \\ \hline
+\texttt{geofence} & C puro & Motor de cerca: pertenencia a un polígono y distancia al borde. \\ \hline
+\texttt{fence\_square} & C puro & Calcula las esquinas de un cuadrado centrado en un punto. \\ \hline
+\texttt{alert\_color} & C puro & Convierte la distancia al borde en el color de alerta. \\ \hline
+\texttt{app\_fsm} & C puro & Función de transición de la máquina de estados. \\ \hline
+\texttt{demo\_route} & C puro & Posición de un caminante simulado en la ruta del demo. \\ \hline
+\texttt{gnss} & Adaptador & Interfaz común del receptor: abrir, leer, escribir, controlar, probar y cerrar. Su implementación para la \dSoc{} usa el módem en modo solo GNSS. \\ \hline
+\texttt{rgb\_led} & Adaptador & Fija el color del LED por PWM. \\ \hline
+\texttt{button} & Adaptador & Lee el botón con una interrupción que solo levanta una bandera y un antirrebote de 300~ms. \\ \hline
+\texttt{timing} & Adaptador & Marcas de tiempo y espera, sobre el kernel. \\ \hline
+\texttt{main} & Aplicación & Une los módulos: bucle cada 250~ms. \\ \hline
+\end{tabularx}
+\caption{Módulos del firmware.}
+\end{table}
+
+\subsection{Máquina de estados}
+
+La aplicación sigue una máquina de estados explícita. La función de transición es de C puro y su
+test recorre las 25 combinaciones de estado y evento.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  st/.style={draw, rounded corners, fill=headbg, minimum width=2.7cm, minimum height=0.9cm, font=\small\ttfamily},
+  ev/.style={font=\scriptsize\ttfamily, fill=white, inner sep=1pt}, >=Stealth]
+\node[st] (S) at (0,0) {SEARCHING};
+\node[st] (M) at (5.2,0) {MONITORING};
+\node[st] (L) at (10.4,0) {FIX\_LOST};
+\node[st] (D) at (5.2,-3) {DEMO};
+\node[st] (F) at (0,-3) {FAULT};
+\draw[->] (S) -- node[ev, above] {FENCE\_CREATED} (M);
+\draw[->] (M) to[bend left=20] node[ev, above] {FIX\_TIMEOUT} (L);
+\draw[->] (L) to[bend left=20] node[ev, below] {FIX} (M);
+\draw[->] (S) -- node[ev, left] {GNSS\_FAILED} (F);
+\draw[->] (M) -- node[ev, right] {DEMO\_TOGGLE} (D);
+\draw[->] (D) -- node[ev, below, sloped] {DEMO\_TOGGLE} (S);
+\end{tikzpicture}
+\caption{Estados y transiciones principales. \texttt{GNSS\_FAILED} lleva a \texttt{FAULT} desde
+\texttt{SEARCHING}, \texttt{MONITORING} y \texttt{FIX\_LOST}; \texttt{DEMO\_TOGGLE} lleva a
+\texttt{DEMO} desde cualquier otro estado, incluido \texttt{FAULT}, y \texttt{DEMO} no reacciona a
+los eventos del GNSS.}
+\end{figure}
+
+\subsection{Parámetros de funcionamiento}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|X c|}
+\hline
+\tablehead{\textbf{Parámetro} & \textbf{Valor}} \\ \hline
+Periodo del bucle de la aplicación & 250~ms \\ \hline
+Intervalo entre fixes del receptor (modo continuo) & 1~s \\ \hline
+Mitad del lado de la cerca cuadrada (lado de 60~m) & 30~m \\ \hline
+Distancia al borde a partir de la cual el LED es verde puro & 20~m \\ \hline
+Precisión máxima aceptada para un fix & 50~m \\ \hline
+Tiempo sin fix para pasar a \texttt{FIX\_LOST} & 10~s \\ \hline
+Ruta del demo: avance, alcance máximo y pasos por ciclo & 2~m, 40~m, 40 \\ \hline
+\end{tabularx}
+\caption{Parámetros del firmware de la PoC.}
+\end{table}
+
+\subsection{Significado del LED}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|l X|}
+\hline
+\tablehead{\textbf{LED} & \textbf{Significado}} \\ \hline
+Azul parpadeando & Buscando: todavía no hay un fix aceptado y no se creó la cerca. \\ \hline
+Cian parpadeando & Llegan fixes, pero con precisión peor que 50~m, y se descartan. \\ \hline
+Verde fijo & Dentro de la cerca, a 20~m o más del borde. \\ \hline
+Mezcla de verde y rojo & Dentro de la cerca, a menos de 20~m del borde; cuanto más cerca, más rojo. \\ \hline
+Rojo fijo & En el borde, dentro. \\ \hline
+Rojo parpadeando & Fuera de la cerca, o el GNSS no está disponible. \\ \hline
+Magenta parpadeando & Se perdió el fix durante más de 10~s después de crear la cerca. \\ \hline
+\end{tabularx}
+\caption{Código de colores del LED.}
+\end{table}
