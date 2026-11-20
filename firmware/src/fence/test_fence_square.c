@@ -7,10 +7,10 @@
 #include <stdio.h>
 
 #include "fence_square.h"
+#include "geo_constants.h"
 #include "geofence.h"
 
-#define METERS_PER_DEG_LAT 111195.0
-#define BOGOTA_LAT         4.6097
+#define BOGOTA_LAT        4.6097
 #define BOGOTA_LON         (-74.0817)
 #define HALF_SIDE_M        30.0
 
@@ -28,7 +28,7 @@ static int failures;
 
 static geopoint_t north_of(geopoint_t p, double meters)
 {
-	p.latitude += meters / METERS_PER_DEG_LAT;
+	p.latitude += meters / GEO_METERS_PER_DEG_LAT;
 	return p;
 }
 

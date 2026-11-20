@@ -19,7 +19,7 @@ SOURCES = fence_square.c test_fence_square.c ../geofence/geofence.c
 test: $(TARGET)
 	./$(TARGET)
 
-$(TARGET): $(SOURCES) ../../include/fence_square.h ../../include/geofence.h
+$(TARGET): $(SOURCES) ../../include/fence_square.h ../../include/geofence.h ../../include/geo_constants.h
 	$(CC) $(CFLAGS) $(SOURCES) -o $@ $(LDFLAGS)
 
 clean:

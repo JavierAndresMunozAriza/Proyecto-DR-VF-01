@@ -8,9 +8,9 @@
 #include <stddef.h>
 
 #include "fence_square.h"
+#include "geo_constants.h"
 
-#define METERS_PER_DEG_LAT 111195.0
-#define MAX_LATITUDE_DEG   85.0
+#define MAX_LATITUDE_DEG  85.0
 #define MAX_LONGITUDE_DEG  180.0
 #define PI                 3.14159265358979323846
 #define DEG_TO_RAD         (PI / 180.0)
@@ -36,7 +36,7 @@ int fence_square_vertices(const geopoint_t *center, double half_side_m,
 		return -1;
 
 	/* A degree of longitude shrinks with the cosine of the latitude. */
-	dlat = half_side_m / METERS_PER_DEG_LAT;
+	dlat = half_side_m / GEO_METERS_PER_DEG_LAT;
 	dlon = dlat / cos(center->latitude * DEG_TO_RAD);
 
 	south = center->latitude - dlat;
