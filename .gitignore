@@ -43,3 +43,7 @@ firmware/src/geofence/geofence_test_debug
 # Python bytecode caches
 __pycache__/
 *.pyc
+
+# Altium native libraries and project files (kept out of git, see CLAUDE.md: no EDA binaries)
+hardware/altium_project/
+hardware/libraries/*/altium_nativo/
