@@ -14,6 +14,8 @@ enum app_state app_fsm_next(enum app_state state, enum app_event event)
 			return APP_STATE_MONITORING;
 		if (event == APP_EVENT_GNSS_FAILED)
 			return APP_STATE_FAULT;
+		if (event == APP_EVENT_DEMO_TOGGLE)
+			return APP_STATE_DEMO;
 		return state;
 
 	case APP_STATE_MONITORING:
@@ -21,6 +23,8 @@ enum app_state app_fsm_next(enum app_state state, enum app_event event)
 			return APP_STATE_FIX_LOST;
 		if (event == APP_EVENT_GNSS_FAILED)
 			return APP_STATE_FAULT;
+		if (event == APP_EVENT_DEMO_TOGGLE)
+			return APP_STATE_DEMO;
 		return state;
 
 	case APP_STATE_FIX_LOST:
@@ -28,11 +32,19 @@ enum app_state app_fsm_next(enum app_state state, enum app_event event)
 			return APP_STATE_MONITORING;
 		if (event == APP_EVENT_GNSS_FAILED)
 			return APP_STATE_FAULT;
+		if (event == APP_EVENT_DEMO_TOGGLE)
+			return APP_STATE_DEMO;
 		return state;
 
 	case APP_STATE_FAULT:
+		return event == APP_EVENT_DEMO_TOGGLE ? APP_STATE_DEMO : state;
+
+	case APP_STATE_DEMO:
+		/* Only the user leaves the demo; GNSS events do not apply to it. */
+		return event == APP_EVENT_DEMO_TOGGLE ? APP_STATE_SEARCHING : state;
+
 	default:
-		/* FAULT is final, and an unknown state is treated as a fault. */
+		/* An unknown state is treated as a fault. */
 		return APP_STATE_FAULT;
 	}
 }

@@ -7,28 +7,30 @@
 
 #include "app_fsm.h"
 
-#define STATE_COUNT 4
-#define EVENT_COUNT 4
+#define STATE_COUNT 5
+#define EVENT_COUNT 5
 
 static int failures;
 
 static const char *const state_name[STATE_COUNT] = {
-	"SEARCHING", "MONITORING", "FIX_LOST", "FAULT",
+	"SEARCHING", "MONITORING", "FIX_LOST", "FAULT", "DEMO",
 };
 static const char *const event_name[EVENT_COUNT] = {
-	"FENCE_CREATED", "FIX", "FIX_TIMEOUT", "GNSS_FAILED",
+	"FENCE_CREATED", "FIX", "FIX_TIMEOUT", "GNSS_FAILED", "DEMO_TOGGLE",
 };
 
 /* Expected next state for every (state, event) pair, in enum order. */
 static const enum app_state expected[STATE_COUNT][EVENT_COUNT] = {
-	/* SEARCHING  */ { APP_STATE_MONITORING, APP_STATE_SEARCHING,
-			   APP_STATE_SEARCHING, APP_STATE_FAULT },
-	/* MONITORING */ { APP_STATE_MONITORING, APP_STATE_MONITORING,
-			   APP_STATE_FIX_LOST, APP_STATE_FAULT },
-	/* FIX_LOST   */ { APP_STATE_FIX_LOST, APP_STATE_MONITORING,
-			   APP_STATE_FIX_LOST, APP_STATE_FAULT },
-	/* FAULT      */ { APP_STATE_FAULT, APP_STATE_FAULT,
-			   APP_STATE_FAULT, APP_STATE_FAULT },
+	/* SEARCHING  */ { APP_STATE_MONITORING, APP_STATE_SEARCHING, APP_STATE_SEARCHING,
+			   APP_STATE_FAULT, APP_STATE_DEMO },
+	/* MONITORING */ { APP_STATE_MONITORING, APP_STATE_MONITORING, APP_STATE_FIX_LOST,
+			   APP_STATE_FAULT, APP_STATE_DEMO },
+	/* FIX_LOST   */ { APP_STATE_FIX_LOST, APP_STATE_MONITORING, APP_STATE_FIX_LOST,
+			   APP_STATE_FAULT, APP_STATE_DEMO },
+	/* FAULT      */ { APP_STATE_FAULT, APP_STATE_FAULT, APP_STATE_FAULT,
+			   APP_STATE_FAULT, APP_STATE_DEMO },
+	/* DEMO       */ { APP_STATE_DEMO, APP_STATE_DEMO, APP_STATE_DEMO,
+			   APP_STATE_DEMO, APP_STATE_SEARCHING },
 };
 
 int main(void)
@@ -57,6 +59,14 @@ int main(void)
 		failures++;
 	}
 
+	/* The demo works even when the GNSS is unavailable, and leaves to SEARCHING. */
+	s = app_fsm_next(APP_STATE_FAULT, APP_EVENT_DEMO_TOGGLE);
+	s = app_fsm_next(s, APP_EVENT_DEMO_TOGGLE);
+	if (s != APP_STATE_SEARCHING) {
+		printf("FAIL fault -> demo -> toggle ends in %s\n", state_name[s]);
+		failures++;
+	}
+
 	if (app_fsm_next((enum app_state)99, APP_EVENT_FIX) != APP_STATE_FAULT) {
 		printf("FAIL an invalid state must fall to FAULT\n");
 		failures++;
@@ -66,6 +76,6 @@ int main(void)
 		printf("%d check(s) failed\n", failures);
 		return 1;
 	}
-	printf("all %d transitions and 2 extra checks passed\n", STATE_COUNT * EVENT_COUNT);
+	printf("all %d transitions and 3 extra checks passed\n", STATE_COUNT * EVENT_COUNT);
 	return 0;
 }
