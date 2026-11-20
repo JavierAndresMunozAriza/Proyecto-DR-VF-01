@@ -50,3 +50,6 @@ hardware/libraries/*/altium_nativo/
 
 # Evidence logs of the engineering report are tracked (raw console captures and test output)
 !reports/engineering_report_poc/evidence/logs/*.log
+
+# Raw field-test captures contain the real location of the board: never commit them
+reports/engineering_report_poc/evidence/private/
