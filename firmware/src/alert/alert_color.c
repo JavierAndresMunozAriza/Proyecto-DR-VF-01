@@ -11,6 +11,12 @@
 static const alert_color_t BLINK_RED = { 255, 0, 0, true };
 static const alert_color_t BLINK_BLUE = { 0, 0, 255, true };
 static const alert_color_t BLINK_CYAN = { 0, 255, 255, true };
+static const alert_color_t BLINK_MAGENTA = { 255, 0, 255, true };
+
+alert_color_t alert_color_fix_lost(void)
+{
+	return BLINK_MAGENTA;
+}
 
 alert_color_t alert_color_searching(bool poor_fix_seen)
 {

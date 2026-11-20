@@ -54,6 +54,15 @@ alert_color_t alert_color_from_distance(double distance_m, bool inside,
  */
 alert_color_t alert_color_searching(bool poor_fix_seen);
 
+/**
+ * @brief Color shown when fixes stop arriving after the fence was created
+ *
+ * Blinking magenta. It is deliberately different from the blinking red of
+ * "outside the fence": the gradient from green to red never contains blue,
+ * so magenta cannot be mistaken for any position-based alert.
+ */
+alert_color_t alert_color_fix_lost(void);
+
 #ifdef __cplusplus
 }
 #endif

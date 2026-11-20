@@ -9,8 +9,8 @@
  *  - MONITORING: every fix is checked against the fence and the distance to
  *    its boundary drives the LED (green far from the edge, toward red as it
  *    gets closer, blinking red outside).
- *  - FIX_LOST: fixes stopped arriving, the LED shows the fail-safe blinking
- *    red until one returns.
+ *  - FIX_LOST: fixes stopped arriving, the LED blinks magenta (not red, so
+ *    it is not confused with "outside the fence") until one returns.
  *  - FAULT: the GNSS could not start, fail-safe blinking red.
  * The duration of each geofence check is logged (RF-02 data on real hardware).
  *
@@ -185,6 +185,8 @@ static void led_update(struct app *app)
 		out = app->color;
 		break;
 	case APP_STATE_FIX_LOST:
+		out = alert_color_fix_lost();
+		break;
 	case APP_STATE_FAULT:
 	default:
 		out = failsafe_color();

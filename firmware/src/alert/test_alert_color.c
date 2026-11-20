@@ -66,6 +66,9 @@ int main(void)
 	c = alert_color_searching(true);
 	CHECK_COLOR("searching with a poor-accuracy fix blinks cyan", c, 0, 255, 255, true);
 
+	c = alert_color_fix_lost();
+	CHECK_COLOR("fix lost blinks magenta, unlike outside the fence", c, 255, 0, 255, true);
+
 	if (failures) {
 		printf("%d check(s) failed\n", failures);
 		return 1;
