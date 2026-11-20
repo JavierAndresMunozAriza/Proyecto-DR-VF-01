@@ -9,6 +9,13 @@
 #include "alert_color.h"
 
 static const alert_color_t BLINK_RED = { 255, 0, 0, true };
+static const alert_color_t BLINK_BLUE = { 0, 0, 255, true };
+static const alert_color_t BLINK_CYAN = { 0, 255, 255, true };
+
+alert_color_t alert_color_searching(bool poor_fix_seen)
+{
+	return poor_fix_seen ? BLINK_CYAN : BLINK_BLUE;
+}
 
 alert_color_t alert_color_from_distance(double distance_m, bool inside,
 					double safe_m)

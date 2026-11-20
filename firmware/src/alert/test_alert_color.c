@@ -60,6 +60,12 @@ int main(void)
 	c = alert_color_from_distance(10.0, true, NAN);
 	CHECK_COLOR("NaN safe distance blinks red", c, 255, 0, 0, true);
 
+	c = alert_color_searching(false);
+	CHECK_COLOR("searching without any fix blinks blue", c, 0, 0, 255, true);
+
+	c = alert_color_searching(true);
+	CHECK_COLOR("searching with a poor-accuracy fix blinks cyan", c, 0, 255, 255, true);
+
 	if (failures) {
 		printf("%d check(s) failed\n", failures);
 		return 1;

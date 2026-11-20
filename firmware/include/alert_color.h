@@ -43,6 +43,17 @@ typedef struct {
 alert_color_t alert_color_from_distance(double distance_m, bool inside,
 					double safe_m);
 
+/**
+ * @brief Color shown while the application searches for its first fix
+ *
+ * Blinking blue means no fix has arrived. Blinking cyan means fixes are
+ * arriving but their accuracy is too poor to use, which tells "no signal"
+ * apart from "weak signal" without a serial console.
+ *
+ * @param poor_fix_seen  true if a fix with poor accuracy arrived recently
+ */
+alert_color_t alert_color_searching(bool poor_fix_seen);
+
 #ifdef __cplusplus
 }
 #endif

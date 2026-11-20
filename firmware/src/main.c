@@ -4,7 +4,8 @@
  *
  * Application states (see app_fsm.h):
  *  - SEARCHING: the LED blinks blue until the first accurate fix, which
- *    defines the fence: a square centered on that position.
+ *    defines the fence: a square centered on that position. It blinks cyan
+ *    while fixes arrive but are too inaccurate to use.
  *  - MONITORING: every fix is checked against the fence and the distance to
  *    its boundary drives the LED (green far from the edge, toward red as it
  *    gets closer, blinking red outside).
@@ -41,7 +42,7 @@ LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 #define FENCE_HALF_SIDE_M    30.0
 #define MAX_FIX_ACCURACY_M   50.0f
 #define FIX_TIMEOUT_TICKS    (10 * TICKS_PER_SECOND)
-#define SEARCH_BLUE_LEVEL    255
+#define POOR_FIX_HOLD_TICKS  (3 * TICKS_PER_SECOND) /* how long the cyan hint stays */
 
 #define FENCE_MAX_POLYGONS   1
 #define FENCE_NO_TOLERANCE   0.0
@@ -53,6 +54,8 @@ struct app {
 	bool blink_on;
 	uint32_t tick;
 	uint32_t last_fix_tick;
+	bool poor_fix_seen;
+	uint32_t poor_fix_tick;
 };
 
 static const char *const state_name[] = {
@@ -114,6 +117,8 @@ static void process_fix(struct app *app, const gnss_fix_t *fix)
 	if (fix->accuracy_m > MAX_FIX_ACCURACY_M) {
 		LOG_INF("Fix ignored, accuracy %.1f m is worse than %.0f m",
 			(double)fix->accuracy_m, (double)MAX_FIX_ACCURACY_M);
+		app->poor_fix_seen = true;
+		app->poor_fix_tick = app->tick;
 		return;
 	}
 
@@ -173,7 +178,8 @@ static void led_update(struct app *app)
 
 	switch (app->state) {
 	case APP_STATE_SEARCHING:
-		out = (alert_color_t){ 0, 0, SEARCH_BLUE_LEVEL, true };
+		out = alert_color_searching(app->poor_fix_seen &&
+					    app->tick - app->poor_fix_tick <= POOR_FIX_HOLD_TICKS);
 		break;
 	case APP_STATE_MONITORING:
 		out = app->color;
