@@ -26,6 +26,19 @@ LOG_MODULE_REGISTER(gnss, LOG_LEVEL_INF);
 #define FIX_RETRY_S            0 /* 0 = keep searching until a fix is found */
 #define AT_REPLY_LEN           64
 
+/*
+ * Data deleted to simulate a cold start. The TCXO offset is a property of the
+ * device, not of the satellites, so it stays (as the modem library docs advise).
+ */
+#define COLD_START_DELETE_MASK (NRF_MODEM_GNSS_DELETE_EPHEMERIDES |            \
+				NRF_MODEM_GNSS_DELETE_ALMANACS |                \
+				NRF_MODEM_GNSS_DELETE_IONO_CORRECTION_DATA |    \
+				NRF_MODEM_GNSS_DELETE_LAST_GOOD_FIX |           \
+				NRF_MODEM_GNSS_DELETE_GPS_TOW |                 \
+				NRF_MODEM_GNSS_DELETE_GPS_WEEK |                \
+				NRF_MODEM_GNSS_DELETE_UTC_DATA |                \
+				NRF_MODEM_GNSS_DELETE_GPS_TOW_PRECISION)
+
 static K_SEM_DEFINE(fix_ready, 0, 1);
 static struct k_spinlock fix_lock;
 static gnss_fix_t latest_fix;
@@ -127,6 +140,14 @@ int gnss_open(void)
 	if (err != 0) {
 		LOG_ERR("Could not activate GNSS mode: %d", err);
 		return to_errno(err);
+	}
+
+	if (IS_ENABLED(CONFIG_DRVF_GNSS_COLD_START)) {
+		/* Debug only: the GNSS must not be running yet, which is the case here. */
+		if (nrf_modem_gnss_nv_data_delete(COLD_START_DELETE_MASK) != 0)
+			LOG_WRN("Could not delete the stored GNSS data");
+		else
+			LOG_INF("Cold start: stored GNSS data deleted");
 	}
 
 	if (nrf_modem_gnss_event_handler_set(gnss_event_handler) != 0 ||

@@ -7,4 +7,12 @@ config DRVF_GEOFENCE_BENCHMARK
 	  the application starts and logs the mean time per call. For
 	  measurement builds only: it delays the start by a few seconds.
 
+config DRVF_GNSS_COLD_START
+	bool "Delete the stored GNSS data at every boot (cold start)"
+	help
+	  The modem keeps satellite data between boots, so a reboot is a hot
+	  start. This option deletes that data before starting the GNSS, to
+	  measure the time to first fix of a real cold start. Debug feature: do
+	  not use it in a product.
+
 source "Kconfig.zephyr"
