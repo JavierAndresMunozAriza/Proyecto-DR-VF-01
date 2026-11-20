@@ -8,7 +8,10 @@ target_include_directories(app PRIVATE include)
 target_sources(app PRIVATE
 	src/main.c
 	src/alert/alert_color.c
+	src/app/app_fsm.c
+	src/fence/fence_square.c
 	src/geofence/geofence.c
+	src/gnss/gnss_nrf91.c
 	src/led/rgb_led.c
 	src/timing/timing.c
 )
