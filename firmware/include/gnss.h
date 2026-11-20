@@ -25,9 +25,17 @@ typedef struct {
 	float accuracy_m;   /**< Horizontal accuracy (1-sigma), meters */
 } gnss_fix_t;
 
+/** Satellites currently tracked, in total and by satellite system */
+typedef struct {
+	unsigned int total;
+	unsigned int gps;     /**< GPS (United States) */
+	unsigned int qzss;    /**< QZSS (Japan, regional) */
+	unsigned int galileo; /**< Galileo (European Union) */
+} gnss_satellites_t;
+
 /** Commands for gnss_ioctl() */
 enum gnss_ioctl_cmd {
-	/** Get the satellites currently tracked; arg is an `unsigned int *` */
+	/** Get the satellites currently tracked; arg is a `gnss_satellites_t *` */
 	GNSS_IOCTL_GET_SATELLITES,
 	/**
 	 * Set the seconds between fixes (1 = continuous, the default); arg is a

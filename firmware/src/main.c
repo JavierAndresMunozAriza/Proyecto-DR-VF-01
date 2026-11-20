@@ -221,14 +221,16 @@ static void check_fix_timeout(struct app *app)
 /* While no fix is available, tell once per second how many satellites are tracked. */
 static void log_search_progress(const struct app *app)
 {
-	unsigned int satellites = 0;
+	gnss_satellites_t satellites;
 
 	if ((app->state != APP_STATE_SEARCHING && app->state != APP_STATE_FIX_LOST) ||
 	    app->tick % TICKS_PER_SECOND != 0)
 		return;
 
 	if (gnss_ioctl(GNSS_IOCTL_GET_SATELLITES, &satellites) == 0)
-		LOG_INF("%s: %u satellites tracked", state_name[app->state], satellites);
+		LOG_INF("%s: %u satellites tracked (GPS %u, QZSS %u, Galileo %u)",
+			state_name[app->state], satellites.total, satellites.gps,
+			satellites.qzss, satellites.galileo);
 }
 
 /* Drive the LED from the current state; called every tick. */

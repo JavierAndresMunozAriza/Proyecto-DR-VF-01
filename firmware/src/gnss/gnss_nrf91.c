@@ -17,7 +17,6 @@
 #include <nrf_modem_gnss.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
-#include <zephyr/sys/atomic.h>
 
 #include "gnss.h"
 
@@ -30,7 +29,7 @@ LOG_MODULE_REGISTER(gnss, LOG_LEVEL_INF);
 static K_SEM_DEFINE(fix_ready, 0, 1);
 static struct k_spinlock fix_lock;
 static gnss_fix_t latest_fix;
-static atomic_t satellites_tracked;
+static gnss_satellites_t satellites;
 static uint16_t fix_interval_s = DEFAULT_FIX_INTERVAL_S;
 static bool opened;
 
@@ -40,16 +39,32 @@ static int to_errno(int err)
 	return err < 0 ? err : -EIO;
 }
 
-static unsigned int count_satellites(const struct nrf_modem_gnss_pvt_data_frame *pvt)
+/* The signal type tells the satellite system: ids overlap between GPS and Galileo. */
+static gnss_satellites_t count_satellites(const struct nrf_modem_gnss_pvt_data_frame *pvt)
 {
-	unsigned int count = 0;
+	gnss_satellites_t counts = { 0 };
 
 	for (int i = 0; i < NRF_MODEM_GNSS_MAX_SATELLITES; i++) {
-		if (pvt->sv[i].sv != 0)
-			count++;
+		if (pvt->sv[i].sv == 0)
+			continue;
+
+		counts.total++;
+		switch (pvt->sv[i].signal) {
+		case NRF_MODEM_GNSS_SIGNAL_GPS_L1_CA:
+			counts.gps++;
+			break;
+		case NRF_MODEM_GNSS_SIGNAL_QZSS_L1_CA:
+			counts.qzss++;
+			break;
+		case NRF_MODEM_GNSS_SIGNAL_GAL_E1_OS:
+			counts.galileo++;
+			break;
+		default:
+			break;
+		}
 	}
 
-	return count;
+	return counts;
 }
 
 /* Runs in interrupt context: copy the data, signal, nothing else. */
@@ -63,7 +78,11 @@ static void gnss_event_handler(int event)
 	if (nrf_modem_gnss_read(&pvt, sizeof(pvt), NRF_MODEM_GNSS_DATA_PVT) != 0)
 		return;
 
-	atomic_set(&satellites_tracked, count_satellites(&pvt));
+	const gnss_satellites_t counts = count_satellites(&pvt);
+
+	K_SPINLOCK(&fix_lock) {
+		satellites = counts;
+	}
 
 	if (!(pvt.flags & NRF_MODEM_GNSS_PVT_FLAG_FIX_VALID))
 		return;
@@ -157,7 +176,9 @@ int gnss_ioctl(enum gnss_ioctl_cmd cmd, void *arg)
 
 	switch (cmd) {
 	case GNSS_IOCTL_GET_SATELLITES:
-		*(unsigned int *)arg = (unsigned int)atomic_get(&satellites_tracked);
+		K_SPINLOCK(&fix_lock) {
+			*(gnss_satellites_t *)arg = satellites;
+		}
 		return 0;
 
 	case GNSS_IOCTL_SET_FIX_INTERVAL:
