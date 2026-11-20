@@ -9,6 +9,8 @@ target_sources(app PRIVATE
 	src/main.c
 	src/alert/alert_color.c
 	src/app/app_fsm.c
+	src/button/button.c
+	src/demo/demo_route.c
 	src/fence/fence_square.c
 	src/geofence/geofence.c
 	src/gnss/gnss_nrf91.c
