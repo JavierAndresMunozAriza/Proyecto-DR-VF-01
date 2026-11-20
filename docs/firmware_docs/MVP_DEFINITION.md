@@ -169,7 +169,7 @@ int lora_send_geofence_alert(geopoint_t* location) {
 
 ### Tareas RTOS Principales
 ```c
-// Propuesta de diseño (el firmware/src/main.c actual es solo la prueba de concepto con ruta simulada, sin hilos)
+// Propuesta de diseño (el firmware/src/main.c actual es solo la prueba de concepto con GNSS real y un solo bucle, sin hilos)
 K_THREAD_DEFINE(imu_monitor, STACK_SIZE, imu_monitor_thread, 
                 NULL, NULL, NULL, IMU_PRIORITY, 0, 0);
 
@@ -215,8 +215,9 @@ K_THREAD_DEFINE(lora_handler, STACK_SIZE, lora_thread,
 
 ### Estado de la prueba de concepto (Nordic Thingy:91 X)
 - **Paso 1, hecho (2026-11-19):** una aplicación Zephyr recorre una ruta simulada sobre un polígono de prueba, llama a `geofence_check()` y gradúa el LED RGB: verde a 20 m o más del límite, mezcla hacia rojo al acercarse y rojo parpadeante fuera del polígono. Verificado en la placa con el registro por consola y con el LED a la vista.
+- **Paso 2, hecho (2026-11-19):** la aplicación usa el GNSS real del nRF9151 a través del adaptador `gnss`, con una máquina de estados explícita (búsqueda, monitoreo, fix perdido, fallo). El primer fix con precisión de 50 m o mejor define un polígono cuadrado de 60 m de lado centrado en esa posición. Mientras busca, el LED parpadea en azul (cian si llegan fixes demasiado imprecisos). El firmware del módem de la placa es `mfw_nrf91x1_2.0.2`. Verificado a simple vista en exteriores, en Manizales: verde tras el fix y rojo al alejarse unos 25 m del centro. No se midió el tiempo hasta el primer fix ni la precisión frente a una referencia.
 - **Primer dato de RF-02:** `geofence_check()` tarda 275 µs con un polígono de 4 vértices en el nRF9151. Falta medir con polígonos grandes antes de dar el requisito por cumplido.
-- **Pendiente:** GNSS real, FSM de la aplicación, comunicaciones, IMU y la configuración de la placa ESP32-S3.
+- **Pendiente:** el backend del GNSS externo MAX-M10S, comunicaciones, IMU, sueño profundo y la configuración de la placa ESP32-S3.
 
 ## Conclusiones
 

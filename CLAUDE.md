@@ -42,7 +42,7 @@ Thingy:91 X proof-of-concept app, from `firmware/`. Always go through the script
 ./build.sh clean
 ```
 
-The app log is on `/dev/ttyACM0` at 115200 baud. `alert_color` has its own host tests (`make test` in `firmware/src/alert`). Flashing from WSL2 needs a udev rule, `SUBSYSTEM=="usb", ATTR{idVendor}=="1915", MODE="0666"` in `/etc/udev/rules.d/`, or `pyusb` fails with "The device has no langid".
+The app log is on `/dev/ttyACM0` at 115200 baud. The pure modules have their own host tests (`make test` in `firmware/src/alert`, `fence` and `app`); `gnss_nrf91.c`, `rgb_led.c` and `main.c` can only be checked on the board. Flashing from WSL2 needs a udev rule, `SUBSYSTEM=="usb", ATTR{idVendor}=="1915", MODE="0666"` in `/etc/udev/rules.d/`, or `pyusb` fails with "The device has no langid".
 
 No linter or formatter is configured; GCC warnings are the only static check.
 
@@ -57,7 +57,7 @@ The final PDF is compiled in Overleaf, not here, and committed as `docs/DR-VF-01
 ## Architecture
 
 - **Specs:** `docs/PROJECT_CONTEXT.md` is the master document. It links to `docs/REQUIREMENTS.md` (RF-xx and RNF-xx requirements with traceability) and `docs/ARCHITECTURE.md` (power topology and component calculations). Firmware design is in `docs/firmware_docs/`.
-- **Firmware:** the geofence engine (`firmware/include/geofence.h`, `firmware/src/geofence/geofence.c`) with its host tests, plus step 1 of the Thingy:91 X proof of concept: `firmware/src/main.c` (simulated route, no GNSS yet), `alert_color` (distance to RGB, host-tested), and the `rgb_led` and `timing` adapters. It runs on the board; `geofence_check()` takes 275 us for a 4-vertex polygon. Real GNSS, the application FSM, comms, IMU and the ESP32-S3 board configuration exist only as designs in `docs/firmware_docs/`.
+- **Firmware:** the geofence engine (`firmware/include/geofence.h`, `firmware/src/geofence/geofence.c`) with its host tests, plus steps 1 and 2 of the Thingy:91 X proof of concept. `firmware/src/main.c` reads real GNSS fixes (`gnss` adapter, nRF9151 backend), builds a 60 m square fence around the first accurate fix (`fence_square`), runs the application FSM (`app_fsm`: SEARCHING, MONITORING, FIX_LOST, FAULT) and shows the distance to the edge on the RGB LED (`alert_color`, `rgb_led`, `timing`). It runs on the board and was checked by eye outdoors in Manizales (green after the fix, red when walking about 25 m away). `geofence_check()` took 275 us for a 4-vertex polygon (measured with the simulated route of step 1). The MAX-M10S GNSS backend, comms, IMU, deep sleep and the ESP32-S3 board configuration exist only as designs in `docs/firmware_docs/`.
 - **Report:** `reports/main.tex` is the root. It loads `Configuracion.tex` and one folder per domain under `reports/secciones/` (requirements, hardware, firmware, mechanical, commercial).
 - **Hardware and mechanical:** `hardware/` and `mechanical/` track Markdown specs only, with no EDA binaries.
 

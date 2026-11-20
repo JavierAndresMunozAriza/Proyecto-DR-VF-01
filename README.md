@@ -94,8 +94,11 @@ Batteries in remote cattle collars cannot be replaced frequently. The firmware i
 │   ├── include/                 # Public C headers
 │   ├── src/geofence/            # Core C Engine, Makefile, & Unit Tests
 │   ├── src/alert/               # Distance to RGB alert color, with host tests
+│   ├── src/app/                 # Application state machine, with host tests
+│   ├── src/fence/               # Square fence around a point, with host tests
+│   ├── src/gnss/                # GNSS adapter backend (nRF9151 modem)
 │   ├── src/led/, src/timing/    # RGB LED (PWM) and timing adapters
-│   ├── src/main.c               # Proof-of-concept app: simulated route + RGB alert
+│   ├── src/main.c               # Proof-of-concept app: GNSS fix, fence and RGB alert
 │   └── build.sh                 # Build and flash for the Thingy:91 X
 ├── hardware/                    # Hardware design notes (no EDA files tracked yet)
 │   ├── BOM.md                   # Bill of Materials
@@ -128,7 +131,7 @@ With nRF Connect SDK v3.4.1 installed, from `firmware/`:
 ./build.sh        # build
 ./build.sh flash  # flash over USB-C (MCUboot)
 ```
-The app walks a simulated route across a test polygon and shows the distance to the boundary on the RGB LED: green at 20 m or more, mixing toward red as it gets closer, blinking red outside. `geofence_check()` takes 275 µs for a 4-vertex polygon on the nRF9151 (measured on the board; larger polygons are not measured yet). The simulated route stands in for GNSS, which is the next step.
+The app uses the nRF9151 GNSS. While it searches the LED blinks blue (cyan if fixes arrive but are too inaccurate, worse than 50 m). The first accurate fix defines a 60 m square fence centered on that position. From then on the LED shows the distance to the boundary: green at 20 m or more, mixing toward red as it gets closer, blinking red outside or when fixes stop arriving for 10 s. The GNSS needs open sky and a few minutes for the first fix; there is no network assistance. It was checked by eye outdoors in Manizales. `geofence_check()` took 275 µs for a 4-vertex polygon on the nRF9151 (measured on the board with the simulated route of step 1; larger polygons are not measured yet).
 
 ## 🛡️ License & Contact
 Distributed under the MIT License (see [LICENSE](./LICENSE)). Developed by engineering team for UNAL academic defense and industrial remote deployment readiness.
