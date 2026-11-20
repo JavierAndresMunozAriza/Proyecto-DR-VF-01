@@ -27,6 +27,12 @@ debe poder rastrearse a uno de estos archivos.
 Los commits de los registros de la placa se infieren de la hora en que se flasheó cada
 compilación durante la sesión de trabajo; no se guardó el hash junto a cada captura.
 
+Además, fuera de `logs/`:
+
+- `field_ttff_manual.csv`: tres tiempos hasta el primer fix en frío, medidos con cronómetro en exteriores (la placa iba a batería, sin PC). No hay log de la consola de esas pruebas.
+- `analyze_static.py`: calcula la dispersión de una prueba estática a partir de una captura privada y solo escribe cifras derivadas y desplazamientos relativos a la media.
+- `private/` (ignorada por git): capturas crudas de las pruebas de campo, que contienen la ubicación real.
+
 ## Limitaciones de la evidencia (el informe debe declararlas)
 
 - **No existe un log de un fix GNSS real.** Las pruebas en exteriores se hicieron con la placa

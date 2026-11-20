@@ -1,0 +1,12 @@
+# Time to first usable fix (steady green LED) after a COLD start, measured by hand with a stopwatch.
+# Firmware: cold-start build (./build.sh cold, sources of commit 0bf6308): the stored GNSS data is deleted at every boot.
+# Method: SW1 off, a few seconds, SW1 on, start the stopwatch; stop it when the LED turns steady green
+#         (first fix with a reported accuracy of 50 m or better, which creates the fence).
+# Date: 2026-11-20. Outdoors with open sky, board flat and face up, on battery, no PC connected.
+# Not recorded: weather, time of day and the surroundings (the user did not note them). The location is deliberately not recorded.
+# Uncertainty: the reaction of the person with the stopwatch, about +-2 s, plus the boot time of about 0.6 s.
+# Run 3 was left on after the green LED for 5 more minutes so the modem stored its satellite data.
+run,time_mm_ss,seconds
+1,1:30,90
+2,0:54,54
+3,2:16,136
