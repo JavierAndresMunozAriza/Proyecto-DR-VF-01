@@ -1,0 +1,36 @@
+\section{Especificaciones clave y criterios de aceptación}
+
+Esta sección fija, antes de medir, lo que se le pide a la PoC. Los criterios derivan de los
+requerimientos de la Memoria Técnica; no se inventaron requerimientos nuevos. Cuando un criterio
+es una decisión de diseño de la PoC y no viene de un requerimiento, se marca como \emph{nuevo}.
+Los resultados se presentan en la sección de resultados y se comparan con esta tabla en la
+matriz de cumplimiento.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabularx}{\textwidth}{|l l X X|}
+\hline
+\tablehead{\textbf{ID} & \textbf{Deriva de} & \textbf{Criterio} & \textbf{Método de verificación}} \\ \hline
+PoC-01 & SR-12, F-02 & Una evaluación de la cerca (\texttt{geofence\_check()}) tarda menos de 50~ms. & Medir en la placa lotes de llamadas con polígonos de 4 a 1024 vértices. \\ \hline
+PoC-02 & SR-11, F-01 & Error de posición horizontal de 2.5~m CEP o menos. El SRD no define si el CEP es CEP50 o RMS. & Prueba estática de al menos 15 minutos en un punto fijo con cielo abierto; dispersión de los fixes (CEP50 y CEP95). \\ \hline
+PoC-03 & SR-10, F-01 & Frecuencia de actualización mayor que 1~Hz. & Marcas de tiempo de los fixes en el registro. \\ \hline
+PoC-04 & F-03 & Alerta visual al cruzar el borde de la cerca. & Observación del LED y registro del modo demo. \\ \hline
+PoC-05 & Nuevo (diseño) & Degradado del LED: verde a 20~m o más del borde, mezcla hacia rojo al acercarse, rojo en el borde y parpadeo fuera. & Registro de la ruta simulada del modo demo (42 pasos). \\ \hline
+PoC-06 & Nuevo (diseño) & A prueba de fallos: sin fix durante 10~s el LED parpadea en magenta; sin GNSS, en rojo parpadeante; una lectura inválida nunca se interpreta como estar fuera. & Tests en el PC y observación en campo. \\ \hline
+PoC-07 & Nuevo (informativo) & Tiempo hasta el primer fix, comparado con la hoja de datos del nRF9151 (30.5~s en frío y 1.3~s en caliente). & Tiempo desde el arranque hasta la creación de la cerca, en al menos 3 arranques en frío. \\ \hline
+PoC-08 & Nuevo & Huella de memoria del firmware. & Tabla de memoria de la compilación. \\ \hline
+PoC-09 & Nuevo & El algoritmo es correcto y el error de la distancia al borde es menor que 0.2~\% hasta los 85° de latitud (límite documentado en el motor). & Tests y pruebas aleatorias en el PC. \\ \hline
+PoC-10 & Nuevo & Los módulos de C puro compilan sin cambios para Cortex-M33 y ESP32-S3. Compilar no equivale a ejecutar en el ESP32-S3. & Compilación cruzada con advertencias como errores. \\ \hline
+PoC-11 & Nuevo & El modo demo funciona sin señal GNSS. & Registro: \texttt{SEARCHING} $\to$ \texttt{DEMO} $\to$ \texttt{SEARCHING}. \\ \hline
+\end{tabularx}
+\caption{Criterios de aceptación de la PoC y su trazabilidad.}
+\end{table}
+
+\subsection{Fuera del alcance de la PoC}
+
+La PoC no cubre, y este informe no afirma nada sobre: la etapa acústica y el pulso de disuasión
+(F-03, SR-30), el aislamiento galvánico con optoacoplador (F-04, NF-02), la telemetría LoRa
+(F-05), el servidor web de configuración (F-06), la gestión de energía, la carga y las
+protecciones (F-07 a F-11, NF-01), el despertar por movimiento con la IMU (F-12) y el guardado
+del perímetro en memoria no volátil (NF-07). Estos requerimientos se verificarán sobre la PCB.

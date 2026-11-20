@@ -1,0 +1,37 @@
+% ==============================================================================
+% Single source of every number and fact quoted in the Engineering Report.
+% Both languages use these macros, so the figures cannot drift apart.
+% Each value comes from a file in evidence/ (see evidence/README.md).
+% Big numbers use a thin space as thousands separator in both languages.
+% ==============================================================================
+
+% --- Document ---------------------------------------------------------------
+\newcommand{\reportrevision}{Rev.\,1.0 (draft)}
+\newcommand{\dFirmwareCommit}{0b19c71}          % firmware measured, evidence/logs/build_memory.log
+
+% --- Platform ---------------------------------------------------------------
+\newcommand{\dBoard}{Nordic Thingy:91\,X (PCA20065)}
+\newcommand{\dSoc}{nRF9151}
+\newcommand{\dNcs}{nRF Connect SDK v3.4.1}
+\newcommand{\dZephyr}{Zephyr 4.4.2}
+\newcommand{\dModemFw}{mfw\_nrf91x1\_2.0.2}      % evidence/logs/gnss_search_indoor_90s.log
+
+% --- Build (evidence/logs/build_memory.log) -----------------------------------
+\newcommand{\dFlashBytes}{94\,268}
+\newcommand{\dFlashPercent}{11.63}
+\newcommand{\dFlashRegion}{810\,858}
+\newcommand{\dRamBytes}{19\,776}
+\newcommand{\dRamPercent}{9.35}
+\newcommand{\dRamRegion}{211\,608}
+
+% --- Timing resolution (kernel cycle counter) -------------------------------
+\newcommand{\dClockHz}{32\,768}
+\newcommand{\dTickUs}{30.5}
+
+% --- Host tests (evidence/logs/host_tests.log) ------------------------------
+\newcommand{\dHostTests}{14}
+\newcommand{\dHostChecks}{3\,067}
+\newcommand{\dStressCases}{3\,795\,130}
+\newcommand{\dStressWorstErrorPct}{0.021}
+\newcommand{\dEngineBytesCmThree}{3\,336}
+\newcommand{\dEngineBytesEsp}{3\,429}
