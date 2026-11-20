@@ -127,7 +127,7 @@ def report(stats):
 
 def selftest():
     """Points on a circle of radius 5 m around a mean: every statistic is known exactly."""
-    lat0, lon0, radius = 5.0, -75.0, 5.0
+    lat0, lon0, radius = 48.0, 11.0, 5.0
     fixes = []
     for i in range(100):
         a = 2 * math.pi * i / 100
@@ -149,8 +149,8 @@ def selftest():
     ]
     # A reset in the middle must be ignored: only the last boot counts.
     lines = ["[00:00:10.000,000] <inf> main: fix 1.000000, 1.000000 acc=9.0 m",
-             "[00:00:01.000,000] <inf> main: fix 5.000000, -75.000000 acc=7.0 m",
-             "[00:00:02.000,000] <inf> main: fix 5.000010, -75.000000 acc=7.0 m"]
+             "[00:00:01.000,000] <inf> main: fix 48.000000, 11.000000 acc=7.0 m",
+             "[00:00:02.000,000] <inf> main: fix 48.000010, 11.000000 acc=7.0 m"]
     checks.append(("only the last boot is used", len(parse_fixes(lines)) == 2))
     # The first 5 fixes are wild (convergence): skipping 5 s leaves only the circle.
     wild = [(float(i), lat0 + 100.0 / METERS_PER_DEG_LAT, lon0, 40.0) for i in range(5)]
