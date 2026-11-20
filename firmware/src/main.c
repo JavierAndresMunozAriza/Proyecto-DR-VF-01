@@ -35,6 +35,7 @@
 #include "demo_route.h"
 #include "fence_square.h"
 #include "geofence.h"
+#include "geofence_bench.h"
 #include "gnss.h"
 #include "rgb_led.h"
 #include "timing.h"
@@ -52,10 +53,6 @@ LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 
 #define FENCE_MAX_POLYGONS   1
 #define FENCE_NO_TOLERANCE   0.0
-
-/* Fictitious center of the demo fence; the demo never uses the real position. */
-#define DEMO_CENTER_LAT      4.6097
-#define DEMO_CENTER_LON      (-74.0817)
 
 struct app {
 	geofence_t fence;
@@ -295,6 +292,10 @@ int main(void)
 		LOG_ERR("geofence_init failed: %d", ret);
 		return ret;
 	}
+
+	/* Measurement builds only: runs before the GNSS and the button start. */
+	if (IS_ENABLED(CONFIG_DRVF_GEOFENCE_BENCHMARK))
+		geofence_bench_run();
 
 	ret = button_init();
 	if (ret < 0)

@@ -8,8 +8,10 @@
 #
 # Usage:
 #   ./build.sh [build]   build (pristine only when the configuration changed)
-#   ./build.sh clean     remove the build directory
+#   ./build.sh clean     remove the build directories
 #   ./build.sh flash     flash build/dfu_application.zip over USB (MCUboot)
+#   ./build.sh bench     build with the geofence timing benchmark (separate directory)
+#   ./build.sh flash-bench  flash the benchmark build
 #
 # Environment overrides: BOARD, BUILD_DIR, LINK_PATH, NCS_SHELL.
 set -euo pipefail
@@ -35,9 +37,24 @@ case "${1:-build}" in
 		"$NCS_SHELL" west build -p auto -b "$BOARD" "$LINK_PATH" -d "$BUILD_DIR"
 		echo "Image: $BUILD_DIR/dfu_application.zip"
 		;;
+	bench)
+		# Measurement build with the geofence timing benchmark, in its own build directory.
+		# The sysbuild image is named after the link's directory name.
+		"$NCS_SHELL" west build -p auto -b "$BOARD" "$LINK_PATH" -d "${BUILD_DIR}_bench" -- \
+			"-D$(basename "$LINK_PATH")_CONFIG_DRVF_GEOFENCE_BENCHMARK=y"
+		echo "Image: ${BUILD_DIR}_bench/dfu_application.zip"
+		;;
+	flash-bench)
+		[ -f "${BUILD_DIR}_bench/dfu_application.zip" ] || {
+			echo "error: no benchmark image, run ./build.sh bench first" >&2
+			exit 1
+		}
+		"$NCS_SHELL" west thingy91x-dfu --chip nrf91 \
+			--image "${BUILD_DIR}_bench/dfu_application.zip"
+		;;
 	clean)
-		rm -rf "$BUILD_DIR"
-		echo "Removed $BUILD_DIR"
+		rm -rf "$BUILD_DIR" "${BUILD_DIR}_bench"
+		echo "Removed $BUILD_DIR and ${BUILD_DIR}_bench"
 		;;
 	flash)
 		[ -f "$BUILD_DIR/dfu_application.zip" ] || {
@@ -48,7 +65,7 @@ case "${1:-build}" in
 			--image "$BUILD_DIR/dfu_application.zip"
 		;;
 	*)
-		echo "usage: $0 [build|clean|flash]" >&2
+		echo "usage: $0 [build|clean|flash|bench|flash-bench]" >&2
 		exit 2
 		;;
 esac

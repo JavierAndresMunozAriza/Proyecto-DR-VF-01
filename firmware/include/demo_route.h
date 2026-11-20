@@ -17,6 +17,13 @@
 extern "C" {
 #endif
 
+/**
+ * Fictitious point used by the demo and the benchmark, so neither depends on
+ * the real position of the board (a plaza in Bogota)
+ */
+#define DEMO_CENTER_LAT 4.6097
+#define DEMO_CENTER_LON (-74.0817)
+
 /** Steps in one full round trip; the route repeats after this many steps */
 #define DEMO_ROUTE_STEPS 40
 

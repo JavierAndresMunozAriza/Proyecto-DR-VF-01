@@ -1,0 +1,10 @@
+mainmenu "DR-VF-01 firmware"
+
+config DRVF_GEOFENCE_BENCHMARK
+	bool "Run the geofence timing benchmark at boot"
+	help
+	  Times geofence_check() on regular polygons of 4 to 1024 vertices before
+	  the application starts and logs the mean time per call. For
+	  measurement builds only: it delays the start by a few seconds.
+
+source "Kconfig.zephyr"

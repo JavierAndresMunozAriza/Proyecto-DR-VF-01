@@ -17,3 +17,8 @@ target_sources(app PRIVATE
 	src/led/rgb_led.c
 	src/timing/timing.c
 )
+
+target_sources_ifdef(CONFIG_DRVF_GEOFENCE_BENCHMARK app PRIVATE
+	src/bench/bench_polygon.c
+	src/bench/geofence_bench.c
+)
