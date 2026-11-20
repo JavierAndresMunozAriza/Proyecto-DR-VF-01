@@ -28,6 +28,17 @@
 \newcommand{\dClockHz}{32\,768}
 \newcommand{\dTickUs}{30.5}
 
+% --- geofence_check() benchmark (evidence/logs/geofence_benchmark.log) -------
+% Mean time per call in microseconds, mean of 3 boots, 40 calls per batch.
+\newcommand{\dBenchUsN004}{350.2}
+\newcommand{\dBenchUsN016}{1\,068.8}
+\newcommand{\dBenchUsN064}{3\,943.1}
+\newcommand{\dBenchUsN256}{15\,440.3}
+\newcommand{\dBenchUsN1024}{61\,421.2}
+\newcommand{\dBenchFitOffsetUs}{111.3}
+\newcommand{\dBenchFitSlopeUs}{59.87}
+\newcommand{\dBenchLimitVertices}{833}          % vertices that reach 50 ms by the linear fit
+
 % --- Host tests (evidence/logs/host_tests.log) ------------------------------
 \newcommand{\dHostTests}{14}
 \newcommand{\dHostChecks}{3\,067}

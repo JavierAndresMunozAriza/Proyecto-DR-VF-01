@@ -34,7 +34,7 @@
 ## 3. Estado de Implementación
 
 - [ ] **RF-01**: Pendiente de implementación
-- [ ] **RF-02**: Pendiente de implementación. Primer dato (2026-11-19): `geofence_check()` tarda 275 µs con un polígono de 4 vértices en el nRF9151 (Thingy:91 X); falta medir con polígonos grandes y en la placa final  
+- [ ] **RF-02**: Pendiente de implementación. Dato (2026-11-20, nRF9151 en Thingy:91 X, benchmark por lotes): 350 µs con 4 vértices, 15.4 ms con 256 y 61.4 ms con 1024; crece linealmente (unos 111 µs + 59.9 µs por vértice) y llega a 50 ms cerca de los 830 vértices; falta medir en la placa final (ESP32-S3) con osciloscopio  
 - [ ] **RF-03**: Pendiente de implementación
 - [ ] **RF-04**: Pendiente de implementación
 - [ ] **RF-05**: Pendiente de implementación

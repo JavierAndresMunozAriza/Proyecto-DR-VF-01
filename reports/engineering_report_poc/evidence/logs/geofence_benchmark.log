@@ -1,0 +1,35 @@
+# geofence_check() timing benchmark on the nRF9151 (Thingy:91 X), 3 consecutive boots
+# Firmware: benchmark build (./build.sh bench), sources of commit 31e6787, NCS v3.4.1, 2026-11-20
+# Each line: 40 checks per polygon (20 inside, 20 outside), a regular polygon of radius 500 m, timed as one batch
+# Kernel cycle counter: 32768 Hz (30.5 us per tick), so only batch means are meaningful
+
+## boot 1
+[00:00:00.290,924] <inf> bench: bench: start, 40 points per polygon, clock 32768 Hz
+[00:00:00.311,340] <inf> bench: bench:    4 vertices, 40 checks, total 14008 us, mean 350.2 us per check, 0 wrong
+[00:00:00.362,182] <inf> bench: bench:   16 vertices, 40 checks, total 42755 us, mean 1068.8 us per check, 0 wrong
+[00:00:00.534,729] <inf> bench: bench:   64 vertices, 40 checks, total 157684 us, mean 3942.1 us per check, 0 wrong
+[00:00:01.194,152] <inf> bench: bench:  256 vertices, 40 checks, total 617584 us, mean 15439.6 us per check, 0 wrong
+[00:00:03.800,964] <inf> bench: bench: 1024 vertices, 40 checks, total 2456787 us, mean 61419.6 us per check, 0 wrong
+[00:00:03.800,994] <inf> bench: bench: done
+
+## boot 2
+[00:00:00.290,954] <inf> bench: bench: start, 40 points per polygon, clock 32768 Hz
+[00:00:00.311,370] <inf> bench: bench:    4 vertices, 40 checks, total 14008 us, mean 350.2 us per check, 0 wrong
+[00:00:00.362,243] <inf> bench: bench:   16 vertices, 40 checks, total 42755 us, mean 1068.8 us per check, 0 wrong
+[00:00:00.534,820] <inf> bench: bench:   64 vertices, 40 checks, total 157745 us, mean 3943.6 us per check, 0 wrong
+[00:00:01.194,305] <inf> bench: bench:  256 vertices, 40 checks, total 617615 us, mean 15440.3 us per check, 0 wrong
+[00:00:03.801,422] <inf> bench: bench: 1024 vertices, 40 checks, total 2457062 us, mean 61426.5 us per check, 0 wrong
+[00:00:03.801,452] <inf> bench: bench: done
+
+## boot 3
+[00:00:00.290,954] <inf> bench: bench: start, 40 points per polygon, clock 32768 Hz
+[00:00:00.311,370] <inf> bench: bench:    4 vertices, 40 checks, total 14008 us, mean 350.2 us per check, 0 wrong
+[00:00:00.362,213] <inf> bench: bench:   16 vertices, 40 checks, total 42755 us, mean 1068.8 us per check, 0 wrong
+[00:00:00.534,851] <inf> bench: bench:   64 vertices, 40 checks, total 157745 us, mean 3943.6 us per check, 0 wrong
+[00:00:01.194,366] <inf> bench: bench:  256 vertices, 40 checks, total 617645 us, mean 15441.1 us per check, 0 wrong
+[00:00:03.801,147] <inf> bench: bench: 1024 vertices, 40 checks, total 2456696 us, mean 61417.4 us per check, 0 wrong
+[00:00:03.801,147] <inf> bench: bench: done
+
+## least-squares fit of the mean of the 3 boots (computed afterwards, see evidence/README.md)
+time_us = 111.3 + 59.87 * vertices   (residuals <= 1.5 us)
+vertices that reach 50 ms: 833
