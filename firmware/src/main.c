@@ -228,7 +228,7 @@ static void log_search_progress(const struct app *app)
 		return;
 
 	if (gnss_ioctl(GNSS_IOCTL_GET_SATELLITES, &satellites) == 0)
-		LOG_INF("Searching: %u satellites tracked", satellites);
+		LOG_INF("%s: %u satellites tracked", state_name[app->state], satellites);
 }
 
 /* Drive the LED from the current state; called every tick. */
