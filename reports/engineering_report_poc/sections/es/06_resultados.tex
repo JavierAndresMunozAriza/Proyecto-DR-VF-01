@@ -177,6 +177,50 @@ modo demo funcionó sin señal GNSS. \textbf{PoC-04, PoC-05 y PoC-11 se cumplen}
         abandona con el modo demo.
 \end{itemize}
 
+\subsection{Caminata de campo: precisión al aire libre y pérdida de señal (PoC-02 y PoC-06)}
+
+El 20 de noviembre se hicieron dos capturas de una caminata con la placa conectada por USB a un teléfono. La
+aplicación del teléfono no guardó el archivo del registro, así que las cifras salen de una \emph{transcripción}
+línea por línea del texto copiado, no de una captura cruda (\texttt{field\_\allowbreak walk\_\allowbreak open\_\allowbreak sky.csv} y
+\texttt{field\_\allowbreak walk\_\allowbreak signal\_\allowbreak loss.csv}, sin coordenadas). Los segundos de la primera están completos y
+consecutivos.
+
+\textbf{Al aire libre.} Durante \dWalkSeconds~s (\dWalkFixes{} fixes, uno por segundo) la persona caminó dentro de la
+cerca, de \dWalkDistMin{} a \dWalkDistMax~m del borde, con cielo despejado. La precisión que reportó el receptor
+fue de \dWalkAccMin{} a \dWalkAccMax~m, con mediana de \dWalkAccMedian~m: \dWalkWithin{} de los \dWalkFixes{} fixes
+(\dWalkWithinPct~\%) reportaron \dReqCep~m o menos y los otros \dWalkAbove{} reportaron \dWalkAccMax~m. El color
+siguió la distancia al borde y la comprobación tardó \dCrossCheckInUs~\textmu s. Frente a los 11 a 13~m
+reportados en la prueba estática con cielo parcial, la diferencia es grande, y muestra cuánto depende la
+precisión de la vista al cielo.
+
+Estas cifras \textbf{no demuestran PoC-02}: la precisión reportada es la estimación del propio receptor (2D, 1
+sigma), no el error frente a un punto conocido; son \dWalkSeconds~s en movimiento, no una prueba estática de
+15 minutos; y no hubo referencia de coordenadas. Son un indicio favorable de lo que podría dar el receptor con
+cielo abierto, que es lo que habría que medir.
+
+\textbf{Cruce del borde y pérdida de señal.} En la otra captura, caminando hacia el borde, el LED pasó de
+verde a rojo y la distancia pasó de 1.20~m dentro a 0.31~m fuera, con el parpadeo activado y la comprobación en
+\dCrossCheckOutUs~\textmu s. Según la persona que hizo la prueba, al entrar a una casa se perdió la señal. El
+registro lo muestra así:
+
+\begin{itemize}
+  \item La precisión reportada de los \dCrossFixes{} fixes aceptados creció de \dCrossAccFrom{} a \dCrossAccTo~m, y los
+        \dCrossIgnored{} siguientes (hasta \dCrossIgnoredLast~m) se descartaron por superar 50~m.
+  \item \texttt{MONITORING} $\to$ \texttt{FIX\_LOST} a los \dCrossLostS~s del último fix aceptado, como en la
+        prueba estática (PoC-06).
+  \item Los satélites en seguimiento bajaron de \dCrossSatsFrom{} a \dCrossSatsTo{} en \dCrossSatsSeconds~s, y
+        quedaron en 0 al final de la captura.
+  \item \textbf{Una observación sin explicar:} en los últimos \dCrossConstSteps{} fixes aceptados el avance entre
+        fixes fue constante, de \dCrossConstLow{} a \dCrossConstHigh~m por segundo, mientras que antes variaba de
+        \dCrossVarLow{} a \dCrossVarHigh~m. Una explicación posible es que el receptor siguiera estimando la
+        posición con la última velocidad al perder los satélites. No está comprobado: el registro no dice
+        cuántos satélites se usaron en cada fix.
+\end{itemize}
+
+Si esa explicación fuera cierta, el firmware habría mostrado el rojo del borde con una posición que ya no se
+medía, porque acepta fixes con precisión de hasta 50~m. Por eso el diagnóstico de la señal figura entre los
+trabajos futuros.
+
 \subsection{Huella de memoria (PoC-08)}
 
 El firmware normal ocupa \dFlashBytes~B de flash (\dFlashPercent~\% de los \dFlashRegion~B disponibles para

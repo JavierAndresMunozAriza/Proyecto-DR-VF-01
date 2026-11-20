@@ -204,6 +204,51 @@ def check_static(m):
           f"{st['n']} {st['cep50']:.2f} {st['cep95']:.2f} {st['drms']:.2f}")
 
 
+# --- field walks (transcribed from the phone console) -------------------------------------
+def csv_rows(name):
+    lines = [l for l in read(os.path.join(HERE, name)).splitlines() if l.strip() and not l.startswith("#")]
+    return list(csv.DictReader(lines))
+
+
+def check_walks(m):
+    walk = csv_rows("field_walk_open_sky.csv")
+    t = [int(r["uptime_s"]) for r in walk]
+    acc = [float(r["reported_accuracy_m"]) for r in walk]
+    dist = [float(r["distance_to_edge_m"]) for r in walk]
+    check("open-sky walk: one row per second, no gaps", all(b - a == 1 for a, b in zip(t, t[1:])))
+    check("data.tex walk fixes and seconds", num(m, "dWalkFixes") == len(walk) and num(m, "dWalkSeconds") == t[-1] - t[0])
+    check("data.tex walk accuracy min, max, median", num(m, "dWalkAccMin") == min(acc) and num(m, "dWalkAccMax") == max(acc)
+          and close(num(m, "dWalkAccMedian"), statistics.median(acc), 0.001))
+    limit = num(m, "dReqCep")
+    within = sum(a <= limit for a in acc)
+    check("data.tex walk fixes within the requirement figure", num(m, "dWalkWithin") == within and num(m, "dWalkAbove") == len(acc) - within)
+    check("data.tex walk percentage within", close(num(m, "dWalkWithinPct"), 100 * within / len(acc), 0.5))
+    check("data.tex walk distance range", close(num(m, "dWalkDistMin"), min(dist), 0.06) and close(num(m, "dWalkDistMax"), max(dist), 0.06))
+    check("data.tex walk largest step between fixes", close(num(m, "dWalkStepMax"), max(abs(b - a) for a, b in zip(dist, dist[1:])), 0.006))
+
+    rows = csv_rows("field_walk_signal_loss.csv")
+    fixes = [r for r in rows if r["event"] == "fix"]
+    ignored = [r for r in rows if r["event"] == "ignored"]
+    lost = [r for r in rows if r["event"] == "fix_lost"][0]
+    sats = [r for r in rows if r["event"] == "sats"]
+    check("data.tex crossing fixes and ignored fixes", num(m, "dCrossFixes") == len(fixes) and num(m, "dCrossIgnored") == len(ignored))
+    check("data.tex crossing accuracy of accepted fixes", num(m, "dCrossAccFrom") == float(fixes[0]["reported_accuracy_m"])
+          and num(m, "dCrossAccTo") == float(fixes[-1]["reported_accuracy_m"]) and num(m, "dCrossIgnoredLast") == float(ignored[-1]["reported_accuracy_m"]))
+    check("every accepted fix has accuracy 50 m or better and every ignored one worse",
+          all(float(r["reported_accuracy_m"]) <= 50 for r in fixes) and all(float(r["reported_accuracy_m"]) > 50 for r in ignored))
+    check("data.tex FIX_LOST after the last accepted fix (s)", close(num(m, "dCrossLostS"), float(lost["uptime_s"]) - float(fixes[-1]["uptime_s"]), 0.05))
+    signed = [float(r["distance_m"]) * (1 if r["inside"] == "1" else -1) for r in fixes]
+    steps = [round(a - b, 2) for a, b in zip(signed, signed[1:])]
+    n_const = int(num(m, "dCrossConstSteps"))
+    check("data.tex crossing: steps of the last fixes are constant", min(steps[-n_const:]) == num(m, "dCrossConstLow") and max(steps[-n_const:]) == num(m, "dCrossConstHigh"))
+    check("data.tex crossing: earlier steps vary", min(steps[:-n_const]) == num(m, "dCrossVarLow") and max(steps[:-n_const]) == num(m, "dCrossVarHigh"))
+    check("data.tex satellites at FIX_LOST and 14 s later", num(m, "dCrossSatsFrom") == float(sats[0]["satellites"]) and num(m, "dCrossSatsTo") == float(sats[14]["satellites"])
+          and close(num(m, "dCrossSatsSeconds"), float(sats[14]["uptime_s"]) - float(sats[0]["uptime_s"]), 0.5))
+    inside = {int(r["check_us"]) for r in fixes if r["inside"] == "1"}
+    outside = {int(r["check_us"]) for r in fixes if r["inside"] == "0"}
+    check("data.tex check time inside and outside", inside == {int(num(m, "dCrossCheckInUs"))} and outside == {int(num(m, "dCrossCheckOutUs"))})
+
+
 # --- the two languages -----------------------------------------------------------------
 def check_languages(m):
     used = {}
@@ -229,7 +274,7 @@ def check_languages(m):
 def main():
     m = load_data()
     check("data.tex parsed", len(m) > 50, f"{len(m)} macros")
-    for step in (check_benchmark, check_build, check_host_tests, check_ttff, check_static, check_languages):
+    for step in (check_benchmark, check_build, check_host_tests, check_ttff, check_static, check_walks, check_languages):
         step(m)
     print(f"{checks} checks, {len(failures)} failed")
     return 1 if failures else 0

@@ -32,6 +32,8 @@ Además, fuera de `logs/`:
 - `field_ttff_manual.csv`: tres tiempos hasta el primer fix en frío, medidos con cronómetro en exteriores (la placa iba a batería, sin PC). No hay log de la consola de esas pruebas.
 - `field_conditions.md`: hora, clima, entorno y colocación de las pruebas de campo, sin ubicación.
 - `static_offsets.csv`: desplazamientos este y norte, en metros respecto al promedio, de los 569 fixes usados en la prueba estática (sin coordenadas absolutas), con su precisión reportada.
+- `field_walk_open_sky.csv`: 79 fixes de una caminata al aire libre dentro de la cerca (2026-11-20, 78 s): precisión reportada y distancia al borde por segundo. Es una TRANSCRIPCIÓN línea por línea del texto que el autor copió de la aplicación del teléfono, porque la aplicación no guardó el archivo; no es la captura cruda. Sin coordenadas.
+- `field_walk_signal_loss.csv`: el cruce del borde (16 fixes aceptados) y la pérdida de señal al entrar a una casa (9 fixes descartados, `FIX_LOST`, satélites en seguimiento). Misma procedencia y mismas limitaciones. Sin coordenadas.
 - `analyze_static.py`: calcula la dispersión de una prueba estática a partir de una captura privada, separando los tramos de fixes y descartando la convergencia de cada uno, y solo escribe cifras derivadas y desplazamientos relativos a la media.
 - `private/` (ignorada por git): capturas crudas de las pruebas de campo, que contienen la ubicación real.
 

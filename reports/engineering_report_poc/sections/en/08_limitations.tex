@@ -11,6 +11,9 @@
   \item \textbf{The static test was short.} About 9.5 minutes of useful data remained, not the 15 planned,
         split into two runs. The two runs gave different results and their means are \dStaticRunSeparation~m
         apart, so a longer test at another time could give different numbers.
+  \item \textbf{The walks are transcribed, not captured.} The phone app did not save the file, so the figures come
+        from a transcription of the copied text. The walk in the open lasted \dWalkSeconds~s and the accuracy it gives is
+        the receiver's estimate, not the error against a known point.
   \item \textbf{One board, one place, one day.} None of this was repeated with another board, at another place
         or at another time, which is when the visible constellation changes.
   \item \textbf{The three cold-start times were timed by hand}, with no console log, with an uncertainty of
@@ -38,7 +41,8 @@ generated around the first fix and is not saved: a reboot rebuilds it at another
   \item \textbf{An open-sky accuracy test}, of at least 15 to 30 minutes, repeated at another time, and with a
         reference of known coordinates or an RTK receiver, so that accuracy can be discussed.
   \item \textbf{Signal diagnostics:} log the strength of each satellite, how many are used in the fix and which
-        satellites have stored data and until when, to explain the loss of fix and the slow start.
+        satellites have stored data and until when, to explain the loss of fix and the slow start, and to decide whether fixes whose accuracy worsens quickly
+        should be discarded (today up to 50~m are accepted).
   \item \textbf{A user-defined polygon} (the fence of a farm), instead of a square around the first fix. It is
         planned as revision 1.1 of this report, storing the vertices in non-volatile memory and with a way to
         create them that can be carried to the final PCB.

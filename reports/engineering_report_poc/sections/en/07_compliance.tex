@@ -13,11 +13,11 @@ None of them transfers as is to the product PCB.
 \hline
 \tablehead{\textbf{ID} & \textbf{Status} & \textbf{Result} & \textbf{Evidence}} \\ \hline
 PoC-01 & Partial & Below 50~ms up to about 800 vertices; \dBenchMsThousand~ms with 1024. & \texttt{logs/geofence\_benchmark.log} \\ \hline
-PoC-02 & Not met under these conditions & CEP50 of \dStaticRunTwoCepFifty{} to \dStaticBothCepFifty~m against \dReqCep~m, with a partly obstructed sky and less than 15 minutes. & \texttt{static\_offsets.csv}, \texttt{analyze\_static.py} \\ \hline
+PoC-02 & Not met under these conditions & CEP50 of \dStaticRunTwoCepFifty{} to \dStaticBothCepFifty~m against \dReqCep~m, with a partly obstructed sky and less than 15 minutes; in the open, the receiver estimated \dWalkAccMin{} to \dWalkAccMax~m for \dWalkSeconds~s (not a measured CEP). & \texttt{static\_offsets.csv}, \texttt{field\_walk\_open\_sky.csv}, \texttt{analyze\_static.py} \\ \hline
 PoC-03 & Not met & 1~Hz, not above 1~Hz. & \texttt{static\_offsets.csv} \\ \hline
 PoC-04 & Met & The LED blinks red when leaving the fence. & \texttt{logs/demo\_mode\_session.log} \\ \hline
 PoC-05 & Met & Green at 20~m or more, a mix toward red, blinking red outside. & \texttt{logs/demo\_mode\_session.log} \\ \hline
-PoC-06 & Met & \texttt{FIX\_LOST} after 10~s without a fix, twice, and PC tests. & Private capture, \texttt{logs/host\_tests.log} \\ \hline
+PoC-06 & Met & \texttt{FIX\_LOST} after 10~s without a fix, three times, and PC tests. & Private capture, \texttt{field\_walk\_signal\_loss.csv}, \texttt{logs/host\_tests.log} \\ \hline
 PoC-07 & Measured (informative) & 54, 90 and 136~s; 1.8 to 4.5 times the \dTtffSpecCold~s of the datasheet; no fix in 20 min from the window. & \texttt{field\_ttff\_manual.csv} \\ \hline
 PoC-08 & Measured & \dFlashBytes~B of flash (\dFlashPercent~\%) and \dRamBytes~B of RAM (\dRamPercent~\%). & \texttt{logs/build\_memory.log} \\ \hline
 PoC-09 & Met & Distance error of \dStressWorstErrorPct~\% against the documented 0.2~\%. & \texttt{logs/host\_tests.log} \\ \hline

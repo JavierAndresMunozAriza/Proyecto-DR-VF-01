@@ -11,6 +11,9 @@
   \item \textbf{La prueba estática fue corta.} Quedaron unos 9.5 minutos de datos útiles, no los 15 previstos,
         repartidos en dos tramos. Los dos tramos dieron resultados distintos y sus promedios están separados por
         \dStaticRunSeparation~m, así que una prueba más larga y en otro momento podría dar números distintos.
+  \item \textbf{Las caminatas están transcritas, no capturadas.} La aplicación del teléfono no guardó el archivo, así que
+        las cifras salen de una transcripción del texto copiado. La caminata al aire libre duró \dWalkSeconds~s y la
+        precisión que da es la estimación del receptor, no el error frente a un punto conocido.
   \item \textbf{Una placa, un lugar, un día.} Nada de esto se repitió con otra placa, en otro sitio ni en otra
         hora, que es cuando cambia la constelación visible.
   \item \textbf{Los tres tiempos en frío se cronometraron a mano}, sin registro de la consola, con una
@@ -39,7 +42,8 @@ otro lugar.
   \item \textbf{Prueba de precisión con cielo abierto}, de al menos 15 a 30 minutos, repetida en otra hora, y con
         una referencia de coordenadas conocidas o un receptor RTK, para poder hablar de exactitud.
   \item \textbf{Diagnóstico de la señal:} registrar la intensidad de cada satélite, cuántos se usan en el fix y
-        qué satélites tienen datos guardados y hasta cuándo, para explicar la pérdida de fix y el arranque lento.
+        qué satélites tienen datos guardados y hasta cuándo, para explicar la pérdida de fix y el arranque lento, y para decidir si conviene descartar los fixes cuya
+        precisión empeora rápido (hoy se aceptan hasta 50~m).
   \item \textbf{Polígono definido por el usuario} (cerca de una finca), en lugar de un cuadrado alrededor del
         primer fix. Está prevista como la revisión 1.1 de este informe, guardando los vértices en memoria no
         volátil y con una forma de crearlos que se pueda llevar a la PCB final.

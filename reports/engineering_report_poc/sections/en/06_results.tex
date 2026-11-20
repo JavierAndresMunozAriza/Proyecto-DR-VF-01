@@ -179,6 +179,49 @@ PoC.
         unknown state give the fail-safe result, and that \texttt{FAULT} is only left through the demo mode.
 \end{itemize}
 
+\subsection{Field walk: accuracy in the open and loss of signal (PoC-02 and PoC-06)}
+
+On 20 November two captures of a walk were made with the board connected over USB to a phone. The phone app
+did not save the log file, so the figures come from a line-by-line \emph{transcription} of the copied text, not
+from a raw capture (\texttt{field\_\allowbreak walk\_\allowbreak open\_\allowbreak sky.csv} and \texttt{field\_\allowbreak walk\_\allowbreak signal\_\allowbreak loss.csv}, without
+coordinates). The seconds of the first one are complete and consecutive.
+
+\textbf{In the open.} For \dWalkSeconds~s (\dWalkFixes{} fixes, one per second) the person walked inside the fence,
+\dWalkDistMin{} to \dWalkDistMax~m from the edge, under a clear sky. The accuracy reported by the receiver was
+\dWalkAccMin{} to \dWalkAccMax~m, with a median of \dWalkAccMedian~m: \dWalkWithin{} of the \dWalkFixes{} fixes
+(\dWalkWithinPct~\%) reported \dReqCep~m or better and the other \dWalkAbove{} reported \dWalkAccMax~m. The color
+followed the distance to the edge and the check took \dCrossCheckInUs~\textmu s. Compared with the 11 to 13~m
+reported in the static test under a partly obstructed sky, the difference is large, and it shows how much the
+accuracy depends on the view of the sky.
+
+These figures \textbf{do not demonstrate PoC-02}: the reported accuracy is the receiver's own estimate (2D, 1
+sigma), not the error against a known point; they cover \dWalkSeconds~s while moving, not a 15-minute static
+test; and there was no coordinate reference. They are a favorable hint of what the receiver could give under an
+open sky, which is what remains to be measured.
+
+\textbf{Edge crossing and loss of signal.} In the other capture, walking toward the edge, the LED went from
+green to red and the distance went from 1.20~m inside to 0.31~m outside, with the blinking turned on and the
+check at \dCrossCheckOutUs~\textmu s. According to the person who ran the test, the signal was lost on entering a
+house. The log shows:
+
+\begin{itemize}
+  \item The reported accuracy of the \dCrossFixes{} accepted fixes grew from \dCrossAccFrom{} to \dCrossAccTo~m, and the
+        next \dCrossIgnored{} (up to \dCrossIgnoredLast~m) were discarded for exceeding 50~m.
+  \item \texttt{MONITORING} $\to$ \texttt{FIX\_LOST} \dCrossLostS~s after the last accepted fix, as in the static
+        test (PoC-06).
+  \item The satellites being tracked fell from \dCrossSatsFrom{} to \dCrossSatsTo{} in \dCrossSatsSeconds~s, and
+        were at 0 at the end of the capture.
+  \item \textbf{An unexplained observation:} over the last \dCrossConstSteps{} accepted fixes the advance between
+        fixes was constant, \dCrossConstLow{} to \dCrossConstHigh~m per second, while before it varied from
+        \dCrossVarLow{} to \dCrossVarHigh~m. One possible explanation is that the receiver kept estimating the
+        position with the last velocity after losing the satellites. It is not verified: the log does not say
+        how many satellites were used in each fix.
+\end{itemize}
+
+If that explanation were true, the firmware would have shown the red of the edge with a position that was no
+longer being measured, because it accepts fixes with an accuracy of up to 50~m. That is why the signal diagnostic
+is among the future work items.
+
 \subsection{Memory footprint (PoC-08)}
 
 The normal firmware takes \dFlashBytes~B of flash (\dFlashPercent~\% of the \dFlashRegion~B available to the

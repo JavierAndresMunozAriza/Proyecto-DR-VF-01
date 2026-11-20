@@ -1,0 +1,52 @@
+# Field walk of 2026-11-20, about 15:11 local time (uptime 00:05:23 to 00:06:55): crossing of the fence edge and loss of
+# the satellites when the author went into a house. The capture starts in the middle of the walk.
+# Source: the console text the author copied from the phone app into the chat; the app's log file was not saved, so
+# this is a line-by-line TRANSCRIPTION, not the raw capture. No coordinates are included. The first row's line was
+# cut off in the paste and its uptime is left empty.
+# event: fix = fix accepted (accuracy 50 m or better); ignored = fix discarded (accuracy worse than 50 m);
+# fix_lost = state MONITORING -> FIX_LOST; sats = satellites tracked while in FIX_LOST (satellite list count).
+# For fix rows: inside is 1 or 0, distance_m is the unsigned distance to the edge, r and g are the LED red and green
+# values (blue was 0), blink is 1 when the LED blinks, check_us is the time of geofence_check().
+uptime_s,event,reported_accuracy_m,inside,distance_m,r,g,blink,check_us,satellites
+,fix,4.2,1,17.75,29,226,0,336,
+324.345153,fix,5.5,1,16.25,48,207,0,336,
+325.346069,fix,7.2,1,14.62,69,186,0,336,
+326.347015,fix,9.2,1,13.06,89,166,0,336,
+327.347930,fix,11.4,1,11.64,107,148,0,336,
+328.348876,fix,13.9,1,10.19,125,130,0,336,
+329.349792,fix,16.6,1,8.76,143,112,0,336,
+330.350738,fix,19.5,1,7.25,163,92,0,336,
+331.351623,fix,22.6,1,5.74,182,73,0,336,
+332.352569,fix,25.9,1,4.23,201,54,0,336,
+333.353485,fix,29.4,1,2.71,220,35,0,336,
+334.354400,fix,33.0,1,1.20,240,15,0,336,
+335.355285,fix,36.8,0,0.31,255,0,1,305,
+336.356170,fix,40.7,0,1.82,255,0,1,305,
+337.357025,fix,44.8,0,3.33,255,0,1,305,
+338.357910,fix,49.0,0,4.84,255,0,1,305,
+339.358489,ignored,53.4,,,,,,,
+340.359039,ignored,57.8,,,,,,,
+341.359558,ignored,62.4,,,,,,,
+342.360107,ignored,67.2,,,,,,,
+343.360626,ignored,72.0,,,,,,,
+344.361175,ignored,77.0,,,,,,,
+345.361694,ignored,82.0,,,,,,,
+346.362243,ignored,87.2,,,,,,,
+347.362762,ignored,92.5,,,,,,,
+348.613433,fix_lost,,,,,,,,
+348.863616,sats,,,,,,,,8
+349.864196,sats,,,,,,,,8
+350.864746,sats,,,,,,,,7
+351.865325,sats,,,,,,,,7
+352.865875,sats,,,,,,,,6
+353.866424,sats,,,,,,,,7
+354.866973,sats,,,,,,,,7
+355.867523,sats,,,,,,,,6
+356.868072,sats,,,,,,,,6
+357.868621,sats,,,,,,,,5
+358.869171,sats,,,,,,,,5
+359.869720,sats,,,,,,,,5
+360.870269,sats,,,,,,,,5
+361.870819,sats,,,,,,,,4
+362.871368,sats,,,,,,,,1
+414.899993,sats,,,,,,,,0
