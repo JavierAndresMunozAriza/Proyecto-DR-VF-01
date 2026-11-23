@@ -1,0 +1,38 @@
+\section{Limitaciones y trabajo pendiente}
+\label{sec:limitaciones}
+
+\subsection{Limitaciones de lo verificado}
+
+\begin{itemize}
+  \item \textbf{La placa no está fabricada.} Nada eléctrico ni de radiofrecuencia se ha medido: ni el consumo en sueño, ni el rizado del riel de 3.3~V al transmitir, ni la línea de 50~$\Omega$, ni el fix del GNSS con el parche, ni el alcance del LoRa, ni la enumeración por USB.
+  \item \textbf{El DRC no es una revisión completa.} Comprueba las reglas cargadas. No sustituye a la revisión de integridad de señal ni a la de radiofrecuencia, y no se auditó que el layout cumpla los criterios de zonificación de la sección~4.
+  \item \textbf{Los datos de la \pBoard{} son indicativos.} Otro procesador, otro receptor con menos constelaciones y otra antena. El resultado de la PoC en cielo parcial (\pCepLow{} a \pCepHigh~m de CEP50) no predice el de la PCB.
+  \item \textbf{El presupuesto de consumo es calculado} con valores típicos de datasheet, con consumos todavía por sumar. El margen de \cMargin~\textmu A frente al límite de RNF-03 es estrecho.
+\end{itemize}
+
+\subsection{Hallazgos abiertos de las revisiones independientes}
+
+Cuatro hallazgos MAJOR siguen sin decisión y se reflejan como \emph{Abierto} en la tabla de cumplimiento.
+El texto completo está en \ruta{docs/design-reviews/}.
+\begin{itemize}
+  \item RF-01 (revisión de RF): el perfil LoRa documentado no encaja en una categoría de uso libre en Colombia.
+  \item RF-02 (revisión de RF): la entrada del GNSS puede superar su máximo absoluto, y se bloquea con seguridad, por los transmisores del propio collar; la placa no tiene huella de filtro para corregirlo después.
+  \item BOM-02 y BOM-03 (revisión del BOM): el proyecto de Altium tiene parámetros de fabricante y proveedor equivocados en 25 piezas y no marca las piezas que no se montan (DNP), así que su lista de materiales no sirve para pedir piezas tal cual.
+  \item BOM-04 (revisión del BOM): el módulo ESP32-S3 admite 65~\textdegree C de ambiente, igual al máximo de diseño, y una carcasa sellada al sol lo supera.
+\end{itemize}
+
+\subsection{Documentos por corregir}
+
+\begin{itemize}
+  \item \ruta{docs/ARCHITECTURE.md}, secciones 2.2 y 2.3, aún da el divisor del MPPT como 402~k$\Omega$ / 100~k$\Omega$ y $R_{CS}$ como 0.12~$\Omega$. El esquemático tiene R8 + R9 = 400~k$\Omega$ con R10 = 100~k$\Omega$ (\cVmppt~V) y R12 = 0.47~$\Omega$ (\cIcs~mA). Esta nota sigue el esquemático.
+  \item \ruta{docs/REQUIREMENTS.md}, RF-03, nombra el zumbador PKMCS0909E4000-R1, y el esquemático lleva el PS1240P02BT (BZ1).
+\end{itemize}
+
+\subsection{Siguientes pasos}
+
+\begin{enumerate}
+  \item Exportar el reporte ERC y las vistas 3D, y completar las secciones 2, 4 y 9.
+  \item Decidir los cuatro hallazgos abiertos y actualizar la tabla de cumplimiento.
+  \item Fabricar la placa y medir: enumeración y programación por USB, fix del GNSS con el parche, rizado del riel de 3.3~V en transmisión, alcance del LoRa y consumo en sueño. Con ello, la tabla de cumplimiento pasa de ``por diseño'' a ``medido en la PCB''.
+  \item Portar el firmware al ESP32-S3: backend UART del MAX-M10S, LoRa, IMU y sueño profundo.
+\end{enumerate}

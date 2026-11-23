@@ -1,0 +1,35 @@
+\section{Archivos de diseño y referencias}
+
+\subsection{Archivos del diseño}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|l X|}
+\hline
+\tablehead{\textbf{Archivo} & \textbf{Contenido}} \\ \hline
+\ruta{hardware/pcb/DR-VF-01_schematics.pdf} & Las cinco hojas del esquemático \\ \hline
+\ruta{hardware/pcb/DR-VF-01_draftsman.pdf} & Plano de ensamble con designadores \\ \hline
+\ruta{hardware/pcb/DR-VF-01_BOM.csv} & Lista de materiales exportada de Altium (\bBomLines{} líneas, \bParts{} piezas). Describe el diseño; no sirve para pedir piezas tal cual (hallazgos BOM-02 y BOM-03) \\ \hline
+\ruta{hardware/pcb/DR-VF-01_gerbers.zip} & Gerbers y archivos de taladro \\ \hline
+\ruta{evidence/drc_summary.txt} & Resumen del DRC de Altium \\ \hline
+\ruta{hardware/BOM.md}, \ruta{hardware/pinout.md}, \ruta{hardware/PCB_REGLAS.md} & Decisiones de componentes, mapa de pines y reglas de diseño \\ \hline
+\end{tabularx}
+\caption{Archivos de diseño. Los fuentes de Altium (\ruta{.PrjPcb}, \ruta{.SchDoc}, \ruta{.PcbDoc}) no están en el repositorio.}
+\end{table}
+
+\subsection{Documentos relacionados}
+
+\begin{itemize}
+  \item Memoria Técnica: \ruta{docs/DR-VF-01_Memoria_Tecnica.pdf} (producto completo).
+  \item Informe de ingeniería de la prueba de concepto: \ruta{docs/poc-thingy91x/}.
+  \item Requerimientos: \ruta{docs/REQUIREMENTS.md}. Arquitectura: \ruta{docs/ARCHITECTURE.md}.
+  \item Presupuesto de potencia y análisis térmico: \ruta{hardware/POWER_BUDGET.md} y \ruta{hardware/THERMAL.md}.
+  \item Revisiones independientes del diseño: \ruta{docs/design-reviews/}.
+\end{itemize}
+
+\subsection{Referencias de formato y de diseño}
+
+Estructura tomada de los diseños de referencia de Texas Instruments (TIDA-010056, TIDUBP3A) y del informe
+de ingeniería del ICL5102 de Infineon. Recomendaciones de layout de la nota de aplicación 60AN066E de Rohm.
+Hojas de datos de los componentes en \ruta{hardware/datasheets/} (copias locales, no versionadas).

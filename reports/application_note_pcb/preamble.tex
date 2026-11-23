@@ -1,0 +1,49 @@
+% ==============================================================================
+% Preamble of the PCB application note (Spanish).
+% Loaded by main_es.tex and main_en.tex after they load babel.
+% Only standard packages, and no \spanishdeactivate: it breaks local builds.
+% ==============================================================================
+
+\usepackage[margin=2.2cm, headheight=15pt]{geometry}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,babel}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
+\urlstyle{tt}
+% File paths and names: they break at slashes and underscores.
+\newcommand{\ruta}[1]{\nolinkurl{#1}}
+\setlength{\emergencystretch}{2em}
+
+\definecolor{headbg}{HTML}{DCE6F1}
+\definecolor{groupbg}{HTML}{F2F2F2}
+
+% Table with a shaded header row.
+\newcommand{\tablehead}[1]{\rowcolor{headbg}#1}
+
+\setlist{itemsep=2pt, topsep=4pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\renewcommand{\arraystretch}{1.15}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small DR-VF-01 -- Nota de aplicación de la PCB}
+\fancyhead[R]{\small \reportrevision}
+\fancyfoot[C]{\small \thepage}
+
+% Numbers and facts that appear in the text come from one file, for both languages.
+\input{data.tex}

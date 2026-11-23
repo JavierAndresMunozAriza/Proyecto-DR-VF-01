@@ -1,0 +1,37 @@
+\section{Especificaciones clave}
+
+La tabla siguiente reproduce los requerimientos de la Memoria Técnica
+(\ruta{docs/REQUIREMENTS.md}, versión vigente). Es la única fuente de requerimientos: esta nota no
+añade ninguno. La tabla de cumplimiento (sección~\ref{sec:cumplimiento}) vuelve a esta lista y dice,
+para cada uno, qué se cumple y con qué evidencia. Las frases entre comillas son el texto original; el
+texto completo, con la trazabilidad, está en el archivo citado.
+
+\begin{longtable}{|p{1.4cm} p{5.2cm} p{8.5cm}|}
+\caption{Requerimientos funcionales (RF) y no funcionales (RNF) de la Memoria Técnica.}\\
+\hline
+\tablehead{\textbf{ID} & \textbf{Descripción} & \textbf{Métrica o criterio de aceptación}} \\ \hline
+\endfirsthead
+\hline
+\tablehead{\textbf{ID} & \textbf{Descripción} & \textbf{Métrica o criterio de aceptación}} \\ \hline
+\endhead
+RF-01 & Geolocalización mediante GNSS multiconstelación & Error de posición $<$ 2.5~m (métrica por definir: CEP o RMS) \\ \hline
+RF-02 & Evaluación de cerca virtual (algoritmo Point-in-Polygon) & Tiempo de procesamiento $<$ 50~ms \\ \hline
+RF-03 & Acción disuasiva simulada con optoacoplador & Activación de LED indicador al cruzar geocerca \\ \hline
+RF-04 & Telemetría LoRa en banda 915~MHz & Envío de paquetes formateados (Lat, Lon, Battery \%, Satellites, Fence Status) \\ \hline
+RF-05 & Monitoreo de porcentaje de batería & Lectura vía bus I2C con actualización constante \\ \hline
+RF-06 & Despertar desde Deep Sleep por movimiento (\emph{wake-on-motion}) & Por definir (sin métrica aprobada) \\ \hline
+RNF-01 & Autonomía energética con panel solar de 6~V, de 1 a 1.5~W & 7 días de operación en oscuridad total con batería de 1200~mAh \\ \hline
+RNF-02 & Procesamiento determinista en Zephyr RTOS & Ejecución sin bloqueo de tareas críticas \\ \hline
+RNF-03 & Consumo en estado Deep Sleep & $<$ 150~\textmu A total del circuito \\ \hline
+RNF-04 & Fiabilidad mecánica sin cables de puente & PCB final sin jumpers o falsos contactos \\ \hline
+RNF-05 & Carga por USB-C & 500~mA de corriente de carga (RPROG de 1.9~k$\Omega$); no menos de 3~h para 1500~mAh (2.4~h para 1200~mAh) antes de la cola a tensión constante \\ \hline
+RNF-06 & Protección de la batería & Por definir (sin métrica aprobada) \\ \hline
+RNF-07 & Protección ESD en el puerto USB-C & Por definir (sin métrica aprobada) \\ \hline
+RNF-08 & Protección IP67 de la carcasa & IP67 (objetivo de diseño) \\ \hline
+RNF-09 & Rango de temperatura de operación & 0 a $+65$~\textdegree C, límite ambiente del módulo dentro de la carcasa \\ \hline
+\end{longtable}
+
+Tres requerimientos nombran piezas concretas: RF-01 el receptor u-blox MAX-M10S, RF-02 el
+microcontrolador ESP32-S3 y RF-04 el módulo LoRa DX-LR30-900M22S. La PCB las usa; la prueba de
+concepto del firmware usó otra plataforma, con otro receptor GNSS y otro procesador, y sus resultados
+solo sirven aquí como referencia indicativa (sección~\ref{sec:verificacion}).

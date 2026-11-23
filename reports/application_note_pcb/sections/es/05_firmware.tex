@@ -1,0 +1,33 @@
+\section{Firmware y portabilidad}
+
+El firmware es un único código base sobre Zephyr RTOS para dos placas: la prueba de concepto en la
+\pBoard{} y el producto final en esta PCB. Se comparten el motor de geocerca (\ruta{geofence.c}, en C puro y
+sin dependencia del SDK), la máquina de estados y el registro de eventos. Cada placa aporta su archivo de
+overlay del árbol de dispositivos, su \ruta{prj.conf} y los adaptadores de GNSS, comunicaciones e IMU.
+
+\subsection{Qué cambia entre las dos placas}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabularx}{\textwidth}{|l X X|}
+\hline
+\tablehead{\textbf{Aspecto} & \textbf{\pBoard{} (\pSoc)} & \textbf{PCB (ESP32-S3)}} \\ \hline
+GNSS & Receptor dentro del firmware del módem, con la biblioteca \ruta{nrf_modem}; sin UART ni NMEA & MAX-M10S por UART1 (GPIO17 y 18), tramas NMEA o UBX; es otro \emph{backend} del mismo adaptador \\ \hline
+Comunicaciones & LTE-M y NB-IoT (no usadas en la PoC) & LoRa SX1262 por SPI (GPIO10 a 13, con BUSY, DIO1, NRESET, RXEN y TXEN) \\ \hline
+Movimiento y energía & No se usan & IMU por I2C con su interrupción en GPIO4; MAX17048 por I2C (GPIO8 y 9) \\ \hline
+Actuadores & LED RGB de la placa & Optoacoplador (GPIO1), zumbador (GPIO2), LED RGB (GPIO38 a 40) \\ \hline
+Carga y arranque & MCUboot, imagen por USB-C & USB nativo (GPIO19 y 20), botón BOOT a masa \\ \hline
+Lo que se reutiliza & \multicolumn{2}{>{\raggedright\arraybackslash}X|}{\ruta{geofence.c}, la máquina de estados, la lógica de alerta, el registro y la estructura de adaptadores} \\ \hline
+\end{tabularx}
+\caption{Diferencias entre las dos plataformas; el mapa de pines vigente es \ruta{hardware/pinout.md}.}
+\end{table}
+
+\subsection{Lo que validó la prueba de concepto}
+
+En la \pBoard{} se ejecutó el motor de geocerca, la máquina de estados y la alerta con un receptor GNSS
+real, y los módulos de C puro se probaron en el PC (miles de casos aleatorios, sin fallos). Seis de esos
+módulos compilan sin cambios para Cortex-M33 y para ESP32-S3, con advertencias como errores, pero
+\textbf{nada se ha ejecutado en el ESP32-S3}: la adaptación al MAX-M10S, a LoRa, a la IMU y al sueño
+profundo existe solo como diseño en \ruta{docs/firmware_docs/}. El informe de la prueba de concepto
+(\ruta{docs/poc-thingy91x/}) detalla el método y los resultados.

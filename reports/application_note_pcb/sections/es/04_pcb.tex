@@ -1,0 +1,74 @@
+\section{Diseño de la PCB}
+
+\subsection{Apilado y contorno}
+
+La placa tiene \bLayers{} capas de cobre sobre FR4 de \bThickness~mm (el espesor del diseño
+recomendado del conector USB-C de 16 pines), con un contorno de \bBoardWidth{} $\times$
+\bBoardHeight~mm. La capa inferior lleva un vertido de masa continuo, que sirve de plano de
+referencia de las líneas de radiofrecuencia y del USB. Al ser de dos capas, el fabricante no ofrece
+impedancia controlada, y el diseño acepta esa dispersión en líneas cortas.
+
+\subsection{Clases de red y reglas cargadas en Altium}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabularx}{\textwidth}{|l l X|}
+\hline
+\tablehead{\textbf{Clase} & \textbf{Ancho preferido} & \textbf{Uso}} \\ \hline
+\texttt{RF50} & \rRfWidth~mm & Línea de 50~$\Omega$ del LoRa y del GNSS hasta sus conectores u.FL, microstrip sobre el plano de la capa inferior \\ \hline
+\texttt{USB} & \rUsbWidth~mm & Par diferencial D+/D$-$, con longitudes igualadas \\ \hline
+\ruta{PWR_CN3791} & \rChargerWidth~mm & Lazo del cargador solar (diodos, MOSFET, bobina) \\ \hline
+\texttt{PWR} & \rPwrWidth~mm & 3V3, batería y alimentación en general \\ \hline
+Resto & 0.203~mm & Señales \\ \hline
+\end{tabularx}
+\caption{Clases de red y ancho de pista preferido.}
+\end{table}
+
+Reglas generales: separación mínima entre cobre de \rClearance~mm, vías con agujero de \rViaHole~mm y
+diámetro de \rViaDiameter~mm, y separaciones propias del componente USB-C y del U8. El ancho de la línea de
+50~$\Omega$ salió de un cálculo de microstrip sobre FR4 de \bThickness~mm con $\varepsilon_r = 4.4$
+(estimación, \ruta{hardware/PCB_REGLAS.md}): con la tolerancia de espesor del fabricante queda entre
+unos 46 y 54~$\Omega$.
+
+\subsection{Criterios de ubicación}
+
+Los criterios de zonificación salen de las guías de integración de u-blox y de Espressif
+(\ruta{hardware/PCB_REGLAS.md}):
+\begin{itemize}
+  \item los componentes de radiofrecuencia del GNSS, a 5~mm como mínimo de cualquier otro componente de RF y lejos de lo digital;
+  \item el parche GNSS y su conector, del lado opuesto al Wi-Fi del módulo y al LoRa;
+  \item el MAX-M10S, lejos de fuentes de calor (TP4056, CN3791, bobina) y sin pistas de otras señales debajo del módulo;
+  \item el lazo del CN3791 lo más corto posible, y su etapa de potencia lo más lejos posible del GNSS y del cristal;
+  \item el pad térmico del TP4056 a masa con una zona amplia de cobre y vías hacia la capa inferior.
+\end{itemize}
+Que el layout final cumpla cada criterio no se ha auditado para esta nota; es un punto de la revisión
+de la placa antes de fabricarla (sección~\ref{sec:limitaciones}).
+
+\subsection{Verificación de reglas de diseño}
+
+El DRC de Altium del 15 de noviembre de 2026 comprobó \bDrcRules{} reglas y detectó \bDrcViolations{}
+violaciones, sin ninguna excepción concedida. Entre ellas: separación de cobre, cortocircuitos, nets sin
+rutear, anchos por clase, vías, anillo mínimo, separación entre agujeros, lengüetas de máscara, serigrafía,
+longitudes igualadas del par USB y separaciones entre componentes. El resumen de cada regla está en
+\ruta{evidence/drc_summary.txt}. El DRC verifica las reglas que se cargaron, no el diseño completo: no
+sustituye a la revisión de integridad de señal ni a la de radiofrecuencia.
+
+\subsection{Taladros}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|l l r l|}
+\hline
+\tablehead{\textbf{Herramienta} & \textbf{Diámetro} & \textbf{Cantidad} & \textbf{Tipo}} \\ \hline
+T1 & 0.305~mm & 160 & Pasante metalizado \\ \hline
+T2 & 0.381~mm & 11 & Pasante metalizado \\ \hline
+T3 & 0.6~mm & 4 & Ranura metalizada \\ \hline
+T4 & 0.762~mm & 4 & Pasante metalizado \\ \hline
+T5 & 0.8~mm & 2 & Pasante metalizado \\ \hline
+T6 & 0.85~mm & 2 & Pasante metalizado \\ \hline
+T7 & 0.65~mm & 2 & No metalizado \\ \hline
+\end{tabular}
+\caption{Taladros de la placa (informe de taladro de Altium); \bHoles{} en total.}
+\end{table}

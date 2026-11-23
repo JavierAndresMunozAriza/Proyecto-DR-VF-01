@@ -1,0 +1,72 @@
+% ==============================================================================
+% Every number of the note comes from this file. evidence/check_numbers.py
+% recomputes each one from its source and fails if they differ.
+% Macro names contain letters only (TeX does not allow digits in them).
+% ==============================================================================
+
+\newcommand{\reportrevision}{Borrador 0.9}
+
+% --- Board (from hardware/pcb/DR-VF-01_gerbers.zip, BOM CSV and DRC summary) ---
+\newcommand{\bBoardWidth}{64.4}        % mm, Gerber profile PCB.GM
+\newcommand{\bBoardHeight}{88.8}       % mm, Gerber profile PCB.GM
+\newcommand{\bLayers}{2}
+\newcommand{\bThickness}{0.8}          % mm, docs/ARCHITECTURE.md 5.2
+\newcommand{\bParts}{112}              % placed parts, BOM CSV
+\newcommand{\bBomLines}{54}            % BOM CSV lines
+\newcommand{\bHoles}{185}              % drill report PCB.DRR
+\newcommand{\bViaHoles}{160}           % 0.305 mm plated holes, PCB.DRR
+\newcommand{\bDrcRules}{31}            % evidence/drc_summary.txt
+\newcommand{\bDrcViolations}{0}
+
+% --- Design rules loaded in Altium (evidence/drc_summary.txt) ---
+\newcommand{\rClearance}{0.152}        % mm
+\newcommand{\rViaHole}{0.305}          % mm
+\newcommand{\rViaDiameter}{0.61}       % mm
+\newcommand{\rRfWidth}{1.346}          % mm, preferred width of class RF50
+\newcommand{\rUsbWidth}{0.254}         % mm, preferred width of class USB
+\newcommand{\rPwrWidth}{0.406}         % mm, preferred width of class PWR
+\newcommand{\rChargerWidth}{0.508}     % mm, preferred width of class PWR_CN3791
+
+% --- Design values as drawn in the schematic (hardware/pcb/DR-VF-01_schematics.pdf, sheet 1)
+%     and calculations that use them. docs/ARCHITECTURE.md still shows older values for the
+%     MPPT divider (402 k / 100 k) and the sense resistor (0.12 ohm); the schematic wins.
+\newcommand{\cVin}{6.0}                % V, solar panel
+\newcommand{\cVbat}{4.2}               % V, full battery
+\newcommand{\cFsw}{300}                % kHz, CN3791 switching frequency
+\newcommand{\cLused}{47}               % uH, L1 (CY54-47UH)
+\newcommand{\cLmin}{25}                % uH, datasheet rule L > 5 (Vcc - Vbat) with Vcc = 8 V, Vbat = 3 V
+\newcommand{\cRtop}{400}               % kohm, R8 390 k + R9 10 k
+\newcommand{\cRbottom}{100}            % kohm, R10
+\newcommand{\cVmppt}{6.03}             % V
+\newcommand{\cVstart}{6.15}            % V
+\newcommand{\cRcs}{0.47}               % ohm, R12
+\newcommand{\cIcs}{255}                % mA, 120 mV / 0.47 ohm
+\newcommand{\cRipple}{89}              % mA, inductor ripple with 47 uH
+\newcommand{\cRipplePct}{35}           % % of the charge current
+\newcommand{\cRprog}{1.9}              % kohm, R5 1.8 k + R6 100 ohm
+\newcommand{\cIcharge}{480}            % mA, scaled from the TP4056 datasheet (0.91 k -> 1 A)
+\newcommand{\cPtp}{0.65}               % W, (5 - 3.7) V x 0.5 A, current limit of the design document
+\newcommand{\cPldo}{0.27}              % W
+\newcommand{\cIsleep}{124}             % uA (123.76)
+\newcommand{\cIactive}{88}             % mA
+\newcommand{\cIpeak}{224}              % mA
+\newcommand{\cIlimit}{150}             % uA, RNF-03
+\newcommand{\cMargin}{26}              % uA
+\newcommand{\cDays}{190}               % days with 1200 mAh, estimate
+
+% --- Thingy:91 X measurements (copied from ../engineering_report_poc/data.tex) ---
+\newcommand{\pSoc}{nRF9151}
+\newcommand{\pBoard}{Nordic Thingy:91\,X}
+\newcommand{\pBenchUsFour}{350.2}
+\newcommand{\pBenchMsThousand}{61.42}
+\newcommand{\pBenchLimitVertices}{833}
+\newcommand{\pCepLow}{3.46}
+\newcommand{\pCepHigh}{7.35}
+\newcommand{\pReqCep}{2.5}
+\newcommand{\pWalkAccMin}{2.0}
+\newcommand{\pWalkAccMax}{2.6}
+\newcommand{\pTtffA}{54}
+\newcommand{\pTtffB}{90}
+\newcommand{\pTtffC}{136}
+\newcommand{\pFlashBytes}{94\,268}
+\newcommand{\pRamBytes}{19\,776}

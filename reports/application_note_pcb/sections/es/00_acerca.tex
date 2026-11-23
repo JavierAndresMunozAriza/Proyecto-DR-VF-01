@@ -1,0 +1,57 @@
+\section{Acerca de este documento}
+
+\subsection{Alcance y propósito}
+
+Esta nota de aplicación describe la PCB del collar DR-VF-01, diseñada en Altium Designer: qué
+hace cada bloque, cómo se calcularon sus valores, cómo se dispusieron las pistas y qué se verificó.
+Sigue el formato de los diseños de referencia de los fabricantes de semiconductores (especificaciones
+clave, diagrama de bloques, teoría de diseño, resultados y archivos de diseño), para que un ingeniero
+pueda entender el diseño, revisarlo y reproducirlo.
+
+La placa está \textbf{diseñada y no fabricada}: pasó la verificación de reglas de diseño (DRC) de
+Altium sin violaciones, pero ninguna cifra eléctrica o de radiofrecuencia se ha medido en una placa
+real. Por eso la nota distingue siempre entre lo que se cumple \emph{por diseño} (cálculo, esquemático o
+DRC), lo que se midió en otra plataforma y lo que queda pendiente de medir cuando exista la placa.
+
+El producto completo, con sus requerimientos, su arquitectura y su análisis comercial, está en la
+\emph{Memoria Técnica} (\ruta{docs/DR-VF-01_Memoria_Tecnica.pdf}), a la que esta nota remite y
+que no repite. La prueba de concepto del firmware sobre la \pBoard{} tiene su propio informe en
+\ruta{docs/poc-thingy91x/}.
+
+\subsection{Público}
+
+Ingenieros de hardware o de firmware que revisen o continúen el diseño, y quien evalúe el proyecto.
+
+\subsection{Datos de la placa}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|l X|}
+\hline
+\tablehead{\textbf{Elemento} & \textbf{Valor}} \\ \hline
+Herramienta & Altium Designer 26.11.1 \\ \hline
+Contorno & \bBoardWidth{} $\times$ \bBoardHeight~mm (perfil de los Gerbers) \\ \hline
+Capas y material & \bLayers{} capas de cobre, FR4 de \bThickness~mm \\ \hline
+Fabricante previsto & JLCPCB, acabado ENIG (decisión del 2026-11-07, \ruta{hardware/PCB_REGLAS.md}) \\ \hline
+Piezas colocadas & \bParts{} en \bBomLines{} líneas del BOM \\ \hline
+Agujeros & \bHoles{} (de ellos \bViaHoles{} de \rViaHole~mm, vías y pads pasantes) \\ \hline
+Verificación DRC & \bDrcRules{} reglas, \bDrcViolations{} violaciones (2026-11-15) \\ \hline
+Estado & Diseñada, no fabricada \\ \hline
+\end{tabularx}
+\caption{Datos de la PCB.}
+\end{table}
+
+\subsection{Historial de revisiones}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|c l X|}
+\hline
+\tablehead{\textbf{Rev.} & \textbf{Estado} & \textbf{Contenido}} \\ \hline
+0.9 & Borrador & Estructura y contenido completos. Faltan el reporte ERC y las vistas 3D de la placa, y la decisión sobre los hallazgos abiertos de las revisiones de RF y de BOM. \\ \hline
+1.0 & Planeada & Versión de entrega, con las figuras de la placa y las decisiones tomadas. \\ \hline
+\end{tabularx}
+\caption{Revisiones de la nota.}
+\end{table}

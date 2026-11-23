@@ -1,0 +1,48 @@
+\section{Tabla de cumplimiento y características de diseño}
+\label{sec:cumplimiento}
+
+Esta sección es el paso de los \emph{requerimientos} a las \emph{características}. Cada fila de la
+tabla de la sección~1 vuelve aquí con el valor que tiene el diseño, la evidencia y un estado. Los
+estados son cinco y no se mezclan:
+
+\begin{itemize}
+  \item \textbf{Cumple por diseño}: el esquemático, un cálculo o el DRC lo respaldan; nada se midió en la placa.
+  \item \textbf{Medido en PoC (otra plataforma)}: hay una medida, pero en la \pBoard{}, no en la PCB.
+  \item \textbf{Pendiente de medir en la PCB}: solo se puede comprobar con la placa fabricada.
+  \item \textbf{Abierto}: una revisión independiente del diseño dejó un hallazgo sin resolver que afecta al requerimiento (\ruta{docs/design-reviews/}).
+  \item \textbf{Sin métrica definida}: el requerimiento no tiene criterio de aceptación aprobado.
+\end{itemize}
+
+\begin{longtable}{|p{1.5cm} >{\raggedright\arraybackslash}p{4.0cm} >{\raggedright\arraybackslash}p{3.6cm} >{\raggedright\arraybackslash}p{2.7cm} >{\raggedright\arraybackslash}p{2.2cm}|}
+\caption{Cumplimiento de los requerimientos por la PCB y características de diseño.}\\
+\hline
+\tablehead{\textbf{ID} & \textbf{Característica del diseño} & \textbf{Evidencia} & \textbf{Estado} & \textbf{Plataforma}} \\ \hline
+\endfirsthead
+\hline
+\tablehead{\textbf{ID} & \textbf{Característica del diseño} & \textbf{Evidencia} & \textbf{Estado} & \textbf{Plataforma}} \\ \hline
+\endhead
+RF-01 & MAX-M10S (U6) con parche pasivo L1 por u.FL (J4). El fabricante da 1.5~m de CEP. En la \pBoard{}, CEP50 de \pCepLow{} a \pCepHigh~m con cielo parcial, frente a \pReqCep~m & Datasheet del MAX-M10S; informe de la PoC; revisión de RF, hallazgo RF-02 (la entrada GNSS puede saturarse con los transmisores del propio collar y la placa no tiene huella para un filtro) & Abierto; pendiente de medir en la PCB & PCB; la medida es de la PoC \\ \hline
+RF-02 & \ruta{geofence_check()}: \pBenchUsFour~\textmu s con 4 vértices y \pBenchMsThousand~ms con 1024; llega a 50~ms cerca de los \pBenchLimitVertices{} vértices & Benchmark de la PoC; falta medir en el ESP32-S3 con osciloscopio & Medido en PoC (otra plataforma) & \pSoc{}, no el ESP32-S3 \\ \hline
+RF-03 & Optoacoplador VO617A (U10), LED rojo (D4), LED RGB (D3) y zumbador PS1240P02BT (BZ1) en el esquemático (hoja 5) & Esquemático; el LED RGB se probó en la PoC & Cumple por diseño; pendiente de medir la corriente & PCB \\ \hline
+RF-04 & DX-LR30-900M22S (U7) por SPI, antena de 8~cm por u.FL (J5) & Esquemático (hoja 3); revisión de RF, hallazgo RF-01 (el perfil LoRa documentado, de canal fijo en 915.0~MHz, no encaja en ninguna categoría de uso libre en Colombia) & Abierto & PCB \\ \hline
+RF-05 & MAX17048 (U9) por I2C, dirección 0x36, conectado a la batería & Esquemático (hoja 4) & Cumple por diseño; pendiente de medir contra un multímetro & PCB \\ \hline
+RF-06 & Interrupción de la IMU LSM6DS3TR-C (U8) cableada a GPIO4 del ESP32-S3 & Esquemático (hojas 2 y 4) & Sin métrica definida & PCB \\ \hline
+RNF-01 & Batería de 1200~mAh y consumo en sueño de unos \cIsleep~\textmu A: unos \cDays~días en oscuridad (estimación) frente a los 7 requeridos & \ruta{hardware/POWER_BUDGET.md} & Cumple por diseño (estimación) & PCB \\ \hline
+RNF-02 & Zephyr RTOS en ambas placas; sin traza de latencias & Informe de la PoC & Pendiente de medir en la PCB & ---\\ \hline
+RNF-03 & Unos \cIsleep~\textmu A calculados frente a \cIlimit~\textmu A; margen de \cMargin~\textmu A, con consumos aún por sumar (USBLC6, diodos del CN3791, módulo LoRa) & Sección~3; \ruta{hardware/POWER_BUDGET.md} & Cumple por diseño, con margen estrecho; pendiente de medir & PCB \\ \hline
+RNF-04 & Módulo ESP32-S3 soldado y conectores u.FL; sin cables de puente & Esquemático y diseño de la placa & Cumple por diseño; pendiente de inspección en la placa & PCB \\ \hline
+RNF-05 & TP4056 (U2) con R5 y R6 en serie, de \cRprog~k$\Omega$ en total: unos \cIcharge~mA & Esquemático (hoja 1); datasheet del TP4056 & Cumple por diseño; pendiente de medir la corriente & PCB \\ \hline
+RNF-06 & Protección de la batería integrada en la celda (PCM); la PCB no lleva circuito protector & Decisión del 2026-11-05 & Sin métrica definida & PCB \\ \hline
+RNF-07 & USBLC6-2SC6 (U1) en D+, D$-$ y VBUS & Esquemático (hoja 1); faltan sus niveles ESD por verificar con el datasheet & Sin métrica definida & PCB \\ \hline
+RNF-08 & Sello del conector USB-C sin definir (tipo y pieza) & \ruta{mechanical/IP67_SPEC.md} & Pendiente de medir en la PCB & Carcasa \\ \hline
+RNF-09 & Módulo de 65~\textdegree C de ambiente máximo, igual al límite de diseño; el análisis térmico indica que una carcasa sellada al sol lo supera, sin mitigación elegida & Revisión del BOM, hallazgo BOM-04; \ruta{hardware/THERMAL.md} & Abierto & PCB y carcasa \\ \hline
+\end{longtable}
+
+\subsection{Lectura de la tabla}
+
+De las quince filas, seis se cumplen por diseño (RF-03, RF-05, RNF-01, RNF-03, RNF-04 y RNF-05), una
+tiene una medida en otra plataforma (RF-02), tres siguen abiertas por hallazgos de las revisiones
+independientes (RF-01, RF-04 y RNF-09), tres no tienen métrica definida (RF-06, RNF-06 y RNF-07) y dos
+esperan a la placa fabricada o a la carcasa (RNF-02 y RNF-08). Solo RF-02 tiene alguna medición, y es de
+la \pBoard{}. Ningún requerimiento está \emph{verificado en la PCB}, porque la PCB aún no existe
+físicamente.

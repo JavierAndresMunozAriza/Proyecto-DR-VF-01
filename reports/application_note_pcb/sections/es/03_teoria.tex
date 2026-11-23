@@ -1,0 +1,79 @@
+\section{Teoría de diseño}
+
+Los valores de esta sección están calculados en \ruta{docs/ARCHITECTURE.md} y
+\ruta{hardware/POWER_BUDGET.md}; aquí se repiten los pasos para que se puedan revisar. Ninguno se
+ha medido en una placa.
+
+\subsection{Cargador solar CN3791}
+
+Los valores de esta subsección son los del esquemático (hoja 1, bloques 1B y 1C).
+
+\textbf{Corriente de carga.} La corriente la fija la resistencia de sensado R12, de \cRcs~$\Omega$, con la
+referencia interna de 120~mV del CN3791:
+\[
+I_{CH} = \frac{120~\text{mV}}{R_{CS}} = \frac{0.12~\text{V}}{\cRcs~\Omega} \approx \cIcs~\text{mA}.
+\]
+Es una corriente moderada, acorde con un panel de 6~V de entre 1 y 1.5~W (unos 250~mA como máximo).
+
+\textbf{Inductancia.} Con la bobina L1 de \cLused~\textmu H (CY54-47UH, 0.71~A, del docente), el rizado de
+corriente en el peor caso (entrada de \cVin~V, batería de \cVbat~V, \cFsw~kHz) es:
+\[
+\Delta I_L = \frac{V_{BAT}\,(V_{IN}-V_{BAT})}{V_{IN}\,f_{sw}\,L}
+  = \frac{4.2\,(6.0-4.2)}{6.0\cdot 300\,000\cdot 47\cdot 10^{-6}} \approx \cRipple~\text{mA},
+\]
+es decir, un \cRipplePct~\% de la corriente de carga. El datasheet del CN3791 exige además
+$L > 5\,(V_{CC}-V_{BAT})~\mu\text{H}$: con el panel en circuito abierto (unos 8~V) y la batería a 3.0~V
+resultan más de \cLmin~\textmu H, que \cLused~\textmu H cumple y 10~\textmu H no.
+
+\textbf{Punto de trabajo del panel (MPPT).} El pin MPPT se regula a 1.205~V. El divisor lleva
+R8 (390~k$\Omega$) y R9 (10~k$\Omega$) en serie hacia el panel y R10 (100~k$\Omega$) a masa, de modo que
+la tensión a la que trabaja el panel es:
+\[
+V_{MPPT} = 1.205\left(1+\frac{R_8+R_9}{R_{10}}\right) = 1.205\left(1+\frac{\cRtop}{\cRbottom}\right) \approx \cVmppt~\text{V}.
+\]
+El ciclo de carga solo empieza cuando el pin MPPT supera 1.23~V, es decir, con más de
+$1.23\cdot 5 \approx \cVstart$~V en la entrada. Por eso un USB de 5~V nunca arranca este cargador, y la
+carga por USB va por otro circuito integrado. Un transistor N (Q3), gobernado por la señal
+\ruta{CHG_INHIBIT} del MCU, baja el pin MPPT para inhibir la carga solar.
+
+\subsection{Cargador USB TP4056}
+
+Con $R_{PROG} = \cRprog$~k$\Omega$ (R5 de 1.8~k$\Omega$ más R6 de 100~$\Omega$) la corriente queda en unos \cIcharge~mA, escalando el dato del datasheet del fabricante (0.91~k$\Omega$ da 1~A); el diseño la documenta como 500~mA. Es un cargador lineal, así que
+disipa la diferencia de tensión por la corriente: con 5~V de entrada, la celda a 3.7~V y los 500~mA del documento de diseño,
+$(5-3.7)\cdot 0.5 = \cPtp$~W. Su regulación térmica protege el chip a 145~\textdegree C, y el pad
+térmico va a una zona amplia de cobre de masa. A 500~mA, la carga tarda no menos de 3~h para
+1500~mAh.
+
+\subsection{Regulador de 3.3~V}
+
+El TLV75733P recibe como máximo 4.2~V de la batería. Con una carga de 300~mA disipa
+$(4.2-3.3)\cdot 0.3 = \cPldo$~W, dentro de lo que admite su encapsulado con cobre y vías térmicas.
+Se descartó el DS8570F8 del docente porque consume 0.6~mA con la salida activa y sin carga, 24 veces
+los 25~\textmu A del TLV75733P.
+
+\subsection{Presupuesto de consumo}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabularx}{\textwidth}{|l l l l X|}
+\hline
+\tablehead{\textbf{Módulo} & \textbf{Reposo} & \textbf{Activo} & \textbf{Pico} & \textbf{Observaciones}} \\ \hline
+ESP32-S3 & 8~\textmu A & 70~mA & 240~mA & Wi-Fi solo en modo de configuración \\ \hline
+MAX-M10S & 46~\textmu A & 12~mA & 35~mA & Reposo por software \\ \hline
+DX-LR30 (SX1262) & 0.6~\textmu A & 5.3~mA & 118~mA & Ráfagas de fracciones de segundo; valores del chip \\ \hline
+IMU & 9.5~\textmu A & 0.55~mA & 1~mA & Valores presupuestados \\ \hline
+MAX17048 & 3~\textmu A & 0.023~mA & 0.05~mA & Hibernación \\ \hline
+CN3791 & 30~\textmu A & --- & --- & Sin entrada, desde la batería \\ \hline
+TLV75733P & 25~\textmu A & --- & --- & Corriente en reposo \\ \hline
+TP4056 & 2.5~\textmu A & --- & --- & En espera \\ \hline
+\textbf{Total} & \textbf{$\approx$ \cIsleep~\textmu A} & \textbf{$\approx$ \cIactive~mA} & \textbf{$\approx$ \cIpeak~mA} & Calculado; ver los pendientes \\ \hline
+\end{tabularx}
+\caption{Consumo por módulo y total del sistema (\ruta{hardware/POWER_BUDGET.md}).}
+\end{table}
+
+El consumo en sueño profundo calculado, de unos \cIsleep~\textmu A, deja un margen de \cMargin~\textmu A
+frente al límite de \cIlimit~\textmu A de RNF-03. El margen es estrecho: faltan por sumar el USBLC6-2SC6,
+la fuga de los dos diodos Schottky del CN3791, que debe quedar por debajo de unos 47~\textmu A en total, y
+los consumos extra del módulo LoRa. Los valores son típicos; el consumo real solo se sabrá midiendo la
+primera placa. Con una batería de 1200~mAh, la autonomía estimada en oscuridad es de unos \cDays~días.

@@ -1,0 +1,43 @@
+\section{Resultados de verificación}
+\label{sec:verificacion}
+
+Cada resultado indica qué plataforma lo produjo. Ninguna medición eléctrica o de radio de esta sección
+se hizo en la PCB, que no está fabricada.
+
+\subsection{Sobre la PCB: verificación por diseño}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabularx}{\textwidth}{|l X X|}
+\hline
+\tablehead{\textbf{Verificación} & \textbf{Resultado} & \textbf{Evidencia}} \\ \hline
+DRC de Altium & \bDrcRules{} reglas, \bDrcViolations{} violaciones (2026-11-15) & \ruta{evidence/drc_summary.txt} \\ \hline
+Cálculos de potencia y carga & L, divisor MPPT, $R_{CS}$, TP4056, LDO y consumo (sección~3) & \ruta{docs/ARCHITECTURE.md} \\ \hline
+Presupuesto de consumo en sueño & $\approx$ \cIsleep~\textmu A frente a \cIlimit~\textmu A, con pendientes & \ruta{hardware/POWER_BUDGET.md} \\ \hline
+Salidas de fabricación & Gerbers, taladros, BOM y planos generados el 2026-11-18 & \ruta{hardware/pcb/} \\ \hline
+Reporte ERC & Pendiente de exportar de Altium & --- \\ \hline
+\end{tabularx}
+\caption{Verificaciones hechas sobre el diseño de la PCB.}
+\end{table}
+
+\subsection{Referencia indicativa: medidas en la \pBoard{}}
+
+Estos números vienen de la prueba de concepto y valen \emph{solo} para esa plataforma y esas condiciones. No
+describen la PCB, que usa otro procesador, otro receptor GNSS (con más constelaciones) y otra antena.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabularx}{\textwidth}{|X X|}
+\hline
+\tablehead{\textbf{Medida en la \pBoard{} (\pSoc)} & \textbf{Valor}} \\ \hline
+\ruta{geofence_check()} con 4 vértices & \pBenchUsFour~\textmu s \\ \hline
+\ruta{geofence_check()} con 1024 vértices & \pBenchMsThousand~ms; llega a 50~ms cerca de los \pBenchLimitVertices{} vértices \\ \hline
+Dispersión horizontal, CEP50 (cielo parcial, menos de 15 min) & \pCepLow{} a \pCepHigh~m, frente a \pReqCep~m de RF-01 \\ \hline
+Exactitud estimada por el receptor al aire libre, caminando & \pWalkAccMin{} a \pWalkAccMax~m (estimación del receptor, no un CEP medido) \\ \hline
+Tiempo hasta el primer fix en frío & \pTtffA, \pTtffB{} y \pTtffC~s (cronómetro manual) \\ \hline
+Memoria del firmware & \pFlashBytes~B de flash y \pRamBytes~B de RAM \\ \hline
+\end{tabularx}
+\caption{Resultados de la prueba de concepto, a título indicativo.}
+\end{table}
