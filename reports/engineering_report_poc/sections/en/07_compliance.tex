@@ -48,3 +48,34 @@ NF-07 (perimeter in non-volatile memory) & Not covered & The fence is created at
 \end{tabularx}
 \caption{Status of the requirements of the Technical Report in the PoC.}
 \end{table}
+
+\subsection{From requirements to characteristics}
+
+A \emph{requirement} says what the product must do. The \emph{compliance matrix} above says how it was
+verified and whether it was met. A \emph{characteristic}, as in a datasheet, says what the product does, with
+the measured value and the conditions. The next table gathers only what was measured in the PoC. A value
+appears here even if it does not reach the related requirement: the right-hand column points to the
+requirement, and the matrix above gives the verdict. Nothing that was not measured is presented as a
+characteristic.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash}p{3.2cm} X >{\raggedright\arraybackslash}p{2.7cm} l|}
+\hline
+\tablehead{\textbf{Parameter} & \textbf{Conditions} & \textbf{Measured value} & \textbf{Requirement}} \\ \hline
+\texttt{geofence\_check()} time with 4 vertices & Batches of 40 calls, mean of 3 boots, \dSoc{} & \dBenchUsFour~\textmu s & SR-12 \\ \hline
+\texttt{geofence\_check()} time with 1024 vertices & Same as the previous row & \dBenchMsThousand~ms & SR-12 \\ \hline
+Cost per vertex & Linear fit over 4 to 1024 vertices & \dBenchFitOffsetUs~\textmu s $+$ \dBenchFitSlopeUs~\textmu s per vertex & SR-12 \\ \hline
+Vertices to reach 50~ms & Computed with the linear fit & about \dBenchLimitVertices & SR-12 \\ \hline
+Distance-to-edge error & Randomized tests on the PC, up to 85° of latitude & $\le$ \dStressWorstErrorPct~\% & --- \\ \hline
+Fix rate & Log of the static test & 1~Hz & SR-10 \\ \hline
+Horizontal scatter, CEP50 & Static test, partly obstructed sky, under 15 min & \dStaticRunTwoCepFifty{} to \dStaticBothCepFifty~m & SR-11 \\ \hline
+Horizontal scatter, CEP95 & Same as the previous row & \dStaticRunTwoCepNinetyFive{} to \dStaticBothCepNinetyFive~m & SR-11 \\ \hline
+Accuracy estimated by the receiver & Walking in the open, \dWalkFixes{} fixes; a receiver estimate, not a measured CEP & \dWalkAccMin{} to \dWalkAccMax~m & SR-11 \\ \hline
+Cold-start time to first fix & 3 boots, manual stopwatch, partly obstructed sky & \dTtffRunB, \dTtffRunA{} and \dTtffRunC~s & --- \\ \hline
+Time to declare the signal lost & No fixes, four times & \dCrossLostS~s & --- \\ \hline
+Firmware memory & Application build & \dFlashBytes~B of flash and \dRamBytes~B of RAM & --- \\ \hline
+\end{tabularx}
+\caption{Measured characteristics of the PoC on the \dSoc{}.}
+\end{table}

@@ -27,6 +27,29 @@ PoC-11 & Nuevo & El modo demo funciona sin señal GNSS. & Registro: \texttt{SEAR
 \caption{Criterios de aceptación de la PoC y su trazabilidad.}
 \end{table}
 
+\subsection{Requerimientos de la Memoria Técnica que cubre la PoC}
+
+La tabla siguiente reproduce, con su texto original, los requerimientos de la Memoria Técnica
+(PRD y SRD) que la PoC puede verificar total o parcialmente. Es el punto de partida del resto del
+informe: la tabla de criterios de aceptación de arriba los traduce a pruebas, la matriz de
+cumplimiento dice si se cumplieron y la tabla de características muestra lo que se midió. Los tres
+requerimientos nombran el MAX-M10S o el ESP32-S3; la PoC usa el receptor de la \dSoc{} y su
+procesador, por lo que cada resultado vale para esa plataforma.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabularx}{\textwidth}{|l X X l|}
+\hline
+\tablehead{\textbf{ID} & \textbf{Requerimiento} & \textbf{Especificación} & \textbf{Criterios}} \\ \hline
+F-01, SR-10 & El sistema debe determinar la ubicación geográfica mediante GPS u-blox MAX-M10S con actualización $>$ 1~Hz. & Frecuencia GNSS $>$ 1~Hz adaptativo. & PoC-03 \\ \hline
+SR-11 & Precisión de ubicación. & $\le$ \dReqCep~m CEP en campo abierto. & PoC-02 \\ \hline
+F-02, SR-12 & El microcontrolador ESP32-S3 debe ejecutar algoritmos Haversine y Point-in-Polygon en tiempo real. & Latencia $<$ 50~ms (Point-in-Polygon). & PoC-01, PoC-09 \\ \hline
+F-03 & El dispositivo debe contar con disuasión en dos etapas: alerta acústica y pulso disuasivo. & Solo la parte visual (LED) es verificable en la PoC. & PoC-04, PoC-05 \\ \hline
+\end{tabularx}
+\caption{Requerimientos de la Memoria Técnica que cubre la PoC (texto del PRD y del SRD).}
+\end{table}
+
 \subsection{Fuera del alcance de la PoC}
 
 La PoC no cubre, y este informe no afirma nada sobre: la etapa acústica y el pulso de disuasión

@@ -48,3 +48,34 @@ NF-07 (perímetro en memoria no volátil) & No cubierto & La cerca se crea en ca
 \end{tabularx}
 \caption{Estado de los requerimientos de la Memoria Técnica en la PoC.}
 \end{table}
+
+\subsection{De requerimientos a características}
+
+Un \emph{requerimiento} dice lo que el producto debe hacer. La \emph{matriz de cumplimiento}
+anterior dice cómo se verificó y si se cumplió. Una \emph{característica}, como las de una hoja de
+datos, dice lo que el producto hace, con el valor medido y las condiciones. La tabla siguiente
+reúne solo lo que se midió en la PoC. Un valor aparece aquí aunque no alcance el requerimiento
+relacionado: la columna de la derecha lo remite al requerimiento, y la matriz anterior da el
+veredicto. Nada de lo que no se midió se presenta como característica.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash}p{3.2cm} X >{\raggedright\arraybackslash}p{2.7cm} l|}
+\hline
+\tablehead{\textbf{Parámetro} & \textbf{Condiciones} & \textbf{Valor medido} & \textbf{Requerimiento}} \\ \hline
+Tiempo de \texttt{geofence\_check()} con 4 vértices & Lotes de 40 llamadas, media de 3 arranques, \dSoc{} & \dBenchUsFour~\textmu s & SR-12 \\ \hline
+Tiempo de \texttt{geofence\_check()} con 1024 vértices & Igual que la fila anterior & \dBenchMsThousand~ms & SR-12 \\ \hline
+Coste por vértice & Ajuste lineal sobre 4 a 1024 vértices & \dBenchFitOffsetUs~\textmu s $+$ \dBenchFitSlopeUs~\textmu s por vértice & SR-12 \\ \hline
+Vértices hasta llegar a 50~ms & Cálculo con el ajuste lineal & unos \dBenchLimitVertices & SR-12 \\ \hline
+Error de la distancia al borde & Pruebas aleatorias en el PC, hasta 85° de latitud & $\le$ \dStressWorstErrorPct~\% & --- \\ \hline
+Frecuencia de fixes & Registro de la prueba estática & 1~Hz & SR-10 \\ \hline
+Dispersión horizontal, CEP50 & Prueba estática, cielo parcial, menos de 15 min & \dStaticRunTwoCepFifty{} a \dStaticBothCepFifty~m & SR-11 \\ \hline
+Dispersión horizontal, CEP95 & Igual que la fila anterior & \dStaticRunTwoCepNinetyFive{} a \dStaticBothCepNinetyFive~m & SR-11 \\ \hline
+Exactitud estimada por el receptor & Caminando al aire libre, \dWalkFixes{} fixes; es una estimación del receptor, no un CEP medido & \dWalkAccMin{} a \dWalkAccMax~m & SR-11 \\ \hline
+Tiempo hasta el primer fix en frío & 3 arranques, cronómetro manual, cielo parcial & \dTtffRunB, \dTtffRunA{} y \dTtffRunC~s & --- \\ \hline
+Tiempo hasta declarar la señal perdida & Sin fixes, cuatro veces & \dCrossLostS~s & --- \\ \hline
+Memoria del firmware & Compilación de la aplicación & \dFlashBytes~B de flash y \dRamBytes~B de RAM & --- \\ \hline
+\end{tabularx}
+\caption{Características medidas de la PoC en la \dSoc{}.}
+\end{table}

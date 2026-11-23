@@ -26,6 +26,28 @@ PoC-11 & New & The demo mode works without a GNSS signal. & Log: \texttt{SEARCHI
 \caption{Acceptance criteria of the PoC and their traceability.}
 \end{table}
 
+\subsection{Technical Report requirements covered by the PoC}
+
+The next table reproduces, with their original wording, the requirements of the Technical Report (PRD and
+SRD) that the PoC can verify in whole or in part. It is the starting point of the rest of the report: the
+acceptance criteria table above turns them into tests, the compliance matrix says whether they were met,
+and the characteristics table shows what was measured. These requirements name the MAX-M10S or the
+ESP32-S3; the PoC uses the receiver and processor of the \dSoc{}, so every result is valid for that platform.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabularx}{\textwidth}{|l X X l|}
+\hline
+\tablehead{\textbf{ID} & \textbf{Requirement} & \textbf{Specification} & \textbf{Criteria}} \\ \hline
+F-01, SR-10 & The system must determine the geographic location with the u-blox MAX-M10S GPS with an update rate $>$ 1~Hz. & GNSS rate $>$ 1~Hz, adaptive. & PoC-03 \\ \hline
+SR-11 & Location accuracy. & $\le$ \dReqCep~m CEP in open field. & PoC-02 \\ \hline
+F-02, SR-12 & The ESP32-S3 microcontroller must run Haversine and Point-in-Polygon algorithms in real time. & Latency $<$ 50~ms (Point-in-Polygon). & PoC-01, PoC-09 \\ \hline
+F-03 & The device must have two-stage deterrence: an acoustic alert and a deterrent pulse. & Only the visual part (LED) can be verified in the PoC. & PoC-04, PoC-05 \\ \hline
+\end{tabularx}
+\caption{Technical Report requirements covered by the PoC (wording of the PRD and SRD, translated).}
+\end{table}
+
 \subsection{Out of scope of the PoC}
 
 The PoC does not cover, and this report claims nothing about: the acoustic stage and the deterrent pulse
