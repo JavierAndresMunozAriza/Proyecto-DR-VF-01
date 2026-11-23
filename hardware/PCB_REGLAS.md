@@ -1,6 +1,6 @@
 # Reglas de diseño de la PCB (borrador del 2026-11-07)
 
-Paso 42 de `PLAN_MANANA.md`. Se extrae de las guías de Espressif y u-blox y de los datasheets de `hardware/datasheets/`. Cada valor lleva su fuente, o está marcado **estimación** (cuenta propia, no medida) o **por confirmar**. El fabricante quedó elegido el 2026-11-07 (paso 41): **JLCPCB**, 2 capas, 0.8 mm, acabado **ENIG**. Las reglas de la sección 2 se cargan en Altium para que el DRC avise en vivo.
+Paso 42 de `hardware/course-notes/PLAN_MANANA.md`. Se extrae de las guías de Espressif y u-blox y de los datasheets de `hardware/datasheets/`. Cada valor lleva su fuente, o está marcado **estimación** (cuenta propia, no medida) o **por confirmar**. El fabricante quedó elegido el 2026-11-07 (paso 41): **JLCPCB**, 2 capas, 0.8 mm, acabado **ENIG**. Las reglas de la sección 2 se cargan en Altium para que el DRC avise en vivo.
 
 ## 1. Supuestos del apilado
 
@@ -65,6 +65,6 @@ Orden de ubicación sugerido: 1) conectores y módulos con antena (ESP32, LoRa, 
 
 1. **Fabricante cerrado (JLCPCB, ENIG, 2 capas, 0.8 mm).** Al hacer el pedido, comprobar en la página: el espesor de 0.8 mm, el acabado ENIG, el precio, el plazo de fabricación y el **envío a Colombia con los impuestos de importación** (no encontré datos). El espesor del dieléctrico y el εr reales no los publica el fabricante en 2 capas: la línea de 50 Ω queda con la dispersión de la sección 2.
 1b. **Fecha límite del pedido:** la PCB se espera a inicios de diciembre; hay que fijarla al conocer el plazo real de entrega, con el esquemático, el layout y las librerías (CN3791, LoRa, 0.47 Ω, huella 1206) terminados antes.
-2. **Tamaño de la PCB y de la caja:** sin definir (ver `PLAN_MANANA.md`).
+2. **Tamaño de la PCB y de la caja:** sin definir (ver `hardware/course-notes/PLAN_MANANA.md`).
 3. **Comprobaciones en la primera placa:** enumeración y programación por USB, fix del GNSS con el parche sobre el plano de cobre, rizado del riel de 3.3 V en el TX y alcance del LoRa.
 4. Las reglas de máscara y de separación del docente se verifican contra las huellas ya guardadas en `shared_lib` antes de fijar el DRC.

@@ -48,7 +48,7 @@
 
 ## 1. Del docente (sin compra)
 
-**Fuente (confirmada por el autor el 2026-11-03):** el docente tiene físicamente todo lo que aparece en su biblioteca de Altium (`shared_lib.IntLib`: 70 componentes y una plantilla, 63 con MPN y código LCSC) y lo que publicó en el classroom (mensaje del 16 de octubre, transcrito en `hardware/DOCENTE_CLASSROOM.md`). **Cantidades (2026-11-05):** el autor confirma que el docente tiene las suficientes de todo lo que está en su biblioteca.
+**Fuente (confirmada por el autor el 2026-11-03):** el docente tiene físicamente todo lo que aparece en su biblioteca de Altium (`shared_lib.IntLib`: 70 componentes y una plantilla, 63 con MPN y código LCSC) y lo que publicó en el classroom (mensaje del 16 de octubre, transcrito en `hardware/course-notes/DOCENTE_CLASSROOM.md`). **Cantidades (2026-11-05):** el autor confirma que el docente tiene las suficientes de todo lo que está en su biblioteca.
 
 **Qué se lista aquí:** solo las piezas que el diseño usa y cuyo datasheet confirma que cumplen. Lo que la biblioteca o el classroom traen y el proyecto no usa se omite a propósito.
 

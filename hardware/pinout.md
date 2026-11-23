@@ -138,12 +138,12 @@ Lista única para todo el mapa de conexiones (actualizada el 2026-11-05). Ningun
 - **Condensadores del docente:** leer la hoja del 22 µF de Chinocera (la descripción de la biblioteca dice X5R ±20 %). Los 470 nF son X7R ±10 % según la biblioteca.
 - **Línea de 50 Ω:** calcular el ancho con el apilado real del fabricante para la PCB de 0.8 mm.
 
-**Por revisar antes de comprar o crear (auditoría del stock del docente, 2026-11-05; ver `hardware/AUDITORIA_STOCK_DOCENTE.md`)**
+**Por revisar antes de comprar o crear (auditoría del stock del docente, 2026-11-05; ver `hardware/course-notes/AUDITORIA_STOCK_DOCENTE.md`)**
 - **Schottky D1 y D2 del CN3791 (O20):** se usan los PSBD1DF40V1H del docente (decidido el 2026-11-06): unos 5 µA por diodo a 40 °C y 4 V, estimado de la Fig. 2 de su datasheet; no se compra nada (`COMPRAS.md` O20).
 - **Bulk de 3.3 V (O25):** cerrado el 2026-11-07 sin compra (22 µF del docente más una huella 1206 sin montar); falta medir el rizado en el TX.
 - **Diodo ESD de la alimentación:** decidido el 2026-11-08: no se agrega el LESD5Z3.3T1G, porque el riel de 3.3 V queda dentro de la caja y su fuga de hasta 1 µA a 3.3 V resta al presupuesto de reposo; el USBLC6 protege VBUS. Si se quiere protección en el panel (J3) o en la batería (J2), va una TVS de más de 8 V (la librería trae `TVS_12V_1CH_BID_SOD_123`). Tampoco se agrega un fusible PTC en el USB-C: el TP4056 limita la corriente y un PTC resta margen al VCC mínimo de 4.35 V del TP4056 de Yongyutai.
 - **Regulador:** se queda el TLV75733P; el DS8570F8 del classroom consume 0.6 mA en reposo (`datasheets/ds8570f8_datasheet.pdf`, p. 5).
-- **Huella del TP4056:** sirve la `SOIC_8_3.9mm_EP` del docente. Falta enlazarla en la biblioteca y agregar el pin 9 (EP) a GND; su máscara y pasta ya están en Rule Expansion (`PLAN_MANANA.md`, paso 19).
+- **Huella del TP4056:** sirve la `SOIC_8_3.9mm_EP` del docente. Falta enlazarla en la biblioteca y agregar el pin 9 (EP) a GND; su máscara y pasta ya están en Rule Expansion (`hardware/course-notes/PLAN_MANANA.md`, paso 19).
 - **Datasheets** de las piezas del docente que usamos: bajarlos a `hardware/datasheets/` (lista en la sección 8 de la auditoría).
 - **Contradicciones** entre `BOM.md` y `COMPRAS.md` (sección 4 de la auditoría): corregirlas al cerrar las decisiones.
 
@@ -425,7 +425,7 @@ Dos terminales SMD sin polaridad marcada (piezo).
 
 ### Protección de batería
 
-**Decidido el 2026-11-05:** la batería trae protección integrada (PCM) y la PCB no lleva IC protector; el `BQ2975DRBR` del BOM no existía (O16, retirado). Batería de prueba elegida el 2026-11-07: LiPo 603450 de 1200 mAh con PCM y JST PH 2.0 (`COMPRAS.md` O6). **Decidido el 2026-11-09:** protección de polaridad con un AP2301 entre J2 y VBAT (drenador a J2 +, fuente a VBAT, puerta a GND), porque el JST no tiene polaridad fija y una batería al revés llevaría unos 2.8 A por D2, el inductor y RCS (`audit/power.md` PD-1). En el panel no se agrega.
+**Decidido el 2026-11-05:** la batería trae protección integrada (PCM) y la PCB no lleva IC protector; el `BQ2975DRBR` del BOM no existía (O16, retirado). Batería de prueba elegida el 2026-11-07: LiPo 603450 de 1200 mAh con PCM y JST PH 2.0 (`COMPRAS.md` O6). **Decidido el 2026-11-09:** protección de polaridad con un AP2301 entre J2 y VBAT (drenador a J2 +, fuente a VBAT, puerta a GND), porque el JST no tiene polaridad fija y una batería al revés llevaría unos 2.8 A por D2, el inductor y RCS (`docs/design-reviews/power.md` PD-1). En el panel no se agrega.
 
 ## Consideraciones de diseño
 

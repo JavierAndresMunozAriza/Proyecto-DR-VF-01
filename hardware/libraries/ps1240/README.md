@@ -35,4 +35,4 @@ Diámetro del cuerpo (12.2 mm) y altura (6.5 o 7.8 mm según la fuente): no se c
 1. Copiar símbolo y huella a `shared_lib.SchLib` y `shared_lib.PcbLib` y guardar; avisar para verificar los archivos guardados.
 2. Al recibir el zumbador (lote TZT `PS1240`, `COMPRAS.md` O14): medir la separación entre patas con calibre y la altura, y comparar con la huella.
 3. Bajar el dibujo mecánico del datasheet de TDK (desde la página de DigiKey del PS1240P02BT) y cerrar la cota de 5.0 mm.
-4. Medir el nivel de sonido a 1 m y revisar SR-30 (`PLAN_MANANA.md`, "Al recibir las piezas").
+4. Medir el nivel de sonido a 1 m y revisar SR-30 (`hardware/course-notes/PLAN_MANANA.md`, "Al recibir las piezas").
