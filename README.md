@@ -1,149 +1,134 @@
-# DR-VF-01: Industrial IoT Virtual Fencing System for Precision Livestock Management
+# DR-VF-01: Virtual Fencing Collar for Cattle
 
-[![Firmware Status](https://img.shields.io/badge/firmware-in_development-yellow.svg)]()
-[![Target Hardware](https://img.shields.io/badge/Hardware-Thingy:91_X_(PoC)_%7C_ESP32--S3_(final_PCB)-00a4e4.svg)]()
-[![RTOS Engine](https://img.shields.io/badge/RTOS-Zephyr_RTOS-orange.svg)]()
-[![Enclosure Standard](https://img.shields.io/badge/Enclosure-IP67_Target-blue.svg)]()
-[![Documentation](https://img.shields.io/badge/Docs-Technical_Specification_PDF-red.svg)](./docs/DR-VF-01_Memoria_Tecnica.pdf)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)]()
+[![Firmware](https://img.shields.io/badge/firmware-proof_of_concept_running-yellow.svg)]()
+[![RTOS](https://img.shields.io/badge/RTOS-Zephyr-orange.svg)]()
+[![PCB](https://img.shields.io/badge/PCB-designed,_DRC_clean,_not_fabricated-blue.svg)]()
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 
-> **Embedded system under development** designed for autonomous livestock monitoring, adaptive geofencing, and real-time containment metrics. Built on **Zephyr RTOS** as a single codebase for two boards: the **Nordic Thingy:91 X (nRF9151 Cellular IoT SiP + nRF5340 BLE/Network SoC, nRF Connect SDK)** as the proof of concept, and the **ESP32-S3-WROOM-1U-N16R8** on the final PCB (LoRa module DX-LR30-900M22S with an SX1262 inside, external u-blox MAX-M10S GNSS, IMU POR DECIDIR: LSM6DSOX or the LSM6DS3TR-C the teacher has).
+A GNSS collar that tells a cow when it crosses a virtual boundary, without a physical fence. The embedded C firmware runs on **Zephyr** and was proven on a Nordic Thingy:91 X (nRF9151). The custom PCB (ESP32-S3, u-blox MAX-M10S, LoRa SX1262) is fully designed in Altium and has not been fabricated yet.
 
----
+## Status
 
-## 📄 Full Technical Specification
+| Stage | What | State |
+| :--- | :--- | :--- |
+| 1. Rapid prototype | Geofence engine, state machine and RGB alert on the **Nordic Thingy:91 X** | Done and measured in the field. Report: [`docs/poc-thingy91x/`](docs/poc-thingy91x/) |
+| 2. Custom PCB | 2-layer board, 5 schematic sheets, 100 x 100 mm | Designed, DRC with 0 violations, **not fabricated**. Outputs: [`hardware/pcb/`](hardware/pcb/) |
+| 3. Firmware port | Same code on the ESP32-S3 with its own GNSS, LoRa and IMU adapters | Pending. Only compile-checked for the ESP32-S3 |
 
-The complete academic and industrial memory technical report (UNAL standard) covering requirements, power budget, thermal dissipation, firmware architecture, enclosure tolerances and compliance is available here. An RF link budget and hardware schematics are planned and not yet part of the report:
+## Results so far
 
-👉 **[Download Full Technical Specification (PDF)](./docs/DR-VF-01_Memoria_Tecnica.pdf)**
+Measured on the Thingy:91 X (nRF9151). These numbers do **not** describe the final PCB, which uses another MCU, receiver and antenna.
 
----
+| Item | Result | Source |
+| :--- | :--- | :--- |
+| `geofence_check()` time | 350 µs with 4 vertices, 15.4 ms with 256, 61.4 ms with 1024; linear, so the 50 ms target (RF-02) is reached near 830 vertices | [Engineering Report](docs/poc-thingy91x/), `evidence/logs/geofence_benchmark.log` |
+| Host tests of the engine | 3,067 checks plus 3,795,130 randomized cases, 0 failures; also clean under ASan and UBSan | `make test`, `make stress`, `make sanitize` |
+| Distance accuracy | Worst error 0.021 % against the documented 0.2 % limit | Same report |
+| Time to first fix, cold start | 54, 90 and 136 s (manual stopwatch, partial sky) | Same report |
+| Position scatter, partial sky | CEP50 between 3.5 and 7.4 m against the 2.5 m target: **not met** in these conditions | Same report, `docs/REQUIREMENTS.md` |
+| Firmware footprint | 94,268 B flash (11.6 %), 19,776 B RAM (9.4 %) | Same report |
+| PCB design rule check | 0 violations in all rules, including un-routed nets (2026-11-15) | [`hardware/pcb/`](hardware/pcb/) |
 
-## 🏗️ System Architecture
+The report states what was *not* met and why. Compliance with each requirement is tracked in [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md).
 
-The firmware utilizes a non-blocking Finite State Machine (FSM) wrapped around a modular Hardware Abstraction Layer (HAL). This decouples the core **Geofence Mathematics Engine** from platform-specific SDKs. One **Zephyr RTOS** codebase runs on both boards: the geofence engine (`geofence.c`), the FSM and the logging layer are shared, while each board provides its own devicetree overlay, `prj.conf` and GNSS / communications / IMU adapters.
+## How it works
+
+The firmware is a small state machine around a pure-C geofence engine. Hardware access goes through adapters, so the same engine and state machine run on both boards.
 
 ```mermaid
 stateDiagram-v2
-    [*] --> DEEP_SLEEP: Power-On / Reset
-    
-    DEEP_SLEEP --> GNSS_ACQUIRE: RTC / Timer Interrupt
-    
-    state GNSS_ACQUIRE {
-        [*] --> Warm_Start_Fix
-        Warm_Start_Fix --> Validate_HDOP: GPS Data Received
-        Validate_HDOP --> Fix_Acquired: HDOP < 2.5
-    }
-
-    GNSS_ACQUIRE --> GEOFENCE_EVAL: Fix_Acquired
-    GNSS_ACQUIRE --> DEEP_SLEEP: Timeout / Retry Limit Exceeded
-
-    state GEOFENCE_EVAL {
-        [*] --> Calculate_Haversine
-        Calculate_Haversine --> Check_Zone
-        Check_Zone --> INSIDE_ZONE: Distance < Safe_Radius
-        Check_Zone --> WARNING_ZONE: Distance >= Safe_Radius & < Perimeter
-        Check_Zone --> VIOLATION_ZONE: Distance >= Perimeter
-    }
-
-    INSIDE_ZONE --> TELEMETRY_DISPATCH: Log State
-    WARNING_ZONE --> AUDIO_CUE_TRIGGER: Audio Pulse
-    VIOLATION_ZONE --> CORRECTION_STIMULUS: Opto-coupled Pulse Stimulus
-
-    AUDIO_CUE_TRIGGER --> TELEMETRY_DISPATCH
-    CORRECTION_STIMULUS --> TELEMETRY_DISPATCH
-
-    TELEMETRY_DISPATCH --> DEEP_SLEEP: Payload Queued (LTE-M / NB-IoT / LoRa)
-``` 
-
-> **Note:** conceptual draft. The implemented geofence engine (`firmware/src/geofence/geofence.c`) decides inside/outside a polygon with ray casting; the radius zones and the warning zone drawn above are planned, not implemented. The state machine under design is in `docs/firmware_docs/FSM_DESIGN.md`.
-
-| Parameter | Specification | Engineering Note |
-| :--- | :--- | :--- |
-| **Proof-of-Concept Target** | Nordic Thingy:91 X (PCA20065) | nRF9151 (LTE-M/NB-IoT/GNSS) + nRF5340 (BLE), built with nRF Connect SDK |
-| **Final Product Target** | ESP32-S3-WROOM-1U-N16R8 (custom PCB) | LoRa module DX-LR30-900M22S (SX1262 inside, SPI), external GNSS MAX-M10S, IMU LSM6DS3TR-C. Pin map: `hardware/pinout.md`; parts list: `hardware/BOM.md` |
-| **Power Path (final PCB)** | Battery-centred: CN3791 charges it from the 6 V solar panel only, TP4056 charges it from USB-C (500 mA); LDO TLV75733PDBVR (1 A, Iq 25 µA) feeds 3.3 V from the battery only | USB never powers the system. MAX17048 fuel gauge (I2C 0x36) on the battery rail; USBLC6-2SC6 ESD protection on the USB-C. Battery protection: built into the cell (PCM), no protection IC on the PCB (decided 2026-11-05). Details: `docs/ARCHITECTURE.md` |
-| **Antennas (final PCB)** | LoRa 915 MHz 8 cm u.FL monopole; 2.4 GHz FPC (Würth 2015301200, via u.FL) for the module's Wi-Fi/BLE; GNSS passive patch (cable with u.FL) | Test GNSS patch: HXANT `HX-TWGPS-184-CV0`; final patch and antenna positions: POR DECIDIR (`hardware/BOM.md`, `mechanical/ANTENNA_PLACEMENT.md`) |
-| **Operating System** | Zephyr RTOS (both boards) | Native DeviceTree & Kconfig driver architecture |
-| **Shared / Per-Board Code** | Shared: `geofence.c`, FSM, logging | Per board: overlay, `prj.conf`, GNSS / comms / IMU adapters |
-| **Geofencing Kernel** | Polygon ray casting in `double` (`geofence.c`) | Allocates the vertex array dynamically (`malloc` / `realloc`). A fixed-point, allocation-free kernel is planned, not implemented |
-| **Power Consumption (target)** | About $124\,\mu\text{A}$ in Deep Sleep (calculated in `hardware/POWER_BUDGET.md`; requirement RNF-03: $< 150\,\mu\text{A}$), not yet measured | The margin is about $26\,\mu\text{A}$ and some consumers are still pending in the budget. Adaptive duty-cycling based on GNSS velocity is planned |
-
-## ⚙️ Engineering Trade-Offs & Design Decisions
-### 1. Zephyr RTOS Portability via HAL
-To ensure long-term industrial viability and prevent vendor lock-in, the codebase strictly isolates POSIX-compliant system calls and hardware drivers. Moving between the Nordic Thingy:91 X (proof of concept) and the ESP32-S3 PCB (final product) requires updating only the per-board devicetree overlay, `prj.conf` and the GNSS / communications / IMU adapters; 100% of the geofencing logic, FSM transitions, and risk metrics remain untouched.
-### 2. Floating-Point Engine Today, Fixed-Point Port Planned
-Calculations on embedded processors often suffer performance penalties when performing trigonometric operations (sin, cos, atan2) for GPS distances. The geofence engine (`geofence.c`) currently uses `double` arithmetic with ray casting and allocates the vertex array dynamically (`malloc` / `realloc`). A fixed-point, allocation-free kernel is a planned optimization. No execution time has been measured on a target; the requirement is a processing time under 50 ms (RF-02).
-### 3. Dynamic Power Budgeting 
-Batteries in remote cattle collars cannot be replaced frequently. The firmware is designed to implement an adaptive sampling strategy (planned; the intervals below are under review and differ between documents):
-- **Static Animal (IMU Stationary):** GNSS enters deep sleep; heartbeat telemetry sent every 6 hours.
-- **Normal Grazing:** GNSS fix every 15 minutes.
-- **Perimeter Boundary Approach:** GNSS fix interval ramps up dynamically to 5 seconds.
- 
- ## 📂 Repository Structure
- ```
- Proyecto-DR-VF-01/
-├── docs/                        # Specifications, Architecture, & Final PDF
-│   ├── DR-VF-01_Memoria_Tecnica.pdf  <-- Full Compiled Technical Report
-│   ├── PROJECT_CONTEXT.md       # Master document
-│   ├── REQUIREMENTS.md          # Requirements matrix (RF / RNF) with traceability
-│   ├── ARCHITECTURE.md          # Power topology, component calculations, firmware architecture
-│   ├── firmware_docs/           # Boot sequences, FSM logic, Risk evaluation
-│   └── comercial_docs/          # System Datasheet & User Manual
-├── firmware/                    # Firmware: geofence engine + Thingy:91 X proof of concept
-│   ├── include/                 # Public C headers
-│   ├── src/geofence/            # Core C Engine, Makefile, & Unit Tests
-│   ├── src/alert/               # Distance to RGB alert color, with host tests
-│   ├── src/app/                 # Application state machine, with host tests
-│   ├── src/button/, src/demo/   # Button adapter; simulated demo walk (host-tested)
-│   ├── src/fence/               # Square fence around a point, with host tests
-│   ├── src/gnss/                # GNSS adapter backend (nRF9151 modem)
-│   ├── src/led/, src/timing/    # RGB LED (PWM) and timing adapters
-│   ├── src/main.c               # Proof-of-concept app: GNSS fix, fence and RGB alert
-│   └── build.sh                 # Build and flash for the Thingy:91 X
-├── hardware/                    # Hardware design notes (no EDA files tracked yet)
-│   ├── BOM.md                   # Bill of Materials
-│   ├── COMPRAS.md               # Where to buy each part (sources and status)
-│   ├── pinout.md                # Pin map
-│   ├── POWER_BUDGET.md          # Current Consumption Breakdown
-│   ├── THERMAL.md               # Thermal dissipation analysis
-│   └── datasheets/              # Datasheet index
-├── mechanical/                  # Enclosure specifications & Environmental Tolerances
-│   ├── IP67_SPEC.md             # Ingress Protection Specifications (design target)
-│   ├── ANTENNA_PLACEMENT.md     # Antenna placement
-│   └── TOLERANCES.md            # Enclosure tolerances
-├── reports/                     # LaTeX Source Files (Modular LaTeX structure)
-└── README.md                    # Project Entrypoint & Fictional Datasheet
+    [*] --> SEARCHING
+    SEARCHING --> MONITORING: first accurate fix creates the fence
+    MONITORING --> FIX_LOST: no fix for 10 s
+    FIX_LOST --> MONITORING: fix arrives
+    SEARCHING --> FAULT: GNSS failed
+    MONITORING --> FAULT: GNSS failed
+    FIX_LOST --> FAULT: GNSS failed
+    SEARCHING --> DEMO: button
+    MONITORING --> DEMO: button
+    FIX_LOST --> DEMO: button
+    FAULT --> DEMO: button
+    DEMO --> SEARCHING: button
 ```
-## 🧪 Building & Running Firmware Unit Tests
-The core geofencing algorithm contains standalone unit tests that can be compiled and executed locally on any Linux host system before flashing to hardware:
+
+On the Thingy the RGB LED shows the distance to the fence edge: green at 20 m or more, shifting to red near the edge, blinking red outside, blinking magenta if the signal is lost so that a lost signal is not mistaken for "outside". Button 1 plays a simulated walk so the alert can be shown indoors.
+
+- `geofence.c` stays pure C (ray casting, no SDK dependency), so it is tested on the PC.
+- Drivers use the Adapter pattern; each board has its own overlay, `prj.conf` and `gnss` / `comms` / `imu` adapters.
+- On the Nordic board the GNSS runs inside the modem firmware and is reached through the `nrf_modem` library. On the ESP32-S3 the MAX-M10S will be a UART backend of the same adapter interface (design only, not implemented).
+
+## Design at a glance (final PCB)
+
+| Block | Choice |
+| :--- | :--- |
+| MCU | ESP32-S3-WROOM-1U-N16R8 |
+| GNSS | u-blox MAX-M10S with a passive L1 patch on a u.FL cable |
+| Radio | DX-LR30-900M22S (SX1262), 915 MHz, u.FL monopole |
+| Sensors | LSM6DS3TR-C IMU for wake-on-motion, MAX17048 fuel gauge |
+| Power | 1S Li-ion; CN3791 charges from a 6 V solar panel, TP4056 from USB-C (500 mA); TLV75733P 3.3 V LDO. Deep-sleep budget about 124 µA (calculated, not measured) |
+| Alert | Optocoupler output, LED and buzzer |
+
+Details: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), [`hardware/BOM.md`](hardware/BOM.md), [`hardware/pinout.md`](hardware/pinout.md), [`hardware/POWER_BUDGET.md`](hardware/POWER_BUDGET.md).
+
+## Documentation
+
+| Document | What it covers |
+| :--- | :--- |
+| [Technical Report](docs/DR-VF-01_Memoria_Tecnica.pdf) (Spanish) | The whole product: requirements, architecture, hardware, firmware, mechanics, compliance |
+| Engineering Report, Thingy:91 X proof of concept ([ES](docs/poc-thingy91x/DR-VF-01_Engineering_Report_PoC_es.pdf), [EN](docs/poc-thingy91x/DR-VF-01_Engineering_Report_PoC_en.pdf)) | Acceptance criteria, method, measured results, compliance matrix and limitations of the prototype |
+| [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) | Requirements (RF / RNF) with traceability and verification status |
+| [`hardware/pcb/`](hardware/pcb/) | Schematics, Draftsman drawing, BOM and Gerbers of the PCB |
+| [`docs/design-reviews/`](docs/design-reviews/) | Independent reviews of the design (RF, BOM, power, MCU, firmware) with open findings |
+
+## Repository map
+
 ```
-# Navigate to the geofence engine directory
+docs/          Specifications, reports (PDF) and design reviews
+firmware/      Geofence engine, application modules and the Thingy:91 X app
+hardware/      BOM, pinout, power budget, thermal notes, PCB outputs, part libraries
+mechanical/    Enclosure, IP67 and antenna placement notes
+reports/       LaTeX sources of the reports
+odd/           Task logs of the development workflow
+```
+
+## Build and test
+
+Host tests need only `gcc` and `make`:
+
+```
 cd firmware/src/geofence
-
-# Build and run the test suite (exits non-zero on any failed check)
-make test
+make test          # unit tests
+make stress        # ~3.8M randomized cases
+make sanitize      # tests under ASan and UBSan
+make cross-check   # compile the pure-C modules for the host, Cortex-M33 and ESP32-S3
 ```
-Timing printed by the host tests says nothing about the 50 ms requirement on the target; that needs a measurement on the board.
 
-### Proof of concept on the Nordic Thingy:91 X
-With nRF Connect SDK v3.4.1 installed, from `firmware/`:
+Thingy:91 X app (needs nRF Connect SDK v3.4.1; the script handles a build path that contains spaces):
+
 ```
-./build.sh        # build
-./build.sh flash  # flash over USB-C (MCUboot)
+cd firmware
+./build.sh         # build
+./build.sh flash   # flash over USB-C (MCUboot)
+./build.sh bench   # build the benchmark of geofence_check()
 ```
-The app uses the nRF9151 GNSS. While it searches the LED blinks blue (cyan if fixes arrive but are too inaccurate, worse than 50 m). The first accurate fix defines a 60 m square fence centered on that position. From then on the LED shows the distance to the boundary: green at 20 m or more, mixing toward red as it gets closer, blinking red outside the fence. If fixes stop arriving for 10 s it blinks magenta, so a lost signal is not mistaken for "outside". The GNSS needs open sky and a few minutes for the first fix; there is no network assistance. It was checked by eye outdoors. Pressing the board's Button 1 (the one in the center of the board) starts a demo mode that plays a simulated walk across a fence around a fixed point (green, toward red, blinking red outside, and back), so the alert can be shown indoors without GNSS signal; pressing it again returns to the search. The demo logic is tested on the PC, and the button was tested on the board: the first press starts the walk and the second one returns to the search. `geofence_check()` was timed on the nRF9151 with a benchmark (`./build.sh bench`) on regular polygons of 4 to 1024 vertices: about 350 µs with 4 vertices, 15.4 ms with 256 and 61.4 ms with 1024. The cost grows linearly, about 111 µs plus 59.9 µs per vertex, so the 50 ms target of RF-02 is reached at around 830 vertices. These are nRF9151 figures, not the final ESP32-S3.
 
-## 📄 Documentation
+The GNSS needs open sky and a few minutes for a first fix. Host timing says nothing about the 50 ms target; that was measured on the board.
 
-- **Technical Report** (Spanish): [`docs/DR-VF-01_Memoria_Tecnica.pdf`](docs/DR-VF-01_Memoria_Tecnica.pdf). The whole product: requirements, architecture, hardware, firmware, mechanics and compliance.
-- **Engineering Report: virtual fence proof of concept** (Spanish and English): measured results of the firmware on the Nordic Thingy:91 X, with acceptance criteria, methodology, a compliance matrix against the requirements and its limitations. Sources in [`reports/engineering_report_poc/`](reports/engineering_report_poc/); every figure traces to a file in its `evidence/` folder.
+Rebuild the proof-of-concept report and recompute every figure from the evidence:
 
 ```
 cd reports/engineering_report_poc
 latexmk -pdf main_en.tex                 # or main_es.tex
-python3 -I evidence/check_numbers.py     # recompute every figure from the evidence
+python3 -I evidence/check_numbers.py
 ```
 
-## 🛡️ License & Contact
-Distributed under the MIT License (see [LICENSE](./LICENSE)). Developed by engineering team for UNAL academic defense and industrial remote deployment readiness.
+## Known limits
+
+- The geofence engine uses `double` and allocates its vertex array with `malloc` / `realloc`. A fixed-point, allocation-free version is planned, not implemented.
+- `geofence_distance_to_boundary()` is accurate up to 85° of latitude; the antimeridian is not supported.
+- The PoC builds a 60 m square fence around the first fix. Defining the polygon by vertices is planned.
+- Comms (LTE-M or LoRa), IMU wake-up and deep sleep exist only as designs in `docs/firmware_docs/`.
+
+## License
+
+MIT, see [LICENSE](./LICENSE). Academic project of the Universidad Nacional de Colombia.
