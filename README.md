@@ -12,7 +12,7 @@ A GNSS collar that tells a cow when it crosses a virtual boundary, without a phy
 | Stage | What | State |
 | :--- | :--- | :--- |
 | 1. Rapid prototype | Geofence engine, state machine and RGB alert on the **Nordic Thingy:91 X** | Done and measured in the field. Report: [`docs/poc-thingy91x/`](docs/poc-thingy91x/) |
-| 2. Custom PCB | 2-layer board, 5 schematic sheets, 100 x 100 mm | Designed, DRC with 0 violations, **not fabricated**. Outputs: [`hardware/pcb/`](hardware/pcb/) |
+| 2. Custom PCB | 2-layer board, 5 schematic sheets, 64.4 x 88.8 mm | Designed, DRC with 0 violations, **not fabricated**. Outputs: [`hardware/pcb/`](hardware/pcb/) |
 | 3. Firmware port | Same code on the ESP32-S3 with its own GNSS, LoRa and IMU adapters | Pending. Only compile-checked for the ESP32-S3 |
 
 ## Results so far
