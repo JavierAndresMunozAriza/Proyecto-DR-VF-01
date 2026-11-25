@@ -3,7 +3,7 @@
  * Thingy:91 X, with a button-activated demo mode.
  *
  * Application states (see app_fsm.h):
- *  - SEARCHING: the LED blinks blue until the first accurate fix, which
+ *  - NO_FENCE: the LED blinks blue until the first accurate fix, which
  *    defines the fence: a square centered on that position. It blinks cyan
  *    while fixes arrive but are too inaccurate to use.
  *  - MONITORING: every fix is checked against the fence and the distance to
@@ -14,7 +14,7 @@
  *  - FAULT: the GNSS could not start, fail-safe blinking red.
  *  - DEMO: pressing the button plays a simulated walk across a fence around
  *    a fixed point, so the alert can be shown without GNSS signal (indoors).
- *    Pressing the button again returns to SEARCHING.
+ *    Pressing the button again returns to NO_FENCE.
  * The duration of each geofence check is logged (RF-02 data on real hardware).
  *
  * PoC exception to the deep-sleep rule: the loop wakes every TICK_MS to
@@ -70,14 +70,6 @@ struct app {
 
 static const geopoint_t demo_center = { DEMO_CENTER_LAT, DEMO_CENTER_LON };
 
-static const char *const state_name[] = {
-	[APP_STATE_SEARCHING] = "SEARCHING",
-	[APP_STATE_MONITORING] = "MONITORING",
-	[APP_STATE_FIX_LOST] = "FIX_LOST",
-	[APP_STATE_FAULT] = "FAULT",
-	[APP_STATE_DEMO] = "DEMO",
-};
-
 /* Fail safe: same color as outside the fence or an invalid reading. */
 static alert_color_t failsafe_color(void)
 {
@@ -90,7 +82,7 @@ static void dispatch(struct app *app, enum app_event event)
 	const enum app_state next = app_fsm_next(app->state, event);
 
 	if (next != app->state)
-		LOG_INF("State %s -> %s", state_name[app->state], state_name[next]);
+		LOG_INF("State %s -> %s", app_fsm_state_name(app->state), app_fsm_state_name(next));
 
 	app->state = next;
 }
@@ -166,7 +158,7 @@ static void process_fix(struct app *app, const gnss_fix_t *fix)
 		return;
 	}
 
-	if (app->state == APP_STATE_SEARCHING) {
+	if (app->state == APP_STATE_NO_FENCE) {
 		if (create_fence(app, &point) != 0)
 			return;
 		dispatch(app, APP_EVENT_FENCE_CREATED);
@@ -186,7 +178,7 @@ static void demo_step(struct app *app)
 		evaluate_point(app, "demo", &point, 0.0f);
 }
 
-/* The button toggles the demo: enter it with its own fence, or leave it for SEARCHING. */
+/* The button toggles the demo: enter it with its own fence, or leave it for NO_FENCE. */
 static void toggle_demo(struct app *app)
 {
 	release_fence(app);
@@ -202,7 +194,7 @@ static void toggle_demo(struct app *app)
 		dispatch(app, APP_EVENT_DEMO_TOGGLE);
 	}
 
-	/* Back to searching: the next accurate fix creates a new fence. */
+	/* Back to NO_FENCE: the next accurate fix creates a new fence. */
 	app->poor_fix_seen = false;
 	if (!app->gnss_ok)
 		dispatch(app, APP_EVENT_GNSS_FAILED);
@@ -220,13 +212,13 @@ static void log_search_progress(const struct app *app)
 {
 	gnss_satellites_t satellites;
 
-	if ((app->state != APP_STATE_SEARCHING && app->state != APP_STATE_FIX_LOST) ||
+	if ((app->state != APP_STATE_NO_FENCE && app->state != APP_STATE_FIX_LOST) ||
 	    app->tick % TICKS_PER_SECOND != 0)
 		return;
 
 	if (gnss_ioctl(GNSS_IOCTL_GET_SATELLITES, &satellites) == 0)
 		LOG_INF("%s: %u satellites tracked (GPS %u, QZSS %u, Galileo %u)",
-			state_name[app->state], satellites.total, satellites.gps,
+			app_fsm_state_name(app->state), satellites.total, satellites.gps,
 			satellites.qzss, satellites.galileo);
 }
 
@@ -237,7 +229,8 @@ static void led_update(struct app *app)
 	int ret;
 
 	switch (app->state) {
-	case APP_STATE_SEARCHING:
+	case APP_STATE_NO_FENCE:
+	case APP_STATE_WAIT_FIX:
 		out = alert_color_searching(app->poor_fix_seen &&
 					    app->tick - app->poor_fix_tick <= POOR_FIX_HOLD_TICKS);
 		break;
@@ -277,7 +270,7 @@ int main(void)
 		.max_vertices_total = FENCE_SQUARE_VERTICES,
 		.tolerance_meters = FENCE_NO_TOLERANCE,
 	};
-	struct app app = { .state = APP_STATE_SEARCHING };
+	struct app app = { .state = APP_STATE_NO_FENCE };
 	gnss_fix_t fix;
 	int ret;
 
