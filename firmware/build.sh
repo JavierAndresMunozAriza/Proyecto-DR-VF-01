@@ -13,9 +13,11 @@
 #   ./build.sh flash-bench    flash the benchmark build
 #   ./build.sh cold           build that deletes the stored GNSS data at every boot
 #   ./build.sh flash-cold     flash the cold-start build
+#   ./build.sh cloud          build with the nRF Cloud link (overlay-cloud.conf)
+#   ./build.sh flash-cloud    flash the cloud build
 #   ./build.sh clean          remove every build directory
 #
-# The bench and cold builds use their own build directories, so they never
+# The bench, cold and cloud builds use their own build directories, so they never
 # overwrite the normal build. Environment overrides: BOARD, BUILD_DIR,
 # LINK_PATH, NCS_SHELL.
 set -euo pipefail
@@ -43,6 +45,16 @@ build_variant() {
 
 	"$NCS_SHELL" west build -p auto -b "$BOARD" "$LINK_PATH" -d "${BUILD_DIR}_${name}" -- \
 		"-D$(basename "$LINK_PATH")_CONFIG_${option}=y"
+	echo "Image: ${BUILD_DIR}_${name}/dfu_application.zip"
+}
+
+# Same, plus an extra Kconfig file for the application image (sysbuild form).
+build_variant_overlay() {
+	local name="$1" option="$2" overlay="$3"
+
+	"$NCS_SHELL" west build -p auto -b "$BOARD" "$LINK_PATH" -d "${BUILD_DIR}_${name}" -- \
+		"-D$(basename "$LINK_PATH")_CONFIG_${option}=y" \
+		"-D$(basename "$LINK_PATH")_EXTRA_CONF_FILE=${overlay}"
 	echo "Image: ${BUILD_DIR}_${name}/dfu_application.zip"
 }
 
@@ -77,12 +89,18 @@ case "${1:-build}" in
 	flash-cold)
 		flash_dir "${BUILD_DIR}_cold"
 		;;
+	cloud)
+		build_variant_overlay cloud DRVF_CLOUD "$LINK_PATH/overlay-cloud.conf"
+		;;
+	flash-cloud)
+		flash_dir "${BUILD_DIR}_cloud"
+		;;
 	clean)
-		rm -rf "$BUILD_DIR" "${BUILD_DIR}_bench" "${BUILD_DIR}_cold"
+		rm -rf "$BUILD_DIR" "${BUILD_DIR}_bench" "${BUILD_DIR}_cold" "${BUILD_DIR}_cloud"
 		echo "Removed the build directories of $BUILD_DIR"
 		;;
 	*)
-		echo "usage: $0 [build|flash|bench|flash-bench|cold|flash-cold|clean]" >&2
+		echo "usage: $0 [build|flash|bench|flash-bench|cold|flash-cold|cloud|flash-cloud|clean]" >&2
 		exit 2
 		;;
 esac

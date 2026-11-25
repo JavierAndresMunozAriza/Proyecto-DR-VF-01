@@ -167,6 +167,31 @@ int gnss_open(void)
 	return 0;
 }
 
+int gnss_restart(void)
+{
+	int err;
+
+	if (!opened)
+		return -ENODEV;
+
+	/* The session may already be gone: a failed stop is not an error here. */
+	(void)nrf_modem_gnss_stop();
+
+	err = lte_lc_func_mode_set(LTE_LC_FUNC_MODE_ACTIVATE_GNSS);
+	if (err != 0) {
+		LOG_ERR("Could not activate GNSS mode again: %d", err);
+		return to_errno(err);
+	}
+
+	if (nrf_modem_gnss_start() != 0) {
+		LOG_ERR("Could not start GNSS again");
+		return -EIO;
+	}
+
+	LOG_INF("GNSS started again");
+	return 0;
+}
+
 int gnss_read(gnss_fix_t *fix, uint32_t timeout_ms)
 {
 	if (fix == NULL)

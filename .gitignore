@@ -57,3 +57,7 @@ hardware/libraries/*/altium_nativo/
 
 # Raw field-test captures contain the real location of the board: never commit them
 reports/engineering_report_poc/evidence/private/
+
+# Host test binaries built by the module Makefiles
+firmware/src/*/*_test
+firmware/src/*/*_test_san

@@ -24,23 +24,27 @@ static int build_polygon(geofence_t *out, const geopoint_t *vertices, uint16_t n
 }
 
 /* Replace the current polygon with a built one. Cannot fail. */
-static void adopt(fence_manager_t *manager, geofence_t *fresh, uint32_t id, uint32_t version)
+static void adopt(fence_manager_t *manager, geofence_t *fresh, uint32_t id, uint32_t version,
+		  uint32_t blob_crc)
 {
 	fence_manager_release(manager);
 	manager->fence = *fresh;
 	manager->has_fence = true;
 	manager->fence_id = id;
 	manager->fence_version = version;
+	manager->blob_crc = blob_crc;
 }
 
 /*
- * Decode a blob and make it the active fence. When @p persist is true it must
- * also be newer than the current fence and is saved before it replaces it.
+ * Decode a blob and make it the active fence. When @p persist is true it is
+ * also saved before it replaces the current one, and a repeated download of
+ * the active fence is recognized and left alone.
  */
 static int accept_blob(fence_manager_t *manager, const uint8_t *blob, size_t len, bool persist)
 {
 	fence_codec_header_t header;
 	geofence_t fresh;
+	uint32_t blob_crc;
 	int rc;
 
 	rc = fence_codec_decode(blob, len, manager->scratch_vertices,
@@ -49,13 +53,10 @@ static int accept_blob(fence_manager_t *manager, const uint8_t *blob, size_t len
 		return rc;
 	if (header.fence_version == 0)
 		return FENCE_MANAGER_ERR_VERSION;
-	if (persist && manager->has_fence) {
-		if (header.fence_version == manager->fence_version &&
-		    header.fence_id == manager->fence_id)
-			return FENCE_MANAGER_ALREADY_ACTIVE;
-		if (header.fence_version <= manager->fence_version)
-			return FENCE_MANAGER_ERR_NOT_NEWER;
-	}
+	blob_crc = fence_codec_crc32(blob, len);
+	if (persist && manager->has_fence && header.fence_id == manager->fence_id &&
+	    header.fence_version == manager->fence_version && blob_crc == manager->blob_crc)
+		return FENCE_MANAGER_ALREADY_ACTIVE;
 
 	rc = build_polygon(&fresh, manager->scratch_vertices, header.num_vertices);
 	if (rc != FENCE_MANAGER_OK)
@@ -67,7 +68,7 @@ static int accept_blob(fence_manager_t *manager, const uint8_t *blob, size_t len
 		return FENCE_MANAGER_ERR_STORE;
 	}
 
-	adopt(manager, &fresh, header.fence_id, header.fence_version);
+	adopt(manager, &fresh, header.fence_id, header.fence_version, blob_crc);
 	return FENCE_MANAGER_OK;
 }
 
@@ -117,7 +118,7 @@ int fence_manager_use_transient(fence_manager_t *manager, const geopoint_t *vert
 	if (rc != FENCE_MANAGER_OK)
 		return rc;
 
-	adopt(manager, &fresh, 0, 0);
+	adopt(manager, &fresh, 0, 0, 0);
 	return FENCE_MANAGER_OK;
 }
 
@@ -130,6 +131,7 @@ void fence_manager_release(fence_manager_t *manager)
 	manager->has_fence = false;
 	manager->fence_id = 0;
 	manager->fence_version = 0;
+	manager->blob_crc = 0;
 }
 
 const geofence_t *fence_manager_fence(const fence_manager_t *manager)

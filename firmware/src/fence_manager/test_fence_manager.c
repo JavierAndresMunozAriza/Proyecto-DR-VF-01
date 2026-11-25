@@ -124,22 +124,29 @@ static void test_apply(void)
 	CHECK("it was stored byte for byte",
 	      st.has && st.len == la && memcmp(st.blob, a, la) == 0);
 
-	CHECK("an equal version with another id is refused",
-	      fence_manager_apply(&m, same, ls) == FENCE_MANAGER_ERR_NOT_NEWER);
 	CHECK("the same fence again is already active, not an error",
 	      fence_manager_apply(&m, a, la) == FENCE_MANAGER_ALREADY_ACTIVE);
-	CHECK("a refused or repeated fence changes nothing",
+	CHECK("a repeated fence changes nothing",
 	      inside(&m, 0.0) && m.fence_version == 5 && st.saves == 1 &&
 	      memcmp(st.blob, a, la) == 0);
+	CHECK("an equal version with another id and shape replaces it",
+	      fence_manager_apply(&m, same, ls) == FENCE_MANAGER_OK &&
+	      inside(&m, FAR_M) && m.fence_id == 9);
+	CHECK("the first fence applies again (the sender's state wins)",
+	      fence_manager_apply(&m, a, la) == FENCE_MANAGER_OK && inside(&m, 0.0));
 
 	CHECK("version 0 is reserved",
 	      fence_manager_apply(&m, v0, l0) == FENCE_MANAGER_ERR_VERSION);
 
 	CHECK("a newer fence replaces it", fence_manager_apply(&m, b, lb) == FENCE_MANAGER_OK);
+	CHECK("an older version also replaces it, as the sender's state wins",
+	      fence_manager_apply(&m, a, la) == FENCE_MANAGER_OK && inside(&m, 0.0) &&
+	      m.fence_version == 5 &&
+	      fence_manager_apply(&m, b, lb) == FENCE_MANAGER_OK);
 	CHECK("the new fence is active, the old one is gone",
 	      inside(&m, FAR_M) && !inside(&m, 0.0) && m.fence_version == 6);
-	CHECK("the store holds the new one",
-	      st.saves == 2 && st.len == lb && memcmp(st.blob, b, lb) == 0);
+	CHECK("the store holds the latest one",
+	      st.len == lb && memcmp(st.blob, b, lb) == 0);
 
 	fence_manager_release(&m);
 	CHECK("release drops the fence but not the store",
@@ -177,6 +184,25 @@ static void test_apply_errors(void)
 
 	CHECK("NULL manager", fence_manager_apply(NULL, b, lb) == FENCE_MANAGER_ERR_ARG);
 	CHECK("NULL blob", fence_manager_apply(&m, NULL, lb) == FENCE_MANAGER_ERR_ARG);
+	fence_manager_release(&m);
+}
+
+static void test_huge_version_does_not_block_updates(void)
+{
+	struct fake_store st = { 0 };
+	const fence_store_ops_t ops = { fake_load, fake_save, &st };
+	fence_manager_t m;
+	uint8_t huge[FENCE_CODEC_MAX_SIZE];
+	uint8_t normal[FENCE_CODEC_MAX_SIZE];
+	size_t lh = make_blob(huge, 1, 0xFFFFFFFFu, 0.0);
+	size_t ln = make_blob(normal, 1, 5, FAR_M);
+
+	fence_manager_init(&m, &ops);
+	CHECK("a fence with the largest version applies",
+	      fence_manager_apply(&m, huge, lh) == FENCE_MANAGER_OK && inside(&m, 0.0));
+	CHECK("a later fence with a normal version still replaces it, even after a reboot",
+	      fence_manager_load(&m) == FENCE_MANAGER_OK &&
+	      fence_manager_apply(&m, normal, ln) == FENCE_MANAGER_OK && inside(&m, FAR_M));
 	fence_manager_release(&m);
 }
 
@@ -277,6 +303,7 @@ int main(void)
 	}
 	test_apply();
 	test_apply_errors();
+	test_huge_version_does_not_block_updates();
 	test_load();
 	test_transient_and_restore();
 	test_without_store();

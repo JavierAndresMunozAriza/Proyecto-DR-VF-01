@@ -50,6 +50,11 @@ extern "C" {
 #define FENCE_CODEC_MAX_VERTICES 128
 #endif
 
+#if FENCE_CODEC_MAX_VERTICES > 256
+/* The area and crossing tests use int64 sums that are proven for up to 256 vertices. */
+#error "FENCE_CODEC_MAX_VERTICES must not exceed 256"
+#endif
+
 /** Minimum number of vertices of a polygon */
 #define FENCE_CODEC_MIN_VERTICES 3
 

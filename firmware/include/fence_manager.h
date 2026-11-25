@@ -11,11 +11,13 @@
  *   decode and validate (fence_codec) -> newer than the current one ->
  *   build the polygon -> save to the store -> replace the current polygon
  *
- * Fence versions: the sender gives each fence a version and only a larger one
- * replaces the current fence. Version 0 is reserved for fences the device
- * made itself (the square around the first fix, the demo fence). A portal
- * should use the time in seconds as the version, so a fence drawn later is
- * always newer.
+ * The sender's state wins: any valid fence replaces the current one, whatever
+ * its version, so a wrong clock or a fence with a huge version cannot block
+ * later updates. The id and version only identify a fence: the same id,
+ * version and content again is a repeated download and changes nothing.
+ * Version 0 is reserved for fences the device made itself (the square around
+ * the first fix, the demo fence). A portal should use the time in seconds as
+ * the version, so versions grow and are easy to read.
  */
 
 #ifndef FENCE_MANAGER_H
@@ -38,7 +40,6 @@ enum fence_manager_status {
 	FENCE_MANAGER_OK = 0,
 	FENCE_MANAGER_NOTHING_STORED = 1,      /**< load: the store is empty */
 	FENCE_MANAGER_ALREADY_ACTIVE = 2,      /**< apply: this exact fence is active */
-	FENCE_MANAGER_ERR_NOT_NEWER = -20,     /**< version not larger than current */
 	FENCE_MANAGER_ERR_VERSION = -21,       /**< version 0 is reserved */
 	FENCE_MANAGER_ERR_STORE = -22,         /**< the store could not save or load */
 	FENCE_MANAGER_ERR_ENGINE = -23,        /**< the geofence engine refused it */
@@ -50,6 +51,7 @@ typedef struct {
 	bool has_fence;
 	uint32_t fence_id;
 	uint32_t fence_version; /**< 0 for a fence made by the device */
+	uint32_t blob_crc;      /**< CRC-32 of the active blob, to spot a repeated download */
 	const fence_store_ops_t *store; /**< NULL: do not persist */
 
 	/* Work buffers, kept here so the calls do not use the caller's stack.
@@ -82,9 +84,9 @@ int fence_manager_load(fence_manager_t *manager);
  * @brief Validate, persist and activate a fence blob received from outside
  *
  * @return FENCE_MANAGER_OK if the fence is now active and stored;
- *         FENCE_MANAGER_ALREADY_ACTIVE if the same fence id and version is
- *         already active (a repeated download; nothing changes and it counts
- *         as success); otherwise a negative fence_codec_status or
+ *         FENCE_MANAGER_ALREADY_ACTIVE if this exact fence (same id, version
+ *         and content) is already active (a repeated download; nothing
+ *         changes and it counts as success); otherwise a negative fence_codec_status or
  *         fence_manager_status. On any error the current fence and the
  *         stored one are unchanged.
  */

@@ -15,4 +15,84 @@ config DRVF_GNSS_COLD_START
 	  measure the time to first fix of a real cold start. Debug feature: do
 	  not use it in a product.
 
+config DRVF_FENCE_AUTO_SQUARE
+	bool "Make a square fence around the first fix when there is no other fence"
+	default y
+	help
+	  With no stored or downloaded fence, the first accurate GNSS fix defines
+	  a 60 m square fence around it, as in the first proof of concept. Turn it
+	  off in a product, which should wait for the fence the user drew.
+
+config DRVF_FENCE_STORAGE
+	bool "Keep the fence in flash, so it survives a reboot"
+	depends on SETTINGS
+	help
+	  Stores each fence received from outside in the settings subsystem and
+	  loads it at boot. Needs CONFIG_SETTINGS with a flash backend.
+
+config DRVF_TELEMETRY_HEARTBEAT_S
+	int "Seconds between telemetry reports when nothing changes"
+	default 900
+	help
+	  A report is also sent when the state, inside or outside, or the fence
+	  version changes. Each cloud message counts against the plan quota.
+
+config DRVF_TELEMETRY_MIN_INTERVAL_S
+	int "Minimum seconds between two telemetry reports"
+	default 30
+	help
+	  Keeps a collar walking along the fence line from flooding the link: a
+	  change that comes sooner waits for this interval.
+
+config DRVF_CLOUD
+	bool "Sync the fence and telemetry with the cloud over LTE"
+	help
+	  Brings up LTE-M/NB-IoT (with PSM and eDRX), connects to nRF Cloud over
+	  CoAP, downloads the fence the user drew and uploads telemetry. Needs
+	  the extra options of overlay-cloud.conf: build it with
+	  `./build.sh cloud`.
+
+if DRVF_CLOUD
+
+config DRVF_CLOUD_POLL_INTERVAL_S
+	int "Seconds between two checks for a new fence"
+	default 120
+	help
+	  The cloud cannot push a fence to a device in PSM: the device asks. A
+	  short interval makes field tests quick; a product would use a longer
+	  one to save energy and data.
+
+config DRVF_CLOUD_THREAD_STACK_SIZE
+	int "Stack size of the cloud worker thread (bytes)"
+	default 6144
+
+config DRVF_CLOUD_SHADOW_BUF_SIZE
+	int "Size of the device shadow response buffer (bytes)"
+	default 2048
+	help
+	  Holds the shadow delta as JSON. It must hold the base64 text of the
+	  largest fence blob plus the rest of the delta.
+
+config DRVF_CLOUD_MSG_BUF_SIZE
+	int "Size of the telemetry message buffer (bytes)"
+	default 512
+	help
+	  Holds the telemetry JSON plus the nRF Cloud message envelope.
+
+config DRVF_CLOUD_REGISTER_TIMEOUT_S
+	int "Seconds to wait for the network registration"
+	default 300
+
+config DRVF_CLOUD_DATE_TIME_TIMEOUT_S
+	int "Seconds to wait for a valid date and time"
+	default 60
+	help
+	  nRF Cloud authentication signs a token with the current time.
+
+config DRVF_CLOUD_PROVISION_TIMEOUT_S
+	int "Seconds to wait for the provisioning service"
+	default 300
+
+endif # DRVF_CLOUD
+
 source "Kconfig.zephyr"

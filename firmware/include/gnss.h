@@ -64,6 +64,17 @@ int gnss_open(void);
 int gnss_read(gnss_fix_t *fix, uint32_t timeout_ms);
 
 /**
+ * @brief Start the receiver again after the radio was switched off
+ *
+ * Needed after first-time cloud provisioning, which powers the whole radio
+ * off and so ends the GNSS session.
+ *
+ * @return 0 on success; -ENODEV if gnss_open() did not succeed; a negative
+ *         errno if the receiver could not be started
+ */
+int gnss_restart(void);
+
+/**
  * @brief Send data to the receiver
  *
  * No backend accepts data yet (assistance data injection is not
