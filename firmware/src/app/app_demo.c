@@ -24,12 +24,18 @@ void app_demo_step(struct app *app)
 		app_evaluate_point(app, "demo", &point, 0.0f);
 }
 
+/* Forget the last result: it belongs to the fence that is about to change. */
+static void clear_results(struct app *app)
+{
+	app->has_result = false;
+	app->has_position = false;
+}
+
 /* Drop the demo fence, bring the stored one back and resume the normal states. */
 static void leave_demo(struct app *app)
 {
 	fence_manager_release(&app->fences);
-	app->has_result = false;
-	app->has_position = false;
+	clear_results(app);
 	app->poor_fix_seen = false;
 
 	if (fence_manager_load(&app->fences) == FENCE_MANAGER_OK)
@@ -49,8 +55,7 @@ void app_demo_toggle(struct app *app)
 	}
 
 	app->demo_step = 0;
-	app->has_result = false;
-	app->has_position = false;
+	clear_results(app);
 	if (app_use_square_fence(app, &demo_center) == 0) {
 		app_demo_step(app);
 		return;

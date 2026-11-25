@@ -134,9 +134,26 @@ void fence_manager_release(fence_manager_t *manager)
 	manager->blob_crc = 0;
 }
 
-const geofence_t *fence_manager_fence(const fence_manager_t *manager)
+bool fence_manager_has_fence(const fence_manager_t *manager)
 {
-	if (manager == NULL || !manager->has_fence)
-		return NULL;
-	return &manager->fence;
+	return manager != NULL && manager->has_fence;
+}
+
+bool fence_manager_info(const fence_manager_t *manager, fence_codec_header_t *info)
+{
+	if (!fence_manager_has_fence(manager) || info == NULL)
+		return false;
+
+	info->fence_id = manager->fence_id;
+	info->fence_version = manager->fence_version;
+	info->num_vertices = manager->fence.num_vertices;
+	return true;
+}
+
+int fence_manager_check(const fence_manager_t *manager, const geopoint_t *point,
+			geofence_result_t *result)
+{
+	if (!fence_manager_has_fence(manager))
+		return GEOFENCE_ERROR_EMPTY_POLYGON;
+	return geofence_check(point, &manager->fence, result);
 }

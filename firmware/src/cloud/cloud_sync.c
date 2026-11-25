@@ -98,12 +98,32 @@ static int run_job(const struct job *job)
 				  job->report.status);
 }
 
+/* One line per poll with the radio conditions: the field test reads the coverage here. */
+static void log_link(void)
+{
+	static const char *const rat_name[] = {
+		[CLOUD_RAT_UNKNOWN] = "unknown",
+		[CLOUD_RAT_LTE_M] = "LTE-M",
+		[CLOUD_RAT_NB_IOT] = "NB-IoT",
+	};
+	cloud_link_info_t info;
+
+	if (cloud_link_info(&info) != 0) {
+		LOG_INF("Link: no radio information");
+		return;
+	}
+	LOG_INF("Link: %s, band %u, RSRP %d dBm%s, operator %s", rat_name[info.rat],
+		(unsigned int)info.band, (int)info.rsrp_dbm, info.has_rsrp ? "" : " (unknown)",
+		info.operator_id[0] != '\0' ? info.operator_id : "unknown");
+}
+
 /* Ask the cloud for a new fence and hand it to the application. */
 static int poll_fence(void)
 {
 	struct fence_msg msg;
 	int err;
 
+	log_link();
 	err = cloud_fetch_fence(msg.blob, sizeof(msg.blob), &msg.len);
 	if (err == -ENODATA)
 		return 0;

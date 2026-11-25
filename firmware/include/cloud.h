@@ -30,8 +30,16 @@ extern "C" {
 /** Longest operator code (MCC+MNC) in cloud_link_info_t, without the NUL */
 #define CLOUD_OPERATOR_MAX 8
 
-/** Radio information for the telemetry report */
+/** Radio access technology in use */
+enum cloud_rat {
+	CLOUD_RAT_UNKNOWN = 0,
+	CLOUD_RAT_LTE_M,
+	CLOUD_RAT_NB_IOT,
+};
+
+/** Radio information for the telemetry report and the field-test log */
 typedef struct {
+	enum cloud_rat rat;
 	bool has_rsrp;
 	int16_t rsrp_dbm;                           /**< LTE signal power */
 	uint8_t band;                               /**< LTE band, 0 if unknown */
@@ -43,8 +51,7 @@ typedef struct {
  *
  * Registers on the cellular network with PSM and eDRX requested, provisions
  * the device if it has no credentials yet and opens the cloud connection.
- * The modem library must already be initialized by the GNSS adapter, so call
- * gnss_open() first. May take minutes on the first connection.
+ * May take minutes on the first connection.
  *
  * @return 0 on success; a negative errno otherwise (-EACCES if the device is
  *         not claimed in the cloud account yet; the adapter logs the

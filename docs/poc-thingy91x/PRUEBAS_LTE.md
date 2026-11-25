@@ -30,7 +30,12 @@ fabricar a **finales de mayo de 2027**:
    (`/dev/ttyACM0`, 115200 baudios), y guarda la clave REST y el ID del
    dispositivo como variables de entorno del portal (nunca en el repositorio).
 3. **Firmware.** Desde `firmware/`: `./build.sh cloud` y `./build.sh flash-cloud`.
-   El log de la aplicacion sigue en `/dev/ttyACM0`.
+   El log de la aplicacion sigue en `/dev/ttyACM0`. Antes de la campana,
+   en casa: (a) reclama y aprovisiona el dispositivo una vez (el primer
+   aprovisionamiento apaga la radio y obliga a reiniciar el GNSS; ese camino
+   nunca corrio en la placa); (b) carga una vez `./build.sh` + `./build.sh flash`
+   (la aplicacion sin nube, ya dividida en modulos) y repite el demo del boton
+   y la prueba al aire libre, porque esa version no se ha probado en la placa.
 4. **Portal.** `tools/fence_portal/server.py` (ver su `README.md`).
 5. **Medidor de corriente** (por ejemplo un PPK2): sin el, las pruebas de
    energia quedan **pendientes**; no se estima.
@@ -44,7 +49,7 @@ HEAD`). Los registros con ubicacion real van en
 
 | ID | Que se mide | Como | Resultado |
 |---|---|---|---|
-| L1 | Cobertura: operador, tecnologia (LTE-M o NB-IoT), banda y RSRP en 5 o mas puntos del potrero | Log del firmware (`cloud_link_info`) en cada punto, 1 minuto por punto | pendiente |
+| L1 | Cobertura: operador, tecnologia (LTE-M o NB-IoT), banda y RSRP en 5 o mas puntos del potrero | Linea `Link: ...` del log, que sale en cada consulta (cada 120 s); espera dos lineas por punto | pendiente |
 | L2 | Tiempo de arranque a conectado, primera vez (con aprovisionamiento) y despues | Marcas de tiempo del log | pendiente |
 | L3 | Latencia de la cerca: del boton "Enviar" a "New fence applied" | Hora del portal y del log, con consulta cada 120 s | pendiente |
 | L4 | La cerca sobrevive a un reinicio y a un corte de energia | Reiniciar, y desconectar la bateria mientras llega una cerca; revisar `Stored fence loaded` | pendiente |

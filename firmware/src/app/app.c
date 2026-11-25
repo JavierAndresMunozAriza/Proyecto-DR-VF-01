@@ -71,6 +71,7 @@ static int init_modules(void)
 		.max_vertices_total = FENCE_CODEC_MAX_VERTICES,
 		.tolerance_meters = FENCE_NO_TOLERANCE,
 	};
+	const fence_store_ops_t *store;
 	int ret;
 
 	ret = rgb_led_init();
@@ -93,11 +94,11 @@ static int init_modules(void)
 	if (ret < 0)
 		LOG_WRN("Button not available, demo mode disabled: %d", ret);
 
-	fence_manager_init(&app.fences, fence_store());
-	if (IS_ENABLED(CONFIG_DRVF_FENCE_STORAGE) && app.fences.store == NULL)
+	store = fence_store();
+	if (IS_ENABLED(CONFIG_DRVF_FENCE_STORAGE) && store == NULL)
 		LOG_ERR("Fence storage not available, fences will not survive a reboot");
+	fence_manager_init(&app.fences, store);
 
-	/* The GNSS adapter initializes the modem library: the cloud comes after it. */
 	app.gnss_ok = gnss_open() == 0;
 	if (!app.gnss_ok) {
 		LOG_ERR("GNSS not available");

@@ -96,9 +96,21 @@ static bool inside(const fence_manager_t *m, double dlat_m)
 	const geopoint_t p = pt(dlat_m, 0);
 	geofence_result_t res;
 
-	if (fence_manager_fence(m) == NULL)
-		return false;
-	return geofence_check(&p, fence_manager_fence(m), &res) == 0 && res.inside;
+	return fence_manager_check(m, &p, &res) == 0 && res.inside;
+}
+
+static uint32_t ver(const fence_manager_t *m)
+{
+	fence_codec_header_t info = { 0, 0, 0 };
+
+	return fence_manager_info(m, &info) ? info.fence_version : 0;
+}
+
+static uint32_t id_of(const fence_manager_t *m)
+{
+	fence_codec_header_t info = { 0, 0, 0 };
+
+	return fence_manager_info(m, &info) ? info.fence_id : 0;
 }
 
 static void test_apply(void)
@@ -116,22 +128,33 @@ static void test_apply(void)
 	size_t l0 = make_blob(v0, 1, 0, 0.0);
 
 	fence_manager_init(&m, &ops);
-	CHECK("a new manager has no fence", fence_manager_fence(&m) == NULL);
+	CHECK("a new manager has no fence", !fence_manager_has_fence(&m));
+	{
+		const geopoint_t p = pt(0, 0);
+		geofence_result_t res;
+		fence_codec_header_t info = { 7, 7, 7 };
+
+		CHECK("no fence: check reports an empty polygon",
+		      fence_manager_check(&m, &p, &res) == GEOFENCE_ERROR_EMPTY_POLYGON);
+		CHECK("no fence: info is false and leaves the output alone",
+		      !fence_manager_info(&m, &info) && info.fence_id == 7 &&
+		      info.num_vertices == 7);
+	}
 
 	CHECK("apply a valid fence", fence_manager_apply(&m, a, la) == FENCE_MANAGER_OK);
 	CHECK("the fence is active", inside(&m, 0.0) && !inside(&m, FAR_M));
-	CHECK("its version and id are kept", m.fence_version == 5 && m.fence_id == 1);
+	CHECK("its version and id are kept", ver(&m) == 5 && id_of(&m) == 1);
 	CHECK("it was stored byte for byte",
 	      st.has && st.len == la && memcmp(st.blob, a, la) == 0);
 
 	CHECK("the same fence again is already active, not an error",
 	      fence_manager_apply(&m, a, la) == FENCE_MANAGER_ALREADY_ACTIVE);
 	CHECK("a repeated fence changes nothing",
-	      inside(&m, 0.0) && m.fence_version == 5 && st.saves == 1 &&
+	      inside(&m, 0.0) && ver(&m) == 5 && st.saves == 1 &&
 	      memcmp(st.blob, a, la) == 0);
 	CHECK("an equal version with another id and shape replaces it",
 	      fence_manager_apply(&m, same, ls) == FENCE_MANAGER_OK &&
-	      inside(&m, FAR_M) && m.fence_id == 9);
+	      inside(&m, FAR_M) && id_of(&m) == 9);
 	CHECK("the first fence applies again (the sender's state wins)",
 	      fence_manager_apply(&m, a, la) == FENCE_MANAGER_OK && inside(&m, 0.0));
 
@@ -141,16 +164,16 @@ static void test_apply(void)
 	CHECK("a newer fence replaces it", fence_manager_apply(&m, b, lb) == FENCE_MANAGER_OK);
 	CHECK("an older version also replaces it, as the sender's state wins",
 	      fence_manager_apply(&m, a, la) == FENCE_MANAGER_OK && inside(&m, 0.0) &&
-	      m.fence_version == 5 &&
+	      ver(&m) == 5 &&
 	      fence_manager_apply(&m, b, lb) == FENCE_MANAGER_OK);
 	CHECK("the new fence is active, the old one is gone",
-	      inside(&m, FAR_M) && !inside(&m, 0.0) && m.fence_version == 6);
+	      inside(&m, FAR_M) && !inside(&m, 0.0) && ver(&m) == 6);
 	CHECK("the store holds the latest one",
 	      st.len == lb && memcmp(st.blob, b, lb) == 0);
 
 	fence_manager_release(&m);
 	CHECK("release drops the fence but not the store",
-	      fence_manager_fence(&m) == NULL && st.has);
+	      !fence_manager_has_fence(&m) && st.has);
 	fence_manager_release(&m);
 }
 
@@ -179,7 +202,7 @@ static void test_apply_errors(void)
 	CHECK("a failed save is reported",
 	      fence_manager_apply(&m, b, lb) == FENCE_MANAGER_ERR_STORE);
 	CHECK("a failed save keeps the current fence and the stored one",
-	      inside(&m, 0.0) && m.fence_version == 5 && memcmp(st.blob, a, la) == 0);
+	      inside(&m, 0.0) && ver(&m) == 5 && memcmp(st.blob, a, la) == 0);
 	st.fail_save = false;
 
 	CHECK("NULL manager", fence_manager_apply(NULL, b, lb) == FENCE_MANAGER_ERR_ARG);
@@ -217,7 +240,7 @@ static void test_load(void)
 	fence_manager_init(&m, &ops);
 	CHECK("an empty store reports nothing stored",
 	      fence_manager_load(&m) == FENCE_MANAGER_NOTHING_STORED &&
-	      fence_manager_fence(&m) == NULL);
+	      !fence_manager_has_fence(&m));
 
 	st.fail_load = true;
 	CHECK("a store failure is reported",
@@ -229,7 +252,7 @@ static void test_load(void)
 	st.has = true;
 	CHECK("a stored fence is loaded", fence_manager_load(&m) == FENCE_MANAGER_OK);
 	CHECK("the loaded fence is active with its version",
-	      inside(&m, 0.0) && m.fence_version == 8 && m.fence_id == 3);
+	      inside(&m, 0.0) && ver(&m) == 8 && id_of(&m) == 3);
 
 	st.blob[20] ^= 0xFF;
 	CHECK("a corrupt stored fence is refused",
@@ -258,13 +281,13 @@ static void test_transient_and_restore(void)
 
 	CHECK("a transient fence replaces the stored one in use",
 	      fence_manager_use_transient(&m, demo, 4) == FENCE_MANAGER_OK &&
-	      inside(&m, FAR_M) && !inside(&m, 0.0) && m.fence_version == 0);
+	      inside(&m, FAR_M) && !inside(&m, 0.0) && ver(&m) == 0);
 	CHECK("a transient fence is not stored", st.saves == 1 && memcmp(st.blob, a, la) == 0);
 
 	fence_manager_release(&m);
 	CHECK("after the demo the stored fence comes back",
 	      fence_manager_load(&m) == FENCE_MANAGER_OK && inside(&m, 0.0) &&
-	      m.fence_version == 5);
+	      ver(&m) == 5);
 
 	fence_manager_use_transient(&m, demo, 4);
 	CHECK("any fence from outside replaces a transient one",

@@ -91,6 +91,10 @@ envia nada (las posiciones son simuladas).
 
 ## Limites conocidos
 
+- Una segunda fuente de cercas (por ejemplo BLE, para configurar en el sitio)
+  tendria que informar tambien a la nube; si no, `reported.fence` queda viejo.
+  Decidirlo aqui antes de implementarla.
+
 - La cuota del plan gratuito de nRF Cloud (cifra de terceros, sin verificar:
   3000 mensajes al mes) obliga a mantener la telemetria por cambio de estado.
 - El primer aprovisionamiento apaga la radio y detiene la sesion GNSS; la

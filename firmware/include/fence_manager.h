@@ -8,8 +8,8 @@
  * fence. A new fence goes through these steps, and any failure leaves the
  * current fence and the stored one untouched:
  *
- *   decode and validate (fence_codec) -> newer than the current one ->
- *   build the polygon -> save to the store -> replace the current polygon
+ *   decode and validate (fence_codec) -> build the polygon ->
+ *   save to the store -> replace the current polygon
  *
  * The sender's state wins: any valid fence replaces the current one, whatever
  * its version, so a wrong clock or a fence with a huge version cannot block
@@ -46,17 +46,19 @@ enum fence_manager_status {
 	FENCE_MANAGER_ERR_ARG = -24            /**< NULL argument */
 };
 
+/**
+ * The fields are private: use the functions below, so a later format with
+ * several polygons stays inside this module.
+ */
 typedef struct {
 	geofence_t fence;
 	bool has_fence;
 	uint32_t fence_id;
-	uint32_t fence_version; /**< 0 for a fence made by the device */
-	uint32_t blob_crc;      /**< CRC-32 of the active blob, to spot a repeated download */
-	const fence_store_ops_t *store; /**< NULL: do not persist */
+	uint32_t fence_version; /* 0 for a fence made by the device */
+	uint32_t blob_crc;      /* CRC-32 of the active blob, to spot a repeated download */
+	const fence_store_ops_t *store; /* NULL: do not persist */
 
-	/* Work buffers, kept here so the calls do not use the caller's stack.
-	 * Private: do not touch.
-	 */
+	/* Work buffers, kept here so the calls do not use the caller's stack. */
 	geopoint_t scratch_vertices[FENCE_CODEC_MAX_VERTICES];
 	uint8_t scratch_blob[FENCE_CODEC_MAX_SIZE];
 } fence_manager_t;
@@ -109,9 +111,25 @@ int fence_manager_use_transient(fence_manager_t *manager, const geopoint_t *vert
 void fence_manager_release(fence_manager_t *manager);
 
 /**
- * @brief The active fence for geofence_check(), or NULL if there is none
+ * @brief True if there is an active fence
  */
-const geofence_t *fence_manager_fence(const fence_manager_t *manager);
+bool fence_manager_has_fence(const fence_manager_t *manager);
+
+/**
+ * @brief Identity of the active fence
+ * @param info  Receives the fence id, version and number of vertices
+ * @return true if there is an active fence; false (and @p info untouched) if not
+ */
+bool fence_manager_info(const fence_manager_t *manager, fence_codec_header_t *info);
+
+/**
+ * @brief Check a point against the active fence
+ *
+ * Same results as geofence_check(); GEOFENCE_ERROR_EMPTY_POLYGON if there is
+ * no active fence.
+ */
+int fence_manager_check(const fence_manager_t *manager, const geopoint_t *point,
+			geofence_result_t *result);
 
 #ifdef __cplusplus
 }

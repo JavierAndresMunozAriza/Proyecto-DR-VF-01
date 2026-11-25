@@ -24,11 +24,11 @@ LOG_MODULE_DECLARE(app, LOG_LEVEL_INF);
 void app_sync_load_stored_fence(struct app *app)
 {
 	const int rc = fence_manager_load(&app->fences);
+	fence_codec_header_t info;
 
-	if (rc == FENCE_MANAGER_OK) {
-		LOG_INF("Stored fence loaded: id %u version %u",
-			(unsigned int)app->fences.fence_id,
-			(unsigned int)app->fences.fence_version);
+	if (rc == FENCE_MANAGER_OK && fence_manager_info(&app->fences, &info)) {
+		LOG_INF("Stored fence loaded: id %u version %u", (unsigned int)info.fence_id,
+			(unsigned int)info.fence_version);
 		app_dispatch(app, APP_EVENT_FENCE_LOADED);
 	} else if (rc == FENCE_MANAGER_NOTHING_STORED) {
 		LOG_INF("No stored fence");
@@ -42,9 +42,9 @@ static void apply_downloaded_fence(struct app *app)
 {
 	uint8_t blob[FENCE_CODEC_MAX_SIZE];
 	size_t len = 0;
+	fence_codec_header_t info = { 0, 0, 0 };
 	int rc;
 	int status;
-	uint32_t version;
 
 	/* The demo fence is in use: the downloaded one comes again after the demo. */
 	if (app->state == APP_STATE_DEMO)
@@ -61,12 +61,13 @@ static void apply_downloaded_fence(struct app *app)
 	}
 	/* A repeated download of the active fence counts as applied. */
 	status = rc == FENCE_MANAGER_ALREADY_ACTIVE ? FENCE_MANAGER_OK : rc;
-	version = status == FENCE_MANAGER_OK ? app->fences.fence_version : 0;
+	if (status == FENCE_MANAGER_OK)
+		(void)fence_manager_info(&app->fences, &info);
 
 	if (rc == FENCE_MANAGER_OK) {
 		LOG_INF("New fence applied: id %u version %u, %u vertices",
-			(unsigned int)app->fences.fence_id, (unsigned int)version,
-			(unsigned int)app->fences.fence.num_vertices);
+			(unsigned int)info.fence_id, (unsigned int)info.fence_version,
+			(unsigned int)info.num_vertices);
 		/* The old fence's last result does not describe the new one. */
 		app->has_result = false;
 		app_dispatch(app, APP_EVENT_FENCE_UPDATED);
@@ -74,17 +75,19 @@ static void apply_downloaded_fence(struct app *app)
 		LOG_WRN("Downloaded fence refused: %d", rc);
 	}
 
-	if (cloud_sync_post_report(blob, len, version, status) != 0)
+	if (cloud_sync_post_report(blob, len, info.fence_version, status) != 0)
 		LOG_WRN("The report of the fence could not be queued");
 }
 
 static telemetry_t build_report(const struct app *app)
 {
 	const bool monitoring = app->state == APP_STATE_MONITORING;
+	fence_codec_header_t info = { 0, 0, 0 };
+	const bool has_fence = fence_manager_info(&app->fences, &info);
 	const telemetry_t report = {
 		.state = app->state,
-		.fence_id = app->fences.fence_id,
-		.fence_version = app->fences.fence_version,
+		.fence_id = has_fence ? info.fence_id : 0,
+		.fence_version = has_fence ? info.fence_version : 0,
 		.has_inside = monitoring && app->has_result,
 		.inside = app->inside,
 		.has_distance = monitoring && app->has_result,
@@ -105,11 +108,13 @@ static void report_telemetry(struct app *app)
 		.heartbeat_ticks = HEARTBEAT_TICKS,
 		.min_interval_ticks = MIN_INTERVAL_TICKS,
 	};
-	const telemetry_t report = build_report(app);
+	telemetry_t report;
 
 	/* The demo positions are simulated: never report them. */
 	if (!IS_ENABLED(CONFIG_DRVF_CLOUD) || app->state == APP_STATE_DEMO)
 		return;
+
+	report = build_report(app);
 
 	if (telemetry_due(&app->telemetry_policy, &config, &report, app->tick) &&
 	    cloud_sync_post_telemetry(&report) != 0)

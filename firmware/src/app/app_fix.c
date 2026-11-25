@@ -38,17 +38,16 @@ int app_use_square_fence(struct app *app, const geopoint_t *center)
 void app_evaluate_point(struct app *app, const char *source, const geopoint_t *point,
 			float accuracy_m)
 {
-	const geofence_t *fence = fence_manager_fence(&app->fences);
 	geofence_result_t result;
 	timing_stamp_t start;
 	uint32_t check_us;
 	int ret;
 
-	if (fence == NULL)
+	if (!fence_manager_has_fence(&app->fences))
 		return;
 
 	start = timing_now();
-	ret = geofence_check(point, fence, &result);
+	ret = fence_manager_check(&app->fences, point, &result);
 	check_us = timing_elapsed_us(start);
 
 	if (ret != GEOFENCE_SUCCESS) {

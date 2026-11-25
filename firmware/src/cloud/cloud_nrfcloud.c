@@ -74,6 +74,7 @@ LOG_MODULE_REGISTER(cloud, LOG_LEVEL_INF);
 /* Modem library, LTE state */
 static K_SEM_DEFINE(registered_sem, 0, 1);
 static bool handlers_registered;
+static atomic_t current_rat; /* enum cloud_rat, updated by the LTE event handler */
 
 /* Cloud state */
 static bool stack_ready;
@@ -116,11 +117,19 @@ static bool is_registered(enum lte_lc_nw_reg_status status)
 
 static void lte_event_handler(const struct lte_lc_evt *const evt)
 {
-	if (evt->type != LTE_LC_EVT_NW_REG_STATUS)
-		return;
-
-	if (is_registered(evt->nw_reg_status))
-		k_sem_give(&registered_sem);
+	switch (evt->type) {
+	case LTE_LC_EVT_NW_REG_STATUS:
+		if (is_registered(evt->nw_reg_status))
+			k_sem_give(&registered_sem);
+		break;
+	case LTE_LC_EVT_LTE_MODE_UPDATE:
+		atomic_set(&current_rat, evt->lte_mode == LTE_LC_LTE_MODE_LTEM ? CLOUD_RAT_LTE_M :
+					 evt->lte_mode == LTE_LC_LTE_MODE_NBIOT ? CLOUD_RAT_NB_IOT :
+										   CLOUD_RAT_UNKNOWN);
+		break;
+	default:
+		break;
+	}
 }
 
 /* The GNSS adapter normally started the modem library; do not repeat it. */
@@ -134,7 +143,7 @@ static int modem_ensure_init(void)
 	err = nrf_modem_lib_init();
 	if (err != 0) {
 		LOG_ERR("Modem library init failed: %d", err);
-		return err < 0 ? err : -EIO;
+		return to_errno(err);
 	}
 
 	return 0;
@@ -154,7 +163,7 @@ static int lte_attach(void)
 	err = lte_lc_func_mode_set(LTE_LC_FUNC_MODE_ACTIVATE_LTE);
 	if (err != 0) {
 		LOG_ERR("Could not activate LTE: %d", err);
-		return err < 0 ? err : -EIO;
+		return to_errno(err);
 	}
 
 	k_sem_reset(&registered_sem);
@@ -554,6 +563,7 @@ int cloud_link_info(cloud_link_info_t *info)
 		return -EINVAL;
 
 	memset(info, 0, sizeof(*info));
+	info->rat = (enum cloud_rat)atomic_get(&current_rat);
 
 	if (modem_info_get_rsrp(&rsrp) == 0) {
 		info->has_rsrp = true;
@@ -565,7 +575,8 @@ int cloud_link_info(cloud_link_info_t *info)
 
 	read_operator(info->operator_id, sizeof(info->operator_id));
 
-	if (!info->has_rsrp && info->band == 0 && info->operator_id[0] == '\0')
+	if (!info->has_rsrp && info->band == 0 && info->operator_id[0] == '\0' &&
+	    info->rat == CLOUD_RAT_UNKNOWN)
 		return -ENODATA;
 
 	return 0;

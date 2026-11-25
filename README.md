@@ -37,18 +37,22 @@ The firmware is a small state machine around a pure-C geofence engine. Hardware 
 
 ```mermaid
 stateDiagram-v2
-    [*] --> SEARCHING
-    SEARCHING --> MONITORING: first accurate fix creates the fence
+    [*] --> NO_FENCE
+    NO_FENCE --> MONITORING: first accurate fix creates the fence
+    NO_FENCE --> WAIT_FIX: a stored or downloaded fence is loaded
+    WAIT_FIX --> MONITORING: first fix
     MONITORING --> FIX_LOST: no fix for 10 s
     FIX_LOST --> MONITORING: fix arrives
-    SEARCHING --> FAULT: GNSS failed
+    NO_FENCE --> FAULT: GNSS failed
+    WAIT_FIX --> FAULT: GNSS failed
     MONITORING --> FAULT: GNSS failed
     FIX_LOST --> FAULT: GNSS failed
-    SEARCHING --> DEMO: button
+    NO_FENCE --> DEMO: button
+    WAIT_FIX --> DEMO: button
     MONITORING --> DEMO: button
     FIX_LOST --> DEMO: button
     FAULT --> DEMO: button
-    DEMO --> SEARCHING: button
+    DEMO --> NO_FENCE: button
 ```
 
 On the Thingy the RGB LED shows the distance to the fence edge: green at 20 m or more, shifting to red near the edge, blinking red outside, blinking magenta if the signal is lost so that a lost signal is not mistaken for "outside". Button 1 plays a simulated walk so the alert can be shown indoors.
