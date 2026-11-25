@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DR-VF-01 - Geocerca</title>
+<link rel="stylesheet" href="vendor/leaflet.css">
+<style>
+  :root { color-scheme: light dark; --accent: #1b7f4c; --bad: #b3261e; --muted: #667; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 15px/1.4 system-ui, sans-serif; display: grid;
+         grid-template-columns: 320px 1fr; height: 100vh; }
+  aside { padding: 16px; overflow-y: auto; border-right: 1px solid #8884; }
+  h1 { font-size: 18px; margin: 0 0 4px; }
+  p.hint { color: var(--muted); margin: 0 0 12px; }
+  #map { height: 100%; }
+  button { font: inherit; padding: 8px 12px; margin: 0 6px 6px 0; border-radius: 6px;
+           border: 1px solid #8886; background: Canvas; color: CanvasText; cursor: pointer; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; margin: 12px 0; }
+  dt { color: var(--muted); }
+  dd { margin: 0; font-variant-numeric: tabular-nums; }
+  #message { min-height: 3em; font-weight: 600; }
+  #message.ok { color: var(--accent); }
+  #message.error { color: var(--bad); }
+  .vertex { width: 16px; height: 16px; border-radius: 50%; background: var(--accent);
+            border: 2px solid #fff; box-shadow: 0 0 0 1px #0006; }
+  @media (max-width: 720px) { body { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+                              #map { min-height: 55vh; } }
+</style>
+</head>
+<body>
+<aside>
+  <h1>Geocerca del collar</h1>
+  <p class="hint">Toca el mapa para agregar vertices. Arrastra un vertice para moverlo; clic derecho
+    (o mantener presionado) para borrarlo.</p>
+  <button id="undo" type="button">Deshacer</button>
+  <button id="clear" type="button">Borrar todo</button>
+  <dl>
+    <dt>Vertices</dt><dd id="count">0</dd>
+    <dt>Area</dt><dd id="area">-</dd>
+    <dt>Tamano</dt><dd id="size">-</dd>
+  </dl>
+  <div id="message" role="status"></div>
+  <button id="send" type="button" class="primary" disabled>Enviar a la nube</button>
+  <h2 style="font-size:15px;margin:18px 0 6px">Ultimo reporte del collar</h2>
+  <dl>
+    <dt>Version de la cerca</dt><dd id="rep-version">-</dd>
+    <dt>Resultado</dt><dd id="rep-status">-</dd>
+  </dl>
+  <p class="hint" id="rep-note"></p>
+</aside>
+<div id="map"></div>
+<script src="vendor/leaflet.js"></script>
+<script>
+"use strict";
+const DEFAULT_CENTER = [4.6097, -74.0817];
+const DEFAULT_ZOOM = 17;
+const VALIDATE_DELAY_MS = 300;
+const STATUS_POLL_MS = 10000;
+
+const map = L.map("map").setView(DEFAULT_CENTER, DEFAULT_ZOOM);
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  maxZoom: 19,
+  attribution: "&copy; OpenStreetMap",
+}).addTo(map);
+if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(
+    (pos) => map.setView([pos.coords.latitude, pos.coords.longitude], DEFAULT_ZOOM),
+    () => {});
+}
+
+const markers = [];
+const polygon = L.polygon([], { color: "#1b7f4c", weight: 3 }).addTo(map);
+let validateTimer = null;
+let validFence = false;
+
+const el = (id) => document.getElementById(id);
+
+function setMessage(text, kind) {
+  const m = el("message");
+  m.textContent = text;
+  m.className = kind || "";
+}
+
+function vertices() {
+  return markers.map((m) => [m.getLatLng().lat, m.getLatLng().lng]);
+}
+
+function addVertex(latlng) {
+  const marker = L.marker(latlng, {
+    draggable: true,
+    icon: L.divIcon({ className: "", html: '<div class="vertex"></div>', iconSize: [16, 16] }),
+  }).addTo(map);
+  marker.on("drag", redraw);
+  marker.on("dragend", scheduleValidation);
+  marker.on("contextmenu", () => { removeMarker(marker); });
+  markers.push(marker);
+  redraw();
+  scheduleValidation();
+}
+
+function removeMarker(marker) {
+  map.removeLayer(marker);
+  markers.splice(markers.indexOf(marker), 1);
+  redraw();
+  scheduleValidation();
+}
+
+function redraw() {
+  polygon.setLatLngs(vertices());
+  el("count").textContent = String(markers.length);
+}
+
+async function postFence(dryRun) {
+  const response = await fetch("/api/fence", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-Portal": "1" },
+    body: JSON.stringify({ vertices: vertices(), dry_run: dryRun }),
+  });
+  return { status: response.status, body: await response.json() };
+}
+
+function scheduleValidation() {
+  clearTimeout(validateTimer);
+  validFence = false;
+  el("send").disabled = true;
+  el("area").textContent = "-";
+  el("size").textContent = "-";
+  if (markers.length < 3) {
+    setMessage(markers.length ? "Agrega al menos 3 vertices." : "", "");
+    return;
+  }
+  validateTimer = setTimeout(validate, VALIDATE_DELAY_MS);
+}
+
+async function validate() {
+  try {
+    const { body } = await postFence(true);
+    if (body.ok) {
+      validFence = true;
+      el("area").textContent = body.area_m2.toLocaleString("es-CO") + " m2";
+      el("size").textContent = body.bytes + " bytes";
+      setMessage("La cerca es valida.", "ok");
+    } else {
+      setMessage(explain(body), "error");
+    }
+    el("send").disabled = !validFence;
+  } catch (err) {
+    setMessage("No se pudo hablar con el servidor local.", "error");
+  }
+}
+
+const EXPLANATIONS = {
+  NOT_SIMPLE: "Los lados se cruzan o se tocan. Ajusta los vertices.",
+  AREA: "La cerca es demasiado pequena (minimo 100 m2).",
+  EDGE_TOO_LONG: "Un lado mide mas de 3.6 km. Agrega vertices intermedios.",
+  VERTEX_COUNT: "La cerca necesita entre 3 y 128 vertices.",
+  RANGE: "Un vertice esta fuera del rango permitido (latitud maxima 85 grados).",
+};
+
+function explain(body) {
+  return EXPLANATIONS[body.code] || body.error || "La cerca no es valida.";
+}
+
+async function send() {
+  el("send").disabled = true;
+  setMessage("Enviando...", "");
+  try {
+    const { body } = await postFence(false);
+    if (body.ok && body.sent) {
+      setMessage("Enviada (version " + body.version + "). El collar la recibe en su proxima consulta.", "ok");
+    } else {
+      setMessage(explain(body), "error");
+    }
+  } catch (err) {
+    setMessage("No se pudo hablar con el servidor local.", "error");
+  }
+  el("send").disabled = !validFence;
+}
+
+async function pollStatus() {
+  try {
+    const response = await fetch("/api/status");
+    const body = await response.json();
+    if (!body.configured) {
+      el("rep-note").textContent = "Sin credenciales de nRF Cloud: solo se valida, no se envia.";
+    } else if (body.error) {
+      el("rep-note").textContent = body.error;
+    } else {
+      const r = body.reported || {};
+      el("rep-version").textContent = r.fence_version === undefined ? "-" : String(r.fence_version);
+      el("rep-status").textContent = r.fence_status === undefined ? "-"
+        : (r.fence_status === 0 ? "aplicada" : "rechazada (codigo " + r.fence_status + ")");
+      el("rep-note").textContent = "";
+    }
+  } catch (err) {
+    el("rep-note").textContent = "No se pudo leer el estado.";
+  }
+}
+
+map.on("click", (e) => addVertex(e.latlng));
+el("undo").addEventListener("click", () => { if (markers.length) removeMarker(markers[markers.length - 1]); });
+el("clear").addEventListener("click", () => { while (markers.length) removeMarker(markers[0]); });
+el("send").addEventListener("click", send);
+pollStatus();
+setInterval(pollStatus, STATUS_POLL_MS);
+</script>
+</body>
+</html>
