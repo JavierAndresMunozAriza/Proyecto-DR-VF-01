@@ -29,7 +29,7 @@ SOURCES = $(SRCDIR)/geofence.c
 
 # The other pure-C modules: `make cross-check` compiles them too, for the host and both targets.
 PURE_MODULES = ../alert/alert_color.c ../fence/fence_square.c ../app/app_fsm.c \
-	../demo/demo_route.c ../bench/bench_polygon.c
+	../demo/demo_route.c ../bench/bench_polygon.c ../fence_codec/fence_codec.c
 HEADERS = $(INCDIR)/geofence.h
 TEST_SOURCES = $(TESTDIR)/test_geofence.c
 
