@@ -25,6 +25,18 @@ El sistema basa su funcionamiento en la integración de tecnologías de ultra ba
   * Implementación de modelos TinyML en la IMU para clasificación del comportamiento animal (pastoreo, descanso, huida). Con el LSM6DS3TR-C no hay MLC: exigiría el LSM6DSOX o correr el modelo en el ESP32-S3.
   * Generador de pulsos de alto voltaje real con aislamiento de grado industrial y encapsulado con certificación IP67.
 
+**Hito de diseño (decidido el 2026-11-25):** la placa completa, con ESP32-S3, módem celular y SIM, se manda a fabricar **a finales de mayo de 2027**, con el mejor diseño posible y funcional. La decisión del módem, de la antena celular y del tamaño de la batería sale de las pruebas de campo con el Thingy:91 X y su SIM (`docs/poc-thingy91x/PRUEBAS_LTE.md`), donde la geocerca dibujada en un portal llega al collar por LTE-M sin que el usuario esté cerca.
+
+| Fecha | Hito | Decisión de hardware que alimenta |
+|---|---|---|
+| Dic 2026 | Código de la geocerca por la nube probado en casa con el Thingy:91 X | — |
+| Ene 2027 | Campaña de campo en la finca (`PRUEBAS_LTE.md`) | Si hay LTE-M, NB-IoT o solo Cat-1: **BG95-M3** o **A7670SA** |
+| Feb 2027 | Elegir módem y servicio en la nube; evaluar ESP32-S3 con el módem | Bandas, antena celular, portaSIM o eSIM, UART2 para el módem |
+| Mar–Abr 2027 | Revisión 2 en Altium: módem, SIM, antena, alimentación para picos de 2 A, hallazgos RF pendientes, presupuesto de energía con datos medidos | Batería y panel solar |
+| May 2027 | Auditorías finales, Gerbers y pedido de la placa | — |
+
+*Nota sobre las fases:* los documentos usan "Fase 2" con significados distintos (aquí es el gestor solar y la IMU; en el informe técnico, la etapa con módem celular). La versión de la placa con módem celular y SIM es la que se fabrica en mayo de 2027; unificar los nombres de las fases está pendiente.
+
 ---
 
 ## 2. Resumen de Requerimientos

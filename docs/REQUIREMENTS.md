@@ -16,6 +16,7 @@
 | **RF-04** | Telemetría LoRa en banda 915 MHz | Envío de paquetes formateados (Lat, Lon, Battery %, Satellites, Fence Status) | Fase 1 | Captura de paquetes con receptor LoRa | `Task_LoRaTX` (Core 0), módulo LoRa DX-LR30-900M22S (SPI GPIO10 a 13; BUSY 14, DIO1 6, NRESET 5, RXEN 42, TXEN 47), antena LoRa de 8 cm y conector u.FL |
 | **RF-05** | Monitoreo de porcentaje de batería | Lectura vía bus I2C con actualización constante | Fase 2 | Comparación con multímetro de precisión | `Task_PowerMgmt` (Core 0), MAX17048 Fuel Gauge (I2C GPIO8/9, dirección 0x36, sobre la batería). Estado de carga: CN3791 CHRG (GPIO41); la salida de estado del TP4056 no tiene GPIO asignado (**POR DECIDIR**) |
 | **RF-06** | Despertar desde Deep Sleep por movimiento (*wake-on-motion*) | Por definir (fila añadida el 31/10/2026, sin métrica aprobada) | Fase 2 | Por definir | **Pendiente:** IMU `IMU_INT1` (GPIO4, despierta de Deep Sleep). IMU LSM6DS3TR-C del docente |
+| **RF-07** | Actualización remota de la geocerca por red celular (**propuesto el 2026-11-25, sin aprobar**) | Una cerca dibujada en el portal llega al collar sin que el usuario esté cerca, se valida, se guarda en flash y se aplica; latencia máxima igual al intervalo de consulta más 30 s (propuesta); una cerca inválida se rechaza y se informa | Fase 2 (placa con módem) | Pruebas L3 a L5 de `docs/poc-thingy91x/PRUEBAS_LTE.md` | `fence_codec`, `fence_manager`, `cloud_sync`, `tools/fence_portal/`, formato en [PROTOCOLO_CERCA.md](firmware_docs/PROTOCOLO_CERCA.md) |
 
 ## 2. Requerimientos No Funcionales (RNF) y Sistema en Tiempo Real
 
@@ -43,6 +44,7 @@ Estado de cada requerimiento según la prueba de concepto (PoC) en la Nordic Thi
 | **RF-04** | No cubierto | — | La PoC no usa LoRa |
 | **RF-05** | No cubierto | — | La PoC no usa el MAX17048 |
 | **RF-06** | No cubierto | — | La PoC no usa la IMU ni el sueño profundo |
+| **RF-07** | Parcial (propuesto) | Pruebas de host | El código del codec, del gestor, de la telemetría y del portal pasa sus pruebas en el PC y el firmware con la nube compila (`./build.sh cloud`). No se ha probado en la placa ni con una cuenta de nube |
 | **RNF-01** a **RNF-04** | No verificado | — | Autonomía, determinismo en Zephyr (sin traza de latencias), consumo en sueño profundo y fiabilidad mecánica no se midieron |
 | **RNF-05** a **RNF-09** | No verificado | — | Siguen pendientes de definición y verificación |
 
