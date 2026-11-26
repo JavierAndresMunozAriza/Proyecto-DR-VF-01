@@ -84,10 +84,6 @@
   \txt{#1+0.35}{5.6}{6.0}{\sz{7.5}{9}\bfseries}{amber}{ADAPTADORES}
   \txt{#1+0.35}{6.0}{6.0}{\sz{12}{14}\bfseries}{cream}{#2}
   \txt{#1+0.35}{6.6}{6.0}{\sz{9}{11.5}}{cream}{#3}}
-\newcommand{\bccard}[5]{\card{#1}{3.05}{6.7}{3.85}{carddark}{linedark}
-  \fill[amber] (#1,3.05) rectangle ++(6.7,0.07);
-  \txt{#1+0.35}{3.4}{6.0}{\sz{12}{14}\bfseries}{amber}{#2}
-  \txt{#1+0.35}{4.05}{6.0}{\sz{8.5}{10.5}}{cream}{#3\par\vspace{6pt}#4\par\vspace{6pt}#5}}
 \newcommand{\nabc}[5]{\card{#1}{2.5}{3.15}{4.2}{amberlight}{navy}
   \txt{#1+0.3}{2.65}{2.6}{\hfont\sz{34}{36}}{navy}{#2}
   \txt{#1+0.3}{4.15}{2.6}{\sz{9}{11}\bfseries}{navy}{#3}
@@ -273,13 +269,14 @@
 % ------------------------------------------------------------------ 9 · benefit and competition
 \begin{frame}[plain]\slidebegin
   \bgrect{navy}
-  \eyebrow{amber}{B · BENEFICIO FRENTE AL COSTO · C · COMPETENCIA}
-  \slidetitle{cream}{Cumple los 7 días sin sol y cambia el alambre por un polígono en software}
-  \bccard{1.1}{Beneficio frente al costo}{Sin sol, con 1200 mAh: cumple los 7 días exigidos; de 40 a 190 estimados con uso normal}{124 µA en sueño, con recarga solar MPPT}{Precio sugerido del modelo básico: \$149.99}
-  \bccard{8.2}{Cómo se resuelve hoy}{Cercas físicas: alambre y mantenimiento del perímetro}{Vigilancia con personal en el campo}{Collares comerciales de cerca virtual}
-  \fill[amber] (1.1,7.2) rectangle ++(0.07,0.6);
-  \txt{1.4}{7.2}{13.4}{\sz{9}{11.5}\bfseries}{cream}{Ventaja del diseño: el límite se cambia por software, el collar se recarga solo y todo el diseño está documentado de punta a punta.}
-  \footer{steel}{Fuente: nota de aplicación, sección 3 · datasheet comercial (precio sugerido)}{}
+  \eyebrow{amber}{B · BENEFICIO FRENTE AL COSTO}
+  \slidetitle{cream}{Cumple los 7 días sin sol con margen y duerme a solo 124 µA}
+  \bigstat{1.1}{3.2}{4.3}{7 días}{sin sol, con 1200 mAh: el requisito RNF-01 se cumple por diseño}{cream}
+  \bigstat{5.85}{3.2}{4.3}{40–190}{días de autonomía estimada con uso normal y sin sol}{cream}
+  \bigstat{10.6}{3.2}{4.3}{124 µA}{en sueño, calculados, con recarga solar MPPT}{cream}
+  \fill[amber] (1.1,6.55) rectangle ++(0.09,0.7);
+  \txt{1.45}{6.6}{12.5}{\sz{13}{16}\bfseries}{cream}{Precio sugerido del modelo básico: \$149.99}
+  \footer{steel}{Fuente: nota de aplicación, secciones 3.4 y 3.5 · datasheet comercial (precio sugerido)}{}
 \slideend\end{frame}
 
 % ------------------------------------------------------------------ 10 · NABC close

@@ -45,7 +45,7 @@ Pitch de 11 diapositivas y unos 5 minutos y medio sobre la PCB del DR-VF-01, con
 
 ![Diapositiva 9](slides/slide-09.png)
 
-### 10. B · Beneficio y C · Competencia
+### 10. B · Beneficio frente al costo
 
 ![Diapositiva 10](slides/slide-10.png)
 
@@ -66,5 +66,5 @@ Pitch de 11 diapositivas y unos 5 minutos y medio sobre la PCB del DR-VF-01, con
 | 7 | A · Decisión 3: radio y layout | 3:05 | Con solo dos capas no hay impedancia controlada: la línea de 50 ohmios es un microstrip de 53 mils sobre FR4 de 31,5, con el plano de masa continuo de la cara inferior que se ve a la derecha; de 46 a 54 ohmios con la tolerancia. Los criterios de ubicación separan el parche GNSS del Wi-Fi y del LoRa y alejan el lazo del cargador solar. Cada tipo de señal tiene su clase de red y su ancho de pista. |
 | 8 | A · Decisión 4: firmware | 3:40 | Un solo código base sobre Zephyr para dos placas. Se comparte el motor de geocerca, en C puro, la máquina de estados, la alerta y el registro. Cada placa aporta sus adaptadores. Cambiar de placa es cambiar de adaptador, no de algoritmo. |
 | 9 | A · Validación en prototipo | 4:05 | Validé el algoritmo y la cadena GNSS en un prototipo con el mismo código del motor. 350 microsegundos por llamada con cuatro vértices; los 50 milisegundos del requisito se alcanzan con unos 833 vértices. Caminando a cielo abierto, el receptor estimó una exactitud de 2,0 a 2,6 metros en 79 fixes. Un fix es una posición que el receptor calcula a partir de los satélites. El primer fix en frío tardó entre 54 y 136 segundos. La exactitud es la que estima el receptor, no un error medido contra una referencia. |
-| 10 | B · Beneficio y C · Competencia | 4:35 | Sin sol, con 1200 miliamperios hora, el collar cumple los siete días exigidos y se estima entre 40 y 190 según el uso; 124 microamperios en sueño y recarga solar; precio sugerido del modelo básico: 149,99. Hoy el problema se resuelve con cercas físicas, personal en el campo o collares comerciales. La ventaja: el límite es un polígono que se cambia por software. Antes de presentar: el repositorio no tiene nombres ni precios de competidores; añade uno o dos con su fuente si el docente los pide, y confirma la moneda del precio. |
+| 10 | B · Beneficio frente al costo | 4:35 | Sin sol, con 1200 miliamperios hora, el collar cumple el requisito de siete días y se estima entre 40 y 190 según el uso. En sueño consume unos 124 microamperios, calculados, y se recarga con el panel solar. El precio sugerido del modelo básico es 149,99. |
 | 11 | Propuesta de valor NABC | 5:15 | Cierro con la propuesta de valor en cuatro frases. Necesidad: vigilar el ganado en grandes extensiones sin alambre ni red eléctrica. Enfoque: GNSS, ESP32-S3 y LoRa, con la batería central y dos cargadores. Beneficio: 124 microamperios en sueño y siete días sin sol exigidos. Competencia: frente a cercas físicas y vigilancia, el límite es un polígono en software. Gracias. |
