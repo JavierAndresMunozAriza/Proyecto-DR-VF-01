@@ -81,7 +81,7 @@ Details: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), [`hardware/BOM.md`](har
 | [Technical Report](docs/DR-VF-01_Memoria_Tecnica.pdf) (Spanish) | The whole product: requirements, architecture, hardware, firmware, mechanics, compliance |
 | Engineering Report, Thingy:91 X proof of concept ([ES](docs/poc-thingy91x/DR-VF-01_Engineering_Report_PoC_es.pdf), [EN](docs/poc-thingy91x/DR-VF-01_Engineering_Report_PoC_en.pdf)) | Acceptance criteria, method, measured results, compliance matrix and limitations of the prototype |
 | [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) | Requirements (RF / RNF) with traceability and verification status |
-| PCB application note (Spanish, draft; sources in [`reports/application_note_pcb/`](reports/application_note_pcb/)) | Design theory, layout, verification and a compliance table of the PCB against the requirements; designed, not fabricated |
+| [PCB application note](docs/DR-VF-01_Nota_de_Aplicacion_PCB.pdf) (Spanish, rev. 1.0; sources in [`reports/application_note_pcb/`](reports/application_note_pcb/)) | Design theory, layout, verification and a compliance table of the PCB against the requirements; designed, not fabricated |
 | [`hardware/pcb/`](hardware/pcb/) | Schematics, Draftsman drawing, BOM and Gerbers of the PCB |
 | [`docs/design-reviews/`](docs/design-reviews/) | Independent reviews of the design (RF, BOM, power, MCU, firmware) with open findings |
 

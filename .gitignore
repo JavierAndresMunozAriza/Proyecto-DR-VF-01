@@ -22,6 +22,7 @@ reports/output/
 !DR-VF-01_Memoria_Tecnica.pdf
 !DR-VF-01_Engineering_Report_PoC_es.pdf
 !DR-VF-01_Engineering_Report_PoC_en.pdf
+!DR-VF-01_Nota_de_Aplicacion_PCB.pdf
 # PCB design outputs (schematics and drawing), no Altium sources
 !hardware/pcb/*.pdf
 # Firmware / Compiladores (Binarios y Build)
