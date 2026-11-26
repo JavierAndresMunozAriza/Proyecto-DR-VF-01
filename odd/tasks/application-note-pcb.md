@@ -15,7 +15,8 @@ Objective: a professional application note, modeled on the TI/Infineon reference
 - [x] T3 (S1) Sections 3 and 4 (design theory, PCB layout). Inline.
 - [x] T4 (S3, S5) Sections 5 to 7 (firmware, verification, compliance table 2). Inline.
 - [x] T5 (S1) Sections 8 and 9 (limitations, files), `check_numbers.py` (88 checks, 0 failed, mutation-tested), compile (19 pages, 0 overfull), visual check. Inline.
-- [ ] T6 (S1) Pending from the user: ERC report and 3D views; then update sections 2, 4 and 9.
+- [x] T6 (S1) 3D views added (section 4, figure 7; section 9 table) from `hardware/altium_project/PCB_Project/`. ERC report NOT exported: left as pending in section 6. Inline.
+- [x] T8 (S3) RF-07 (proposed 2026-11-25) added to tables 1 and 2 as `Sin métrica definida`, 16 rows; checker updated to 16 (90 checks, 0 failed). Inline.
 - [ ] T7 (S6) English version.
 
 Route: all inline (no Writer trigger: sequential sections that share one data file).
@@ -28,3 +29,4 @@ Route: all inline (no Writer trigger: sequential sections that share one data fi
 - L5 (2026-11-22): the Altium BOM names the buzzer PS1240P02BT (BZ1) while `docs/REQUIREMENTS.md` RF-03 names PKMCS0909E4000-R1; the note follows the Altium BOM and flags the mismatch.
 - L6 (2026-11-22): the schematic (sheet 1, read as an image) differs from `docs/ARCHITECTURE.md` 2.2/2.3: MPPT divider is R8 390 k + R9 10 k over R10 100 k (6.03 V), not 402 k / 100 k; sense resistor R12 is 0.47 ohm (255 mA), not 0.12 ohm (1 A); TP4056 PROG is R5 1.8 k + R6 100 ohm = 1.9 k. The note follows the schematic.
 - L7: Draft Rev. 0.9 complete. Waiting for the user: ERC report and 3D views (sections 2, 4, 9), decisions on RF-01, RF-02, BOM-02/03/04, and review of the draft PDF.
+- L8 (2026-11-26): user: "nada, no cambie nada" about the Nov-26 mtimes of `PCB.PcbDoc` and the ESP32-S3 sheet (taken as copy/open dates, so the 2026-11-15 DRC is kept). User asked to clean the Altium folder and complete the note. Folder flattened to `hardware/altium_project/PCB_Project/` (gitignored, 15 MB; removed old stub, History, logs, previews and a 249 MB zip). Still open: ERC report, decisions RF-01/RF-02/BOM-02..04, English version.

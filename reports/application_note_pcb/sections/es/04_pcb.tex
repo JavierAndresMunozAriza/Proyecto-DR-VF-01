@@ -8,6 +8,27 @@ recomendado del conector USB-C de 16 pines), con un contorno de \bBoardWidth{} $
 referencia de las líneas de radiofrecuencia y del USB. Al ser de dos capas, el fabricante no ofrece
 impedancia controlada, y el diseño acepta esa dispersión en líneas cortas.
 
+\subsection{Vistas de la placa}
+
+La figura~\ref{fig:placa3d} muestra la placa terminada en la vista 3D de Altium. La cara superior concentra
+el ESP32-S3 (U5), el módulo GNSS (U6) y el LoRa (U7) con sus conectores u.FL (J4, J5), el conector USB-C (J1),
+el zumbador (BZ1) y los pulsadores BOOT y EN. La cara inferior lleva el vertido de masa continuo que sirve de
+plano de referencia, con vías de unión y puntos de prueba.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[t]{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth,height=0.55\textheight,keepaspectratio]{figures/pcb_3d_top.png}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth,height=0.55\textheight,keepaspectratio]{figures/pcb_3d_bottom.png}
+\end{minipage}
+\caption{Vista 3D de Altium: cara superior (izquierda) y cara inferior (derecha), de \bBoardWidth{} $\times$ \bBoardHeight~mm.}
+\label{fig:placa3d}
+\end{figure}
+
 \subsection{Clases de red y reglas cargadas en Altium}
 
 \begin{table}[H]

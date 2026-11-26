@@ -106,8 +106,8 @@ check("deep-sleep margin", num(d["cIlimit"]) - num(d["cIsleep"]) == num(d["cMarg
 
 # --- Requirements: table 1 matches docs/REQUIREMENTS.md and table 2 covers every one ---
 req = (REPO / "docs/REQUIREMENTS.md").read_text()
-ids = re.findall(r"^\| \*\*(R(?:F|NF)-\d\d)\*\* \|", req, re.M)[:15]
-check("REQUIREMENTS.md has 15 requirements", len(ids) == 15, str(len(ids)))
+ids = re.findall(r"^\| \*\*(R(?:F|NF)-\d\d)\*\* \|", req, re.M)[:16]
+check("REQUIREMENTS.md has 16 requirements", len(ids) == 16, str(len(ids)))
 sec1 = (NOTE / "sections/es/01_requerimientos.tex").read_text()
 sec7 = (NOTE / "sections/es/07_cumplimiento.tex").read_text()
 for i in ids:
@@ -124,9 +124,9 @@ for i in ids:
             break
     else:
         check(f"{i} has a known status", False, st)
-check("every requirement has a status", sum(status.values()) == 15, str(status))
-check("reading paragraph: 6 by design, 1 PoC, 3 open, 3 without metric, 2 pending",
-      (status["Cumple por diseño"], status["Medido en PoC"], status["Abierto"], status["Sin métrica definida"], status["Pendiente"]) == (6, 1, 3, 3, 2), str(status))
+check("every requirement has a status", sum(status.values()) == 16, str(status))
+check("reading paragraph: 6 by design, 1 PoC, 3 open, 4 without metric, 2 pending",
+      (status["Cumple por diseño"], status["Medido en PoC"], status["Abierto"], status["Sin métrica definida"], status["Pendiente"]) == (6, 1, 3, 4, 2), str(status))
 
 # --- Thingy figures equal those of the PoC report ---
 pairs = {"pBenchUsFour": "dBenchUsFour", "pBenchMsThousand": "dBenchMsThousand", "pBenchLimitVertices": "dBenchLimitVertices",

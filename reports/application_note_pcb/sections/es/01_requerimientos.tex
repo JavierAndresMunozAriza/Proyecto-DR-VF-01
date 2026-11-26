@@ -20,6 +20,7 @@ RF-03 & Acción disuasiva simulada con optoacoplador & Activación de LED indica
 RF-04 & Telemetría LoRa en banda 915~MHz & Envío de paquetes formateados (Lat, Lon, Battery \%, Satellites, Fence Status) \\ \hline
 RF-05 & Monitoreo de porcentaje de batería & Lectura vía bus I2C con actualización constante \\ \hline
 RF-06 & Despertar desde Deep Sleep por movimiento (\emph{wake-on-motion}) & Por definir (sin métrica aprobada) \\ \hline
+RF-07 & Actualización remota de la geocerca por red celular (propuesto el 2026-11-25, sin aprobar) & Una cerca dibujada en el portal llega al collar, se valida, se guarda en flash y se aplica; latencia máxima igual al intervalo de consulta más 30~s (propuesta); una cerca inválida se rechaza y se informa \\ \hline
 RNF-01 & Autonomía energética con panel solar de 6~V, de 1 a 1.5~W & 7 días de operación en oscuridad total con batería de 1200~mAh \\ \hline
 RNF-02 & Procesamiento determinista en Zephyr RTOS & Ejecución sin bloqueo de tareas críticas \\ \hline
 RNF-03 & Consumo en estado Deep Sleep & $<$ 150~\textmu A total del circuito \\ \hline
