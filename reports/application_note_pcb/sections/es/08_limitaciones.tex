@@ -10,15 +10,15 @@
   \item \textbf{El presupuesto de consumo es calculado} con valores típicos de datasheet, con consumos todavía por sumar. El margen de \cMargin~\textmu A frente al límite de RNF-03 es estrecho.
 \end{itemize}
 
-\subsection{Hallazgos abiertos de las revisiones independientes}
+\subsection{Hallazgos de las revisiones independientes}
 
-Cuatro hallazgos MAJOR siguen sin decisión y se reflejan como \emph{Abierto} en la tabla de cumplimiento.
+Los dos hallazgos MAJOR de la revisión de RF tienen una decisión tomada el 2026-11-26; los de la revisión del BOM siguen sin decisión.
 El texto completo está en \ruta{docs/design-reviews/}.
 \begin{itemize}
-  \item RF-01 (revisión de RF): el perfil LoRa documentado no encaja en una categoría de uso libre en Colombia.
-  \item RF-02 (revisión de RF): la entrada del GNSS puede superar su máximo absoluto, y se bloquea con seguridad, por los transmisores del propio collar; la placa no tiene huella de filtro para corregirlo después.
-  \item BOM-02 y BOM-03 (revisión del BOM): el proyecto de Altium tiene parámetros de fabricante y proveedor equivocados en 25 piezas y no marca las piezas que no se montan (DNP), así que su lista de materiales no sirve para pedir piezas tal cual.
-  \item BOM-04 (revisión del BOM): el módulo ESP32-S3 admite 65~\textdegree C de ambiente, igual al máximo de diseño, y una carcasa sellada al sol lo supera.
+  \item RF-01 (revisión de RF), \emph{resuelto en los documentos}: el perfil LoRa pasa a canales de 500~kHz dentro de 915.25 a 927.75~MHz. El firmware del LoRa aún no existe, y falta la confirmación de la ANE antes de cualquier prueba de campo.
+  \item RF-02 (revisión de RF), \emph{decisión tomada, no aplicada}: la entrada del GNSS puede superar su máximo absoluto por los transmisores del propio collar. Esta PCB no lleva filtro y no se modifica; la siguiente revisión añade una huella de filtro SAW con puente de 0~$\Omega$. Mientras tanto, el firmware no transmite por LoRa ni por Wi-Fi con el GNSS activo, y el aislamiento se mide en la primera placa.
+  \item BOM-02 y BOM-03 (revisión del BOM), \emph{abiertos}: el proyecto de Altium tiene parámetros de fabricante y proveedor equivocados en 25 piezas y no marca las piezas que no se montan (DNP), así que su lista de materiales no sirve para pedir piezas tal cual.
+  \item BOM-04 (revisión del BOM), \emph{abierto}: el módulo ESP32-S3 admite 65~\textdegree C de ambiente, igual al máximo de diseño, y una carcasa sellada al sol lo supera.
 \end{itemize}
 
 \subsection{Documentos por corregir}
@@ -32,7 +32,7 @@ El texto completo está en \ruta{docs/design-reviews/}.
 
 \begin{enumerate}
   \item Exportar el reporte ERC de Altium (no se exportó) y añadirlo a la tabla de verificación.
-  \item Decidir los cuatro hallazgos abiertos y actualizar la tabla de cumplimiento.
+  \item Decidir los hallazgos BOM-02 a BOM-04, aplicar la huella del filtro GNSS en la siguiente revisión de la PCB y confirmar el perfil LoRa con la ANE.
   \item Fabricar la placa y medir: enumeración y programación por USB, fix del GNSS con el parche, rizado del riel de 3.3~V en transmisión, alcance del LoRa y consumo en sueño. Con ello, la tabla de cumplimiento pasa de ``por diseño'' a ``medido en la PCB''.
   \item Portar el firmware al ESP32-S3: backend UART del MAX-M10S, LoRa, IMU y sueño profundo.
 \end{enumerate}

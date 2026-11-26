@@ -67,7 +67,7 @@ Antes de usar el collar por primera vez:
 ### Configuración de Comunicación
 1. Seleccione "Comunicación" en el menú
 2. Configure las opciones de LoRa:
-   - Frecuencia: 915MHz (predeterminado)
+   - Frecuencia: canal de 500 kHz dentro de 915.25-927.75 MHz (predeterminado)
    - Potencia: +22dBm (máximo del transceptor SX1262)
    - Intervalo de reporte: 1-60 minutos
 3. Si dispone de gateway LoRa, ingrese sus credenciales

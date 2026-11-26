@@ -107,10 +107,11 @@ bool geofence_is_point_in_polygon_ray_casting(const geopoint_t* point, const geo
 
 ### 3. Comunicación LoRa
 **Configuración**:
-- Frecuencia: 915MHz (ISM band)
-- Spreading Factor: 12 (máximo rango)
-- Bandwidth: 125kHz
-- Potencia: +22dBm
+- Frecuencia: canal de 500 kHz dentro de 915.25-927.75 MHz (banda de uso libre en Colombia); nunca 915.0 MHz ni un canal centrado por debajo de unos 915.2 MHz
+- Bandwidth: 500kHz (con ancho de banda a 6 dB de al menos 500 kHz, la modulación digital no exige saltos de frecuencia)
+- Spreading Factor: a fijar con el presupuesto de enlace; SF12/BW500 llega a unos -129 dBm (hallazgo RF-01 de la revisión de RF)
+- Potencia: +22dBm conducidos (dentro de los límites de uso libre en 915-928 MHz)
+- Pendiente: confirmar el texto final del Anexo técnico, o pedir confirmación por escrito a la ANE, antes de cualquier prueba de campo. El perfil anterior (915.0 MHz fijo, SF12/BW125, unos 1.3 s por paquete) no encajaba en ninguna categoría de uso libre
 
 **Funcionalidad**:
 - Transmisión de coordenadas cuando se detecta movimiento fuera de geocerca

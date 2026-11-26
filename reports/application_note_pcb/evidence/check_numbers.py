@@ -125,8 +125,8 @@ for i in ids:
     else:
         check(f"{i} has a known status", False, st)
 check("every requirement has a status", sum(status.values()) == 16, str(status))
-check("reading paragraph: 6 by design, 1 PoC, 3 open, 4 without metric, 2 pending",
-      (status["Cumple por diseño"], status["Medido en PoC"], status["Abierto"], status["Sin métrica definida"], status["Pendiente"]) == (6, 1, 3, 4, 2), str(status))
+check("reading paragraph: 7 by design, 1 PoC, 2 open, 4 without metric, 2 pending",
+      (status["Cumple por diseño"], status["Medido en PoC"], status["Abierto"], status["Sin métrica definida"], status["Pendiente"]) == (7, 1, 2, 4, 2), str(status))
 
 # --- Thingy figures equal those of the PoC report ---
 pairs = {"pBenchUsFour": "dBenchUsFour", "pBenchMsThousand": "dBenchMsThousand", "pBenchLimitVertices": "dBenchLimitVertices",

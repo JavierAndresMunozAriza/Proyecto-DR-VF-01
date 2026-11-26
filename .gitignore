@@ -61,3 +61,7 @@ reports/engineering_report_poc/evidence/private/
 # Host test binaries built by the module Makefiles
 firmware/src/*/*_test
 firmware/src/*/*_test_san
+
+# Third-party reference material kept local only
+docs/references/*.pptx
+*:Zone.Identifier

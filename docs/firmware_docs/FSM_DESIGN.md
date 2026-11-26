@@ -153,7 +153,7 @@ stateDiagram-v2
 ### Restricciones Temporales Críticas
 - **WCET PIP Algorithm**: < 50ms (ver `docs/firmware_docs/REAL_TIME_RISKS.md`)
 - **GNSS Fix Timeout**: 30 segundos máximo
-- **LoRa Transmission**: < 2 segundos (SF12, 125kHz)
+- **LoRa Transmission**: < 2 segundos (canal de 500 kHz; con SF12/BW500 el paquete dura unas 3 a 4 veces menos que con SF12/BW125, estimación de la revisión de RF)
 - **Deep Sleep Current**: unos 124 μA calculados en `hardware/POWER_BUDGET.md`; requisito RNF-03: < 150 μA
 
 ### Estrategia de Manejo de Tiempos

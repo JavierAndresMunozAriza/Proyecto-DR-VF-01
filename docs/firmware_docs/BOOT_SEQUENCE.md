@@ -49,9 +49,10 @@ Esta documentación describe la secuencia de arranque del sistema siguiendo los 
    - **Verificación de posicionamiento**: Confirmación de recepción de satélites
 
 3. **Módulo LoRa DX-LR30-900M22S (SX1262)**
-   - Frecuencia: 915MHz (banda ISM americana)
+   - Frecuencia: canal de 500 kHz dentro de 915.25-927.75 MHz (uso libre en Colombia), nunca 915.0 MHz
+   - Ancho de banda: 500 kHz
    - Potencia: +22dBm (máximo del transceptor SX1262)
-   - SF: 12 (para rango extendido)
+   - SF: a fijar con el presupuesto de enlace (ver `docs/firmware_docs/MVP_DEFINITION.md`, sección 3)
    - **Prueba de comunicación**: Envío de mensaje de prueba y confirmación de recepción
 
 4. **MAX17048 (medidor de batería)**

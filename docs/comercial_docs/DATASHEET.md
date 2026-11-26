@@ -12,7 +12,7 @@ El DR-VF-01 es un sistema avanzado de geocercamiento para ganado que combina tec
 
 ### Comunicación de Largo Alcance
 - **Radio LoRa**: módulo DX-LR30-900M22S (SX1262) con alcance objetivo de más de 5 km en campo abierto (sin medir; el vendedor del módulo indica 8 km de distancia de transmisión abierta, dato de marketing)
-- **Frecuencia**: 915MHz (banda ISM americana)
+- **Frecuencia**: canal de 500 kHz dentro de 915.25-927.75 MHz (uso libre en Colombia), pendiente de confirmar con la ANE
 - **Potencia de Transmisión**: +22dBm (máximo del transceptor SX1262)
 - **Protocolo Propietario**: Optimizado para bajo consumo y alta fiabilidad
 

@@ -155,3 +155,8 @@ Scope: RF only. Not re-reported, because these are already known or belong to an
 - Spur candidates: 40 MHz x39 = 1560.000 MHz inside BDS B1I (1559.05-1563.14); 40 MHz x40 = 1600 and 32 MHz x50 = 1600 inside GLONASS L1OF; 12 MHz x130 = 1560.
 - IM p90 migration table: "Absolute max RF input power MAX-M10S: 0 dBm ... HW change: add external SAW filter in front of MAX-M10S for cellular applications."
 
+
+## Resolution of the two MAJOR findings (2026-11-26)
+
+- **RF-01 (LoRa profile): resolved in the documents, not yet in firmware.** The documented profile is now P2P on a 500 kHz channel inside 915.25-927.75 MHz (option 2 above), in `MVP_DEFINITION.md`, `BOOT_SEQUENCE.md`, `DATASHEET.md`, `FSM_DESIGN.md` and `USER_MANUAL.md`. `lora_task.c` does not exist yet. The ANE confirmation recommended above is still pending and is required before any field test.
+- **RF-02 (GNSS input): decision taken, not applied.** The PCB has no filter footprint and the Altium files are not edited from this repository. The SAW plus 0 ohm footprint is recorded in `hardware/pinout.md` for the next board revision. Until then the firmware rule applies (no LoRa or Wi-Fi TX while the GNSS runs).
