@@ -14,3 +14,10 @@ After changing the deck, rebuild and refresh it:
 pdftoppm -r 110 -png main.pdf ../../docs/presentacion/slides/slide
 cp main.pdf ../../docs/presentacion/DR-VF-01_Pitch.pdf
 ```
+
+To also refresh the PowerPoint (one image per slide, speaker notes from the script table in `docs/presentacion/README.md`):
+
+```bash
+python3 -m venv /tmp/venv && /tmp/venv/bin/pip install python-pptx
+/tmp/venv/bin/python make_pptx.py
+```

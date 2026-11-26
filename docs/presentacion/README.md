@@ -2,7 +2,8 @@
 
 Pitch de 10 diapositivas y unos 5 minutos sobre la PCB del DR-VF-01, con la estructura NABC (necesidad, enfoque, beneficio frente al costo, competencia).
 
-- [Descargar el PDF](DR-VF-01_Pitch.pdf)
+- [Descargar el PDF](DR-VF-01_Pitch.pdf): en pantalla completa (F11 en el navegador, Ctrl+L en Acrobat) se pasa hoja por hoja con las flechas.
+- [Descargar el PowerPoint](DR-VF-01_Pitch.pptx): se presenta con F5 y el guion aparece en las notas del orador. Cada diapositiva es una imagen; para cambiar un texto hay que editar `main.tex` y volver a generar.
 - Fuentes LaTeX: [`reports/pitch/`](../../reports/pitch/)
 - Las medidas de las diapositivas 6 y 8 vienen de la nota de aplicación (placa en mils) y del informe de ingeniería de la prueba de concepto (prototipo Thingy:91 X).
 
