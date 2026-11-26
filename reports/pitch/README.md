@@ -1,6 +1,6 @@
 # Pitch deck
 
-Source of the 10-slide pitch of the PCB application note (Spanish, about 5 minutes).
+Source of the 11-slide pitch of the PCB application note (Spanish, about 5 minutes and a half).
 
 ```bash
 latexmk -pdf main.tex     # pdfLaTeX with TeX Gyre Heros; images come from ../application_note_pcb/figures/

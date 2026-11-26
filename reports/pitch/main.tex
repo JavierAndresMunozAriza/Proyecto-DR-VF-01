@@ -24,7 +24,7 @@
 \newcommand{\hfont}{\bfseries}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,calc}
-\graphicspath{{../application_note_pcb/figures/}}
+\graphicspath{{../application_note_pcb/figures/}{figures/}}
 
 \hyphenpenalty=10000
 \exhyphenpenalty=10000
@@ -60,12 +60,17 @@
   \draw[#1,opacity=.35,line width=.4pt] (1.1,8.4) -- (14.9,8.4);
   \txt{1.1}{8.5}{9}{\sz{6.5}{8}}{#1}{DR-VF-01 · Nota de aplicación de la PCB}
   \txt{13.9}{8.5}{1}{\sz{6.5}{8}\raggedleft}{#1}{\insertframenumber\,/\,\inserttotalframenumber}}
-\newcommand{\solarrow}[5]{%
-  \card{1.1}{#1}{13.8}{1.2}{cardlight}{linelight}
-  \fill[amber] (1.1,#1) rectangle ++(0.07,1.2);
-  \txt{1.4}{#1+0.45}{2.3}{\sz{7.5}{9}\bfseries}{amberdeep}{\MakeUppercase{#2}}
-  \txt{3.9}{#1+0.18}{6.2}{\sz{9.5}{11.5}}{mute}{#3\par\vspace{1pt}{\hfont\sz{15}{17}\color{ink}#4}}
-  \txt{10.4}{#1+0.25}{4.3}{\sz{8.5}{10.5}}{mute}{#5}}
+\newcommand{\solarrow}[4]{%
+  \card{1.1}{#1}{8.2}{1.05}{cardlight}{linelight}
+  \fill[amber] (1.1,#1) rectangle ++(0.07,1.05);
+  \txt{1.4}{#1+0.38}{2.0}{\sz{7.5}{9}\bfseries}{amberdeep}{\MakeUppercase{#2}}
+  \txt{3.5}{#1+0.1}{5.6}{\sz{8.5}{10.5}}{mute}{#3\par\vspace{1pt}{\hfont\sz{13}{15}\color{ink}#4}}}
+\newcommand{\pin}[3]{\draw[fill=amber,draw=navy,line width=.6pt] (\fpeval{1.1+#1*0.004763},\fpeval{2.95+#2*0.004766}) circle (0.2);
+  \node[inner sep=0pt,text=navy,font=\sz{7}{8}\bfseries] at (\fpeval{1.1+#1*0.004763},\fpeval{2.95+#2*0.004766}) {#3};}
+\newcommand{\legend}[4]{\draw[fill=amber,draw=amber] (6.0,#1+0.2) circle (0.2);
+  \node[inner sep=0pt,text=navy,font=\sz{7}{8}\bfseries] at (6.0,#1+0.2) {#2};
+  \txt{6.5}{#1-0.03}{8.4}{\sz{10.5}{12}\bfseries}{ink}{#3}
+  \txt{6.5}{#1+0.37}{8.4}{\sz{8.5}{10.5}}{mute}{#4}}
 \newcommand{\midstat}[5]{\fill[#5] (#1,#2) rectangle ++(#3,0.06);
   \txt{#1}{#2+0.2}{#3}{\hfont\sz{26}{28}}{#5}{#4}}
 \newcommand{\midcap}[4]{\txt{#1}{#2+1.15}{#3}{\sz{8.5}{10.5}}{ink}{#4}}
@@ -161,14 +166,38 @@
   \footer{steel}{Fuente: nota de aplicación, sección 2}{}
 \slideend\end{frame}
 
+% ------------------------------------------------------------------ 3b · the board
+\begin{frame}[plain]\slidebegin
+  \bgrect{paper}
+  \eyebrow{amberdeep}{A · ENFOQUE · LA PLACA}
+  \slidetitle{ink}{Cada bloque tiene su lugar en la placa}
+  \node[inner sep=0pt,anchor=north west] at (1.1,2.95) {\includegraphics[height=5.0cm]{pcb_3d_top.png}};
+  \pin{410}{100}{1}
+  \pin{370}{305}{2}
+  \pin{495}{630}{3}
+  \pin{195}{700}{4}
+  \pin{272}{553}{5}
+  \pin{82}{395}{6}
+  \legend{2.85}{1}{MAX-M10S (U6)}{Receptor GNSS multiconstelación en L1}
+  \legend{3.7}{2}{ESP32-S3 (U5)}{Procesador de la aplicación}
+  \legend{4.55}{3}{DX-LR30 (U7)}{Radio LoRa de 915 MHz}
+  \legend{5.4}{4}{CN3791 (U3) y L1}{Cargador solar con seguimiento MPPT}
+  \legend{6.25}{5}{TP4056 (U2) y USB-C (J1)}{Carga por USB y programación}
+  \legend{7.1}{6}{LSM6DS3TR-C (U8)}{IMU que despierta al procesador del sueño}
+  \footer{mute}{Fuente: nota de aplicación, sección 2 · vista 3D de Altium, 2535 × 3496 mil}{}
+\slideend\end{frame}
+
 % ------------------------------------------------------------------ 4 · solar
 \begin{frame}[plain]\slidebegin
   \bgrect{paper}
   \eyebrow{amberdeep}{A · ENFOQUE · DECISIÓN 1 · ENERGÍA}
   \slidetitle{ink}{Un divisor de resistencias fija el punto de trabajo del panel en 6,03 V}
-  \solarrow{3.0}{Punto del panel}{V = 1,205 × (1 + 400 kΩ / 100 kΩ)}{≈ 6,03 V}{Divisor R8 + R9 (390 k + 10 k) sobre R10 (100 k).}
-  \solarrow{4.3}{Corriente de carga}{I = 120 mV / 0,47 Ω}{≈ 255 mA}{R12 fija la corriente, acorde con un panel de 6 V y 1 a 1,5 W.}
-  \solarrow{5.6}{Inductancia}{L1 = 47 µH}{rizado ≈ 89 mA}{El 35 \% de la corriente de carga; con 10 µH no se cumple la regla del fabricante.}
+  \solarrow{2.95}{Punto del panel}{V = 1,205 × (1 + 400 kΩ / 100 kΩ)}{≈ 6,03 V}
+  \solarrow{4.1}{Corriente de carga}{I = 120 mV / 0,47 Ω (R12)}{≈ 255 mA}
+  \solarrow{5.25}{Inductancia}{L1 = 47 µH; con 10 µH no cumple}{rizado ≈ 89 mA, el 35 \%}
+  \draw[fill=cardlight,draw=linelight,rounded corners=3pt] (9.7,2.95) rectangle (14.9,6.25);
+  \node[inner sep=0pt] at (12.3,4.6) {\includegraphics[height=3.0cm]{sch_1b_mppt.png}};
+  \txt{9.7}{6.32}{5.2}{\sz{7}{8.5}}{mute}{Hoja 1B del esquemático: divisor R8, R9 y R10 en el pin MPPT del CN3791.}
   \fill[amberdeep] (1.1,7.0) rectangle ++(0.07,0.85);
   \txt{1.4}{7.0}{13.4}{\sz{8.8}{11}}{ink}{\textbf{Descartado:} cargar también el USB con este circuito. Con 5 V el pin MPPT no llega a 1,23 V (hace falta más de 6,15 V); por eso el USB tiene su propio cargador, el TP4056.}
   \footer{mute}{Fuente: nota de aplicación, sección 3.1}{}
@@ -207,8 +236,8 @@
   \rline{4.85}{2}{Criterios de ubicación}{Parche GNSS en el lado opuesto al Wi-Fi y al LoRa; lazo del cargador solar lejos del GNSS y del cristal.}
   \rline{6.55}{3}{Clases de red}{RF50 53 mil · PWR 16 mil · lazo CN3791 20 mil · USB 10 mil con longitudes igualadas.}
   \draw[fill=cardlight,draw=linelight,rounded corners=4pt] (10.0,2.85) rectangle (14.9,7.9);
-  \node[inner sep=0pt] at (12.45,5.2) {\includegraphics[height=4.2cm]{pcb_3d_top.png}};
-  \txt{10.15}{7.38}{4.6}{\sz{6.5}{8}\centering}{mute}{2535 × 3496 mil (64,4 × 88,8 mm) · 112 piezas}
+  \node[inner sep=0pt] at (12.45,5.2) {\includegraphics[height=4.2cm]{pcb_3d_bottom.png}};
+  \txt{10.15}{7.38}{4.6}{\sz{6.5}{8}\centering}{mute}{Cara inferior: plano de masa continuo · 2535 × 3496 mil}
   \footer{mute}{Fuente: nota de aplicación, sección 4}{}
 \slideend\end{frame}
 
