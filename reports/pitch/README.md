@@ -1,6 +1,6 @@
 # Pitch deck
 
-Source of the 11-slide pitch of the PCB application note (Spanish, about 5 minutes and a half).
+Source of the 12-slide pitch of the PCB application note (Spanish, about 5 minutes and a half).
 
 ```bash
 latexmk -pdf main.tex     # pdfLaTeX with TeX Gyre Heros; images come from ../application_note_pcb/figures/
@@ -11,7 +11,7 @@ The published copy is `docs/presentacion/` (PDF, one PNG per slide and the speak
 After changing the deck, rebuild and refresh it:
 
 ```bash
-pdftoppm -r 110 -png main.pdf ../../docs/presentacion/slides/slide
+pdftoppm -r 400 -png main.pdf ../../docs/presentacion/slides/slide
 cp main.pdf ../../docs/presentacion/DR-VF-01_Pitch.pdf
 ```
 

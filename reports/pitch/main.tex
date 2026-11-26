@@ -84,7 +84,7 @@
   \txt{#1+0.35}{5.6}{6.0}{\sz{7.5}{9}\bfseries}{amber}{ADAPTADORES}
   \txt{#1+0.35}{6.0}{6.0}{\sz{12}{14}\bfseries}{cream}{#2}
   \txt{#1+0.35}{6.6}{6.0}{\sz{9}{11.5}}{cream}{#3}}
-\newcommand{\nabc}[5]{\card{#1}{2.5}{3.15}{4.2}{amberlight}{navy}
+\newcommand{\nabc}[5]{\card{#1}{2.5}{3.15}{4.4}{amberlight}{navy}
   \txt{#1+0.3}{2.65}{2.6}{\hfont\sz{34}{36}}{navy}{#2}
   \txt{#1+0.3}{4.15}{2.6}{\sz{9}{11}\bfseries}{navy}{#3}
   \txt{#1+0.3}{4.65}{2.6}{\sz{8.5}{11}}{navy}{#4}}
@@ -96,6 +96,10 @@
 \newcommand{\barrow}[4]{\txt{1.1}{#1}{2.7}{\sz{8}{10}}{cream}{#2}
     \fill[amber,rounded corners=1pt] (3.9,#1+0.02) rectangle ++(#3,0.3);
     \txt{3.9+#3+0.15}{#1}{1.4}{\sz{8}{10}\bfseries}{cream}{#4}}
+\newcommand{\cmp}[4]{\draw[linelight,line width=.5pt] (1.1,#1) -- (14.9,#1);
+  \txt{1.1}{#1+0.28}{3.0}{\sz{8}{10}\bfseries}{amberdeep}{\MakeUppercase{#2}}
+  \txt{4.5}{#1+0.25}{4.3}{\sz{9.5}{12}}{mute}{#3}
+  \txt{9.4}{#1+0.25}{5.4}{\sz{9.5}{12}\bfseries}{ink}{#4}}
 \newcommand{\slidebegin}{\begin{tikzpicture}[remember picture,overlay,shift={(current page.north west)},x=1cm,y=-1cm]}
 \newcommand{\slideend}{\end{tikzpicture}}
 \newcommand{\card}[6]{% x y w h fill border
@@ -279,6 +283,25 @@
   \footer{steel}{Fuente: nota de aplicación, secciones 3.4 y 3.5 · datasheet comercial (precio sugerido)}{}
 \slideend\end{frame}
 
+% ------------------------------------------------------------------ 9b · competition vs the physical fence
+\begin{frame}[plain]\slidebegin
+  \bgrect{paper}
+  \eyebrow{amberdeep}{C · COMPETENCIA · FRENTE A LA CERCA FÍSICA}
+  \slidetitle{ink}{Frente a la cerca física, el límite es software y el animal informa}
+  \draw[fill=linelight,draw=linelight,rounded corners=3pt] (4.3,2.85) rectangle ++(4.6,0.65);
+  \txt{4.5}{3.02}{4.2}{\sz{10}{12}\bfseries}{ink}{Cerca física}
+  \draw[fill=amber,draw=amber,rounded corners=3pt] (9.2,2.85) rectangle ++(5.7,0.65);
+  \txt{9.4}{3.02}{5.3}{\sz{10}{12}\bfseries}{navy}{DR-VF-01}
+  \cmp{3.7}{Límite}{Alambre y postes fijos}{Polígono en el collar}
+  \cmp{4.55}{Cambiarlo}{Mover alambre y postes}{Se edita por software}
+  \cmp{5.4}{Posición}{No se conoce}{GNSS, con reporte por LoRa}
+  \cmp{6.25}{Mantenimiento}{Revisar el perímetro}{Recarga solar, sin cableado}
+  \draw[linelight,line width=.5pt] (1.1,7.1) -- (14.9,7.1);
+  \fill[amberdeep] (1.1,7.3) rectangle ++(0.07,0.45);
+  \txt{1.4}{7.3}{13.4}{\sz{11}{13}\bfseries}{ink}{La cerca física contiene; el collar además informa.}
+  \footer{mute}{Fuente: nota de aplicación, secciones 1 a 3 y 5 · datasheet comercial}{}
+\slideend\end{frame}
+
 % ------------------------------------------------------------------ 10 · NABC close
 \begin{frame}[plain]\slidebegin
   \bgrect{amber}
@@ -287,8 +310,8 @@
   \nabc{1.1}{N}{Necesidad}{Vigilar el ganado en grandes extensiones sin alambre ni red eléctrica.}{}
   \nabc{4.65}{A}{Enfoque}{Collar con GNSS, ESP32-S3 y LoRa; batería central y dos cargadores.}{}
   \nabc{8.2}{B}{Beneficio}{124 µA en sueño; 7 días sin sol exigidos y de 40 a 190 estimados.}{}
-  \nabc{11.75}{C}{Competencia}{Frente a cercas físicas y vigilancia: el límite es un polígono en software.}{}
-  \txt{1.1}{7.15}{13.8}{\sz{15}{18}\bfseries}{navy}{Un diseño documentado de punta a punta.}
+  \nabc{11.75}{C}{Competencia}{Frente a la cerca física: límite en software y el animal informa.}{}
+  \txt{1.1}{7.3}{13.8}{\sz{15}{18}\bfseries}{navy}{Un diseño documentado de punta a punta.}
   \footer{navy}{}{}
 \slideend\end{frame}
 
