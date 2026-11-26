@@ -27,6 +27,19 @@
 \newcommand{\rPwrWidth}{0.406}         % mm, preferred width of class PWR
 \newcommand{\rChargerWidth}{0.508}     % mm, preferred width of class PWR_CN3791
 
+% --- the same lengths in mil (1 mil = 0.0254 mm), as Altium shows them; check_numbers.py compares them with the mm values ---
+\newcommand{\mBoardWidth}{2535}
+\newcommand{\mBoardHeight}{3496}
+\newcommand{\mThickness}{31.5}
+\newcommand{\mClearance}{6}
+\newcommand{\mViaHole}{12}
+\newcommand{\mViaDiameter}{24}
+\newcommand{\mRfWidth}{53}
+\newcommand{\mUsbWidth}{10}
+\newcommand{\mPwrWidth}{16}
+\newcommand{\mChargerWidth}{20}
+\newcommand{\mRestWidth}{8}
+
 % --- Design values as drawn in the schematic (hardware/pcb/DR-VF-01_schematics.pdf, sheet 1)
 %     and calculations that use them. docs/ARCHITECTURE.md still shows older values for the
 %     MPPT divider (402 k / 100 k) and the sense resistor (0.12 ohm); the schematic wins.
@@ -52,7 +65,13 @@
 \newcommand{\cIpeak}{224}              % mA
 \newcommand{\cIlimit}{150}             % uA, RNF-03
 \newcommand{\cMargin}{26}              % uA
-\newcommand{\cDays}{190}               % days with 1200 mAh, estimate
+\newcommand{\cDays}{190}               % days, POWER_BUDGET.md profile (0.223 mA average), 1020 mAh effective
+\newcommand{\cCapEff}{1020}            % mAh, 1200 x 0.85
+\newcommand{\cIdoc}{0.223}             % mA, average current of the POWER_BUDGET.md profile
+\newcommand{\cIfsm}{1.06}              % mA, average current of the FSM-consistent profile (docs/design-reviews/power.md PH-2)
+\newcommand{\cDaysLow}{40}             % days, FSM-consistent profile
+\newcommand{\cDaysSleep}{343}          % days, sleep only at 123.76 uA (upper bound, not a real autonomy)
+\newcommand{\cEnergySeven}{177}        % mAh used by 7 dark days (25.3 mAh/day, PH-2)
 
 % --- Thingy:91 X measurements (copied from ../engineering_report_poc/data.tex) ---
 \newcommand{\pSoc}{nRF9151}

@@ -2,9 +2,9 @@
 
 \subsection{Apilado y contorno}
 
-La placa tiene \bLayers{} capas de cobre sobre FR4 de \bThickness~mm (el espesor del diseño
-recomendado del conector USB-C de 16 pines), con un contorno de \bBoardWidth{} $\times$
-\bBoardHeight~mm. La capa inferior lleva un vertido de masa continuo, que sirve de plano de
+La placa tiene \bLayers{} capas de cobre sobre FR4 de \mThickness~mil (el espesor del diseño
+recomendado del conector USB-C de 16 pines), con un contorno de \mBoardWidth{} $\times$
+\mBoardHeight~mil (\bBoardWidth{} $\times$ \bBoardHeight~mm). La capa inferior lleva un vertido de masa continuo, que sirve de plano de
 referencia de las líneas de radiofrecuencia y del USB. Al ser de dos capas, el fabricante no ofrece
 impedancia controlada, y el diseño acepta esa dispersión en líneas cortas.
 
@@ -25,7 +25,7 @@ plano de referencia, con vías de unión y puntos de prueba.
 \centering
 \includegraphics[width=\linewidth,height=0.55\textheight,keepaspectratio]{figures/pcb_3d_bottom.png}
 \end{minipage}
-\caption{Vista 3D de Altium: cara superior (izquierda) y cara inferior (derecha), de \bBoardWidth{} $\times$ \bBoardHeight~mm.}
+\caption{Vista 3D de Altium: cara superior (izquierda) y cara inferior (derecha), de \mBoardWidth{} $\times$ \mBoardHeight~mil.}
 \label{fig:placa3d}
 \end{figure}
 
@@ -37,18 +37,18 @@ plano de referencia, con vías de unión y puntos de prueba.
 \begin{tabularx}{\textwidth}{|l l X|}
 \hline
 \tablehead{\textbf{Clase} & \textbf{Ancho preferido} & \textbf{Uso}} \\ \hline
-\texttt{RF50} & \rRfWidth~mm & Línea de 50~$\Omega$ del LoRa y del GNSS hasta sus conectores u.FL, microstrip sobre el plano de la capa inferior \\ \hline
-\texttt{USB} & \rUsbWidth~mm & Par diferencial D+/D$-$, con longitudes igualadas \\ \hline
-\ruta{PWR_CN3791} & \rChargerWidth~mm & Lazo del cargador solar (diodos, MOSFET, bobina) \\ \hline
-\texttt{PWR} & \rPwrWidth~mm & 3V3, batería y alimentación en general \\ \hline
-Resto & 0.203~mm & Señales \\ \hline
+\texttt{RF50} & \mRfWidth~mil & Línea de 50~$\Omega$ del LoRa y del GNSS hasta sus conectores u.FL, microstrip sobre el plano de la capa inferior \\ \hline
+\texttt{USB} & \mUsbWidth~mil & Par diferencial D+/D$-$, con longitudes igualadas \\ \hline
+\ruta{PWR_CN3791} & \mChargerWidth~mil & Lazo del cargador solar (diodos, MOSFET, bobina) \\ \hline
+\texttt{PWR} & \mPwrWidth~mil & 3V3, batería y alimentación en general \\ \hline
+Resto & \mRestWidth~mil & Señales \\ \hline
 \end{tabularx}
 \caption{Clases de red y ancho de pista preferido.}
 \end{table}
 
-Reglas generales: separación mínima entre cobre de \rClearance~mm, vías con agujero de \rViaHole~mm y
-diámetro de \rViaDiameter~mm, y separaciones propias del componente USB-C y del U8. El ancho de la línea de
-50~$\Omega$ salió de un cálculo de microstrip sobre FR4 de \bThickness~mm con $\varepsilon_r = 4.4$
+Reglas generales: separación mínima entre cobre de \mClearance~mil, vías con agujero de \mViaHole~mil y
+diámetro de \mViaDiameter~mil, y separaciones propias del componente USB-C y del U8. El ancho de la línea de
+50~$\Omega$ salió de un cálculo de microstrip sobre FR4 de \mThickness~mil con $\varepsilon_r = 4.4$
 (estimación, \ruta{hardware/PCB_REGLAS.md}): con la tolerancia de espesor del fabricante queda entre
 unos 46 y 54~$\Omega$.
 
@@ -57,7 +57,7 @@ unos 46 y 54~$\Omega$.
 Los criterios de zonificación salen de las guías de integración de u-blox y de Espressif
 (\ruta{hardware/PCB_REGLAS.md}):
 \begin{itemize}
-  \item los componentes de radiofrecuencia del GNSS, a 5~mm como mínimo de cualquier otro componente de RF y lejos de lo digital;
+  \item los componentes de radiofrecuencia del GNSS, a unos 200~mil (5~mm) como mínimo de cualquier otro componente de RF y lejos de lo digital;
   \item el parche GNSS y su conector, del lado opuesto al Wi-Fi del módulo y al LoRa;
   \item el MAX-M10S, lejos de fuentes de calor (TP4056, CN3791, bobina) y sin pistas de otras señales debajo del módulo;
   \item el lazo del CN3791 lo más corto posible, y su etapa de potencia lo más lejos posible del GNSS y del cristal;
@@ -83,13 +83,13 @@ sustituye a la revisión de integridad de señal ni a la de radiofrecuencia.
 \begin{tabular}{|l l r l|}
 \hline
 \tablehead{\textbf{Herramienta} & \textbf{Diámetro} & \textbf{Cantidad} & \textbf{Tipo}} \\ \hline
-T1 & 0.305~mm & 160 & Pasante metalizado \\ \hline
-T2 & 0.381~mm & 11 & Pasante metalizado \\ \hline
-T3 & 0.6~mm & 4 & Ranura metalizada \\ \hline
-T4 & 0.762~mm & 4 & Pasante metalizado \\ \hline
-T5 & 0.8~mm & 2 & Pasante metalizado \\ \hline
-T6 & 0.85~mm & 2 & Pasante metalizado \\ \hline
-T7 & 0.65~mm & 2 & No metalizado \\ \hline
+T1 & 12~mil & 160 & Pasante metalizado \\ \hline
+T2 & 15~mil & 11 & Pasante metalizado \\ \hline
+T3 & 23.6~mil & 4 & Ranura metalizada \\ \hline
+T4 & 30~mil & 4 & Pasante metalizado \\ \hline
+T5 & 31.5~mil & 2 & Pasante metalizado \\ \hline
+T6 & 33.5~mil & 2 & Pasante metalizado \\ \hline
+T7 & 25.6~mil & 2 & No metalizado \\ \hline
 \end{tabular}
 \caption{Taladros de la placa (informe de taladro de Altium); \bHoles{} en total.}
 \end{table}

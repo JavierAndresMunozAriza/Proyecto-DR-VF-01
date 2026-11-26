@@ -128,6 +128,22 @@ check("every requirement has a status", sum(status.values()) == 16, str(status))
 check("reading paragraph: 7 by design, 1 PoC, 2 open, 4 without metric, 2 pending",
       (status["Cumple por diseño"], status["Medido en PoC"], status["Abierto"], status["Sin métrica definida"], status["Pendiente"]) == (7, 1, 2, 4, 2), str(status))
 
+# --- mil values equal the mm values (1 mil = 0.0254 mm) ---
+for mm, mil in [("bBoardWidth", "mBoardWidth"), ("bBoardHeight", "mBoardHeight"), ("bThickness", "mThickness"),
+                ("rClearance", "mClearance"), ("rViaHole", "mViaHole"), ("rViaDiameter", "mViaDiameter"),
+                ("rRfWidth", "mRfWidth"), ("rUsbWidth", "mUsbWidth"), ("rPwrWidth", "mPwrWidth"),
+                ("rChargerWidth", "mChargerWidth")]:
+    check(f"{mil} is {mm} in mil", abs(num(d[mm]) / 0.0254 - num(d[mil])) < 0.5, f"{num(d[mm]) / 0.0254:.2f} vs {d[mil]}")
+check("mRestWidth is 0.203 mm in mil", abs(0.203 / 0.0254 - num(d["mRestWidth"])) < 0.5)
+
+# --- autonomy figures ---
+cap = 1200 * 0.85
+check("effective capacity", abs(cap - num(d["cCapEff"])) < 1)
+check("autonomy, POWER_BUDGET profile", abs(cap / num(d["cIdoc"]) / 24 - num(d["cDays"])) < 1.5, f"{cap / num(d['cIdoc']) / 24:.1f}")
+check("autonomy, FSM profile", abs(cap / num(d["cIfsm"]) / 24 - num(d["cDaysLow"])) < 1, f"{cap / num(d['cIfsm']) / 24:.1f}")
+check("autonomy, sleep only (upper bound)", abs(cap / 0.12376 / 24 - num(d["cDaysSleep"])) < 1, f"{cap / 0.12376 / 24:.1f}")
+check("energy of 7 dark days", abs(7 * 25.3 - num(d["cEnergySeven"])) < 1)
+
 # --- Thingy figures equal those of the PoC report ---
 pairs = {"pBenchUsFour": "dBenchUsFour", "pBenchMsThousand": "dBenchMsThousand", "pBenchLimitVertices": "dBenchLimitVertices",
          "pCepLow": "dStaticRunTwoCepFifty", "pCepHigh": "dStaticBothCepFifty", "pReqCep": "dReqCep",

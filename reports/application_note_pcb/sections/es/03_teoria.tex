@@ -75,5 +75,25 @@ TP4056 & 2.5~\textmu A & --- & --- & En espera \\ \hline
 El consumo en sueño profundo calculado, de unos \cIsleep~\textmu A, deja un margen de \cMargin~\textmu A
 frente al límite de \cIlimit~\textmu A de RNF-03. El margen es estrecho: faltan por sumar el USBLC6-2SC6,
 la fuga de los dos diodos Schottky del CN3791, que debe quedar por debajo de unos 47~\textmu A en total, y
-los consumos extra del módulo LoRa. Los valores son típicos; el consumo real solo se sabrá midiendo la
-primera placa. Con una batería de 1200~mAh, la autonomía estimada en oscuridad es de unos \cDays~días.
+los consumos extra del módulo LoRa. Los valores son típicos de datasheet.
+
+\subsection{Autonomía en oscuridad: tres cifras para tres preguntas}
+
+Con la batería de 1200~mAh, que con el factor de degradación de 0.85 ofrece \cCapEff~mAh efectivos, y sin
+ninguna aportación del panel solar, aparecen tres cifras. No se contradicen: responden a preguntas distintas.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabularx}{\textwidth}{|l X X|}
+\hline
+\tablehead{\textbf{Cifra} & \textbf{Qué supone} & \textbf{Para qué sirve}} \\ \hline
+7 días & Requisito RNF-01: operar siete días en oscuridad total. Con el perfil de la máquina de estados, siete días consumen unos \cEnergySeven~mAh de los \cCapEff~mAh efectivos. & Es lo que el diseño debe cumplir; se cumple con margen. \\ \hline
+De \cDaysLow{} a \cDays~días & Uso normal sin sol, con movimiento, transmisiones LoRa y chequeos del GNSS. \cDays~días con el perfil del presupuesto de potencia (\cIdoc~mA de promedio); \cDaysLow~días con el perfil de la máquina de estados (\cIfsm~mA de promedio, con más chequeos del GNSS y el procesador despierto). & Estima cuánto dura la carga en funcionamiento real; el rango refleja la incertidumbre del perfil de uso. \\ \hline
+\cDaysSleep~días & Techo teórico: el collar duerme todo el tiempo a \cIsleep~\textmu A, sin ningún chequeo ni transmisión (\cCapEff~mAh $\div$ 0.124~mA). & Solo es un límite superior; ningún uso real lo alcanza. \\ \hline
+\end{tabularx}
+\caption{Autonomía en oscuridad con batería de 1200~mAh: qué mide cada cifra.}
+\end{table}
+
+El perfil de \cIfsm~mA y los \cDaysLow~días son el cálculo de la revisión de potencia
+(\ruta{docs/design-reviews/power.md}, hallazgo PH-2), hecho con el firmware tal como lo describe la máquina de estados.
