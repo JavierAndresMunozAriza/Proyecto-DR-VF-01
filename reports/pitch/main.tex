@@ -136,7 +136,7 @@
   \bigstat{10.6}{3.2}{4.3}{3 radios}{GNSS en 1575 MHz, LoRa en 915 MHz y Wi-Fi o BLE en 2,4 GHz, en 2535 × 3496 mil y 2 capas}{ink}
   \fill[amber] (1.1,6.55) rectangle ++(0.09,1.0);
   \txt{1.45}{6.55}{12.5}{\sz{13}{16}\bfseries}{ink}{Un collar a pleno sol y sin red eléctrica: cada microamperio y cada milímetro cuentan.}
-  \footer{mute}{Fuente: nota de aplicación, secciones 1 y 3}{}
+  \footer{mute}{Fuente: nota de aplicación, secciones 2 y 4}{}
 \slideend\end{frame}
 
 % ------------------------------------------------------------------ 3 · architecture
@@ -163,7 +163,7 @@
   \modbox{6.5}{LSM6DS3TR-C}{IMU}
   \fill[amber] (1.1,7.45) rectangle ++(0.07,0.5);
   \txt{1.4}{7.47}{13}{\sz{9.5}{12}\bfseries}{cream}{El USB solo carga la batería; no alimenta el sistema.}
-  \footer{steel}{Fuente: nota de aplicación, sección 2}{}
+  \footer{steel}{Fuente: nota de aplicación, sección 3}{}
 \slideend\end{frame}
 
 % ------------------------------------------------------------------ 3b · the board
@@ -184,7 +184,7 @@
   \legend{5.4}{4}{CN3791 (U3) y L1}{Cargador solar con seguimiento MPPT}
   \legend{6.25}{5}{TP4056 (U2) y USB-C (J1)}{Carga por USB y programación}
   \legend{7.1}{6}{LSM6DS3TR-C (U8)}{IMU que despierta al procesador del sueño}
-  \footer{mute}{Fuente: nota de aplicación, sección 2 · vista 3D de Altium, 2535 × 3496 mil}{}
+  \footer{mute}{Fuente: nota de aplicación, sección 3 · vista 3D de Altium, 2535 × 3496 mil}{}
 \slideend\end{frame}
 
 % ------------------------------------------------------------------ 4 · solar
@@ -200,7 +200,7 @@
   \txt{9.7}{6.32}{5.2}{\sz{7}{8.5}}{mute}{Hoja 1B del esquemático: divisor R8, R9 y R10 en el pin MPPT del CN3791.}
   \fill[amberdeep] (1.1,7.0) rectangle ++(0.07,0.85);
   \txt{1.4}{7.0}{13.4}{\sz{8.8}{11}}{ink}{\textbf{Descartado:} cargar también el USB con este circuito. Con 5 V el pin MPPT no llega a 1,23 V (hace falta más de 6,15 V); por eso el USB tiene su propio cargador, el TP4056.}
-  \footer{mute}{Fuente: nota de aplicación, sección 3.1}{}
+  \footer{mute}{Fuente: nota de aplicación, sección 4.1}{}
 \slideend\end{frame}
 
 % ------------------------------------------------------------------ 5 · power
@@ -224,7 +224,7 @@
   \autorow{5.8}{40–190 días}{uso normal}
   \autorow{6.4}{343 días}{techo teórico}
   \txt{9.95}{7.1}{4.95}{\sz{7.5}{9.5}}{steel}{LDO elegido: 25 µA; el descartado consume 600 µA (24 veces más).}
-  \footer{steel}{Fuente: nota de aplicación, secciones 3.4 y 3.5; valores típicos de datasheet}{}
+  \footer{steel}{Fuente: nota de aplicación, secciones 4.4 y 4.5; valores típicos de datasheet}{}
 \slideend\end{frame}
 
 % ------------------------------------------------------------------ 6 · radio and layout
@@ -238,7 +238,7 @@
   \draw[fill=cardlight,draw=linelight,rounded corners=4pt] (10.0,2.85) rectangle (14.9,7.9);
   \node[inner sep=0pt] at (12.45,5.2) {\includegraphics[height=4.2cm]{pcb_3d_bottom.png}};
   \txt{10.15}{7.38}{4.6}{\sz{6.5}{8}\centering}{mute}{Cara inferior: plano de masa continuo · 2535 × 3496 mil}
-  \footer{mute}{Fuente: nota de aplicación, sección 4}{}
+  \footer{mute}{Fuente: nota de aplicación, sección 5}{}
 \slideend\end{frame}
 
 % ------------------------------------------------------------------ 7 · firmware
@@ -251,7 +251,7 @@
   \txt{1.5}{3.85}{12.9}{\sz{12}{15}\bfseries}{navy}{\texttt{geofence.c} en C puro · máquina de estados · lógica de alerta · registro de eventos}
   \fwcard{1.1}{Thingy:91 X · prototipo}{GNSS dentro del módem nRF9151 y LTE-M. \texttt{geofence\_check()} tarda 350 µs con 4 vértices.}
   \fwcard{8.2}{PCB · ESP32-S3}{MAX-M10S por UART, LoRa SX1262 por SPI, IMU y medidor de batería por I2C.}
-  \footer{steel}{Fuente: nota de aplicación, sección 5 · los 350 µs son de la Thingy:91 X}{}
+  \footer{steel}{Fuente: nota de aplicación, sección 6 · los 350 µs son de la Thingy:91 X}{}
 \slideend\end{frame}
 
 % ------------------------------------------------------------------ 8 · validation
@@ -280,7 +280,7 @@
   \bigstat{10.6}{3.2}{4.3}{124 µA}{en sueño, calculados, con recarga solar MPPT}{cream}
   \fill[amber] (1.1,6.55) rectangle ++(0.09,0.7);
   \txt{1.45}{6.6}{12.5}{\sz{13}{16}\bfseries}{cream}{Precio sugerido del modelo básico: \$149.99}
-  \footer{steel}{Fuente: nota de aplicación, secciones 3.4 y 3.5 · datasheet comercial (precio sugerido)}{}
+  \footer{steel}{Fuente: nota de aplicación, secciones 4.4 y 4.5 · datasheet comercial (precio sugerido)}{}
 \slideend\end{frame}
 
 % ------------------------------------------------------------------ 9b · competition vs the physical fence
@@ -299,7 +299,7 @@
   \draw[linelight,line width=.5pt] (1.1,7.1) -- (14.9,7.1);
   \fill[amberdeep] (1.1,7.3) rectangle ++(0.07,0.45);
   \txt{1.4}{7.3}{13.4}{\sz{11}{13}\bfseries}{ink}{La cerca física contiene; el collar además informa.}
-  \footer{mute}{Fuente: nota de aplicación, secciones 1 a 3 y 5 · datasheet comercial}{}
+  \footer{mute}{Fuente: nota de aplicación, secciones 2, 4 y 6 · datasheet comercial}{}
 \slideend\end{frame}
 
 % ------------------------------------------------------------------ 10 · NABC close

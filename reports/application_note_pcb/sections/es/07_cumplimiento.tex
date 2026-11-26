@@ -2,7 +2,7 @@
 \label{sec:cumplimiento}
 
 Esta sección es el paso de los \emph{requerimientos} a las \emph{características}. Cada fila de la
-tabla de la sección~1 vuelve aquí con el valor que tiene el diseño, la evidencia y un estado. Los
+tabla de la sección~2 vuelve aquí con el valor que tiene el diseño, la evidencia y un estado. Los
 estados son cinco y no se mezclan:
 
 \begin{itemize}
@@ -28,7 +28,7 @@ RF-04 & DX-LR30-900M22S (U7) por SPI, antena de 8~cm por u.FL (J5) & Esquemátic
 RF-05 & MAX17048 (U9) por I2C, dirección 0x36, conectado a la batería & Esquemático (hoja 4) & Cumple por diseño; pendiente de medir contra un multímetro & PCB \\ \hline
 RF-06 & Interrupción de la IMU LSM6DS3TR-C (U8) cableada a GPIO4 del ESP32-S3 & Esquemático (hojas 2 y 4) & Sin métrica definida & PCB \\ \hline
 RF-07 & La PCB no tiene módem celular (ESP32-S3 con LoRa), así que el diseño no puede cumplirlo; la función existe solo en la prueba de concepto, con pruebas en el PC y compilación para la \pBoard{}, sin haberse ejecutado en la placa ni con una cuenta de nube & \ruta{docs/REQUIREMENTS.md} (RF-07, propuesto); \ruta{docs/poc-thingy91x/PRUEBAS\_LTE.md} & Sin métrica definida (propuesto, sin aprobar) & Otra plataforma; no aplica a esta PCB \\ \hline
-RNF-01 & Batería de 1200~mAh sin sol: el requisito de 7 días se cumple con margen; autonomía estimada de \cDaysLow{} a \cDays~días con uso normal, y \cIsleep~\textmu A en sueño (sección~3) & \ruta{hardware/POWER_BUDGET.md}; \ruta{docs/design-reviews/power.md} (PH-2) & Cumple por diseño (estimación) & PCB \\ \hline
+RNF-01 & Batería de 1200~mAh sin sol: el requisito de 7 días se cumple con margen; autonomía estimada de \cDaysLow{} a \cDays~días con uso normal, y \cIsleep~\textmu A en sueño (sección~4.5) & \ruta{hardware/POWER_BUDGET.md}; \ruta{docs/design-reviews/power.md} (PH-2) & Cumple por diseño (estimación) & PCB \\ \hline
 RNF-02 & Zephyr RTOS en ambas placas; sin traza de latencias & Informe de la PoC & Pendiente de medir en la PCB & ---\\ \hline
 RNF-03 & Unos \cIsleep~\textmu A calculados frente a \cIlimit~\textmu A; margen de \cMargin~\textmu A, con consumos aún por sumar (USBLC6, diodos del CN3791, módulo LoRa) & Sección~3; \ruta{hardware/POWER_BUDGET.md} & Cumple por diseño, con margen estrecho; pendiente de medir & PCB \\ \hline
 RNF-04 & Módulo ESP32-S3 soldado y conectores u.FL; sin cables de puente & Esquemático y diseño de la placa & Cumple por diseño; pendiente de inspección en la placa & PCB \\ \hline
