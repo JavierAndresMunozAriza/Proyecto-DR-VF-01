@@ -36,14 +36,14 @@ RNF-05 & TP4056 (U2) con R5 y R6 en serie, de \cRprog~k$\Omega$ en total: unos \
 RNF-06 & Protección de la batería integrada en la celda (PCM); la PCB no lleva circuito protector & Decisión del 2026-11-05 & Sin métrica definida & PCB \\ \hline
 RNF-07 & USBLC6-2SC6 (U1) en D+, D$-$ y VBUS & Esquemático (hoja 1); faltan sus niveles ESD por verificar con el datasheet & Sin métrica definida & PCB \\ \hline
 RNF-08 & Sello del conector USB-C sin definir (tipo y pieza) & \ruta{mechanical/IP67_SPEC.md} & Pendiente de medir en la PCB & Carcasa \\ \hline
-RNF-09 & Módulo de 65~\textdegree C de ambiente máximo, igual al límite de diseño; el análisis térmico indica que una carcasa sellada al sol lo supera, sin mitigación elegida & Revisión del BOM, hallazgo BOM-04; \ruta{hardware/THERMAL.md} & Abierto & PCB y carcasa \\ \hline
+RNF-09 & Módulo ESP32-S3-WROOM-1U-N16R2, de 85~\textdegree C de ambiente, en lugar del N16R8 de 65~\textdegree C; con hasta 15~\textdegree C de sol directo sobre 65~\textdegree C quedan 80~\textdegree C & Revisión del BOM, hallazgo BOM-04 (decisión del 2026-11-26); \ruta{hardware/THERMAL.md} & Cumple por diseño & PCB y carcasa \\ \hline
 \end{longtable}
 
 \subsection{Lectura de la tabla}
 
-De las dieciséis filas, siete se cumplen por diseño (RF-03, RF-04, RF-05, RNF-01, RNF-03, RNF-04 y RNF-05), una
-tiene una medida en otra plataforma (RF-02), dos siguen abiertas por hallazgos de las revisiones
-independientes (RF-01 y RNF-09), cuatro no tienen métrica definida (RF-06, RF-07, RNF-06 y RNF-07) y dos
+De las dieciséis filas, ocho se cumplen por diseño (RF-03, RF-04, RF-05, RNF-01, RNF-03, RNF-04, RNF-05 y RNF-09), una
+tiene una medida en otra plataforma (RF-02), una sigue abierta por un hallazgo de las revisiones
+independientes (RF-01), cuatro no tienen métrica definida (RF-06, RF-07, RNF-06 y RNF-07) y dos
 esperan a la placa fabricada o a la carcasa (RNF-02 y RNF-08). Solo RF-02 tiene alguna medición, y es de
 la \pBoard{}. Ningún requerimiento está \emph{verificado en la PCB}, porque la PCB aún no existe
 físicamente.

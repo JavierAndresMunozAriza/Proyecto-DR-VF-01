@@ -125,8 +125,8 @@ for i in ids:
     else:
         check(f"{i} has a known status", False, st)
 check("every requirement has a status", sum(status.values()) == 16, str(status))
-check("reading paragraph: 7 by design, 1 PoC, 2 open, 4 without metric, 2 pending",
-      (status["Cumple por diseño"], status["Medido en PoC"], status["Abierto"], status["Sin métrica definida"], status["Pendiente"]) == (7, 1, 2, 4, 2), str(status))
+check("reading paragraph: 8 by design, 1 PoC, 1 open, 4 without metric, 2 pending",
+      (status["Cumple por diseño"], status["Medido en PoC"], status["Abierto"], status["Sin métrica definida"], status["Pendiente"]) == (8, 1, 1, 4, 2), str(status))
 
 # --- mil values equal the mm values (1 mil = 0.0254 mm) ---
 for mm, mil in [("bBoardWidth", "mBoardWidth"), ("bBoardHeight", "mBoardHeight"), ("bThickness", "mThickness"),

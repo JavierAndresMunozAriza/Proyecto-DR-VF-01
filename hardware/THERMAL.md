@@ -198,7 +198,7 @@ Implementamos una estrategia de protección en múltiples capas:
 
 ### 2. Efecto Solar Directo
 - **Incremento térmico**: Hasta 15°C adicional en exposición directa
-- **Límite del módulo**: el ESP32-S3-WROOM-1U-N16R8 admite -40 a 65°C de ambiente (con ECC de la PSRAM activado, 85°C y 1/16 menos de PSRAM utilizable; datasheet WROOM-1 v1.8). Con sol directo dentro de la carcasa sellada el ambiente puede superar los 65°C: el módulo queda fuera de rango antes que el LDO
+- **Límite del módulo**: el ESP32-S3-WROOM-1U-N16R8 admite -40 a 65°C de ambiente (con ECC de la PSRAM activado, 85°C y 1/16 menos de PSRAM utilizable; datasheet WROOM-1 v1.8). Con sol directo dentro de la carcasa sellada el ambiente puede superar los 65°C: el módulo queda fuera de rango antes que el LDO **Decisión (2026-11-26, BOM-04):** se usa el módulo N16R2, de 85°C de ambiente; con los 15°C de sol directo sobre 65°C quedan 80°C, por debajo de ese límite.
 - **Gradiente térmico**: Variaciones en carcasa pueden causar estrés
 - **Compensación**: Diseño con margen térmico adicional
 

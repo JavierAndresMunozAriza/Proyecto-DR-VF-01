@@ -18,7 +18,7 @@ Este BOM cubre **solo la PCB final** (ESP32-S3-WROOM-1U-N16R8). La Nordic Thingy
 ### 1.1 Microcontrolador y memoria
 | Cant. | Descripción | MPN | Fabricante | Proveedor |
 |-------|-------------|-----|------------|-----------|
-| 1 | Módulo ESP32-S3-WROOM-1U-N16R8 (16 MB flash quad, 8 MB PSRAM octal, conector U.FL) | ESP32-S3-WROOM-1U-N16R8 | Espressif | AliExpress (`COMPRAS.md` O2) |
+| 1 | Módulo ESP32-S3-WROOM-1U-N16R2 (16 MB flash quad, 2 MB PSRAM quad, conector U.FL, 85 °C de ambiente; sustituye al N16R8 de 65 °C por el hallazgo BOM-04, decidido el 2026-11-26) | ESP32-S3-WROOM-1U-N16R2 | Espressif | AliExpress (`COMPRAS.md` O2) |
 
 La flash externa GD25Q128CWIGR y la SRAM externa IS62WVS5128GBLL-10NL **se eliminaron**: el datasheet v1.8 del módulo (Tablas 1-1 y 1-2) ya incluye 16 MB de flash y 8 MB de PSRAM, y el ESP32-S3 no tiene un bus libre para memorias adicionales sin gastar los GPIO que ya faltan.
 
@@ -131,6 +131,8 @@ Decidido el 2026-11-03: el LED RGB del docente reemplaza al Kingbright L-154A4SU
 | 5 | Resistor 0 Ω: R33 (3V3 medición), R34 (GNSS_RESET), R35 (3V3_GNSS), R36 (3V3_LORA), R40 (SCK) | de la biblioteca | — | Docente (biblioteca) |
 | 2 | Resistor 3.3 kΩ: pull-ups de I2C (R20 y R21, antes 4.7 kΩ) | de la biblioteca | — | Docente (biblioteca) |
 | 3 | Condensador 33 pF sin montar: C31 y C32 (D+ y D-) y C33 (SCK) | de la biblioteca | — | Docente (biblioteca) |
+| 1 | Resistor 0 Ω sin montar: R19 (entre DIO2 del SX1262 y TXEN, que maneja GPIO47; montarlo haría pelear dos salidas) | de la biblioteca | — | Docente (biblioteca) |
+| 1 | Condensador 100 µF 1206 sin montar: C26 (huella reservada) | por elegir | por elegir | Sin pieza |
 | 1 | Condensador 10 µF 25 V X7R 0805 (C1, VCC del TP4056; sustituye al X5R) | por elegir | por elegir | AliExpress (`COMPRAS.md` O28, enlace pendiente) |
 | 4 | Puntos de prueba TP8 a TP11 (VBAT, GNSS_TX, GNSS_RX, IMU_INT1; los del GNSS y la IMU no se pueden medir de otro modo porque sus pads están bajo el chip) | — (huella `TP_TH_15mil`) | — | Sin pieza |
 
@@ -253,3 +255,4 @@ No cubre y hay que crear o descargar: huella del ESP32-S3-WROOM-1U (la bibliotec
 | 1.18 | 2026-11-08 | Botones de EN y BOOT (reinicio y modo descarga) además del botón de usuario: 3 pulsadores TSC015A05026A del docente. Confirmar la cantidad con el docente |
 | 1.19 | 2026-11-08 | Sin fusible PTC en el USB-C, sin diodo ESD LESD5Z3.3T1G en el riel de 3.3 V y sin supervisor de EN en la primera placa (decisiones de diseño; se revisan tras medir la primera placa) |
 | 1.20 | 2026-11-09 | Piezas añadidas tras las auditorías MCU y POWER (sección 1.9): protección de batería invertida, corte de carga solar, puentes de 0 Ω para medir corriente, pull-ups y pull-downs de arranque, pull-ups de I2C de 3.3 kΩ y puntos de prueba. Confirmar con el docente la cantidad del N-FET (DN2302S) y del segundo AP2301. Condensador X7R: compra pendiente (COMPRAS O28) |
+| 1.21 | 2026-11-26 | Decisiones de la revisión del BOM: módulo ESP32-S3-WROOM-1U-N16R2 (85 °C) en lugar del N16R8 (BOM-04); la lista de compra es este BOM y no el ActiveBOM de Altium, cuyos parámetros de 25 piezas se corrigen en la siguiente revisión del proyecto (BOM-02); piezas sin montar R19, C26, C31, C32 y C33 documentadas arriba, y la variante de Altium queda para la siguiente revisión (BOM-03) |

@@ -175,3 +175,9 @@ All MPNs in the BOM tables exist in the repo datasheets or as library parts with
 - **REPORT:** `.tex` table rows for the optocoupler, buzzer, FPC antenna and u.FL, and the layer count (BOM-11).
 <!-- cross-end -->
 
+
+## Resolution of the MAJOR findings (2026-11-26)
+
+- **BOM-04 (module rated 65 C): decided.** The module is the ESP32-S3-WROOM-1U-N16R2 (85 C, same footprint and pinout per the audit, nothing in the repo needs 8 MB of PSRAM). It was still "elegido, falta comprar" in `COMPRAS.md` O2. If an N16R8 was already bought, option (b) applies: PSRAM ECC enabled as a firmware requirement. Recorded in `hardware/BOM.md` (row and change 1.21), `hardware/THERMAL.md`, `hardware/COMPRAS.md` O2 and `docs/REQUIREMENTS.md`.
+- **BOM-02 (wrong parameters on 25 parts): decided, not applied in Altium.** The purchase list is `hardware/BOM.md`, not the ActiveBOM export. In the next Altium revision every edited part gets the right Comment, Value, MPN and supplier part number (the 100 nF capacitors are X7R, CC0603KRX7R9BB104; C1 is X7R 25 V; U5 is the -N16R2; U10 follows BOM-07).
+- **BOM-03 (DNP not encoded): decided, not applied in Altium.** The unfitted parts R19, C26, C31, C32 and C33 are listed in `hardware/BOM.md`. The next Altium revision adds a variant ("Primera placa") with them Not Fitted and fixes the `Cap_100uF_1206_DNP` library part.
