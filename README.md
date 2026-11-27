@@ -47,6 +47,15 @@ make stress    # 3.8 million randomized cases
 | 3. Firmware port | Same code on the ESP32-S3 with its own GNSS, LoRa and IMU adapters | Pending. Only compile-checked for the ESP32-S3 |
 | 4. Fence from the cloud | Fence drawn in a local portal and delivered over LTE-M (nRF Cloud) | Host-tested and compiles. **Not run** on the board or against a cloud account |
 
+## Standalone demos
+
+The two stages of the proof of concept are also published as small repositories that build and test on their own, each with continuous integration:
+
+| Repository | What it is |
+| :--- | :--- |
+| [dr-vf-01-geofence-alert-demo](https://github.com/JavierAndresMunozAriza/dr-vf-01-geofence-alert-demo) | Step 1: a simulated walk across a fence, shown as a color alert on the Thingy:91 X, with the raw log of the board |
+| [dr-vf-01-gnss-geofence-poc](https://github.com/JavierAndresMunozAriza/dr-vf-01-gnss-geofence-poc) | Step 2: the real GNSS receiver, a fence around the first fix, a demo mode and the Engineering Report, whose figures a script recomputes from the evidence |
+
 ## Results so far
 
 Measured on the Thingy:91 X (nRF9151). These numbers do **not** describe the final PCB, which uses another MCU, GNSS receiver and antenna.
