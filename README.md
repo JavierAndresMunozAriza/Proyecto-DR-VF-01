@@ -186,7 +186,7 @@ python3 -I evidence/check_numbers.py
 
 ## Author
 
-**Javier Andres Muñoz Ariza**, Electronic Engineering, Universidad Nacional de Colombia. GitHub: [@JavierAndresMunozAriza](https://github.com/JavierAndresMunozAriza).
+**Javier Andres Muñoz Ariza**, Electronic Engineering, Universidad Nacional de Colombia. GitHub: [@JavierAndresMunozAriza](https://github.com/JavierAndresMunozAriza) · LinkedIn: [Javier Andres Muñoz Ariza](https://www.linkedin.com/in/javier-andres-mu%C3%B1oz-ariza/).
 
 Built with Zephyr RTOS, nRF Connect SDK v3.4.1 and Altium Designer. Firmware design patterns follow Elecia White, *Making Embedded Systems*; the structure of the reports follows Texas Instruments reference designs and an Infineon engineering report.
 
